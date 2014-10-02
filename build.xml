@@ -13,16 +13,77 @@
         </fileset>
     </path>
 
+    <!-- windows specific properties -->
+    <condition property="is.running.windows" value="${os.name}">
+        <os family="windows"/>
+    </condition>
+    <condition property="lib.native.path" value="lib/native/windows">
+        <isset property="is.running.windows"/>
+    </condition>
+
+    <!-- linux specific properties -->
+    <condition property="is.running.linux" value="${os.name}">
+        <equals arg1="${os.name}" arg2="linux"
+                casesensitive="false" trim="true"/>
+    </condition>
+    <condition property="lib.native.path" value="lib/native/linux">
+        <isset property="is.running.linux"/>
+    </condition>
+    <!-- make sure we use the linux-64 natives if this is a 64 bit system-->
+    <condition property="lib.native.path" value="lib/native/linux-64">
+        <and>
+            <isset property="is.running.linux"/>
+            <os arch="amd64" />
+        </and>
+    </condition>
+
+    <!-- macosx specific properties -->
+    <condition property="is.running.macosx" value="${os.name}">
+        <os family="mac"/>
+    </condition>
+    <condition property="lib.native.path" value="lib/native/macosx">
+        <isset property="is.running.macosx"/>
+    </condition>
+
+    <!-- webdriver binary property -->
+    <condition property="webdriver.chrome.driver"
+               value="${lib.native.path}/chromedriver">
+        <or>
+            <isset property="is.running.macosx"/>
+            <isset property="is.running.linux"/>
+        </or>
+    </condition>
+    <condition property="webdriver.chrome.driver"
+               value="${lib.native.path}/chromedriver.exe">
+            <isset property="is.running.windows"/>
+    </condition>
+
+    <!--<property name="jitsi-meet.instance.url"-->
+              <!--value="https://meet.example.com"/>-->
+
     <!-- default target -->
     <target name="test" depends="compile,clean-test-reports">
+
+        <!-- Fail if we have't setup what to test -->
+        <fail unless="jitsi-meet.instance.url"
+              message="Please setup the property jitsi-meet.instance.url
+with the address of the instance to test (add to the command line
+-Djitsi-meet.instance.url=&quot;https://meet.example.com&quot;"/>
+
         <junit printsummary="yes"
                fork="yes"
                haltonfailure="yes"
+               showoutput="yes"
                failureproperty="testing.failed">
             <classpath refid="project.class.path"/>
             <formatter type="xml"/>
+            <sysproperty key="webdriver.chrome.driver"
+                         value="${webdriver.chrome.driver}"/>
+            <sysproperty key="jitsi-meet.instance.url"
+                         value="${jitsi-meet.instance.url}"/>
 
-            <test name="org.jitsi.meet.test.SetupConference"
+            <!-- The main test suite which will add all tests -->
+            <test name="org.jitsi.meet.test.TestsRunner"
                   todir="${test.reports.dir}"/>
         </junit>
 
