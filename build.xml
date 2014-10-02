@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="test" name="jitsi-meet-torture">
+
+    <property name="dest" value="classes"/>
+    <property name="test.reports.dir" value="test-reports"/>
+    <property name="test.html.reports.dir" value="${test.reports.dir}/html"/>
+
+    <path id="project.class.path">
+        <pathelement location="${dest}"/>
+
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- default target -->
+    <target name="test" depends="compile,clean-test-reports">
+        <junit printsummary="yes"
+               fork="yes"
+               haltonfailure="yes"
+               failureproperty="testing.failed">
+            <classpath refid="project.class.path"/>
+            <formatter type="xml"/>
+
+            <test name="org.jitsi.meet.test.SetupConference"
+                  todir="${test.reports.dir}"/>
+        </junit>
+
+        <junitreport todir="${test.reports.dir}">
+            <fileset dir="${test.reports.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.html.reports.dir}"/>
+        </junitreport>
+
+        <!-- Check whether testing went alright and fail if not.-->
+        <fail if="testing.failed"/>
+    </target>
+
+    <!-- compiles project -->
+    <target name="compile" depends="init">
+        <javac classpathref="project.class.path"
+               debug="true"
+               deprecation="true" destdir="${dest}"
+               nowarn="false"
+               includeantruntime="false"
+               source="1.6" target="1.6"
+               fork="true">
+            <src path="src"/>
+            <include name="**/*.java" />
+        </javac>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${dest}"/>
+    </target>
+
+    <!-- clean -->
+    <target name="clean"
+        description="Remove all generated files and prepare for a clean build.">
+        <delete failonerror="false" includeemptydirs="true">
+            <fileset dir="${dest}"/>
+        </delete>
+    </target>
+
+    <!-- internal target - removes the current set of test reports, so
+         residual data is not left to confuse a cached browser -->
+    <target name="clean-test-reports">
+        <delete failonerror="false" includeemptydirs="true">
+            <fileset dir="${test.reports.dir}"/>
+        </delete>
+        <mkdir dir="${test.reports.dir}"/>
+    </target>
+
+</project>
