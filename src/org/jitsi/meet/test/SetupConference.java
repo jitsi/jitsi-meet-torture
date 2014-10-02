@@ -36,16 +36,10 @@ public class SetupConference
 
     private void checkParticipantToJoinRoom(WebDriver participant, long timeout)
     {
-        (new WebDriverWait(participant, timeout))
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Object res = ((JavascriptExecutor) ConferenceFixture.focus)
-                        .executeScript("return connection.emuc.joined;");
-                    return res != null && res.equals(Boolean.TRUE);
-                }
-            });
+        TestUtils.waitsForBoolean(
+            participant,
+            "return connection.emuc.joined;",
+            timeout);
     }
 
     @Test
