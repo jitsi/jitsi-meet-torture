@@ -68,11 +68,13 @@
             <isset property="is.running.windows"/>
     </condition>
 
+    <property environment="env"/>
+
     <!--<property name="jitsi-meet.instance.url"-->
               <!--value="https://meet.example.com"/>-->
 
     <!-- default target -->
-    <target name="test" depends="compile,clean-test-reports">
+    <target name="test" depends="compile,clean-test-reports,check-linux-env">
 
         <!-- Fail if we have't setup what to test -->
         <fail unless="jitsi-meet.instance.url"
@@ -141,6 +143,15 @@ with the address of the instance to test (add to the command line
             <fileset dir="${test.reports.dir}"/>
         </delete>
         <mkdir dir="${test.reports.dir}"/>
+    </target>
+
+    <target name="check-linux-env" if="is.running.linux">
+        <fail unless="env.DISPLAY">No DISPLAY environment variable.
+Its seems you are running headless linux and have no DISPLAY set.
+Make sure you start xvfb:
+$ Xvfb :1 -screen 5 1024x768x8 &amp;
+$ export DISPLAY=:1.5
+        </fail>
     </target>
 
 </project>
