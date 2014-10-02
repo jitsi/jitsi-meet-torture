@@ -6,10 +6,9 @@
  */
 package org.jitsi.meet.test;
 
-import org.junit.*;
-import org.junit.runners.*;
+import junit.framework.*;
+
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 
 /**
  * This test will setup the conference and will end when both
@@ -18,17 +17,32 @@ import org.openqa.selenium.support.ui.*;
  *
  * @author Damian Minkov
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupConference
+    extends TestCase
 {
-    @Test
-    public void stage1_StartFocus()
+    public SetupConference(String name)
+    {
+        super(name);
+    }
+
+    public static junit.framework.Test suite()
+    {
+        TestSuite suite = new TestSuite();
+
+        suite.addTest(new SetupConference("startFocus"));
+        suite.addTest(new SetupConference("checkFocusJoinRoom"));
+        suite.addTest(new SetupConference("startSecondParticipant"));
+        suite.addTest(new SetupConference("checkSecondParticipantJoinRoom"));
+
+        return suite;
+    }
+
+    public void startFocus()
     {
         ConferenceFixture.startFocus();
     }
 
-    @Test
-    public void stage2_CheckFocusStart()
+    public void checkFocusJoinRoom()
     {
         // first lets wait 10 secs to join
         checkParticipantToJoinRoom(ConferenceFixture.focus, 10);
@@ -42,14 +56,12 @@ public class SetupConference
             timeout);
     }
 
-    @Test
-    public void stage3_StartSecondParticipant()
+    public void startSecondParticipant()
     {
         ConferenceFixture.startSecondParticipant();
     }
 
-    @Test
-    public void stage4_CheckSecondParticipant()
+    public void checkSecondParticipantJoinRoom()
     {
         checkParticipantToJoinRoom(ConferenceFixture.secondParticipant, 10);
     }

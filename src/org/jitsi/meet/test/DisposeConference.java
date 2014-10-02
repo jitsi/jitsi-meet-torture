@@ -6,7 +6,7 @@
  */
 package org.jitsi.meet.test;
 
-import org.junit.*;
+import junit.framework.*;
 
 /**
  * A test which always needs to be the last to clear all resources (browsers)
@@ -15,9 +15,9 @@ import org.junit.*;
  * @author Damian Minkov
  */
 public class DisposeConference
+    extends TestCase
 {
-    @Test
-    public void dispose()
+    public void testDispose()
     {
         try
         {
