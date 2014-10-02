@@ -33,6 +33,8 @@ public class SetupConference
         suite.addTest(new SetupConference("checkFocusJoinRoom"));
         suite.addTest(new SetupConference("startSecondParticipant"));
         suite.addTest(new SetupConference("checkSecondParticipantJoinRoom"));
+        suite.addTest(new SetupConference("waitsFocusToJoinConference"));
+        suite.addTest(new SetupConference("waitsSecondParticipantToJoinConference"));
 
         return suite;
     }
@@ -64,5 +66,37 @@ public class SetupConference
     public void checkSecondParticipantJoinRoom()
     {
         checkParticipantToJoinRoom(ConferenceFixture.secondParticipant, 10);
+    }
+
+    public void waitsFocusToJoinConference()
+    {
+        TestUtils.waitsForBoolean(
+            ConferenceFixture.focus,
+            "return focus !== null"
+            ,10);
+        TestUtils.waitsForBoolean(
+            ConferenceFixture.focus,
+            "return (typeof focus.peerconnection !== 'undefined');"
+            ,10);
+
+        // lets wait till the state becomes connected
+        TestUtils.waitsForEqualsStrings(
+            ConferenceFixture.focus,
+            "return focus.peerconnection.iceConnectionState;",
+            "connected",
+            30
+        );
+    }
+
+    public void waitsSecondParticipantToJoinConference()
+    {
+        TestUtils.waitsForBoolean(
+            ConferenceFixture.focus,
+            "for (sid in connection.sessions) {" +
+                "if (connection.sessions[sid].iceConnectionState !== 'connected')" +
+                    "return false;" +
+            "}" +
+            "return true;"
+            ,30);
     }
 }

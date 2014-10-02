@@ -31,4 +31,23 @@ public class TestUtils
                 }
             });
     }
+
+    public static void waitsForEqualsStrings(
+        WebDriver participant,
+        final String scriptToExecute,
+        final String expectedResult,
+        long timeout)
+    {
+        (new WebDriverWait(participant, timeout))
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    Object res = ((JavascriptExecutor) ConferenceFixture.focus)
+                        .executeScript(scriptToExecute);
+
+                    return res != null && res.equals(expectedResult);
+                }
+            });
+    }
 }
