@@ -26,14 +26,24 @@
         <equals arg1="${os.name}" arg2="linux"
                 casesensitive="false" trim="true"/>
     </condition>
-    <condition property="lib.native.path" value="lib/native/linux">
-        <isset property="is.running.linux"/>
-    </condition>
-    <!-- make sure we use the linux-64 natives if this is a 64 bit system-->
     <condition property="lib.native.path" value="lib/native/linux-64">
         <and>
-            <isset property="is.running.linux"/>
+            <equals
+                arg1="${os.name}"
+                arg2="linux"
+                casesensitive="false"
+                trim="true"/>
             <os arch="amd64" />
+        </and>
+    </condition>
+    <condition property="lib.native.path" value="lib/native/linux">
+        <and>
+            <equals
+                arg1="${os.name}"
+                arg2="linux"
+                casesensitive="false"
+                trim="true"/>
+            <os arch="i386" />
         </and>
     </condition>
 
