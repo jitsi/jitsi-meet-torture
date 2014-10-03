@@ -31,7 +31,7 @@ public class SetupConference
 
     /**
      * Orders tests.
-     * @return
+     * @return the suite with order tests.
      */
     public static junit.framework.Test suite()
     {
