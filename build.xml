@@ -84,7 +84,7 @@ with the address of the instance to test (add to the command line
 
         <junit printsummary="yes"
                fork="yes"
-               haltonfailure="yes"
+               haltonfailure="no"
                showoutput="yes"
                failureproperty="testing.failed">
             <classpath refid="project.class.path"/>
