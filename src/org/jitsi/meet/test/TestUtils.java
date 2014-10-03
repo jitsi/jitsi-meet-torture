@@ -15,6 +15,12 @@ import org.openqa.selenium.support.ui.*;
  */
 public class TestUtils
 {
+    /**
+     * Waits for a boolean value of javascript variable.
+     * @param participant where we check (poll)
+     * @param scriptToExecute the script that returns the boolean variable.
+     * @param timeout
+     */
     public static void waitsForBoolean(
         WebDriver participant,
         final String scriptToExecute,
@@ -32,6 +38,13 @@ public class TestUtils
             });
     }
 
+    /**
+     * Waits a javascript String variable to become <tt>expectedResult</tt>.
+     * @param participant where we check
+     * @param scriptToExecute the script that returns the String variable.
+     * @param expectedResult the expected value
+     * @param timeout time to wait for the change
+     */
     public static void waitsForEqualsStrings(
         WebDriver participant,
         final String scriptToExecute,
@@ -50,4 +63,48 @@ public class TestUtils
                 }
             });
     }
+
+    /**
+     * Waits till an element becomes available.
+     * @param participant where we check
+     * @param xpath the xpath to search for the element
+     * @param timeout the time to wait for the element.
+     */
+    public static void waitsForElementByXPath(
+        WebDriver participant,
+        final String xpath,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+        {
+            public Boolean apply(WebDriver d)
+            {
+                return !d.findElements(By.xpath(xpath)).isEmpty();
+            }
+        });
+    }
+
+    /**
+     * Waits till an element becomes unavailable.
+     * @param participant where we check
+     * @param xpath the xpath to search for the element
+     * @param timeout the time to wait for the element to disappear.
+     */
+    public static void waitsForElementNotPresentByXPath(
+        WebDriver participant,
+        final String xpath,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    return d.findElements(By.xpath(xpath))
+                        .isEmpty();
+                }
+            });
+    }
+
 }

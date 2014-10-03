@@ -17,20 +17,22 @@ import junit.framework.*;
 public class DisposeConference
     extends TestCase
 {
+    /**
+     * Disposes the secondParticipant and the focus.
+     */
     public void testDispose()
     {
         try
         {
-            ConferenceFixture.focus.quit();
+            ConferenceFixture.secondParticipant.quit();
         }
         catch(Throwable t)
         {
             t.printStackTrace();
         }
-
         try
         {
-            ConferenceFixture.secondParticipant.quit();
+            ConferenceFixture.focus.quit();
         }
         catch(Throwable t)
         {

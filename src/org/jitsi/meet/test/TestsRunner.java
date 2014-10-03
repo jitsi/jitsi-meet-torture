@@ -17,11 +17,19 @@ import org.junit.runners.*;
 @RunWith(AllTests.class)
 public class TestsRunner
 {
+    /**
+     * The tests that are currently started.
+     * @return tests that are currently started.
+     */
     public static TestSuite suite()
     {
         TestSuite suite = new TestSuite();
         suite.addTest(SetupConference.suite());
+
+        suite.addTest(MuteTest.suite());
+
         suite.addTestSuite(DisposeConference.class);
+
         return suite;
     }
 }

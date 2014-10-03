@@ -24,6 +24,10 @@ public class ConferenceFixture
     public static WebDriver focus;
     public static WebDriver secondParticipant;
 
+    /**
+     * Starts the focus, the first participant that generates the random
+     * room name.
+     */
     public static void startFocus()
     {
         focus = startChromeInstance();
@@ -35,6 +39,10 @@ public class ConferenceFixture
             + currentRoomName);
     }
 
+    /**
+     * Starts chrome instance using some default settings.
+     * @return the webdriver instance.
+     */
     private static WebDriver startChromeInstance()
     {
         ChromeOptions ops = new ChromeOptions();
@@ -44,7 +52,10 @@ public class ConferenceFixture
         return new ChromeDriver(ops);
     }
 
-    public static void startSecondParticipant()
+    /**
+     * Start another participant reusing the already generated room name.
+     */
+    public static void startParticipant()
     {
         secondParticipant = startChromeInstance();
 

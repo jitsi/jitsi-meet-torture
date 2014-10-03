@@ -20,11 +20,19 @@ import org.openqa.selenium.*;
 public class SetupConference
     extends TestCase
 {
+    /**
+     * Constructs test.
+     * @param name method name.
+     */
     public SetupConference(String name)
     {
         super(name);
     }
 
+    /**
+     * Orders tests.
+     * @return
+     */
     public static junit.framework.Test suite()
     {
         TestSuite suite = new TestSuite();
@@ -39,17 +47,28 @@ public class SetupConference
         return suite;
     }
 
+    /**
+     * First starts the focus.
+     */
     public void startFocus()
     {
         ConferenceFixture.startFocus();
     }
 
+    /**
+     * Checks whether focus joined the room.
+     */
     public void checkFocusJoinRoom()
     {
         // first lets wait 10 secs to join
         checkParticipantToJoinRoom(ConferenceFixture.focus, 10);
     }
 
+    /**
+     * Checks whether participant has joined the room
+     * @param participant where we check
+     * @param timeout the time to wait for the event.
+     */
     private void checkParticipantToJoinRoom(WebDriver participant, long timeout)
     {
         TestUtils.waitsForBoolean(
@@ -58,16 +77,26 @@ public class SetupConference
             timeout);
     }
 
+    /**
+     * Starts the second participant.
+     */
     public void startSecondParticipant()
     {
-        ConferenceFixture.startSecondParticipant();
+        ConferenceFixture.startParticipant();
     }
 
+    /**
+     * Checks whether the second participant has joined the room.
+     */
     public void checkSecondParticipantJoinRoom()
     {
         checkParticipantToJoinRoom(ConferenceFixture.secondParticipant, 10);
     }
 
+    /**
+     * Waits the focus to get event for iceConnectionState that changes
+     * to connected.
+     */
     public void waitsFocusToJoinConference()
     {
         TestUtils.waitsForBoolean(
@@ -88,12 +117,17 @@ public class SetupConference
         );
     }
 
+    /**
+     * Waits the participant to get event for iceConnectionState that changes
+     * to connected.
+     */
     public void waitsSecondParticipantToJoinConference()
     {
         TestUtils.waitsForBoolean(
             ConferenceFixture.focus,
             "for (sid in connection.sessions) {" +
-                "if (connection.sessions[sid].iceConnectionState !== 'connected')" +
+                "if (connection.sessions[sid].iceConnectionState " +
+                        "!== 'connected')" +
                     "return false;" +
             "}" +
             "return true;"
