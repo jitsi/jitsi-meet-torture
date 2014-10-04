@@ -107,4 +107,26 @@ public class TestUtils
             });
     }
 
+    /**
+     * Waits till an element becomes available and displayed.
+     * @param participant where we check
+     * @param xpath the xpath to search for the element
+     * @param timeout the time to wait for the element.
+     */
+    public static void waitsForDisplayedElementByXPath(
+        WebDriver participant,
+        final String xpath,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    WebElement el = d.findElement(By.xpath(xpath));
+                    return el != null && el.isDisplayed();
+                }
+            });
+    }
+
 }

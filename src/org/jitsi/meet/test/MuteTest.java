@@ -8,6 +8,7 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 
 /**
  * Mutes and unmutes tests.
@@ -94,13 +95,45 @@ public class MuteTest
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
+    /**
+     * Finds the menu that can be used by the focus to control the participant.
+     * Hovers over it. Finds the mute link and mute it.
+     * Then checks in the second participant page whether it is muted
+     */
     public void focusMutesParticipantAndCheck()
     {
-        // TODO
+        WebElement elem = ConferenceFixture.focus.findElement(By.xpath(
+            "//span[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
+
+        Actions action = new Actions(ConferenceFixture.focus);
+        action.moveToElement(elem);
+        action.perform();
+
+        TestUtils.waitsForDisplayedElementByXPath(
+            ConferenceFixture.focus,
+            "//ul[@class='popupmenu']/li/a[@class='mutelink']",
+            5);
+
+        ConferenceFixture.focus.findElement(
+                By.xpath("//ul[@class='popupmenu']/li/a[@class='mutelink']"))
+            .click();
+
+        // and now check whether second participant is muted
+        TestUtils.waitsForElementByXPath(
+            ConferenceFixture.secondParticipant,
+            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
+    /**
+     * UnMutes once again the second participant and checks in the focus page
+     * does this change is reflected.
+     */
     public void participantUnMutesAfterFocusMutedHimAndCheck()
     {
-        // TODO
+        ConferenceFixture.secondParticipant.findElement(By.id("mute")).click();
+
+        TestUtils.waitsForElementByXPath(
+            ConferenceFixture.focus,
+            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 }
