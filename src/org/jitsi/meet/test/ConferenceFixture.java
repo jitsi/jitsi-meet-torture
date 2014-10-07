@@ -35,7 +35,16 @@ public class ConferenceFixture
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
 
-        focus.get(System.getProperty(JITSI_MEET_URL_PROP) + "/"
+        openRoom(focus);
+    }
+
+    /**
+     * Opens the room for the given participant.
+     * @param participant to open the current test room.
+     */
+    public static void openRoom(WebDriver participant)
+    {
+        participant.get(System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName);
     }
 
@@ -59,7 +68,79 @@ public class ConferenceFixture
     {
         secondParticipant = startChromeInstance();
 
-        secondParticipant.get(System.getProperty(JITSI_MEET_URL_PROP) + "/"
-            + currentRoomName);
+        openRoom(secondParticipant);
+    }
+
+    /**
+     * Checks whether participant has joined the room
+     * @param participant where we check
+     * @param timeout the time to wait for the event.
+     */
+    public static void checkParticipantToJoinRoom(
+        WebDriver participant, long timeout)
+    {
+        TestUtils.waitsForBoolean(
+            participant,
+            "return connection.emuc.joined;",
+            timeout);
+    }
+
+    /**
+     * Waits the focus to get event for iceConnectionState that changes
+     * to connected.
+     */
+    public static void waitsFocusToJoinConference()
+    {
+        TestUtils.waitsForBoolean(
+            focus,
+            "return focus !== null"
+            ,10);
+        TestUtils.waitsForBoolean(
+            focus,
+            "return (typeof focus.peerconnection !== 'undefined');"
+            ,10);
+
+        // lets wait till the state becomes connected
+        TestUtils.waitsForEqualsStrings(
+            focus,
+            "return focus.peerconnection.iceConnectionState;",
+            "connected",
+            30
+        );
+    }
+
+    /**
+     * Waits the participant to get event for iceConnectionState that changes
+     * to connected.
+     */
+    public static void waitsSecondParticipantToJoinConference()
+    {
+        TestUtils.waitsForBoolean(
+            secondParticipant,
+            "for (sid in connection.sessions) {" +
+                "if (connection.sessions[sid].iceConnectionState " +
+                "!== 'connected')" +
+                "return false;" +
+                "}" +
+                "return true;"
+            ,30);
+    }
+
+    /**
+     * Quits the participant.
+     * @param participant to quit.
+     */
+    public static void quit(WebDriver participant)
+    {
+        try
+        {
+            participant.close();
+
+            participant.quit();
+        }
+        catch(Throwable t)
+        {
+            t.printStackTrace();
+        }
     }
 }

@@ -129,4 +129,21 @@ public class TestUtils
             });
     }
 
+    /**
+     * Waits the specified <tt>time</tt> milliseconds.
+     * @param time to wait in milliseconds.
+     */
+    public static void waits(long time)
+    {
+        Object obj = new Object();
+        synchronized(obj)
+        {
+            try
+            {
+                obj.wait(time);
+            }
+            catch(Throwable t){}
+        }
+    }
+
 }

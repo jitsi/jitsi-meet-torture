@@ -61,20 +61,8 @@ public class SetupConference
     public void checkFocusJoinRoom()
     {
         // first lets wait 10 secs to join
-        checkParticipantToJoinRoom(ConferenceFixture.focus, 10);
-    }
-
-    /**
-     * Checks whether participant has joined the room
-     * @param participant where we check
-     * @param timeout the time to wait for the event.
-     */
-    private void checkParticipantToJoinRoom(WebDriver participant, long timeout)
-    {
-        TestUtils.waitsForBoolean(
-            participant,
-            "return connection.emuc.joined;",
-            timeout);
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.focus, 10);
     }
 
     /**
@@ -90,7 +78,8 @@ public class SetupConference
      */
     public void checkSecondParticipantJoinRoom()
     {
-        checkParticipantToJoinRoom(ConferenceFixture.secondParticipant, 10);
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.secondParticipant, 10);
     }
 
     /**
@@ -99,22 +88,7 @@ public class SetupConference
      */
     public void waitsFocusToJoinConference()
     {
-        TestUtils.waitsForBoolean(
-            ConferenceFixture.focus,
-            "return focus !== null"
-            ,10);
-        TestUtils.waitsForBoolean(
-            ConferenceFixture.focus,
-            "return (typeof focus.peerconnection !== 'undefined');"
-            ,10);
-
-        // lets wait till the state becomes connected
-        TestUtils.waitsForEqualsStrings(
-            ConferenceFixture.focus,
-            "return focus.peerconnection.iceConnectionState;",
-            "connected",
-            30
-        );
+        ConferenceFixture.waitsFocusToJoinConference();
     }
 
     /**
@@ -123,14 +97,6 @@ public class SetupConference
      */
     public void waitsSecondParticipantToJoinConference()
     {
-        TestUtils.waitsForBoolean(
-            ConferenceFixture.focus,
-            "for (sid in connection.sessions) {" +
-                "if (connection.sessions[sid].iceConnectionState " +
-                        "!== 'connected')" +
-                    "return false;" +
-            "}" +
-            "return true;"
-            ,30);
+        ConferenceFixture.waitsSecondParticipantToJoinConference();
     }
 }

@@ -22,21 +22,7 @@ public class DisposeConference
      */
     public void testDispose()
     {
-        try
-        {
-            ConferenceFixture.secondParticipant.quit();
-        }
-        catch(Throwable t)
-        {
-            t.printStackTrace();
-        }
-        try
-        {
-            ConferenceFixture.focus.quit();
-        }
-        catch(Throwable t)
-        {
-            t.printStackTrace();
-        }
+        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
+        ConferenceFixture.quit(ConferenceFixture.focus);
     }
 }

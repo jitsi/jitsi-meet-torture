@@ -12,7 +12,6 @@ import org.openqa.selenium.interactions.*;
 
 /**
  * Mutes and unmutes tests.
- * @TODO add tests to first mute focus and then to join participant,
  * @author Damian Minkov
  */
 public class MuteTest
@@ -42,6 +41,8 @@ public class MuteTest
         suite.addTest(new MuteTest("focusMutesParticipantAndCheck"));
         suite.addTest(new MuteTest(
                     "participantUnMutesAfterFocusMutedHimAndCheck"));
+        suite.addTest(new MuteTest(
+                    "muteFocusBeforeSecondParticipantJoins"));
 
         return suite;
     }
@@ -135,5 +136,38 @@ public class MuteTest
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.focus,
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+
+        // lets give time to the ui to reflect the change in the ui of the focus
+        TestUtils.waits(1000);
+    }
+
+    /**
+     * Closes the participant and leaves the focus alone in the room.
+     * Mutes the focus and then joins new participant and checks the status
+     * of the mute icon.
+     * At the end unmutes to clear the state.
+     */
+    public void muteFocusBeforeSecondParticipantJoins()
+    {
+        ConferenceFixture.secondParticipant.close();
+
+        // just in case wait
+        TestUtils.waits(1000);
+
+        ConferenceFixture.focus.findElement(By.id("mute")).click();
+
+        ConferenceFixture.startParticipant();
+
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.secondParticipant, 10);
+
+        ConferenceFixture.waitsSecondParticipantToJoinConference();
+
+        TestUtils.waitsForElementByXPath(
+            ConferenceFixture.secondParticipant,
+            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+
+        // now lets unmute
+        unMuteFocusAndCheck();
     }
 }
