@@ -164,7 +164,7 @@ public class TestUtils
         action.perform();
 
         TestUtils.waitsForDisplayedElementByID(
-            driver, "videospace", 5);
+            driver, "toolbar", 5);
     }
 
     /**
