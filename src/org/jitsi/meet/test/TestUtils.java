@@ -174,6 +174,8 @@ public class TestUtils
      */
     public static void clickOnToolbarButton(WebDriver driver, String buttonID)
     {
+        showToolbar(driver);
+
         WebElement element = driver.findElement(
             By.xpath("//a[@class='button']/i[@id='" + buttonID + "']"));
 
