@@ -27,6 +27,7 @@ public class TestsRunner
         suite.addTest(SetupConference.suite());
 
         suite.addTest(MuteTest.suite());
+        suite.addTest(StopVideoTest.suite());
 
         suite.addTestSuite(DisposeConference.class);
 
