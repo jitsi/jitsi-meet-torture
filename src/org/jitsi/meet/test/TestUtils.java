@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 /**
@@ -127,6 +128,54 @@ public class TestUtils
                     return el != null && el.isDisplayed();
                 }
             });
+    }
+
+    /**
+     * Waits till an element becomes available and displayed.
+     * @param participant where we check
+     * @param id the id to search for the element
+     * @param timeout the time to wait for the element.
+     */
+    public static void waitsForDisplayedElementByID(
+        WebDriver participant,
+        final String id,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    WebElement el = d.findElement(By.id(id));
+                    return el != null && el.isDisplayed();
+                }
+            });
+    }
+
+    /**
+     * Finds the toolbar and hover over it.
+     */
+    public static void showToolbar(WebDriver driver)
+    {
+        WebElement elem = driver.findElement(By.id("videospace"));
+
+        Actions action = new Actions(driver);
+        action.moveToElement(elem);
+        action.perform();
+
+        TestUtils.waitsForDisplayedElementByID(
+            driver, "videospace", 5);
+    }
+
+    /**
+     * First shows the toolbar then clicks the button.
+     * @param driver the page
+     * @param buttonID the id of the button to click.
+     */
+    public static void clickOnToolbarButton(WebDriver driver, String buttonID)
+    {
+        showToolbar(driver);
+        driver.findElement(By.id(buttonID)).click();
     }
 
     /**

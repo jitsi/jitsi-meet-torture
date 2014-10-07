@@ -48,7 +48,7 @@ public class StopVideoTest
      */
     public void stopVideoOnFocusAndCheck()
     {
-        ConferenceFixture.focus.findElement(By.id("video")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.secondParticipant,
@@ -60,7 +60,7 @@ public class StopVideoTest
      */
     public void startVideoOnFocusAndCheck()
     {
-        ConferenceFixture.focus.findElement(By.id("video")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
@@ -72,7 +72,8 @@ public class StopVideoTest
      */
     public void stopVideoOnParticipantAndCheck()
     {
-        ConferenceFixture.secondParticipant.findElement(By.id("video")).click();
+        TestUtils.clickOnToolbarButton(
+            ConferenceFixture.secondParticipant, "video");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.focus,
@@ -84,7 +85,8 @@ public class StopVideoTest
      */
     public void startVideoOnParticipantAndCheck()
     {
-        ConferenceFixture.secondParticipant.findElement(By.id("video")).click();
+        TestUtils.clickOnToolbarButton(
+            ConferenceFixture.secondParticipant, "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.focus,
@@ -104,7 +106,7 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waits(1000);
 
-        ConferenceFixture.focus.findElement(By.id("video")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
 
         ConferenceFixture.startParticipant();
 

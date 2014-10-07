@@ -52,7 +52,7 @@ public class MuteTest
      */
     public void muteFocusAndCheck()
     {
-        ConferenceFixture.focus.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.secondParticipant,
@@ -65,7 +65,7 @@ public class MuteTest
      */
     public void unMuteFocusAndCheck()
     {
-        ConferenceFixture.focus.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
@@ -77,7 +77,8 @@ public class MuteTest
      */
     public void muteParticipantAndCheck()
     {
-        ConferenceFixture.secondParticipant.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(
+            ConferenceFixture.secondParticipant, "mute");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.focus,
@@ -89,7 +90,8 @@ public class MuteTest
      */
     public void unMuteParticipantAndCheck()
     {
-        ConferenceFixture.secondParticipant.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(
+            ConferenceFixture.secondParticipant, "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.focus,
@@ -131,7 +133,8 @@ public class MuteTest
      */
     public void participantUnMutesAfterFocusMutedHimAndCheck()
     {
-        ConferenceFixture.secondParticipant.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(
+            ConferenceFixture.secondParticipant, "mute");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.focus,
@@ -154,7 +157,7 @@ public class MuteTest
         // just in case wait
         TestUtils.waits(1000);
 
-        ConferenceFixture.focus.findElement(By.id("mute")).click();
+        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
 
         ConferenceFixture.startParticipant();
 
