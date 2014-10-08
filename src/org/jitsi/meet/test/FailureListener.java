@@ -57,28 +57,14 @@ public class FailureListener
     @Override
     public void setOutput(OutputStream out)
     {
-        try
-        {
-            Object o = FieldUtils.readField(out, "file", true);
-            if(o instanceof File)
-                outputParentFolder
-                    = new File(((File)o).getParent()
-                        + File.separator + "screenshots");
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-
-            outputParentFolder = new File("test-reports/screenshots");
-        }
-        System.out.println("created parent screenshot folder:"
-            + outputParentFolder);
-
-        super.setOutput(out);
+        // default reports folder
+        outputParentFolder = new File("test-reports/screenshots");
+        // skip output so we do not print in console
+        //super.setOutput(out);
     }
 
     /**
-     * Takse screenshot of focus and participant.
+     * Takes screenshot of focus and participant.
      *
      * @param test which failed
      */
