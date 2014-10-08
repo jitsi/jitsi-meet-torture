@@ -105,7 +105,8 @@ with the address of the instance to test (add to the command line
             <test name="org.jitsi.meet.test.TestsRunner"
                   todir="${test.reports.dir}"/>
             <!-- this is xml formatter -->
-            <formatter classname="org.jitsi.meet.test.FailureListener"/>
+            <formatter classname="org.jitsi.meet.test.FailureListener"
+                       type="xml"/>
         </junit>
 
         <junitreport todir="${test.reports.dir}">
