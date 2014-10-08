@@ -64,7 +64,7 @@ public class StopVideoTest
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 10);
     }
 
     /**
