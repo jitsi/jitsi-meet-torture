@@ -5,11 +5,19 @@
     <property name="test.reports.dir" value="test-reports"/>
     <property name="test.html.reports.dir" value="${test.reports.dir}/html"/>
 
+    <path id="compile.class.path">
+        <path refid="project.class.path"/>
+        <fileset dir="lib">
+            <include name="ant.jar"/>
+        </fileset>
+    </path>
+
     <path id="project.class.path">
         <pathelement location="${dest}"/>
 
         <fileset dir="lib">
             <include name="**/*.jar"/>
+            <exclude name="ant.jar"/>
         </fileset>
     </path>
 
@@ -88,7 +96,6 @@ with the address of the instance to test (add to the command line
                showoutput="yes"
                failureproperty="testing.failed">
             <classpath refid="project.class.path"/>
-            <formatter type="xml"/>
             <sysproperty key="webdriver.chrome.driver"
                          value="${webdriver.chrome.driver}"/>
             <sysproperty key="jitsi-meet.instance.url"
@@ -97,6 +104,8 @@ with the address of the instance to test (add to the command line
             <!-- The main test suite which will add all tests -->
             <test name="org.jitsi.meet.test.TestsRunner"
                   todir="${test.reports.dir}"/>
+            <!-- this is xml formatter -->
+            <formatter classname="org.jitsi.meet.test.FailureListener"/>
         </junit>
 
         <junitreport todir="${test.reports.dir}">
@@ -112,7 +121,7 @@ with the address of the instance to test (add to the command line
 
     <!-- compiles project -->
     <target name="compile" depends="init">
-        <javac classpathref="project.class.path"
+        <javac classpathref="compile.class.path"
                debug="true"
                deprecation="true" destdir="${dest}"
                nowarn="false"
