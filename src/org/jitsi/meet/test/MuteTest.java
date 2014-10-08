@@ -69,7 +69,7 @@ public class MuteTest
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 10);
     }
 
     /**
