@@ -8,7 +8,6 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 import org.apache.commons.io.*;
-import org.apache.commons.lang3.reflect.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.openqa.selenium.*;
 
