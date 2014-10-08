@@ -32,16 +32,22 @@ public class FailureListener
     @Override
     public void addFailure(Test test, AssertionFailedError t)
     {
-        takeScreenshot(ConferenceFixture.focus,
-            JUnitVersionHelper.getTestCaseClassName(test)
-            + "." +JUnitVersionHelper.getTestCaseName(test)
-            + "-focus.png");
-        takeScreenshot(ConferenceFixture.secondParticipant,
-            JUnitVersionHelper.getTestCaseClassName(test)
-            + "." + JUnitVersionHelper.getTestCaseName(test)
-            + "-participant.png");
+        takeScreenshots(test);
 
         super.addFailure(test, t);
+    }
+
+    /**
+     * Creates a screenshot named by the class and name of the failure.
+     * @param test the test
+     * @param t the assertion error
+     */
+    @Override
+    public void addError(Test test, Throwable t)
+    {
+        takeScreenshots(test);
+
+        super.addError(test, t);
     }
 
     /**
@@ -69,6 +75,23 @@ public class FailureListener
             + outputParentFolder);
 
         super.setOutput(out);
+    }
+
+    /**
+     * Takse screenshot of focus and participant.
+     *
+     * @param test which failed
+     */
+    private void takeScreenshots(Test test)
+    {
+        takeScreenshot(ConferenceFixture.focus,
+            JUnitVersionHelper.getTestCaseClassName(test)
+                + "." +JUnitVersionHelper.getTestCaseName(test)
+                + "-focus.png");
+        takeScreenshot(ConferenceFixture.secondParticipant,
+            JUnitVersionHelper.getTestCaseClassName(test)
+                + "." + JUnitVersionHelper.getTestCaseName(test)
+                + "-participant.png");
     }
 
     /**
