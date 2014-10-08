@@ -21,7 +21,15 @@ import java.io.*;
 public class FailureListener
     extends XMLJUnitResultFormatter
 {
-    private File outputParentFolder = null;
+    /**
+     * The folder where the screenshost will be saved.
+     */
+    private File outputScreenshotsParentFolder = null;
+
+    /**
+     * The folder where the htmls will be saved.
+     */
+    private File outputHtmlSourceParentFolder = null;
 
     /**
      * Creates a screenshot named by the class and name of the failure.
@@ -32,6 +40,8 @@ public class FailureListener
     public void addFailure(Test test, AssertionFailedError t)
     {
         takeScreenshots(test);
+
+        saveHtmlSources(test);
 
         super.addFailure(test, t);
     }
@@ -46,6 +56,8 @@ public class FailureListener
     {
         takeScreenshots(test);
 
+        saveHtmlSources(test);
+
         super.addError(test, t);
     }
 
@@ -57,7 +69,11 @@ public class FailureListener
     public void setOutput(OutputStream out)
     {
         // default reports folder
-        outputParentFolder = new File("test-reports/screenshots");
+        outputScreenshotsParentFolder = new File("test-reports/screenshots");
+
+        outputHtmlSourceParentFolder = new File("test-reports/html-sources");
+        outputHtmlSourceParentFolder.mkdirs();
+
         // skip output so we do not print in console
         //super.setOutput(out);
     }
@@ -89,7 +105,7 @@ public class FailureListener
         TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
 
         File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        File destFile = new File(outputParentFolder, fileName);
+        File destFile = new File(outputScreenshotsParentFolder, fileName);
         try
         {
             System.err.println("Took screenshot " + destFile);
@@ -100,4 +116,41 @@ public class FailureListener
             throw new RuntimeException(ioe);
         }
     }
+
+    /**
+     * Saves html sources of focus and participant in the moment of failure.
+     *
+     * @param test which failed
+     */
+    private void saveHtmlSources(Test test)
+    {
+        saveHtmlSource(ConferenceFixture.focus,
+            JUnitVersionHelper.getTestCaseClassName(test)
+                + "." + JUnitVersionHelper.getTestCaseName(test)
+                + "-focus.html");
+        saveHtmlSource(ConferenceFixture.secondParticipant,
+            JUnitVersionHelper.getTestCaseClassName(test)
+                + "." + JUnitVersionHelper.getTestCaseName(test)
+                + "-participant.html");
+    }
+
+    /**
+     * Saves the html source of the supplied page.
+     * @param driver the driver controlling the page.
+     * @param fileName the destination html file name.
+     */
+    private void saveHtmlSource(WebDriver driver, String fileName)
+    {
+        try
+        {
+            FileUtils.openOutputStream(
+                new File(outputHtmlSourceParentFolder, fileName))
+                .write(driver.getPageSource().getBytes());
+        }
+        catch(Throwable t)
+        {
+            t.printStackTrace();
+        }
+    }
+
 }
