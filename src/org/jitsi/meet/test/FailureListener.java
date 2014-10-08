@@ -65,6 +65,8 @@ public class FailureListener
 
             outputParentFolder = new File("test-reports/screenshots");
         }
+        System.out.println("created parent screenshot folder:"
+            + outputParentFolder);
 
         super.setOutput(out);
     }
