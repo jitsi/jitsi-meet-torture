@@ -84,7 +84,9 @@ public class FailureListener
         File destFile = new File(outputParentFolder, fileName);
         try
         {
+            System.err.println("Took screenshot " + destFile);
             FileUtils.copyFile(scrFile, destFile);
+            System.err.println("Saved screenshot " + destFile);
         } catch (IOException ioe)
         {
             throw new RuntimeException(ioe);
