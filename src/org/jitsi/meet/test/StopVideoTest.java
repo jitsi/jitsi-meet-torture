@@ -48,10 +48,10 @@ public class StopVideoTest
      */
     public void stopVideoOnFocusAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
@@ -60,10 +60,10 @@ public class StopVideoTest
      */
     public void startVideoOnFocusAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
@@ -73,10 +73,10 @@ public class StopVideoTest
     public void stopVideoOnParticipantAndCheck()
     {
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.secondParticipant, "video");
+            ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
@@ -86,10 +86,10 @@ public class StopVideoTest
     public void startVideoOnParticipantAndCheck()
     {
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.secondParticipant, "video");
+            ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
@@ -101,22 +101,22 @@ public class StopVideoTest
      */
     public void stopFocusVideoBeforeSecondParticipantJoins()
     {
-        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
+        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
         TestUtils.waits(1000);
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
 
         ConferenceFixture.startParticipant();
 
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.secondParticipant, 10);
+            ConferenceFixture.getSecondParticipant(), 10);
 
         ConferenceFixture.waitsSecondParticipantToJoinConference();
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
 
         // now lets start video for focus

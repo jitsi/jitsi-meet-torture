@@ -52,10 +52,10 @@ public class MuteTest
      */
     public void muteFocusAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
     }
@@ -65,10 +65,10 @@ public class MuteTest
      */
     public void unMuteFocusAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
@@ -78,10 +78,10 @@ public class MuteTest
     public void muteParticipantAndCheck()
     {
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.secondParticipant, "mute");
+            ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
@@ -91,10 +91,10 @@ public class MuteTest
     public void unMuteParticipantAndCheck()
     {
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.secondParticipant, "mute");
+            ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
@@ -105,25 +105,25 @@ public class MuteTest
      */
     public void focusMutesParticipantAndCheck()
     {
-        WebElement elem = ConferenceFixture.focus.findElement(By.xpath(
+        WebElement elem = ConferenceFixture.getFocus().findElement(By.xpath(
             "//span[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
 
-        Actions action = new Actions(ConferenceFixture.focus);
+        Actions action = new Actions(ConferenceFixture.getFocus());
         action.moveToElement(elem);
         action.perform();
 
         TestUtils.waitsForDisplayedElementByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//ul[@class='popupmenu']/li/a[@class='mutelink']",
             5);
 
-        ConferenceFixture.focus.findElement(
+        ConferenceFixture.getFocus().findElement(
                 By.xpath("//ul[@class='popupmenu']/li/a[@class='mutelink']"))
             .click();
 
         // and now check whether second participant is muted
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
         action.release();
@@ -136,10 +136,10 @@ public class MuteTest
     public void participantUnMutesAfterFocusMutedHimAndCheck()
     {
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.secondParticipant, "mute");
+            ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.focus,
+            ConferenceFixture.getFocus(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
         // lets give time to the ui to reflect the change in the ui of the focus
@@ -154,30 +154,30 @@ public class MuteTest
      */
     public void muteFocusBeforeSecondParticipantJoins()
     {
-        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
+        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
         TestUtils.waits(1000);
 
         System.err.println("class of button before mute: "
-            + ConferenceFixture.focus.findElement(
+            + ConferenceFixture.getFocus().findElement(
             By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
 
         System.err.println("class of button after mute: "
-            + ConferenceFixture.focus.findElement(
+            + ConferenceFixture.getFocus().findElement(
             By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
 
         ConferenceFixture.startParticipant();
 
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.secondParticipant, 10);
+            ConferenceFixture.getSecondParticipant(), 10);
 
         ConferenceFixture.waitsSecondParticipantToJoinConference();
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.secondParticipant,
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
         // now lets unmute

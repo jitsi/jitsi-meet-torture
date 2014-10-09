@@ -22,7 +22,7 @@ public class DisposeConference
      */
     public void testDispose()
     {
-        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
-        ConferenceFixture.quit(ConferenceFixture.focus);
+        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.quit(ConferenceFixture.getFocus());
     }
 }

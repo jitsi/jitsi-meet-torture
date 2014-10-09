@@ -62,7 +62,7 @@ public class SetupConference
     {
         // first lets wait 10 secs to join
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.focus, 10);
+            ConferenceFixture.getFocus(), 10);
     }
 
     /**
@@ -79,7 +79,7 @@ public class SetupConference
     public void checkSecondParticipantJoinRoom()
     {
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.secondParticipant, 10);
+            ConferenceFixture.getSecondParticipant(), 10);
     }
 
     /**

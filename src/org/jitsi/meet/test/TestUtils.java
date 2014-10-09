@@ -23,7 +23,7 @@ public class TestUtils
      * @param timeout
      */
     public static void waitsForBoolean(
-        WebDriver participant,
+        final WebDriver participant,
         final String scriptToExecute,
         long timeout)
     {
@@ -32,7 +32,7 @@ public class TestUtils
             {
                 public Boolean apply(WebDriver d)
                 {
-                    Object res = ((JavascriptExecutor) ConferenceFixture.focus)
+                    Object res = ((JavascriptExecutor) participant)
                         .executeScript(scriptToExecute);
                     return res != null && res.equals(Boolean.TRUE);
                 }
@@ -47,7 +47,7 @@ public class TestUtils
      * @param timeout time to wait for the change
      */
     public static void waitsForEqualsStrings(
-        WebDriver participant,
+        final WebDriver participant,
         final String scriptToExecute,
         final String expectedResult,
         long timeout)
@@ -57,7 +57,8 @@ public class TestUtils
             {
                 public Boolean apply(WebDriver d)
                 {
-                    Object res = ((JavascriptExecutor) ConferenceFixture.focus)
+                    Object res =
+                        ((JavascriptExecutor) participant)
                         .executeScript(scriptToExecute);
 
                     return res != null && res.equals(expectedResult);

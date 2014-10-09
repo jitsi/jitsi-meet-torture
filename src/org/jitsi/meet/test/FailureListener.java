@@ -99,11 +99,11 @@ public class FailureListener
      */
     private void takeScreenshots(Test test)
     {
-        takeScreenshot(ConferenceFixture.focus,
+        takeScreenshot(ConferenceFixture.getFocus(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." +JUnitVersionHelper.getTestCaseName(test)
                 + "-focus.png");
-        takeScreenshot(ConferenceFixture.secondParticipant,
+        takeScreenshot(ConferenceFixture.getSecondParticipant(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." + JUnitVersionHelper.getTestCaseName(test)
                 + "-participant.png");
@@ -138,11 +138,11 @@ public class FailureListener
      */
     private void saveHtmlSources(Test test)
     {
-        saveHtmlSource(ConferenceFixture.focus,
+        saveHtmlSource(ConferenceFixture.getFocus(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." + JUnitVersionHelper.getTestCaseName(test)
                 + "-focus.html");
-        saveHtmlSource(ConferenceFixture.secondParticipant,
+        saveHtmlSource(ConferenceFixture.getSecondParticipant(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." + JUnitVersionHelper.getTestCaseName(test)
                 + "-participant.html");

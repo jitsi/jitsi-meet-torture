@@ -21,8 +21,40 @@ public class ConferenceFixture
 
     public static String currentRoomName;
 
-    public static WebDriver focus;
-    public static WebDriver secondParticipant;
+    /**
+     * The focus in the tests.
+     */
+    private static WebDriver focus;
+
+    /**
+     * The second participant.
+     */
+    private static WebDriver secondParticipant;
+
+    /**
+     * Returns the currently allocated focus.
+     * @return the currently allocated focus.
+     */
+    public static WebDriver getFocus()
+    {
+        return focus;
+    }
+
+    /**
+     * Returns the currently allocated second participant.
+     * @return the currently allocated second participant.
+     */
+    public static WebDriver getSecondParticipant()
+    {
+        if(secondParticipant == null)
+        {
+            // this will only happen if some test that quits the
+            // second participant fails, and couldn't open it
+            startParticipant();
+        }
+
+        return secondParticipant;
+    }
 
     /**
      * Starts the focus, the first participant that generates the random
@@ -148,5 +180,10 @@ public class ConferenceFixture
         {
             t.printStackTrace();
         }
+
+        if(participant == focus)
+            focus = null;
+        else if(participant == secondParticipant)
+            secondParticipant = null;
     }
 }
