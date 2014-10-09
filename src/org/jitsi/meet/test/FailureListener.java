@@ -39,9 +39,16 @@ public class FailureListener
     @Override
     public void addFailure(Test test, AssertionFailedError t)
     {
-        takeScreenshots(test);
+        try
+        {
+            takeScreenshots(test);
 
-        saveHtmlSources(test);
+            saveHtmlSources(test);
+        }
+        catch(Throwable ex)
+        {
+            ex.printStackTrace();
+        }
 
         super.addFailure(test, t);
     }
@@ -54,9 +61,16 @@ public class FailureListener
     @Override
     public void addError(Test test, Throwable t)
     {
-        takeScreenshots(test);
+        try
+        {
+            takeScreenshots(test);
 
-        saveHtmlSources(test);
+            saveHtmlSources(test);
+        }
+        catch(Throwable ex)
+        {
+            ex.printStackTrace();
+        }
 
         super.addError(test, t);
     }
