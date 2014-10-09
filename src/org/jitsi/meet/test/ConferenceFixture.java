@@ -79,11 +79,9 @@ public class ConferenceFixture
         participant.get(System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName);
 
-        // fighting a bug where clicking on buttons on the toolbar sometimes
-        // fail and some of the tests fail from time to time, those with
-        // stopping the second participant
+        // disables animations
         ((JavascriptExecutor) participant)
-            .executeScript("interfaceConfig.TOOLBAR_TIMEOUT = 20000;");
+            .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
     }
 
     /**
