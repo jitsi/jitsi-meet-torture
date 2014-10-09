@@ -157,14 +157,10 @@ public class TestUtils
      */
     public static void showToolbar(WebDriver driver)
     {
-        WebElement elem = driver.findElement(By.id("videospace"));
+        ((JavascriptExecutor) driver)
+            .executeScript("ToolbarToggler.showToolbar();");
 
-        Actions action = new Actions(driver);
-        action.moveToElement(elem);
-        action.perform();
-
-        TestUtils.waitsForDisplayedElementByID(
-            driver, "toolbar", 5);
+        waitsForDisplayedElementByID(driver, "toolbar" , 2);
     }
 
     /**
@@ -176,12 +172,8 @@ public class TestUtils
     {
         showToolbar(driver);
 
-        WebElement element = driver.findElement(
-            By.xpath("//a[@class='button']/i[@id='" + buttonID + "']"));
-
-        Actions actions = new Actions(driver);
-
-        actions.moveToElement(element).click().perform();
+        driver.findElement(
+            By.xpath("//a[@class='button']/i[@id='" + buttonID + "']")).click();
     }
 
     /**
