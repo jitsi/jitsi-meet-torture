@@ -64,7 +64,7 @@ public class StopVideoTest
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 10);
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
     /**
@@ -101,7 +101,7 @@ public class StopVideoTest
      */
     public void stopFocusVideoBeforeSecondParticipantJoins()
     {
-        ConferenceFixture.secondParticipant.close();
+        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
 
         // just in case wait
         TestUtils.waits(1000);
