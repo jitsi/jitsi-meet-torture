@@ -159,15 +159,7 @@ public class MuteTest
         // just in case wait
         TestUtils.waits(1000);
 
-        System.err.println("class of button before mute: "
-            + ConferenceFixture.getFocus().findElement(
-            By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
-
         TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
-
-        System.err.println("class of button after mute: "
-            + ConferenceFixture.getFocus().findElement(
-            By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
 
         ConferenceFixture.startParticipant();
 
