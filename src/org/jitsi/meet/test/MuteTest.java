@@ -69,7 +69,7 @@ public class MuteTest
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.secondParticipant,
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 10);
+            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
     /**
@@ -125,6 +125,8 @@ public class MuteTest
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.secondParticipant,
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+
+        action.release();
     }
 
     /**
@@ -136,7 +138,7 @@ public class MuteTest
         TestUtils.clickOnToolbarButton(
             ConferenceFixture.secondParticipant, "mute");
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.focus,
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
@@ -152,12 +154,20 @@ public class MuteTest
      */
     public void muteFocusBeforeSecondParticipantJoins()
     {
-        ConferenceFixture.secondParticipant.close();
+        ConferenceFixture.quit(ConferenceFixture.secondParticipant);
 
         // just in case wait
         TestUtils.waits(1000);
 
+        System.err.println("class of button before mute: "
+            + ConferenceFixture.focus.findElement(
+            By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
+
         TestUtils.clickOnToolbarButton(ConferenceFixture.focus, "mute");
+
+        System.err.println("class of button after mute: "
+            + ConferenceFixture.focus.findElement(
+            By.xpath("//a[@class='button']/i[@id='mute']")).getAttribute("class"));
 
         ConferenceFixture.startParticipant();
 
