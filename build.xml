@@ -90,6 +90,13 @@
 with the address of the instance to test (add to the command line
 -Djitsi-meet.instance.url=&quot;https://meet.example.com&quot;"/>
 
+        <!-- if the property is not set we use the param all, to run all -->
+        <condition property="jitsi-meet.tests.toRun" value="all">
+            <not>
+                <isset property="jitsi-meet.tests.toRun"/>
+            </not>
+        </condition>
+
         <junit printsummary="yes"
                fork="yes"
                haltonfailure="no"
@@ -102,6 +109,12 @@ with the address of the instance to test (add to the command line
             <sysproperty key="jitsi-meet.instance.url"
                          value="${jitsi-meet.instance.url}"/>
 
+            <!-- Comma separated list of tests to run relative to the
+            org.jitsi.meet.test package. Executed in the same order as
+            ordered in the property. -->
+            <sysproperty key="jitsi-meet.tests.toRun"
+                         value="${jitsi-meet.tests.toRun}"/>
+
             <!-- The main test suite which will add all tests -->
             <test name="org.jitsi.meet.test.TestsRunner"
                   todir="${test.reports.dir}"/>
@@ -110,15 +123,22 @@ with the address of the instance to test (add to the command line
                 usefile="false"/>
         </junit>
 
+        <antcall target="-generate-html-reports"/>
+
+        <!-- Check whether testing went alright and fail if not.-->
+        <fail if="testing.failed"/>
+    </target>
+
+    <!-- Separates generating html reports in own target so we are able to
+     to disable them -->
+    <target name="-generate-html-reports"
+            unless="jitsi-meet.disable.htmlreports">
         <junitreport todir="${test.reports.dir}">
             <fileset dir="${test.reports.dir}">
                 <include name="*.xml"/>
             </fileset>
             <report format="frames" todir="${test.html.reports.dir}"/>
         </junitreport>
-
-        <!-- Check whether testing went alright and fail if not.-->
-        <fail if="testing.failed"/>
     </target>
 
     <!-- compiles project -->
