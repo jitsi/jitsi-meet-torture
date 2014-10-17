@@ -137,6 +137,28 @@ public class TestUtils
      * @param id the id to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
+    public static void waitsForNotDisplayedElementByID(
+        WebDriver participant,
+        final String id,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    WebElement el = d.findElement(By.id(id));
+                    return el == null || !el.isDisplayed();
+                }
+            });
+    }
+
+    /**
+     * Waits till an element becomes available and displayed.
+     * @param participant where we check
+     * @param id the id to search for the element
+     * @param timeout the time to wait for the element in seconds.
+     */
     public static void waitsForDisplayedElementByID(
         WebDriver participant,
         final String id,
@@ -175,6 +197,20 @@ public class TestUtils
 
         driver.findElement(
             By.xpath("//a[@class='button']/i[@id='" + buttonID + "']")).click();
+    }
+    /**
+     * First shows the toolbar then clicks the button.
+     * @param driver the page
+     * @param buttonClass the class of the button to click.
+     */
+    public static void clickOnToolbarButtonByClass(WebDriver driver,
+                                                   String buttonClass)
+    {
+        showToolbar(driver);
+
+        driver.findElement(
+            By.xpath("//a[@class='button']/i[@class='" + buttonClass + "']"))
+                .click();
     }
 
     /**
