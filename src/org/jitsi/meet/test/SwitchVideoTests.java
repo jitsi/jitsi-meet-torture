@@ -39,8 +39,8 @@ public class SwitchVideoTests
             "focusClickOnRemoteVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
             "participantClickOnLocalVideoAndTest"));
-//        suite.addTest(new SwitchVideoTests(
-//            "participantClickOnRemoteVideoAndTest"));
+        //suite.addTest(new SwitchVideoTests(
+        //    "participantClickOnRemoteVideoAndTest"));
 
         return suite;
     }
@@ -65,7 +65,7 @@ public class SwitchVideoTests
             By.xpath("//span[@id='localVideoWrapper']/video"))
             .getAttribute("src");
 
-        driver.findElement(By.id("localVideoWrapper")).click();
+        driver.findElement(By.className("focusindicator")).click();
 
         TestUtils.waits(1000);
 
