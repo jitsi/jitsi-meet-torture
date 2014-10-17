@@ -20,7 +20,7 @@ public class TestUtils
      * Waits for a boolean value of javascript variable.
      * @param participant where we check (poll)
      * @param scriptToExecute the script that returns the boolean variable.
-     * @param timeout
+     * @param timeout time to wait in seconds
      */
     public static void waitsForBoolean(
         final WebDriver participant,
@@ -44,7 +44,7 @@ public class TestUtils
      * @param participant where we check
      * @param scriptToExecute the script that returns the String variable.
      * @param expectedResult the expected value
-     * @param timeout time to wait for the change
+     * @param timeout time to wait for the change in seconds
      */
     public static void waitsForEqualsStrings(
         final WebDriver participant,
@@ -70,7 +70,7 @@ public class TestUtils
      * Waits till an element becomes available.
      * @param participant where we check
      * @param xpath the xpath to search for the element
-     * @param timeout the time to wait for the element.
+     * @param timeout the time to wait for the element in seconds.
      */
     public static void waitsForElementByXPath(
         WebDriver participant,
@@ -91,7 +91,7 @@ public class TestUtils
      * Waits till an element becomes unavailable.
      * @param participant where we check
      * @param xpath the xpath to search for the element
-     * @param timeout the time to wait for the element to disappear.
+     * @param timeout the time to wait for the element to disappear in seconds.
      */
     public static void waitsForElementNotPresentByXPath(
         WebDriver participant,
@@ -113,7 +113,7 @@ public class TestUtils
      * Waits till an element becomes available and displayed.
      * @param participant where we check
      * @param xpath the xpath to search for the element
-     * @param timeout the time to wait for the element.
+     * @param timeout the time to wait for the element in seconds.
      */
     public static void waitsForDisplayedElementByXPath(
         WebDriver participant,
@@ -135,7 +135,7 @@ public class TestUtils
      * Waits till an element becomes available and displayed.
      * @param participant where we check
      * @param id the id to search for the element
-     * @param timeout the time to wait for the element.
+     * @param timeout the time to wait for the element in seconds.
      */
     public static void waitsForDisplayedElementByID(
         WebDriver participant,
