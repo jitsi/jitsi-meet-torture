@@ -33,8 +33,14 @@ public class SwitchVideoTests
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new SwitchVideoTests("focusClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTests("focusClickOnRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
+            "focusClickOnLocalVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
+            "focusClickOnRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
+            "participantClickOnLocalVideoAndTest"));
+//        suite.addTest(new SwitchVideoTests(
+//            "participantClickOnRemoteVideoAndTest"));
 
         return suite;
     }
@@ -45,28 +51,36 @@ public class SwitchVideoTests
      */
     public void focusClickOnLocalVideoAndTest()
     {
+        clickOnLocalVideoAndTest(ConferenceFixture.getFocus());
+    }
+
+    /**
+     * Click on local video thumbnail and checks whether the large video
+     * is the local one.
+     */
+    private void clickOnLocalVideoAndTest(WebDriver driver)
+    {
         // click on local
-        String localVideoSrc = ConferenceFixture.getFocus().findElement(
-                By.xpath("//span[@id='localVideoWrapper']/video"))
+        String localVideoSrc = driver.findElement(
+            By.xpath("//span[@id='localVideoWrapper']/video"))
             .getAttribute("src");
 
-        ConferenceFixture.getFocus().findElement(
-            By.id("localVideoWrapper")).click();
+        driver.findElement(By.id("localVideoWrapper")).click();
 
         TestUtils.waits(1000);
 
         // test is this the video seen
         assertEquals("Video didn't change to local",
-            localVideoSrc, getLargeVideoSource());
+            localVideoSrc, getLargeVideoSource(driver));
     }
 
     /**
      * Returns the source of the large video currently shown.
      * @return the source of the large video currently shown.
      */
-    private String getLargeVideoSource()
+    private String getLargeVideoSource(WebDriver driver)
     {
-        return ConferenceFixture.getFocus().findElement(By.xpath(
+        return driver.findElement(By.xpath(
             "//div[@id='largeVideoContainer']/video[@id='largeVideo']"))
                 .getAttribute("src");
     }
@@ -76,6 +90,15 @@ public class SwitchVideoTests
      * is the remote one.
      */
     public void focusClickOnRemoteVideoAndTest()
+    {
+        clickOnRemoteVideoAndTest(ConferenceFixture.getFocus());
+    }
+
+    /**
+     * Clicks on the remote video thumbnail and checks whether the large video
+     * is the remote one.
+     */
+    private void clickOnRemoteVideoAndTest(WebDriver driver)
     {
         // first wait for remote video to be visible
         String remoteThumbXpath
@@ -88,12 +111,12 @@ public class SwitchVideoTests
                 + "/video[starts-with(@id, 'remoteVideo_') and @src]";
 
         TestUtils.waitsForDisplayedElementByXPath(
-            ConferenceFixture.getFocus(),
+            driver,
             remoteThumbVideoXpath,
-            5000
+            5
         );
 
-        WebElement remoteThumb = ConferenceFixture.getFocus()
+        WebElement remoteThumb = driver
             .findElement(By.xpath(remoteThumbVideoXpath));
 
         assertNotNull("Remote video not found", remoteThumb);
@@ -101,13 +124,32 @@ public class SwitchVideoTests
         String remoteVideoSrc = remoteThumb.getAttribute("src");
 
         // click on remote
-        ConferenceFixture.getFocus().findElement(By.xpath(remoteThumbXpath))
+        driver.findElement(By.xpath(remoteThumbXpath))
             .click();
 
         TestUtils.waits(1000);
 
         // test is this the video seen
         assertEquals("Video didn't change to remote one",
-            remoteVideoSrc, getLargeVideoSource());
+            remoteVideoSrc, getLargeVideoSource(driver));
     }
+
+    /**
+     * Click on local video thumbnail and checks whether the large video
+     * is the local one.
+     */
+    public void participantClickOnLocalVideoAndTest()
+    {
+        clickOnLocalVideoAndTest(ConferenceFixture.getFocus());
+    }
+
+    /**
+     * Clicks on the remote video thumbnail and checks whether the large video
+     * is the remote one.
+     */
+    public void participantClickOnRemoteVideoAndTest()
+    {
+        clickOnRemoteVideoAndTest(ConferenceFixture.getSecondParticipant());
+    }
+
 }
