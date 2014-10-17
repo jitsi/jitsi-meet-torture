@@ -68,6 +68,9 @@ public class ConferenceFixture
             + String.valueOf((int)(Math.random()*1000000));
 
         openRoom(focus);
+
+        ((JavascriptExecutor) focus)
+            .executeScript("document.title='Focus'");
     }
 
     /**
@@ -105,6 +108,9 @@ public class ConferenceFixture
         secondParticipant = startChromeInstance();
 
         openRoom(secondParticipant);
+
+        ((JavascriptExecutor) secondParticipant)
+            .executeScript("document.title='SecondParticipant'");
     }
 
     /**
