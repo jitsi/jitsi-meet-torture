@@ -178,6 +178,9 @@ public class ConferenceFixture
         {
             participant.close();
 
+            // lets wait so we can successfully quit the conference
+            TestUtils.waits(1000);
+
             participant.quit();
         }
         catch(Throwable t)
