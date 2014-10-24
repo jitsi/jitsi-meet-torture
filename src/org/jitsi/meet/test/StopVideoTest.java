@@ -121,6 +121,9 @@ public class StopVideoTest
 
         // now lets start video for focus
         startVideoOnFocusAndCheck();
+
+        // just in case wait
+        TestUtils.waits(1500);
     }
 
 }
