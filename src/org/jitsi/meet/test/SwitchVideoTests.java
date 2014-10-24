@@ -39,8 +39,8 @@ public class SwitchVideoTests
             "focusClickOnRemoteVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
             "participantClickOnLocalVideoAndTest"));
-        //suite.addTest(new SwitchVideoTests(
-        //    "participantClickOnRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
+            "participantClickOnRemoteVideoAndTest"));
 
         return suite;
     }
@@ -110,7 +110,7 @@ public class SwitchVideoTests
             = remoteThumbXpath
                 + "/video[starts-with(@id, 'remoteVideo_') and @src]";
 
-        TestUtils.waitsForDisplayedElementByXPath(
+        TestUtils.waitsForElementByXPath(
             driver,
             remoteThumbVideoXpath,
             5
