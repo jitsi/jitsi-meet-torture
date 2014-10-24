@@ -176,10 +176,11 @@ public class ConferenceFixture
     {
         try
         {
-            participant.close();
+            TestUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
 
-            // lets wait so we can successfully quit the conference
-            TestUtils.waits(1000);
+            TestUtils.waits(500);
+
+            participant.close();
 
             participant.quit();
         }
