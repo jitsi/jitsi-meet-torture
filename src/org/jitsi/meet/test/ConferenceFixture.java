@@ -179,7 +179,14 @@ public class ConferenceFixture
             TestUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
 
             TestUtils.waits(500);
+        }
+        catch(Throwable t)
+        {
+            t.printStackTrace();
+        }
 
+        try
+        {
             participant.close();
 
             participant.quit();
