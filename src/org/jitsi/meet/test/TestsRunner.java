@@ -40,6 +40,12 @@ public class TestsRunner
             suite.addTest(StopVideoTest.suite());
             suite.addTest(SwitchVideoTests.suite());
             suite.addTest(EtherpadTests.suite());
+            suite.addTest(LockRoomTest.suite());
+            // doing the same test two more times to be sure it is
+            // not a problem, as there was reported an issue about that
+            // https://github.com/jitsi/jitsi-meet/issues/83
+            suite.addTest(LockRoomTest.suite());
+            suite.addTest(LockRoomTest.suite());
 
             suite.addTestSuite(DisposeConference.class);
         }
