@@ -7,7 +7,6 @@
 package org.jitsi.meet.test;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 /**
@@ -16,6 +15,39 @@ import org.openqa.selenium.support.ui.*;
  */
 public class TestUtils
 {
+    /** <tt>true</tt> if OS is Linux. */
+    public static final boolean IS_LINUX;
+
+    /** <tt>true</tt> if OS is MacOSX. */
+    public static final boolean IS_MAC;
+
+    static
+    {
+        // OS
+        String osName = System.getProperty("os.name");
+
+        if (osName == null)
+        {
+            IS_LINUX = false;
+            IS_MAC = false;
+        }
+        else if (osName.startsWith("Linux"))
+        {
+            IS_LINUX = true;
+            IS_MAC = false;
+        }
+        else if (osName.startsWith("Mac"))
+        {
+            IS_LINUX = false;
+            IS_MAC = true;
+        }
+        else
+        {
+            IS_LINUX = false;
+            IS_MAC = false;
+        }
+    }
+
     /**
      * Waits for a boolean value of javascript variable.
      * @param participant where we check (poll)
