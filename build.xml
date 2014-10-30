@@ -97,6 +97,9 @@ with the address of the instance to test (add to the command line
             </not>
         </condition>
 
+        <!-- Get all properties available to pass them to ant -->
+        <propertyset id="test.sysproperties" negate="true"/>
+
         <junit printsummary="yes"
                fork="yes"
                haltonfailure="no"
@@ -106,8 +109,7 @@ with the address of the instance to test (add to the command line
             <formatter type="xml"/>
             <sysproperty key="webdriver.chrome.driver"
                          value="${webdriver.chrome.driver}"/>
-            <sysproperty key="jitsi-meet.instance.url"
-                         value="${jitsi-meet.instance.url}"/>
+            <syspropertyset refid="test.sysproperties"/>
 
             <!-- Comma separated list of tests to run relative to the
             org.jitsi.meet.test package. Executed in the same order as
