@@ -121,13 +121,16 @@ public class SwitchVideoTests
 
         assertNotNull("Remote video not found", remoteThumb);
 
-        String remoteVideoSrc = remoteThumb.getAttribute("src");
-
         // click on remote
         driver.findElement(By.xpath(remoteThumbXpath))
             .click();
 
         TestUtils.waits(1000);
+
+        // Obtain the remote video src *after* we have clicked the thumbnail
+        // and have waited. With simulcast enabled, the remote stream may
+        // change.
+        String remoteVideoSrc = remoteThumb.getAttribute("src");
 
         // test is this the video seen
         assertEquals("Video didn't change to remote one",
