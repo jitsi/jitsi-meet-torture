@@ -145,30 +145,30 @@ public class TCPTest
     {
         if(TestUtils.IS_MAC)
         {
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ipfw add 01000 allow udp from any to any dst-port 53");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ipfw add 01002 allow udp from any 53 to any");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ipfw add 01003 deny udp from any to any");
         }
         else if(TestUtils.IS_LINUX)
         {
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -I OUTPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -I OUTPUT -p udp --dport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -I INPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -I INPUT -p udp --sport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -I OUTPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -I OUTPUT -p udp --dport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -I INPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -I INPUT -p udp --sport 53 -j ACCEPT");
         }
     }
@@ -183,28 +183,49 @@ public class TCPTest
     {
         if(TestUtils.IS_MAC)
         {
-            Runtime.getRuntime().exec("sudo ipfw delete 01000");
-            Runtime.getRuntime().exec("sudo ipfw delete 01002");
-            Runtime.getRuntime().exec("sudo ipfw delete 01003");
+            executeFirewallRule("sudo ipfw delete 01000");
+            executeFirewallRule("sudo ipfw delete 01002");
+            executeFirewallRule("sudo ipfw delete 01003");
         }
         else if(TestUtils.IS_LINUX)
         {
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -D OUTPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -D OUTPUT -p udp --dport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -D INPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo iptables -D INPUT -p udp --sport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -D OUTPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -D OUTPUT -p udp --dport 53 -j ACCEPT");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -D INPUT -p udp -j DROP");
-            Runtime.getRuntime().exec(
+            executeFirewallRule(
                 "sudo ip6tables -D INPUT -p udp --sport 53 -j ACCEPT");
+        }
+    }
+
+    /**
+     * Executes the command, do not fail in any case and waits
+     * a little before executing.
+     * @param rule the rule
+     */
+    private void executeFirewallRule(String rule)
+    {
+        // give some time for the utils to work, do not burst commands
+        // tries to fix a problem where on linux some rules stay after
+        // execution, and breaks future tests
+        TestUtils.waits(500);
+        try
+        {
+            Runtime.getRuntime().exec(rule);
+        }
+        catch(Throwable t)
+        {
+            t.printStackTrace();
         }
     }
 
