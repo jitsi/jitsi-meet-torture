@@ -110,6 +110,9 @@ public class TCPTest
         {
             assertEquals("We must be connected through tcp", "tcp", p);
         }
+
+        setup.waitForFocusSendReceiveData();
+        setup.waitForSecondParticipantSendReceiveData();
     }
 
     /**

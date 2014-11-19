@@ -9,6 +9,9 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
+
+import java.util.*;
 
 /**
  * This test will setup the conference and will end when both
@@ -43,6 +46,8 @@ public class SetupConference
         suite.addTest(new SetupConference("checkSecondParticipantJoinRoom"));
         suite.addTest(new SetupConference("waitsFocusToJoinConference"));
         suite.addTest(new SetupConference("waitsSecondParticipantToJoinConference"));
+        suite.addTest(new SetupConference("waitForFocusSendReceiveData"));
+        suite.addTest(new SetupConference("waitForSecondParticipantSendReceiveData"));
 
         return suite;
     }
@@ -98,5 +103,52 @@ public class SetupConference
     public void waitsSecondParticipantToJoinConference()
     {
         ConferenceFixture.waitsSecondParticipantToJoinConference();
+    }
+
+    /**
+     * Checks statistics for received and sent bitrate.
+     * @param participant the participant to check.
+     */
+    private void waitForSendReceiveData(WebDriver participant)
+    {
+        new WebDriverWait(participant, 15)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getFocus())
+                        .executeScript("return ConnectionQuality.getStats();");
+
+                    Map<String,Long> bitrate =
+                        (Map<String,Long>)stats.get("bitrate");
+
+                    if(bitrate != null)
+                    {
+                        long download =  bitrate.get("download");
+                        long upload = bitrate.get("upload");
+
+                        if(download > 0 && upload > 0)
+                            return true;
+                    }
+
+                    return false;
+                }
+            });
+    }
+
+    /**
+     * Checks statistics for received and sent bitrate.
+     */
+    public void waitForFocusSendReceiveData()
+    {
+        waitForSendReceiveData(ConferenceFixture.getFocus());
+    }
+
+    /**
+     * Checks statistics for received and sent bitrate.
+     */
+    public void waitForSecondParticipantSendReceiveData()
+    {
+        waitForSendReceiveData(ConferenceFixture.getSecondParticipant());
     }
 }
