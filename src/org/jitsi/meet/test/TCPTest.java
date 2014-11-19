@@ -58,6 +58,7 @@ public class TCPTest
         TestSuite suite = new TestSuite();
 
         suite.addTest(new TCPTest("tcpTest"));
+        suite.addTest(new TCPTest("removeRules"));
 
         return suite;
     }
@@ -109,7 +110,14 @@ public class TCPTest
         {
             assertEquals("We must be connected through tcp", "tcp", p);
         }
+    }
 
+    /**
+     * Make sure we remove rules in separate method (test), if tcp test
+     * fails make sure we will remove the rules in any case.
+     */
+    public void removeRules()
+    {
         // lets remove rules we have added
         try
         {

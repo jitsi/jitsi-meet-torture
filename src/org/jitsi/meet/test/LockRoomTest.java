@@ -27,6 +27,7 @@ public class LockRoomTest
     extends TestCase
 {
     public static String ROOM_KEY = null;
+
     /**
      * Constructs test.
      * @param name the method name for the test.
