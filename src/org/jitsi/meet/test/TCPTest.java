@@ -41,6 +41,15 @@ public class TCPTest
         = "jitsi-meet.sudo.fw.configured";
 
     /**
+     * The property that will indicate that the test will not check whether
+     * meet reports connected to tcp.
+     * When using TURN statistics do not show whether we are connected with tcp
+     * to the turn server.
+     */
+    public static final String JITSI_MEET_DISABLE_TCP_PROTOCOL_CHECK_PROP
+        = "jitsi-meet.tcp.protocol.check.disabled";
+
+    /**
      * Constructs test.
      * @param name the method name for the test.
      */
@@ -106,9 +115,12 @@ public class TCPTest
         TestUtils.waits(5000);
         Map<String,String> focusIPAddressesToCheck = printFocusConnectInfo();
 
-        for(String p : focusIPAddressesToCheck.values())
+        if(!Boolean.getBoolean(JITSI_MEET_DISABLE_TCP_PROTOCOL_CHECK_PROP))
         {
-            assertEquals("We must be connected through tcp", "tcp", p);
+            for(String p : focusIPAddressesToCheck.values())
+            {
+                assertEquals("We must be connected through tcp", "tcp", p);
+            }
         }
 
         setup.waitForFocusSendReceiveData();
