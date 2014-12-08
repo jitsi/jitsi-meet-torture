@@ -128,37 +128,15 @@ public class ConferenceFixture
     }
 
     /**
-     * Waits the focus to get event for iceConnectionState that changes
-     * to connected.
-     */
-    public static void waitsFocusToJoinConference()
-    {
-        TestUtils.waitsForBoolean(
-            focus,
-            "return focus !== null"
-            ,10);
-        TestUtils.waitsForBoolean(
-            focus,
-            "return (typeof focus.peerconnection !== 'undefined');"
-            ,10);
-
-        // lets wait till the state becomes connected
-        TestUtils.waitsForEqualsStrings(
-            focus,
-            "return focus.peerconnection.iceConnectionState;",
-            "connected",
-            30
-        );
-    }
-
-    /**
      * Waits the participant to get event for iceConnectionState that changes
      * to connected.
+     * @param participant driver instance used by the participant for whom we
+     *                    want to wait to join the conference.
      */
-    public static void waitsSecondParticipantToJoinConference()
+    public static void waitsParticipantToJoinConference(WebDriver participant)
     {
         TestUtils.waitsForBoolean(
-            secondParticipant,
+            participant,
             "for (sid in connection.sessions) {" +
                 "if (connection.sessions[sid].iceConnectionState " +
                 "!== 'connected')" +

@@ -166,7 +166,8 @@ public class MuteTest
         ConferenceFixture.checkParticipantToJoinRoom(
             ConferenceFixture.getSecondParticipant(), 10);
 
-        ConferenceFixture.waitsSecondParticipantToJoinConference();
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getSecondParticipant());
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),

@@ -93,7 +93,8 @@ public class SetupConference
      */
     public void waitsFocusToJoinConference()
     {
-        ConferenceFixture.waitsFocusToJoinConference();
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getFocus());
     }
 
     /**
@@ -102,7 +103,8 @@ public class SetupConference
      */
     public void waitsSecondParticipantToJoinConference()
     {
-        ConferenceFixture.waitsSecondParticipantToJoinConference();
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getSecondParticipant());
     }
 
     /**
