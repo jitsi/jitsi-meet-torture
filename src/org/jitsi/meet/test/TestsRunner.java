@@ -36,6 +36,7 @@ public class TestsRunner
         {
             suite.addTest(SetupConference.suite());
 
+            suite.addTest(ChangeAvatarTest.suite());
             suite.addTest(MuteTest.suite());
             suite.addTest(StopVideoTest.suite());
             suite.addTest(SwitchVideoTests.suite());

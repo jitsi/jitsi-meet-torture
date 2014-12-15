@@ -192,7 +192,7 @@ public class LockRoomTest
     }
 
     /**
-     * Just enter the room and check that is not licked.
+     * Just enter the room and check that is not locked.
      */
     public void enterParticipantInUnlockedRoom()
     {
