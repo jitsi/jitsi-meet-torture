@@ -103,10 +103,15 @@ public class FailureListener
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." +JUnitVersionHelper.getTestCaseName(test)
                 + "-focus.png");
-        takeScreenshot(ConferenceFixture.getSecondParticipant(),
-            JUnitVersionHelper.getTestCaseClassName(test)
-                + "." + JUnitVersionHelper.getTestCaseName(test)
-                + "-participant.png");
+
+        WebDriver secondParticipant =
+            ConferenceFixture.getSecondParticipantInstance();
+
+        if(secondParticipant != null)
+            takeScreenshot(secondParticipant,
+                JUnitVersionHelper.getTestCaseClassName(test)
+                    + "." + JUnitVersionHelper.getTestCaseName(test)
+                    + "-participant.png");
     }
 
     /**
@@ -142,10 +147,15 @@ public class FailureListener
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." + JUnitVersionHelper.getTestCaseName(test)
                 + "-focus.html");
-        saveHtmlSource(ConferenceFixture.getSecondParticipant(),
-            JUnitVersionHelper.getTestCaseClassName(test)
-                + "." + JUnitVersionHelper.getTestCaseName(test)
-                + "-participant.html");
+
+        WebDriver secondParticipant =
+            ConferenceFixture.getSecondParticipantInstance();
+
+        if(secondParticipant != null)
+            saveHtmlSource(secondParticipant,
+                JUnitVersionHelper.getTestCaseClassName(test)
+                    + "." + JUnitVersionHelper.getTestCaseName(test)
+                    + "-participant.html");
     }
 
     /**

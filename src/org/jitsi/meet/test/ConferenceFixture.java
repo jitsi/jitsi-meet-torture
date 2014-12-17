@@ -41,7 +41,8 @@ public class ConferenceFixture
     }
 
     /**
-     * Returns the currently allocated second participant.
+     * Returns the currently allocated second participant. If missing
+     * will create it.
      * @return the currently allocated second participant.
      */
     public static WebDriver getSecondParticipant()
@@ -53,6 +54,15 @@ public class ConferenceFixture
             startParticipant();
         }
 
+        return secondParticipant;
+    }
+
+    /**
+     * Returns the currently allocated second participant.
+     * @return the currently allocated second participant.
+     */
+    public static WebDriver getSecondParticipantInstance()
+    {
         return secondParticipant;
     }
 
