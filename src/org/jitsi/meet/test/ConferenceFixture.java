@@ -95,6 +95,9 @@ public class ConferenceFixture
         // disables animations
         ((JavascriptExecutor) participant)
             .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+        // Disables toolbar hiding
+        ((JavascriptExecutor) participant)
+            .executeScript("ToolbarToggler.dockToolbar(true);");
     }
 
     /**
