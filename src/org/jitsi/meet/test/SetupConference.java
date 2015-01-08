@@ -119,7 +119,7 @@ public class SetupConference
                 public Boolean apply(WebDriver d)
                 {
                     Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getFocus())
-                        .executeScript("return ConnectionQuality.getStats();");
+                        .executeScript("return connectionquality.getStats();");
 
                     Map<String,Long> bitrate =
                         (Map<String,Long>)stats.get("bitrate");
