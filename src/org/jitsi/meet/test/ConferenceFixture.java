@@ -136,7 +136,7 @@ public class ConferenceFixture
     {
         TestUtils.waitsForBoolean(
             participant,
-            "return connection.emuc.joined;",
+            "return APP.xmpp.getMUCJoined();",
             timeout);
     }
 
@@ -150,8 +150,9 @@ public class ConferenceFixture
     {
         TestUtils.waitsForBoolean(
             participant,
-            "for (sid in connection.sessions) {" +
-                "if (connection.sessions[sid].iceConnectionState " +
+            "for (sid in APP.xmpp.getSessions()) {" +
+                "if (APP.xmpp.getSessions()[sid]."
+                + "peerconnection.iceConnectionState " +
                 "!== 'connected')" +
                 "return false;" +
                 "}" +

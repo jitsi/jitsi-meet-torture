@@ -61,7 +61,7 @@ public class ChangeAvatarTest
 
         String focusResourceJid = (String)((JavascriptExecutor) focus)
             .executeScript(
-            "return Strophe.getResourceFromJid(connection.emuc.myroomjid);");
+            "return APP.xmpp.myResource();");
 
         //check if the local avatar in the settings menu has changed
         checkSrcIsCorrect(focus, "//img[@id='avatar']");

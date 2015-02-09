@@ -248,7 +248,7 @@ public class TCPTest
     private Map<String,String> printFocusConnectInfo()
     {
         Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getFocus())
-            .executeScript("return connectionquality.getStats();");
+            .executeScript("return APP.connectionquality.getStats();");
 
         Map<String,String> focusIPAddresses = new HashMap<String, String>();
         List<Map<String,String>> transports = (List)stats.get("transport");
