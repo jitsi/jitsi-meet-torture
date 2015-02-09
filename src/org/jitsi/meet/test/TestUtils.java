@@ -213,7 +213,7 @@ public class TestUtils
     public static void showToolbar(WebDriver driver)
     {
         ((JavascriptExecutor) driver)
-            .executeScript("UI.showToolbar();");
+            .executeScript("APP.UI.showToolbar();");
 
         waitsForDisplayedElementByID(driver, "toolbar" , 2);
     }
