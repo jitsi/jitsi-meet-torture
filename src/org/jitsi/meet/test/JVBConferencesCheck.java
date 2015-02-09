@@ -12,7 +12,7 @@ import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.protocol.*;
 import org.apache.http.util.*;
-import org.json.*;
+import com.google.gson.*;
 
 import java.net.*;
 import java.util.*;
@@ -90,11 +90,15 @@ public class JVBConferencesCheck
             HttpEntity entity = response.getEntity();
             String value = EntityUtils.toString(entity);
 
-            JSONArray jsonArray = new JSONArray(value);
-            for(int i = 0; i < jsonArray.length(); i++)
+            JsonElement jsonElem = new JsonParser().parse(value);
+            if(jsonElem.isJsonArray())
             {
-                conferencesList.add(
-                    (String)((JSONObject)jsonArray.get(i)).get("id"));
+                JsonArray jsonArray = jsonElem.getAsJsonArray();
+                for(int i = 0; i < jsonArray.size(); i++)
+                {
+                    conferencesList.add(
+                        ((JsonObject)jsonArray.get(i)).get("id").getAsString());
+                }
             }
         }
         catch(Throwable t)
