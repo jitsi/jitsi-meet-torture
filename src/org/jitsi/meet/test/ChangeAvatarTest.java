@@ -8,7 +8,7 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Change the avatar test
@@ -48,7 +48,17 @@ public class ChangeAvatarTest
     public void changeAvatarAndCheck()
     {
         WebDriver focus = ConferenceFixture.getFocus();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        final WebDriver secondParticipant
+            = ConferenceFixture.getSecondParticipant();
+
+        final String focusResourceJid = (String)((JavascriptExecutor) focus)
+            .executeScript(
+                "return APP.xmpp.myResource();");
+
+        final String srcOneSecondParticipant =
+            getParticipantSrc(secondParticipant,
+                "//span[@id='participant_" + focusResourceJid
+                    + "']/img[@class='userAvatar']");
 
         //chage the email for the focus
         TestUtils.clickOnToolbarButton(focus, "settingsButton");
@@ -59,10 +69,6 @@ public class ChangeAvatarTest
 
         TestUtils.waits(1000);
 
-        String focusResourceJid = (String)((JavascriptExecutor) focus)
-            .executeScript(
-            "return APP.xmpp.myResource();");
-
         //check if the local avatar in the settings menu has changed
         checkSrcIsCorrect(focus, "//img[@id='avatar']");
         //check if the avatar in the local thumbnail has changed
@@ -72,6 +78,22 @@ public class ChangeAvatarTest
         checkSrcIsCorrect(focus,
             "//div[@id='contactlist']/ul/li[@id='"
                 + focusResourceJid + "']/img");
+
+        // waits till the src changes so we can continue with the check
+        // sometimes the notification for the avatar change can be more
+        // than 5 seconds
+        (new WebDriverWait(secondParticipant, 15))
+                .until(new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
+                        String currentSrc =
+                            getParticipantSrc(secondParticipant,
+                                "//span[@id='participant_" + focusResourceJid
+                                    + "']/img[@class='userAvatar']");
+                        return !currentSrc.equals(srcOneSecondParticipant);
+                    }
+                });
 
         //check if the avatar in the thumbnail for the other participant has
         // changed
@@ -94,9 +116,17 @@ public class ChangeAvatarTest
      */
     private void checkSrcIsCorrect(WebDriver participant, String xpath)
     {
-        String src = participant.findElement(By.xpath(xpath))
-            .getAttribute("src");
+        String src = getParticipantSrc(participant, xpath);
         assertTrue("The avatar has the correct src", src.contains(HASH));
+    }
+
+    /**
+     * Return the participant avatar src that we will check
+     * @return the participant avatar src that we will check
+     */
+    private String getParticipantSrc(WebDriver participant, String xpath)
+    {
+        return participant.findElement(By.xpath(xpath)).getAttribute("src");
     }
 
 }
