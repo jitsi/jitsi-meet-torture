@@ -81,7 +81,7 @@ public class LockRoomTest
             By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY);
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonSave")).click();
+            By.id("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
 
         TestUtils.waits(1000);
 
@@ -115,7 +115,7 @@ public class LockRoomTest
         ConferenceFixture.getSecondParticipant().findElement(
             By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY + "1234");
         ConferenceFixture.getSecondParticipant().findElement(
-            By.id("jqi_state0_buttonOk")).click();
+            By.id("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
         try
         {
@@ -131,7 +131,7 @@ public class LockRoomTest
         ConferenceFixture.getSecondParticipant().findElement(
             By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY);
         ConferenceFixture.getSecondParticipant().findElement(
-            By.id("jqi_state0_buttonOk")).click();
+            By.id("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
         ConferenceFixture.checkParticipantToJoinRoom(
             ConferenceFixture.getSecondParticipant(), 5);
@@ -164,7 +164,8 @@ public class LockRoomTest
             ConferenceFixture.getFocus(), "lockIcon");
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonCancel")).click();
+            By.id("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
+                .click();
 
         elems = ConferenceFixture.getFocus().findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
@@ -178,7 +179,8 @@ public class LockRoomTest
             ConferenceFixture.getFocus(), "lockIcon");
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonRemove")).click();
+            By.id("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
+                .click();
 
         // just in case wait
         TestUtils.waits(1000);
