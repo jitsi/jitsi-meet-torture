@@ -75,13 +75,13 @@ public class LockRoomTest
 
         // fill in the dialog
         TestUtils.waitsForElementByXPath(ConferenceFixture.getFocus(),
-            "//input[@id='lockKey']", 5);
+            "//input[@name='lockKey']", 5);
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
         ConferenceFixture.getFocus().findElement(
-            By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY);
+            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
+            By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
 
         TestUtils.waits(1000);
 
@@ -113,9 +113,9 @@ public class LockRoomTest
         {}
 
         ConferenceFixture.getSecondParticipant().findElement(
-            By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY + "1234");
+            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
         ConferenceFixture.getSecondParticipant().findElement(
-            By.id("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
         try
         {
@@ -129,9 +129,9 @@ public class LockRoomTest
         {}
 
         ConferenceFixture.getSecondParticipant().findElement(
-            By.xpath("//input[@id='lockKey']")).sendKeys(ROOM_KEY);
+            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
         ConferenceFixture.getSecondParticipant().findElement(
-            By.id("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
         ConferenceFixture.checkParticipantToJoinRoom(
             ConferenceFixture.getSecondParticipant(), 5);
@@ -164,7 +164,7 @@ public class LockRoomTest
             ConferenceFixture.getFocus(), "lockIcon");
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
+            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
                 .click();
 
         elems = ConferenceFixture.getFocus().findElements(
@@ -179,7 +179,7 @@ public class LockRoomTest
             ConferenceFixture.getFocus(), "lockIcon");
 
         ConferenceFixture.getFocus().findElement(
-            By.id("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
+            By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
                 .click();
 
         // just in case wait
