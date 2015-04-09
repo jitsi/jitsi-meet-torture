@@ -34,7 +34,7 @@ public class EtherpadTests
         TestSuite suite = new TestSuite();
 
         suite.addTest(new EtherpadTests("enterEtherpad"));
-        //suite.addTest(new EtherpadTests("writeTextAndCheck"));
+        suite.addTest(new EtherpadTests("writeTextAndCheck"));
         suite.addTest(new EtherpadTests("closeEtherpadCheck"));
         // lets check after closing etherpad we are able to click on videos
         suite.addTest(new EtherpadTests("focusClickOnLocalVideoAndTest"));
@@ -69,7 +69,29 @@ public class EtherpadTests
      */
     public void writeTextAndCheck()
     {
-        // TODO write it
+        TestUtils.waits(10000);
+
+        ConferenceFixture.getFocus().switchTo().frame(
+            ConferenceFixture.getFocus().findElement(By.tagName("iframe")));
+        ConferenceFixture.getFocus().switchTo().frame(
+            ConferenceFixture.getFocus().findElement(By.name("ace_outer")));
+        ConferenceFixture.getFocus().switchTo().frame(
+            ConferenceFixture.getFocus().findElement(By.name("ace_inner")));
+
+        String textToEnter = "SomeTestText";
+
+        ConferenceFixture.getFocus().findElement(
+            By.id("innerdocbody")).sendKeys(textToEnter);
+
+        TestUtils.waits(2000);
+
+        // now search and check the text
+        String txt = ConferenceFixture.getFocus().findElement(
+            By.xpath("//span[contains(@class, 'author')]")).getText();
+
+        assertEquals("Texts do not match", textToEnter, txt);
+
+        ConferenceFixture.getFocus().switchTo().defaultContent();
     }
 
     /**
