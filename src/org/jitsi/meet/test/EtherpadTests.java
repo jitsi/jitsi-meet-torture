@@ -69,29 +69,34 @@ public class EtherpadTests
      */
     public void writeTextAndCheck()
     {
-        TestUtils.waits(10000);
+        try
+        {
+            TestUtils.waits(10000);
 
-        ConferenceFixture.getFocus().switchTo().frame(
-            ConferenceFixture.getFocus().findElement(By.tagName("iframe")));
-        ConferenceFixture.getFocus().switchTo().frame(
-            ConferenceFixture.getFocus().findElement(By.name("ace_outer")));
-        ConferenceFixture.getFocus().switchTo().frame(
-            ConferenceFixture.getFocus().findElement(By.name("ace_inner")));
+            ConferenceFixture.getFocus().switchTo().frame(
+                ConferenceFixture.getFocus().findElement(By.tagName("iframe")));
+            ConferenceFixture.getFocus().switchTo().frame(
+                ConferenceFixture.getFocus().findElement(By.name("ace_outer")));
+            ConferenceFixture.getFocus().switchTo().frame(
+                ConferenceFixture.getFocus().findElement(By.name("ace_inner")));
 
-        String textToEnter = "SomeTestText";
+            String textToEnter = "SomeTestText";
 
-        ConferenceFixture.getFocus().findElement(
-            By.id("innerdocbody")).sendKeys(textToEnter);
+            ConferenceFixture.getFocus().findElement(
+                By.id("innerdocbody")).sendKeys(textToEnter);
 
-        TestUtils.waits(2000);
+            TestUtils.waits(2000);
 
-        // now search and check the text
-        String txt = ConferenceFixture.getFocus().findElement(
-            By.xpath("//span[contains(@class, 'author')]")).getText();
+            // now search and check the text
+            String txt = ConferenceFixture.getFocus().findElement(
+                By.xpath("//span[contains(@class, 'author')]")).getText();
 
-        assertEquals("Texts do not match", textToEnter, txt);
-
-        ConferenceFixture.getFocus().switchTo().defaultContent();
+            assertEquals("Texts do not match", textToEnter, txt);
+        }
+        finally
+        {
+            ConferenceFixture.getFocus().switchTo().defaultContent();
+        }
     }
 
     /**
