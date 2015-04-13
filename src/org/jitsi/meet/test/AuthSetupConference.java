@@ -172,7 +172,7 @@ public class AuthSetupConference
         WebDriver moderator = ConferenceFixture.getFocus();
 
         String authButtonName = "jqi_state0_" +
-                "buttonspandatai18ndialogAuthenticateAuthenticatespan";
+                "buttonspandatai18ndialogIamHostIamthehostspan";
 
         TestUtils.waitsForElementByXPath(
             moderator, "//button[@name='" + authButtonName + "']", 15);
