@@ -8,6 +8,7 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Adds various tests with the etherpad functionality.
@@ -71,14 +72,20 @@ public class EtherpadTests
     {
         try
         {
-            TestUtils.waits(10000);
+            WebDriverWait wait = new WebDriverWait(
+                ConferenceFixture.getFocus(), 30);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.tagName("iframe")));
 
-            ConferenceFixture.getFocus().switchTo().frame(
-                ConferenceFixture.getFocus().findElement(By.tagName("iframe")));
-            ConferenceFixture.getFocus().switchTo().frame(
-                ConferenceFixture.getFocus().findElement(By.name("ace_outer")));
-            ConferenceFixture.getFocus().switchTo().frame(
-                ConferenceFixture.getFocus().findElement(By.name("ace_inner")));
+            wait = new WebDriverWait(
+                ConferenceFixture.getFocus(), 30);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.name("ace_outer")));
+
+            wait = new WebDriverWait(
+                ConferenceFixture.getFocus(), 30);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.name("ace_inner")));
 
             String textToEnter = "SomeTestText";
 
