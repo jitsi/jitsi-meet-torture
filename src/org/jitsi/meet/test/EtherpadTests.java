@@ -55,6 +55,10 @@ public class EtherpadTests
      */
     public void enterEtherpad()
     {
+        // waits for etherpad button to be displayed in the toolbar
+        TestUtils.waitsForDisplayedElementByID(
+            ConferenceFixture.getFocus(), "etherpadButton", 15);
+
         TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getFocus(),
             "icon-share-doc");
 
