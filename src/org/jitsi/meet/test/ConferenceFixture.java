@@ -9,6 +9,8 @@ package org.jitsi.meet.test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 
+import com.gargoylesoftware.htmlunit.javascript.background.*;
+
 /**
  * The static fixture which holds the drivers to access the conference
  * participant pages.
@@ -96,6 +98,9 @@ public class ConferenceFixture
         ((JavascriptExecutor) participant)
             .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
         // Disables toolbar hiding
+        ((JavascriptExecutor) participant).executeScript(
+            "config.alwaysVisibleToolbar = true");
+
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
     }

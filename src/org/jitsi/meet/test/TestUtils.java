@@ -208,25 +208,12 @@ public class TestUtils
     }
 
     /**
-     * Finds the toolbar and hover over it.
-     */
-    public static void showToolbar(WebDriver driver)
-    {
-        ((JavascriptExecutor) driver)
-            .executeScript("APP.UI.showToolbar();");
-
-        waitsForDisplayedElementByID(driver, "toolbar" , 2);
-    }
-
-    /**
      * First shows the toolbar then clicks the button.
      * @param driver the page
      * @param buttonID the id of the button to click.
      */
     public static void clickOnToolbarButton(WebDriver driver, String buttonID)
     {
-        showToolbar(driver);
-
         driver.findElement(
             By.xpath("//a[@class='button']/i[@id='" + buttonID + "']")).click();
     }
@@ -238,8 +225,6 @@ public class TestUtils
     public static void clickOnToolbarButtonByClass(WebDriver driver,
                                                    String buttonClass)
     {
-        showToolbar(driver);
-
         driver.findElement(
             By.xpath("//a[@class='button']/i[@class='" + buttonClass + "']"))
                 .click();
