@@ -52,6 +52,8 @@ public class TestsRunner
             if(Boolean.getBoolean(TCPTest.JITSI_MEET_SUDO_CONFIGED_PROP))
                 suite.addTest(TCPTest.suite());
 
+            suite.addTest(StartMutedTest.suite());
+
             suite.addTestSuite(DisposeConference.class);
         }
         else

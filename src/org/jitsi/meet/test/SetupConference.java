@@ -57,7 +57,7 @@ public class SetupConference
      */
     public void startFocus()
     {
-        ConferenceFixture.startFocus();
+        ConferenceFixture.startFocus(null);
     }
 
     /**

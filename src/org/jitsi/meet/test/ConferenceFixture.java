@@ -71,15 +71,16 @@ public class ConferenceFixture
     /**
      * Starts the focus, the first participant that generates the random
      * room name.
+     * @param fragment adds the given string to the fragment part of the URL
      */
-    public static void startFocus()
+    public static void startFocus(String fragment)
     {
         focus = startChromeInstance();
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
 
-        openRoom(focus);
+        openRoom(focus, fragment);
 
         ((JavascriptExecutor) focus)
             .executeScript("document.title='Focus'");
@@ -88,11 +89,15 @@ public class ConferenceFixture
     /**
      * Opens the room for the given participant.
      * @param participant to open the current test room.
+     * @param fragment adds the given string to the fragment part of the URL
      */
-    public static void openRoom(WebDriver participant)
+    public static void openRoom(WebDriver participant, String fragment)
     {
-        participant.get(System.getProperty(JITSI_MEET_URL_PROP) + "/"
-            + currentRoomName);
+        String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
+            + currentRoomName;
+        if(fragment != null)
+            URL += "#" + fragment;
+        participant.get(URL);
 
         // disables animations
         ((JavascriptExecutor) participant)
@@ -125,7 +130,7 @@ public class ConferenceFixture
     {
         secondParticipant = startChromeInstance();
 
-        openRoom(secondParticipant);
+        openRoom(secondParticipant, null);
 
         ((JavascriptExecutor) secondParticipant)
             .executeScript("document.title='SecondParticipant'");
