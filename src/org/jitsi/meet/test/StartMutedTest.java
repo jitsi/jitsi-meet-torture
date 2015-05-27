@@ -50,7 +50,7 @@ public class StartMutedTest
 
         WebDriver focus = ConferenceFixture.getFocus();
 
-        TestUtils.clickOnToolbarButton(focus, "settingsButton");
+        // The settings panel is opened from the previous test.
         TestUtils.waitsForDisplayedElementByXPath(
             focus, "//input[@id='startAudioMuted']", 5);
         TestUtils.waitsForDisplayedElementByXPath(
