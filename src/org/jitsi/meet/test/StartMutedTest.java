@@ -95,23 +95,23 @@ public class StartMutedTest
         TestUtils.waitsForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='audioMuted']/"
-            + "i[@class='icon-mic-disabled']", 5);
+            + "i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitsForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='videoMuted']/"
-            + "i[@class='icon-camera-disabled']", 5);
+            + "i[@class='icon-camera-disabled']", 25);
 
         TestUtils.waitsForElementNotPresentByXPath(
             secondParticipant,
             "//span[@id='participant_" + focusResourceJid + "']/"
-                + "span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+                + "span[@class='audioMuted']/i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitsForElementNotPresentByXPath(
             secondParticipant,
             "//span[@id='participant_" + focusResourceJid + "']/"
                 + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
-                5);
+                25);
 
 
     }
