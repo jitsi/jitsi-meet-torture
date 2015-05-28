@@ -47,7 +47,7 @@ public class StartMutedTest
     public void checkboxesTest()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-
+        TestUtils.waits(1000);
         WebDriver focus = ConferenceFixture.getFocus();
 
         // The settings panel is opened from the previous test.
@@ -61,6 +61,12 @@ public class StartMutedTest
         focus.findElement(By.id("updateSettings")).click();
 
         ConferenceFixture.startParticipant();
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getSecondParticipant(), 10);
+
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getSecondParticipant());
+
         checkSecondParticipantForMute();
 
     }
@@ -73,9 +79,23 @@ public class StartMutedTest
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getFocus());
+        TestUtils.waits(1000);
         ConferenceFixture.startFocus("config.startAudioMuted=2&"
             + "config.startVideoMuted=2");
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getFocus(), 10);
+
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getFocus());
+
         ConferenceFixture.startParticipant();
+
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getSecondParticipant(), 10);
+
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getSecondParticipant());
+
         checkSecondParticipantForMute();
     }
 
