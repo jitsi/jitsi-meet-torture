@@ -80,8 +80,8 @@ public class StartMutedTest
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getFocus());
         TestUtils.waits(1000);
-        ConferenceFixture.startFocus("config.startAudioMuted=2&"
-            + "config.startVideoMuted=2");
+        ConferenceFixture.startFocus("config.startAudioMuted=1&"
+            + "config.startVideoMuted=1");
         ConferenceFixture.checkParticipantToJoinRoom(
             ConferenceFixture.getFocus(), 10);
 
