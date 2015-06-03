@@ -4,7 +4,7 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jitsi.meet.test;
+package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -205,29 +205,6 @@ public class TestUtils
                     return el != null && el.isDisplayed();
                 }
             });
-    }
-
-    /**
-     * First shows the toolbar then clicks the button.
-     * @param driver the page
-     * @param buttonID the id of the button to click.
-     */
-    public static void clickOnToolbarButton(WebDriver driver, String buttonID)
-    {
-        driver.findElement(
-            By.xpath("//a[@class='button']/i[@id='" + buttonID + "']")).click();
-    }
-    /**
-     * First shows the toolbar then clicks the button.
-     * @param driver the page
-     * @param buttonClass the class of the button to click.
-     */
-    public static void clickOnToolbarButtonByClass(WebDriver driver,
-                                                   String buttonClass)
-    {
-        driver.findElement(
-            By.xpath("//a[@class='button']/i[@class='" + buttonClass + "']"))
-                .click();
     }
 
     /**

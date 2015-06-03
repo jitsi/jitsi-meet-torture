@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 /**
@@ -38,9 +39,13 @@ public class SwitchVideoTests
         suite.addTest(new SwitchVideoTests(
             "ownerClickOnRemoteVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
+            "ownerUnpinRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
             "participantClickOnLocalVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
             "participantClickOnRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests(
+            "participantUnpinRemoteVideo"));
 
         return suite;
     }
@@ -95,6 +100,67 @@ public class SwitchVideoTests
     }
 
     /**
+     * Unpins remote video in owner and verifies if the operation has succeeded.
+     */
+    public void ownerUnpinRemoteVideoAndTest()
+    {
+        unpinRemoteVideoAndTest(
+            ConferenceFixture.getOwner(),
+            ConferenceFixture.getSecondParticipant());
+    }
+
+    /**
+     * Unpins remote video in the 2nd participant and verifies if the operation
+     * has succeeded.
+     */
+    public void participantUnpinRemoteVideo()
+    {
+        unpinRemoteVideoAndTest(
+            ConferenceFixture.getSecondParticipant(),
+            ConferenceFixture.getOwner());
+    }
+
+    /**
+     * Unpins remote video of given <tt>peer</tt> from given <tt>host</tt>
+     * perspective.
+     *
+     * @param host the <tt>WebDriver</tt> instance where unpinning operation
+     *             will be performed
+     * @param peer the <tt>WebDriver</tt> instance to whom remote video to be
+     *             unpinned belongs to.
+     */
+    private void unpinRemoteVideoAndTest(WebDriver host, WebDriver peer)
+    {
+        // Peer's endpoint ID
+        String peerEndpointId = MeetUtils.getResourceJid(peer);
+
+        // Remote video with 'videoContainerFocused' is the pinned one
+        String pinnedThumbXpath
+            = "//span[ @id='participant_" + peerEndpointId + "'" +
+              "        and contains(@class,'videoContainerFocused') ]";
+
+        WebElement pinnedThumb = host.findElement(By.xpath(pinnedThumbXpath));
+
+        assertNotNull(
+            "Pinned remote video not found for " + peerEndpointId, pinnedThumb);
+
+        // click on remote
+        host.findElement(By.xpath(pinnedThumbXpath))
+            .click();
+
+        // Wait for the video to unpin
+        try
+        {
+            TestUtils.waitsForElementNotPresentByXPath(
+                host, pinnedThumbXpath, 2);
+        }
+        catch (TimeoutException exc)
+        {
+            fail("Failed to unpin video for " + peerEndpointId);
+        }
+    }
+
+    /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
@@ -143,7 +209,7 @@ public class SwitchVideoTests
      */
     public void participantClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
+        clickOnLocalVideoAndTest(ConferenceFixture.getSecondParticipant());
     }
 
     /**

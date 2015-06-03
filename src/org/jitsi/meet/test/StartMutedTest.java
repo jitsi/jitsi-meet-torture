@@ -8,6 +8,7 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 /**
@@ -49,7 +50,9 @@ public class StartMutedTest
         TestUtils.waits(1000);
         WebDriver owner = ConferenceFixture.getOwner();
 
-        // The settings panel is opened from the previous test.
+        // Make sure settings panel is displayed
+        MeetUIUtils.makeSureSettingsAreDisplayed(owner);
+        // Wait for 'start muted' checkboxes
         TestUtils.waitsForDisplayedElementByXPath(
             owner, "//input[@id='startAudioMuted']", 5);
         TestUtils.waitsForDisplayedElementByXPath(
@@ -107,9 +110,7 @@ public class StartMutedTest
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
         WebDriver owner = ConferenceFixture.getOwner();
 
-        final String ownerResourceJid
-            = (String)((JavascriptExecutor) owner)
-                .executeScript("return APP.xmpp.myResource();");
+        final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 
         TestUtils.waitsForElementByXPath(
             secondParticipant,

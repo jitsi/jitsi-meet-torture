@@ -88,6 +88,23 @@ public class SetupConference
     }
 
     /**
+     * Starts the third participant.
+     */
+    public void startThirdParticipant()
+    {
+        ConferenceFixture.startThirdParticipant();
+    }
+
+    /**
+     * Checks whether the third participant has joined the room.
+     */
+    public void checkThirdParticipantJoinRoom()
+    {
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getThirdParticipant(), 10);
+    }
+
+    /**
      * Waits the owner to get event for iceConnectionState that changes
      * to connected.
      */
@@ -105,6 +122,16 @@ public class SetupConference
     {
         ConferenceFixture.waitsParticipantToJoinConference(
             ConferenceFixture.getSecondParticipant());
+    }
+
+    /**
+     * Waits the participant to get event for iceConnectionState that changes
+     * to connected.
+     */
+    public void waitsThirdParticipantToJoinConference()
+    {
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getThirdParticipant());
     }
 
     /**
@@ -152,5 +179,13 @@ public class SetupConference
     public void waitForSecondParticipantSendReceiveData()
     {
         waitForSendReceiveData(ConferenceFixture.getSecondParticipant());
+    }
+
+    /**
+     * Checks statistics for received and sent bitrate.
+     */
+    public void waitForThirdParticipantSendReceiveData()
+    {
+        waitForSendReceiveData(ConferenceFixture.getThirdParticipant());
     }
 }

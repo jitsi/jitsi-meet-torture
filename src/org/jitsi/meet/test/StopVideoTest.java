@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 
 /**
  * To stop the video on owner and participant side.
@@ -47,7 +48,7 @@ public class StopVideoTest
      */
     public void stopVideoOnOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -59,7 +60,7 @@ public class StopVideoTest
      */
     public void startVideoOnOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -71,7 +72,7 @@ public class StopVideoTest
      */
     public void stopVideoOnParticipantAndCheck()
     {
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementByXPath(
@@ -84,7 +85,7 @@ public class StopVideoTest
      */
     public void startVideoOnParticipantAndCheck()
     {
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
@@ -105,7 +106,7 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waits(1000);
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         ConferenceFixture.startParticipant();
 

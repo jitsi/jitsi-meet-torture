@@ -13,10 +13,21 @@ import junit.framework.*;
  * that were open.
  *
  * @author Damian Minkov
+ * @author Pawel Domas
  */
 public class DisposeConference
     extends TestCase
 {
+    public DisposeConference()
+    {
+
+    }
+
+    public DisposeConference(String testName)
+    {
+        super(testName);
+    }
+
     /**
      * Disposes the secondParticipant and the owner.
      */
@@ -24,5 +35,13 @@ public class DisposeConference
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getOwner());
+    }
+
+    /**
+     * Disposes the third participant.
+     */
+    public void disposeThirdParticipant()
+    {
+        ConferenceFixture.quit(ConferenceFixture.getThirdParticipant());
     }
 }

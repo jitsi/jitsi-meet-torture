@@ -4,7 +4,7 @@
  * Distributable under LGPL license.
  * See terms of license at gnu.org.
  */
-package org.jitsi.meet.test;
+package org.jitsi.meet.test.util;
 
 import java.io.*;
 import java.util.*;

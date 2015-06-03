@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
@@ -51,9 +52,7 @@ public class ChangeAvatarTest
         final WebDriver secondParticipant
             = ConferenceFixture.getSecondParticipant();
 
-        final String ownerResourceJid = (String)((JavascriptExecutor) owner)
-            .executeScript(
-                "return APP.xmpp.myResource();");
+        final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 
         final String srcOneSecondParticipant =
             getParticipantSrc(secondParticipant,
@@ -61,7 +60,7 @@ public class ChangeAvatarTest
                     + "']/img[@class='userAvatar']");
 
         //change the email for the conference owner
-        TestUtils.clickOnToolbarButton(owner, "settingsButton");
+        MeetUIUtils.clickOnToolbarButton(owner, "settingsButton");
         TestUtils.waitsForDisplayedElementByXPath(
             owner, "//input[@id='setEmail']", 5);
         owner.findElement(By.xpath("//input[@id='setEmail']")).sendKeys(EMAIL);

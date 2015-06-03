@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.io.*;

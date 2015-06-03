@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
@@ -70,7 +71,7 @@ public class LockRoomTest
         assertTrue("Icon must be unlocked when starting the test",
             elems.isEmpty());
 
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getOwner(), "lockIcon");
 
         // fill in the dialog
@@ -160,7 +161,7 @@ public class LockRoomTest
         assertTrue("Icon must be locked when starting this test",
             elems.isEmpty());
 
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getOwner(), "lockIcon");
 
         ConferenceFixture.getOwner().findElement(
@@ -175,7 +176,7 @@ public class LockRoomTest
                 "for room",
             elems.isEmpty());
 
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getOwner(), "lockIcon");
 
         ConferenceFixture.getOwner().findElement(

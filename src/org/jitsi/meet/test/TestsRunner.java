@@ -52,6 +52,8 @@ public class TestsRunner
             if(Boolean.getBoolean(TCPTest.JITSI_MEET_SUDO_CONFIGED_PROP))
                 suite.addTest(TCPTest.suite());
 
+            suite.addTest(ActiveSpeakerTest.suite());
+
             suite.addTest(StartMutedTest.suite());
 
             suite.addTestSuite(DisposeConference.class);
@@ -98,6 +100,14 @@ public class TestsRunner
                     t.printStackTrace();
                 }
             }
+        }
+
+        String fakeStreamAudioFile
+            = System.getProperty(ConferenceFixture.FAKE_AUDIO_FNAME_PROP);
+
+        if (fakeStreamAudioFile != null)
+        {
+            ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);
         }
 
         return suite;

@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
@@ -59,7 +60,7 @@ public class EtherpadTests
         TestUtils.waitsForDisplayedElementByID(
             ConferenceFixture.getOwner(), "etherpadButton", 15);
 
-        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
 
         TestUtils.waits(5000);
@@ -115,7 +116,7 @@ public class EtherpadTests
      */
     public void closeEtherpadCheck()
     {
-        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
 
         TestUtils.waits(5000);

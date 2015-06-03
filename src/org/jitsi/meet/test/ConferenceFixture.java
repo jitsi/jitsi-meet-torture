@@ -6,6 +6,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 
@@ -14,12 +15,22 @@ import org.openqa.selenium.chrome.*;
  * participant pages.
  *
  * @author Damian Minkov
+ * @author Pawel Domas
  */
 public class ConferenceFixture
 {
     public static final String JITSI_MEET_URL_PROP = "jitsi-meet.instance.url";
 
+    public static final String FAKE_AUDIO_FNAME_PROP
+        = "jitsi-meet.fakeStreamAudioFile";
+
     public static String currentRoomName;
+
+    /**
+     * Full name of wav file which will be streamed through participant's fake
+     * audio device.
+     */
+    private static String fakeStreamAudioFName;
 
     /**
      * The conference owner in the tests.
@@ -148,6 +159,13 @@ public class ConferenceFixture
         ChromeOptions ops = new ChromeOptions();
         ops.addArguments("use-fake-ui-for-media-stream");
         ops.addArguments("use-fake-device-for-media-stream");
+
+        if (fakeStreamAudioFName != null)
+        {
+            ops.addArguments(
+                "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
+        }
+
         ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
         return new ChromeDriver(ops);
     }
@@ -220,7 +238,7 @@ public class ConferenceFixture
     {
         try
         {
-            TestUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
+            MeetUIUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
 
             TestUtils.waits(500);
         }
@@ -246,5 +264,18 @@ public class ConferenceFixture
             secondParticipant = null;
         else if(participant == thirdParticipant)
             thirdParticipant = null;
+    }
+
+    /**
+     * Sets the name of wav audio file which will be streamed through fake audio
+     * device by participants. The file is not looped, so must be long enough
+     * for all tests to finish.
+     *
+     * @param fakeStreamAudioFile full name of wav file for the fake audio
+     *                            device.
+     */
+    public static void setFakeStreamAudioFile(String fakeStreamAudioFile)
+    {
+        fakeStreamAudioFName = fakeStreamAudioFile;
     }
 }

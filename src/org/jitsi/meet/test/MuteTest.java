@@ -7,6 +7,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 
@@ -52,12 +53,13 @@ public class MuteTest
      */
     public void muteOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
-        TestUtils.waitsForElementByXPath(
+        MeetUIUtils.verifyIsMutedStatus(
+            "owner",
+            ConferenceFixture.getOwner(),
             ConferenceFixture.getSecondParticipant(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
-
+            true);
     }
 
     /**
@@ -65,11 +67,13 @@ public class MuteTest
      */
     public void unMuteOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        MeetUIUtils.verifyIsMutedStatus(
+            "owner",
+            ConferenceFixture.getOwner(),
             ConferenceFixture.getSecondParticipant(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            false);
     }
 
     /**
@@ -77,12 +81,14 @@ public class MuteTest
      */
     public void muteParticipantAndCheck()
     {
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "mute");
 
-        TestUtils.waitsForElementByXPath(
+        MeetUIUtils.verifyIsMutedStatus(
+            "participant2",
+            ConferenceFixture.getSecondParticipant(),
             ConferenceFixture.getOwner(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            true);
     }
 
     /**
@@ -90,12 +96,44 @@ public class MuteTest
      */
     public void unMuteParticipantAndCheck()
     {
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "mute");
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        MeetUIUtils.verifyIsMutedStatus(
+            "participant2",
+            ConferenceFixture.getSecondParticipant(),
             ConferenceFixture.getOwner(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            false);
+    }
+
+    /**
+     * Mutes the participant and checks at owner side.
+     */
+    public void muteThirdParticipantAndCheck()
+    {
+        MeetUIUtils.clickOnToolbarButton(
+            ConferenceFixture.getThirdParticipant(), "mute");
+
+        MeetUIUtils.verifyIsMutedStatus(
+            "participant3",
+            ConferenceFixture.getThirdParticipant(),
+            ConferenceFixture.getOwner(),
+            true);
+    }
+
+    /**
+     * UnMutes the participant and checks at owner side.
+     */
+    public void unMuteThirdParticipantAndCheck()
+    {
+        MeetUIUtils.clickOnToolbarButton(
+            ConferenceFixture.getThirdParticipant(), "mute");
+
+        MeetUIUtils.verifyIsMutedStatus(
+            "participant3",
+            ConferenceFixture.getThirdParticipant(),
+            ConferenceFixture.getOwner(),
+            false);
     }
 
     /**
@@ -135,7 +173,7 @@ public class MuteTest
      */
     public void participantUnMutesAfterOwnerMutedHimAndCheck()
     {
-        TestUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
@@ -159,7 +197,7 @@ public class MuteTest
         // just in case wait
         TestUtils.waits(1000);
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
         ConferenceFixture.startParticipant();
 
