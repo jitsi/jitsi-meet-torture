@@ -10,6 +10,7 @@ import junit.framework.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 
+import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -105,10 +106,13 @@ public class TestsRunner
         String fakeStreamAudioFile
             = System.getProperty(ConferenceFixture.FAKE_AUDIO_FNAME_PROP);
 
-        if (fakeStreamAudioFile != null)
+        if (fakeStreamAudioFile == null)
         {
-            ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);
+            File file = new File("resources/fakeAudioStream.wav");
+            fakeStreamAudioFile = file.getAbsolutePath();
         }
+
+        ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);
 
         return suite;
     }
