@@ -109,8 +109,8 @@ public class AuthSetupConference
         Enumeration<Test> parentTests = parentSuite.tests();
         TestSuite suite = new TestSuite();
 
-        // We want to insert "authenticate" after "startFocus"
-        suite.addTest(parentTests.nextElement()); // startFocus
+        // We want to insert "authenticate" after "startOwner"
+        suite.addTest(parentTests.nextElement()); // startOwner
         suite.addTest(new AuthSetupConference("authenticate"));
 
         // The rest of the tests
@@ -169,7 +169,7 @@ public class AuthSetupConference
             throw new RuntimeException(e);
         }
 
-        WebDriver moderator = ConferenceFixture.getFocus();
+        WebDriver moderator = ConferenceFixture.getOwner();
 
         String authButtonName = "jqi_state0_" +
                 "buttonspandatai18ndialogIamHostIamthehostspan";

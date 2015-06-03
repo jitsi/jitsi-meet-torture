@@ -54,7 +54,7 @@ public class LockRoomTest
     }
 
     /**
-     * Stops the participant. And locks the room from the focus.
+     * Stops the participant. And locks the room from the owner.
      */
     public void lockRoom()
     {
@@ -63,7 +63,7 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waits(1000);
 
-        List<WebElement> elems = ConferenceFixture.getFocus().findElements(
+        List<WebElement> elems = ConferenceFixture.getOwner().findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security-locked']"));
 
@@ -71,21 +71,21 @@ public class LockRoomTest
             elems.isEmpty());
 
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.getFocus(), "lockIcon");
+            ConferenceFixture.getOwner(), "lockIcon");
 
         // fill in the dialog
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getFocus(),
+        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
             "//input[@name='lockKey']", 5);
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
-        ConferenceFixture.getFocus().findElement(
+        ConferenceFixture.getOwner().findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
 
-        ConferenceFixture.getFocus().findElement(
+        ConferenceFixture.getOwner().findElement(
             By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
 
         TestUtils.waits(1000);
 
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getFocus(),
+        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
             "//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security-locked']", 5);
     }
@@ -97,7 +97,7 @@ public class LockRoomTest
     {
         ConferenceFixture.startParticipant();
 
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getFocus(),
+        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
             "//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security-locked']", 5);
 
@@ -153,7 +153,7 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waits(1000);
 
-        List<WebElement> elems = ConferenceFixture.getFocus().findElements(
+        List<WebElement> elems = ConferenceFixture.getOwner().findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
@@ -161,13 +161,13 @@ public class LockRoomTest
             elems.isEmpty());
 
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.getFocus(), "lockIcon");
+            ConferenceFixture.getOwner(), "lockIcon");
 
-        ConferenceFixture.getFocus().findElement(
+        ConferenceFixture.getOwner().findElement(
             By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
                 .click();
 
-        elems = ConferenceFixture.getFocus().findElements(
+        elems = ConferenceFixture.getOwner().findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
@@ -176,16 +176,16 @@ public class LockRoomTest
             elems.isEmpty());
 
         TestUtils.clickOnToolbarButton(
-            ConferenceFixture.getFocus(), "lockIcon");
+            ConferenceFixture.getOwner(), "lockIcon");
 
-        ConferenceFixture.getFocus().findElement(
+        ConferenceFixture.getOwner().findElement(
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
                 .click();
 
         // just in case wait
         TestUtils.waits(1000);
 
-        elems = ConferenceFixture.getFocus().findElements(
+        elems = ConferenceFixture.getOwner().findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security-locked']"));
 

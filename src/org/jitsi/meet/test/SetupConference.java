@@ -40,34 +40,34 @@ public class SetupConference
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new SetupConference("startFocus"));
-        suite.addTest(new SetupConference("checkFocusJoinRoom"));
+        suite.addTest(new SetupConference("startOwner"));
+        suite.addTest(new SetupConference("checkOwnerJoinRoom"));
         suite.addTest(new SetupConference("startSecondParticipant"));
         suite.addTest(new SetupConference("checkSecondParticipantJoinRoom"));
-        suite.addTest(new SetupConference("waitsFocusToJoinConference"));
+        suite.addTest(new SetupConference("waitsOwnerToJoinConference"));
         suite.addTest(new SetupConference("waitsSecondParticipantToJoinConference"));
-        suite.addTest(new SetupConference("waitForFocusSendReceiveData"));
+        suite.addTest(new SetupConference("waitForOwnerSendReceiveData"));
         suite.addTest(new SetupConference("waitForSecondParticipantSendReceiveData"));
 
         return suite;
     }
 
     /**
-     * First starts the focus.
+     * First starts the owner.
      */
-    public void startFocus()
+    public void startOwner()
     {
-        ConferenceFixture.startFocus(null);
+        ConferenceFixture.startOwner(null);
     }
 
     /**
-     * Checks whether focus joined the room.
+     * Checks whether owner joined the room.
      */
-    public void checkFocusJoinRoom()
+    public void checkOwnerJoinRoom()
     {
         // first lets wait 10 secs to join
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getFocus(), 10);
+            ConferenceFixture.getOwner(), 10);
     }
 
     /**
@@ -88,13 +88,13 @@ public class SetupConference
     }
 
     /**
-     * Waits the focus to get event for iceConnectionState that changes
+     * Waits the owner to get event for iceConnectionState that changes
      * to connected.
      */
-    public void waitsFocusToJoinConference()
+    public void waitsOwnerToJoinConference()
     {
         ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getFocus());
+            ConferenceFixture.getOwner());
     }
 
     /**
@@ -118,7 +118,7 @@ public class SetupConference
             {
                 public Boolean apply(WebDriver d)
                 {
-                    Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getFocus())
+                    Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getOwner())
                         .executeScript("return APP.connectionquality.getStats();");
 
                     Map<String,Long> bitrate =
@@ -141,9 +141,9 @@ public class SetupConference
     /**
      * Checks statistics for received and sent bitrate.
      */
-    public void waitForFocusSendReceiveData()
+    public void waitForOwnerSendReceiveData()
     {
-        waitForSendReceiveData(ConferenceFixture.getFocus());
+        waitForSendReceiveData(ConferenceFixture.getOwner());
     }
 
     /**

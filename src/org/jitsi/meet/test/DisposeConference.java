@@ -18,11 +18,11 @@ public class DisposeConference
     extends TestCase
 {
     /**
-     * Disposes the secondParticipant and the focus.
+     * Disposes the secondParticipant and the owner.
      */
     public void testDispose()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.quit(ConferenceFixture.getFocus());
+        ConferenceFixture.quit(ConferenceFixture.getOwner());
     }
 }

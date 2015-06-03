@@ -34,9 +34,9 @@ public class SwitchVideoTests
         TestSuite suite = new TestSuite();
 
         suite.addTest(new SwitchVideoTests(
-            "focusClickOnLocalVideoAndTest"));
+            "ownerClickOnLocalVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
-            "focusClickOnRemoteVideoAndTest"));
+            "ownerClickOnRemoteVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
             "participantClickOnLocalVideoAndTest"));
         suite.addTest(new SwitchVideoTests(
@@ -49,9 +49,9 @@ public class SwitchVideoTests
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
-    public void focusClickOnLocalVideoAndTest()
+    public void ownerClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(ConferenceFixture.getFocus());
+        clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
     }
 
     /**
@@ -89,9 +89,9 @@ public class SwitchVideoTests
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
-    public void focusClickOnRemoteVideoAndTest()
+    public void ownerClickOnRemoteVideoAndTest()
     {
-        clickOnRemoteVideoAndTest(ConferenceFixture.getFocus());
+        clickOnRemoteVideoAndTest(ConferenceFixture.getOwner());
     }
 
     /**
@@ -143,7 +143,7 @@ public class SwitchVideoTests
      */
     public void participantClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(ConferenceFixture.getFocus());
+        clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
     }
 
     /**

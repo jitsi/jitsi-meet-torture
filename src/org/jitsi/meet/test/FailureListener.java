@@ -93,16 +93,16 @@ public class FailureListener
     }
 
     /**
-     * Takes screenshot of focus and participant.
+     * Takes screenshot of owner and participant.
      *
      * @param test which failed
      */
     private void takeScreenshots(Test test)
     {
-        takeScreenshot(ConferenceFixture.getFocus(),
+        takeScreenshot(ConferenceFixture.getOwner(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." +JUnitVersionHelper.getTestCaseName(test)
-                + "-focus.png");
+                + "-owner.png");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
@@ -137,16 +137,16 @@ public class FailureListener
     }
 
     /**
-     * Saves html sources of focus and participant in the moment of failure.
+     * Saves html sources of owner and participant in the moment of failure.
      *
      * @param test which failed
      */
     private void saveHtmlSources(Test test)
     {
-        saveHtmlSource(ConferenceFixture.getFocus(),
+        saveHtmlSource(ConferenceFixture.getOwner(),
             JUnitVersionHelper.getTestCaseClassName(test)
                 + "." + JUnitVersionHelper.getTestCaseName(test)
-                + "-focus.html");
+                + "-owner.html");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();

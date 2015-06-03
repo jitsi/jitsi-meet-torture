@@ -38,13 +38,13 @@ public class EtherpadTests
         suite.addTest(new EtherpadTests("writeTextAndCheck"));
         suite.addTest(new EtherpadTests("closeEtherpadCheck"));
         // lets check after closing etherpad we are able to click on videos
-        suite.addTest(new EtherpadTests("focusClickOnLocalVideoAndTest"));
-        suite.addTest(new EtherpadTests("focusClickOnRemoteVideoAndTest"));
+        suite.addTest(new EtherpadTests("ownerClickOnLocalVideoAndTest"));
+        suite.addTest(new EtherpadTests("ownerClickOnRemoteVideoAndTest"));
         suite.addTest(new EtherpadTests("enterEtherpad"));
         //suite.addTest(new EtherpadTests("writeTextAndCheck"));
         //lets not directly click on videos without closing etherpad
-        suite.addTest(new SwitchVideoTests("focusClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTests("focusClickOnRemoteVideoAndTest"));
+        suite.addTest(new SwitchVideoTests("ownerClickOnLocalVideoAndTest"));
+        suite.addTest(new SwitchVideoTests("ownerClickOnRemoteVideoAndTest"));
 
         return suite;
     }
@@ -57,15 +57,15 @@ public class EtherpadTests
     {
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitsForDisplayedElementByID(
-            ConferenceFixture.getFocus(), "etherpadButton", 15);
+            ConferenceFixture.getOwner(), "etherpadButton", 15);
 
-        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getFocus(),
+        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
 
         TestUtils.waits(5000);
 
         TestUtils.waitsForNotDisplayedElementByID(
-            ConferenceFixture.getFocus(), "largeVideo", 10);
+            ConferenceFixture.getOwner(), "largeVideo", 10);
     }
 
     /**
@@ -77,36 +77,36 @@ public class EtherpadTests
         try
         {
             WebDriverWait wait = new WebDriverWait(
-                ConferenceFixture.getFocus(), 30);
+                ConferenceFixture.getOwner(), 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.tagName("iframe")));
 
             wait = new WebDriverWait(
-                ConferenceFixture.getFocus(), 30);
+                ConferenceFixture.getOwner(), 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.name("ace_outer")));
 
             wait = new WebDriverWait(
-                ConferenceFixture.getFocus(), 30);
+                ConferenceFixture.getOwner(), 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.name("ace_inner")));
 
             String textToEnter = "SomeTestText";
 
-            ConferenceFixture.getFocus().findElement(
+            ConferenceFixture.getOwner().findElement(
                 By.id("innerdocbody")).sendKeys(textToEnter);
 
             TestUtils.waits(2000);
 
             // now search and check the text
-            String txt = ConferenceFixture.getFocus().findElement(
+            String txt = ConferenceFixture.getOwner().findElement(
                 By.xpath("//span[contains(@class, 'author')]")).getText();
 
             assertEquals("Texts do not match", textToEnter, txt);
         }
         finally
         {
-            ConferenceFixture.getFocus().switchTo().defaultContent();
+            ConferenceFixture.getOwner().switchTo().defaultContent();
         }
     }
 
@@ -115,33 +115,33 @@ public class EtherpadTests
      */
     public void closeEtherpadCheck()
     {
-        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getFocus(),
+        TestUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
 
         TestUtils.waits(5000);
 
         TestUtils.waitsForDisplayedElementByID(
-            ConferenceFixture.getFocus(), "largeVideo", 10);
+            ConferenceFixture.getOwner(), "largeVideo", 10);
     }
 
     /**
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
-    public void focusClickOnLocalVideoAndTest()
+    public void ownerClickOnLocalVideoAndTest()
     {
-        new SwitchVideoTests("focusClickOnLocalVideoAndTest")
-            .focusClickOnLocalVideoAndTest();
+        new SwitchVideoTests("ownerClickOnLocalVideoAndTest")
+            .ownerClickOnLocalVideoAndTest();
     }
 
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
-    public void focusClickOnRemoteVideoAndTest()
+    public void ownerClickOnRemoteVideoAndTest()
     {
-        new SwitchVideoTests("focusClickOnRemoteVideoAndTest")
-            .focusClickOnRemoteVideoAndTest();
+        new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
+            .ownerClickOnRemoteVideoAndTest();
     }
 
 

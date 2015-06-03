@@ -7,10 +7,9 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
-import org.openqa.selenium.*;
 
 /**
- * To stop the video on focus and participant side.
+ * To stop the video on owner and participant side.
  * @author Damian Minkov
  */
 public class StopVideoTest
@@ -33,22 +32,22 @@ public class StopVideoTest
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new StopVideoTest("stopVideoOnFocusAndCheck"));
-        suite.addTest(new StopVideoTest("startVideoOnFocusAndCheck"));
+        suite.addTest(new StopVideoTest("stopVideoOnOwnerAndCheck"));
+        suite.addTest(new StopVideoTest("startVideoOnOwnerAndCheck"));
         suite.addTest(new StopVideoTest("stopVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest(
-            "stopFocusVideoBeforeSecondParticipantJoins"));
+            "stopOwnerVideoBeforeSecondParticipantJoins"));
 
         return suite;
     }
 
     /**
-     * Stops the video on focus.
+     * Stops the video on the conference owner.
      */
-    public void stopVideoOnFocusAndCheck()
+    public void stopVideoOnOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -56,11 +55,11 @@ public class StopVideoTest
     }
 
     /**
-     * Starts the video on focus.
+     * Starts the video on owner.
      */
-    public void startVideoOnFocusAndCheck()
+    public void startVideoOnOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -76,7 +75,7 @@ public class StopVideoTest
             ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
@@ -89,24 +88,24 @@ public class StopVideoTest
             ConferenceFixture.getSecondParticipant(), "video");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
     /**
-     * Closes the participant and leaves the focus alone in the room.
-     * Stops video of the focus and then joins new participant and
+     * Closes the participant and leaves the owner alone in the room.
+     * Stops video of the owner and then joins new participant and
      * checks the status of the stopped video icon.
      * At the end starts the video to clear the state.
      */
-    public void stopFocusVideoBeforeSecondParticipantJoins()
+    public void stopOwnerVideoBeforeSecondParticipantJoins()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
         TestUtils.waits(1000);
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "video");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
         ConferenceFixture.startParticipant();
 
@@ -120,8 +119,8 @@ public class StopVideoTest
             ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
 
-        // now lets start video for focus
-        startVideoOnFocusAndCheck();
+        // now lets start video for owner
+        startVideoOnOwnerAndCheck();
 
         // just in case wait
         TestUtils.waits(1500);

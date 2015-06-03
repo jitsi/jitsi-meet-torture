@@ -47,37 +47,37 @@ public class ChangeAvatarTest
      */
     public void changeAvatarAndCheck()
     {
-        WebDriver focus = ConferenceFixture.getFocus();
+        WebDriver owner = ConferenceFixture.getOwner();
         final WebDriver secondParticipant
             = ConferenceFixture.getSecondParticipant();
 
-        final String focusResourceJid = (String)((JavascriptExecutor) focus)
+        final String ownerResourceJid = (String)((JavascriptExecutor) owner)
             .executeScript(
                 "return APP.xmpp.myResource();");
 
         final String srcOneSecondParticipant =
             getParticipantSrc(secondParticipant,
-                "//span[@id='participant_" + focusResourceJid
+                "//span[@id='participant_" + ownerResourceJid
                     + "']/img[@class='userAvatar']");
 
-        //chage the email for the focus
-        TestUtils.clickOnToolbarButton(focus, "settingsButton");
+        //change the email for the conference owner
+        TestUtils.clickOnToolbarButton(owner, "settingsButton");
         TestUtils.waitsForDisplayedElementByXPath(
-            focus, "//input[@id='setEmail']", 5);
-        focus.findElement(By.xpath("//input[@id='setEmail']")).sendKeys(EMAIL);
-        focus.findElement(By.id("updateSettings")).click();
+            owner, "//input[@id='setEmail']", 5);
+        owner.findElement(By.xpath("//input[@id='setEmail']")).sendKeys(EMAIL);
+        owner.findElement(By.id("updateSettings")).click();
 
         TestUtils.waits(1000);
 
         //check if the local avatar in the settings menu has changed
-        checkSrcIsCorrect(focus, "//img[@id='avatar']");
+        checkSrcIsCorrect(owner, "//img[@id='avatar']");
         //check if the avatar in the local thumbnail has changed
-        checkSrcIsCorrect(focus,
+        checkSrcIsCorrect(owner,
             "//span[@id='localVideoContainer']/img[@class='userAvatar']");
         //check if the avatar in the contact list has changed
-        checkSrcIsCorrect(focus,
+        checkSrcIsCorrect(owner,
             "//div[@id='contactlist']/ul/li[@id='"
-                + focusResourceJid + "']/img");
+                + ownerResourceJid + "']/img");
 
         // waits till the src changes so we can continue with the check
         // sometimes the notification for the avatar change can be more
@@ -89,7 +89,7 @@ public class ChangeAvatarTest
                     {
                         String currentSrc =
                             getParticipantSrc(secondParticipant,
-                                "//span[@id='participant_" + focusResourceJid
+                                "//span[@id='participant_" + ownerResourceJid
                                     + "']/img[@class='userAvatar']");
                         return !currentSrc.equals(srcOneSecondParticipant);
                     }
@@ -98,13 +98,13 @@ public class ChangeAvatarTest
         //check if the avatar in the thumbnail for the other participant has
         // changed
         checkSrcIsCorrect(secondParticipant,
-            "//span[@id='participant_" + focusResourceJid
+            "//span[@id='participant_" + ownerResourceJid
                 + "']/img[@class='userAvatar']");
         //check if the avatar in the contact list has changed for the other
         // participant
         checkSrcIsCorrect(secondParticipant,
             "//div[@id='contactlist']/ul/li[@id='"
-                + focusResourceJid + "']/img");
+                + ownerResourceJid + "']/img");
         //check if the active spekaer avatar has changed for the other
         // participant
         checkSrcIsCorrect(secondParticipant,

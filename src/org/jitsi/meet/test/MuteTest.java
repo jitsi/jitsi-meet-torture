@@ -34,25 +34,25 @@ public class MuteTest
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new MuteTest("muteFocusAndCheck"));
-        suite.addTest(new MuteTest("unMuteFocusAndCheck"));
+        suite.addTest(new MuteTest("muteOwnerAndCheck"));
+        suite.addTest(new MuteTest("unMuteOwnerAndCheck"));
         suite.addTest(new MuteTest("muteParticipantAndCheck"));
         suite.addTest(new MuteTest("unMuteParticipantAndCheck"));
-        suite.addTest(new MuteTest("focusMutesParticipantAndCheck"));
+        suite.addTest(new MuteTest("ownerMutesParticipantAndCheck"));
         suite.addTest(new MuteTest(
-                    "participantUnMutesAfterFocusMutedHimAndCheck"));
+                    "participantUnMutesAfterOwnerMutedHimAndCheck"));
         suite.addTest(new MuteTest(
-                    "muteFocusBeforeSecondParticipantJoins"));
+                    "muteOwnerBeforeSecondParticipantJoins"));
 
         return suite;
     }
 
     /**
-     * Mutes the focus and checks at other participant is this is visible.
+     * Mutes the owner and checks at other participant is this is visible.
      */
-    public void muteFocusAndCheck()
+    public void muteOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -61,11 +61,11 @@ public class MuteTest
     }
 
     /**
-     * Unmutes focus and checks at other participant is this is visible.
+     * Unmutes owner and checks at other participant is this is visible.
      */
-    public void unMuteFocusAndCheck()
+    public void unMuteOwnerAndCheck()
     {
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -73,7 +73,7 @@ public class MuteTest
     }
 
     /**
-     * Mutes the participant and checks at focus side.
+     * Mutes the participant and checks at owner side.
      */
     public void muteParticipantAndCheck()
     {
@@ -81,12 +81,12 @@ public class MuteTest
             ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
     /**
-     * UnMutes the participant and checks at focus side.
+     * UnMutes the participant and checks at owner side.
      */
     public void unMuteParticipantAndCheck()
     {
@@ -94,30 +94,30 @@ public class MuteTest
             ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
     }
 
     /**
-     * Finds the menu that can be used by the focus to control the participant.
+     * Finds the menu that can be used by the owner to control the participant.
      * Hovers over it. Finds the mute link and mute it.
      * Then checks in the second participant page whether it is muted
      */
-    public void focusMutesParticipantAndCheck()
+    public void ownerMutesParticipantAndCheck()
     {
-        WebElement elem = ConferenceFixture.getFocus().findElement(By.xpath(
+        WebElement elem = ConferenceFixture.getOwner().findElement(By.xpath(
             "//span[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
 
-        Actions action = new Actions(ConferenceFixture.getFocus());
+        Actions action = new Actions(ConferenceFixture.getOwner());
         action.moveToElement(elem);
         action.perform();
 
         TestUtils.waitsForDisplayedElementByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//ul[@class='popupmenu']/li/a[@class='mutelink']",
             5);
 
-        ConferenceFixture.getFocus().findElement(
+        ConferenceFixture.getOwner().findElement(
                 By.xpath("//ul[@class='popupmenu']/li/a[@class='mutelink']"))
             .click();
 
@@ -130,36 +130,36 @@ public class MuteTest
     }
 
     /**
-     * UnMutes once again the second participant and checks in the focus page
+     * UnMutes once again the second participant and checks in the owner page
      * does this change is reflected.
      */
-    public void participantUnMutesAfterFocusMutedHimAndCheck()
+    public void participantUnMutesAfterOwnerMutedHimAndCheck()
     {
         TestUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "mute");
 
         TestUtils.waitsForElementNotPresentByXPath(
-            ConferenceFixture.getFocus(),
+            ConferenceFixture.getOwner(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
-        // lets give time to the ui to reflect the change in the ui of the focus
+        // lets give time to the ui to reflect the change in the ui of the owner
         TestUtils.waits(1000);
     }
 
     /**
-     * Closes the participant and leaves the focus alone in the room.
-     * Mutes the focus and then joins new participant and checks the status
+     * Closes the participant and leaves the owner alone in the room.
+     * Mutes the owner and then joins new participant and checks the status
      * of the mute icon.
      * At the end unmutes to clear the state.
      */
-    public void muteFocusBeforeSecondParticipantJoins()
+    public void muteOwnerBeforeSecondParticipantJoins()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
         TestUtils.waits(1000);
 
-        TestUtils.clickOnToolbarButton(ConferenceFixture.getFocus(), "mute");
+        TestUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "mute");
 
         ConferenceFixture.startParticipant();
 
@@ -174,6 +174,6 @@ public class MuteTest
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
         // now lets unmute
-        unMuteFocusAndCheck();
+        unMuteOwnerAndCheck();
     }
 }

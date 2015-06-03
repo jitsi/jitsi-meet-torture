@@ -9,7 +9,6 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 
 /**
  * Start muted tests
@@ -42,23 +41,23 @@ public class StartMutedTest
 
     /**
      * Restarts the second participant tab and checks start muted checkboxes.
-     * Test if the second participant is muted and the focus is unmuted.
+     * Test if the second participant is muted and the owner is unmuted.
      */
     public void checkboxesTest()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         TestUtils.waits(1000);
-        WebDriver focus = ConferenceFixture.getFocus();
+        WebDriver owner = ConferenceFixture.getOwner();
 
         // The settings panel is opened from the previous test.
         TestUtils.waitsForDisplayedElementByXPath(
-            focus, "//input[@id='startAudioMuted']", 5);
+            owner, "//input[@id='startAudioMuted']", 5);
         TestUtils.waitsForDisplayedElementByXPath(
-            focus, "//input[@id='startVideoMuted']", 5);
+            owner, "//input[@id='startVideoMuted']", 5);
 
-        focus.findElement(By.id("startAudioMuted")).click();
-        focus.findElement(By.id("startVideoMuted")).click();
-        focus.findElement(By.id("updateSettings")).click();
+        owner.findElement(By.id("startAudioMuted")).click();
+        owner.findElement(By.id("startVideoMuted")).click();
+        owner.findElement(By.id("updateSettings")).click();
 
         ConferenceFixture.startParticipant();
         ConferenceFixture.checkParticipantToJoinRoom(
@@ -73,20 +72,20 @@ public class StartMutedTest
 
     /**
      * Opens new room and sets start muted config parameters trough the URL.
-     * Test if the second participant is muted and the focus is unmuted.
+     * Test if the second participant is muted and the owner is unmuted.
      */
     public void configOptionsTest()
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.quit(ConferenceFixture.getFocus());
+        ConferenceFixture.quit(ConferenceFixture.getOwner());
         TestUtils.waits(1000);
-        ConferenceFixture.startFocus("config.startAudioMuted=1&"
+        ConferenceFixture.startOwner("config.startAudioMuted=1&"
             + "config.startVideoMuted=1");
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getFocus(), 10);
+            ConferenceFixture.getOwner(), 10);
 
         ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getFocus());
+            ConferenceFixture.getOwner());
 
         ConferenceFixture.startParticipant();
 
@@ -106,10 +105,10 @@ public class StartMutedTest
     private void checkSecondParticipantForMute()
     {
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
-        WebDriver focus = ConferenceFixture.getFocus();
+        WebDriver owner = ConferenceFixture.getOwner();
 
-        final String focusResourceJid
-            = (String)((JavascriptExecutor) focus)
+        final String ownerResourceJid
+            = (String)((JavascriptExecutor) owner)
                 .executeScript("return APP.xmpp.myResource();");
 
         TestUtils.waitsForElementByXPath(
@@ -124,12 +123,12 @@ public class StartMutedTest
 
         TestUtils.waitsForElementNotPresentByXPath(
             secondParticipant,
-            "//span[@id='participant_" + focusResourceJid + "']/"
+            "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='audioMuted']/i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitsForElementNotPresentByXPath(
             secondParticipant,
-            "//span[@id='participant_" + focusResourceJid + "']/"
+            "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
                 25);
 

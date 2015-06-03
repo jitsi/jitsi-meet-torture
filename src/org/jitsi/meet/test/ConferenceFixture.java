@@ -9,8 +9,6 @@ package org.jitsi.meet.test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 
-import com.gargoylesoftware.htmlunit.javascript.background.*;
-
 /**
  * The static fixture which holds the drivers to access the conference
  * participant pages.
@@ -24,9 +22,9 @@ public class ConferenceFixture
     public static String currentRoomName;
 
     /**
-     * The focus in the tests.
+     * The conference owner in the tests.
      */
-    private static WebDriver focus;
+    private static WebDriver owner;
 
     /**
      * The second participant.
@@ -34,12 +32,12 @@ public class ConferenceFixture
     private static WebDriver secondParticipant;
 
     /**
-     * Returns the currently allocated focus.
-     * @return the currently allocated focus.
+     * Returns the currently allocated conference owner.
+     * @return the currently allocated conference owner.
      */
-    public static WebDriver getFocus()
+    public static WebDriver getOwner()
     {
-        return focus;
+        return owner;
     }
 
     /**
@@ -69,21 +67,21 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts the focus, the first participant that generates the random
-     * room name.
+     * Starts the conference owner, the first participant that generates
+     * the random room name.
      * @param fragment adds the given string to the fragment part of the URL
      */
-    public static void startFocus(String fragment)
+    public static void startOwner(String fragment)
     {
-        focus = startChromeInstance();
+        owner = startChromeInstance();
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
 
-        openRoom(focus, fragment);
+        openRoom(owner, fragment);
 
-        ((JavascriptExecutor) focus)
-            .executeScript("document.title='Focus'");
+        ((JavascriptExecutor) owner)
+            .executeScript("document.title='Owner'");
     }
 
     /**
@@ -198,8 +196,8 @@ public class ConferenceFixture
             t.printStackTrace();
         }
 
-        if(participant == focus)
-            focus = null;
+        if(participant == owner)
+            owner = null;
         else if(participant == secondParticipant)
             secondParticipant = null;
     }

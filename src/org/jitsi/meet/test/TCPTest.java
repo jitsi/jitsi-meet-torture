@@ -73,11 +73,11 @@ public class TCPTest
     }
 
     /**
-     * Gets the currently connected addresses from focus and prints them.
+     * Gets the currently connected addresses from owner and prints them.
      * Stops current instances.
      * Adds rules to forbid udp traffic.
-     * Starts the focus and participant again.
-     * Takes the currently connected addresses from focus and prints them.
+     * Starts the owner and participant again.
+     * Takes the currently connected addresses from owner and prints them.
      * Checks whether were are connected with TCP.
      * Clears the added firewall rules.
      */
@@ -86,7 +86,7 @@ public class TCPTest
         // just waits the stats to become available
         TestUtils.waits(5000);
 
-        Map<String,String> focusIPAddresses = printFocusConnectInfo();
+        Map<String,String> ownerIPAddresses = printOwnerConnectInfo();
 
         new DisposeConference().testDispose();
         TestUtils.waits(1000);
@@ -104,26 +104,26 @@ public class TCPTest
         }
 
         SetupConference setup = new SetupConference(getName());
-        setup.startFocus();
-        setup.checkFocusJoinRoom();
+        setup.startOwner();
+        setup.checkOwnerJoinRoom();
         setup.startSecondParticipant();
         setup.checkSecondParticipantJoinRoom();
-        setup.waitsFocusToJoinConference();
+        setup.waitsOwnerToJoinConference();
         setup.waitsSecondParticipantToJoinConference();
 
         // just waits the stats to become available
         TestUtils.waits(5000);
-        Map<String,String> focusIPAddressesToCheck = printFocusConnectInfo();
+        Map<String,String> ownerIPAddressesToCheck = printOwnerConnectInfo();
 
         if(!Boolean.getBoolean(JITSI_MEET_DISABLE_TCP_PROTOCOL_CHECK_PROP))
         {
-            for(String p : focusIPAddressesToCheck.values())
+            for(String p : ownerIPAddressesToCheck.values())
             {
                 assertEquals("We must be connected through tcp", "tcp", p);
             }
         }
 
-        setup.waitForFocusSendReceiveData();
+        setup.waitForOwnerSendReceiveData();
         setup.waitForSecondParticipantSendReceiveData();
     }
 
@@ -242,15 +242,15 @@ public class TCPTest
     }
 
     /**
-     * Returns the currently connected addresses from focus and prints them.
-     * @return the currently connected addresses from focus and prints them.
+     * Returns the currently connected addresses from owner and prints them.
+     * @return the currently connected addresses from owner and prints them.
      */
-    private Map<String,String> printFocusConnectInfo()
+    private Map<String,String> printOwnerConnectInfo()
     {
-        Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getFocus())
+        Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getOwner())
             .executeScript("return APP.connectionquality.getStats();");
 
-        Map<String,String> focusIPAddresses = new HashMap<String, String>();
+        Map<String,String> ownerIPAddresses = new HashMap<String, String>();
         List<Map<String,String>> transports = (List)stats.get("transport");
 
         System.out.println("Currently connected to:");
@@ -260,12 +260,12 @@ public class TCPTest
             String protocol = t.get("type");
             String address = t.get("ip");
             String ipAddress = address.substring(0, address.lastIndexOf(':'));
-            focusIPAddresses.put(ipAddress, protocol);
+            ownerIPAddresses.put(ipAddress, protocol);
 
             System.out.println(protocol + ":" + ipAddress);
         }
 
-        return focusIPAddresses;
+        return ownerIPAddresses;
     }
 
 }
