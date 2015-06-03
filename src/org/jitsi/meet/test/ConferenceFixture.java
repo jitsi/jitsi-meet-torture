@@ -32,6 +32,11 @@ public class ConferenceFixture
     private static WebDriver secondParticipant;
 
     /**
+     * The third participant.
+     */
+    private static WebDriver thirdParticipant;
+
+    /**
      * Returns the currently allocated conference owner.
      * @return the currently allocated conference owner.
      */
@@ -64,6 +69,32 @@ public class ConferenceFixture
     public static WebDriver getSecondParticipantInstance()
     {
         return secondParticipant;
+    }
+
+    /**
+     * Returns the currently allocated third participant. If missing
+     * will create it.
+     * @return the currently allocated third participant.
+     */
+    public static WebDriver getThirdParticipant()
+    {
+        if(thirdParticipant == null)
+        {
+            // this will only happen if some test that quits the
+            // third participant fails, and couldn't open it
+            startThirdParticipant();
+        }
+
+        return thirdParticipant;
+    }
+
+    /**
+     * Returns the currently allocated third participant.
+     * @return the currently allocated third participant.
+     */
+    public static WebDriver getThirdParticipantInstance()
+    {
+        return thirdParticipant;
     }
 
     /**
@@ -135,6 +166,19 @@ public class ConferenceFixture
     }
 
     /**
+     * Start the third participant reusing the already generated room name.
+     */
+    public static void startThirdParticipant()
+    {
+        thirdParticipant = startChromeInstance();
+
+        openRoom(thirdParticipant, null);
+
+        ((JavascriptExecutor) thirdParticipant)
+            .executeScript("document.title='ThirdParticipant'");
+    }
+
+    /**
      * Checks whether participant has joined the room
      * @param participant where we check
      * @param timeout the time to wait for the event.
@@ -200,5 +244,7 @@ public class ConferenceFixture
             owner = null;
         else if(participant == secondParticipant)
             secondParticipant = null;
+        else if(participant == thirdParticipant)
+            thirdParticipant = null;
     }
 }
