@@ -182,15 +182,18 @@ public class LockRoomTest
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
                 .click();
 
-        // just in case wait
-        TestUtils.waits(1000);
-
-        elems = ConferenceFixture.getOwner().findElements(
-            By.xpath("//span[@id='toolbar']/a[@class='button']/" +
-                "i[@class='icon-security-locked']"));
-
-        assertTrue("Icon must be unlocked after removing the key",
-            elems.isEmpty());
+        // Wait for the lock icon to disappear
+        try
+        {
+            TestUtils.waitsForElementNotPresentByXPath(
+                ConferenceFixture.getOwner(),
+                "//span[@id='toolbar']/a[@class='button']/" +
+                    "i[@class='icon-security-locked']", 10);
+        }
+        catch (TimeoutException exc)
+        {
+            fail("Icon must be unlocked after removing the key");
+        }
     }
 
     /**
