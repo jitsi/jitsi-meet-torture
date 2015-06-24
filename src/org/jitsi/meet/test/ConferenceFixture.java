@@ -238,7 +238,9 @@ public class ConferenceFixture
     {
         try
         {
-            MeetUIUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
+            if(participant != null)
+                MeetUIUtils.clickOnToolbarButtonByClass(
+                    participant, "icon-hangup");
 
             TestUtils.waits(500);
         }
@@ -249,9 +251,12 @@ public class ConferenceFixture
 
         try
         {
-            participant.close();
+            if(participant != null)
+            {
+                participant.close();
 
-            participant.quit();
+                participant.quit();
+            }
         }
         catch(Throwable t)
         {
