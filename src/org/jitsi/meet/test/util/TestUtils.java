@@ -224,4 +224,21 @@ public class TestUtils
         }
     }
 
+    /**
+     * Returns the resource for the jid or null if missing.
+     * @param jid the full jid.
+     * @return the resource for the jid or null if missing.
+     */
+    public static String getResourceFromJid(String jid)
+    {
+        if(jid == null)
+            return null;
+
+        int ix = jid.lastIndexOf("/");
+
+        if(ix == -1)
+            return null;
+
+        return jid.substring(ix + 1, jid.length());
+    }
 }
