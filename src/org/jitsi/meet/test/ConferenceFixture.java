@@ -144,8 +144,10 @@ public class ConferenceFixture
     {
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
+        URL += "#config.requireDisplayName=false";
         if(fragment != null)
-            URL += "#" + fragment;
+            URL += "&" + fragment;
+
         participant.get(URL);
 
         // disables animations
