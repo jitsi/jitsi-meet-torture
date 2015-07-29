@@ -217,7 +217,7 @@ public class ConferenceFixture
     {
         TestUtils.waitsForBoolean(
             participant,
-            "return APP.xmpp.getMUCJoined();",
+            "return APP.xmpp.isMUCJoined();",
             timeout);
     }
 
