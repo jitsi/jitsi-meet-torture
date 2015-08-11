@@ -117,6 +117,8 @@ public class StopVideoTest
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
 
+        TestUtils.waits(500);
+
         ConferenceFixture.startParticipant();
 
         ConferenceFixture.checkParticipantToJoinRoom(
