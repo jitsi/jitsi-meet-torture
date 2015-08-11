@@ -20,6 +20,8 @@ import org.apache.commons.io.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.openqa.selenium.*;
 
+import org.jitsi.meet.test.util.*;
+
 import java.io.*;
 
 /**
@@ -75,6 +77,8 @@ public class FailureListener
             takeScreenshots(test);
 
             saveHtmlSources(test);
+
+            saveMeetDebugLog();
         }
         catch(Throwable ex)
         {
@@ -186,4 +190,45 @@ public class FailureListener
         }
     }
 
+    /**
+     * Saves the log from meet. Normally when clicked it is saved in Downloads
+     * if we do not find it we skip it.
+     */
+    private void saveMeetDebugLog()
+    {
+        saveMeetDebugLog(ConferenceFixture.getOwner(), "meetlog-owner.json");
+
+        WebDriver secondParticipant =
+            ConferenceFixture.getSecondParticipantInstance();
+
+        if(secondParticipant != null)
+        {
+            saveMeetDebugLog(secondParticipant, "meetlog-participant.json");
+        }
+    }
+
+    /**
+     * Saves the log from meet. Normally when clicked it is saved in Downloads
+     * if we do not find it we skip it.
+     */
+    private void saveMeetDebugLog(WebDriver driver, String fileName)
+    {
+        try
+        {
+            WebElement el = driver.findElement(By.id("downloadlog"));
+            el.click();
+
+            TestUtils.waits(1000);
+
+            FileUtils.moveFile(
+                new File(
+                    new File(System.getProperty("user.home"), "Downloads"),
+                    "meetlog.json"),
+                new File(outputHtmlSourceParentFolder, fileName));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
