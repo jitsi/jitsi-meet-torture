@@ -60,9 +60,8 @@ public class MeetUIUtils
      */
     public static String getLargeVideoResource(WebDriver participant)
     {
-        return TestUtils.getResourceFromJid(
-            (String)((JavascriptExecutor) participant)
-                .executeScript("return APP.UI.getLargeVideoJid();"));
+        return (String)((JavascriptExecutor) participant)
+                .executeScript("return APP.UI.getLargeVideoResource();");
     }
 
     /**
