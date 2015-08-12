@@ -35,7 +35,7 @@ public class MeetUIUtils
     public static void clickOnToolbarButton(WebDriver driver, String buttonID)
     {
         driver.findElement(
-            By.xpath("//a[@class='button']/i[@id='" + buttonID + "']")).click();
+            By.xpath("//a[@id='" + buttonID + "']")).click();
     }
 
     /**
@@ -47,7 +47,7 @@ public class MeetUIUtils
                                                    String buttonClass)
     {
         driver.findElement(
-            By.xpath("//a[@class='button']/i[@class='" + buttonClass + "']"))
+            By.xpath("//a[@class='button " + buttonClass + "']"))
             .click();
     }
 
@@ -78,7 +78,7 @@ public class MeetUIUtils
         WebElement settings = user.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
-            clickOnToolbarButton(user, "settingsButton");
+            clickOnToolbarButton(user, "toolbar_button_settings");
 
             TestUtils.waitsForDisplayedElementByXPath(
                 user, settingsXPath, 5);

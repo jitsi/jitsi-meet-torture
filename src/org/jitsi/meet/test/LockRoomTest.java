@@ -74,14 +74,14 @@ public class LockRoomTest
         TestUtils.waits(1000);
 
         List<WebElement> elems = ConferenceFixture.getOwner().findElements(
-            By.xpath("//span[@id='toolbar']/a[@class='button']/" +
-                "i[@class='icon-security-locked']"));
+            By.xpath("//span[@id='toolbar']/a[@class='button "
+                + "icon-security-locked']"));
 
         assertTrue("Icon must be unlocked when starting the test",
             elems.isEmpty());
 
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "lockIcon");
+            ConferenceFixture.getOwner(), "toolbar_button_security");
 
         // fill in the dialog
         TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
@@ -96,8 +96,7 @@ public class LockRoomTest
         TestUtils.waits(1000);
 
         TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
-            "//span[@id='toolbar']/a[@class='button']/" +
-                "i[@class='icon-security-locked']", 5);
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
     }
 
     /**
@@ -108,8 +107,7 @@ public class LockRoomTest
         ConferenceFixture.startParticipant();
 
         TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
-            "//span[@id='toolbar']/a[@class='button']/" +
-                "i[@class='icon-security-locked']", 5);
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
 
         try
         {
@@ -148,8 +146,7 @@ public class LockRoomTest
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            "//span[@id='toolbar']/a[@class='button']/" +
-                "i[@class='icon-security-locked']", 5);
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
     }
 
     /**
@@ -171,7 +168,7 @@ public class LockRoomTest
             elems.isEmpty());
 
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "lockIcon");
+            ConferenceFixture.getOwner(), "toolbar_button_security");
 
         ConferenceFixture.getOwner().findElement(
             By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
@@ -186,7 +183,7 @@ public class LockRoomTest
             elems.isEmpty());
 
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "lockIcon");
+            ConferenceFixture.getOwner(), "toolbar_button_security");
 
         ConferenceFixture.getOwner().findElement(
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
@@ -197,8 +194,8 @@ public class LockRoomTest
         {
             TestUtils.waitsForElementNotPresentByXPath(
                 ConferenceFixture.getOwner(),
-                "//span[@id='toolbar']/a[@class='button']/" +
-                    "i[@class='icon-security-locked']", 10);
+                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+                10);
         }
         catch (TimeoutException exc)
         {
@@ -215,8 +212,8 @@ public class LockRoomTest
 
         List<WebElement> elems = ConferenceFixture.getSecondParticipant()
             .findElements(
-                By.xpath("//span[@id='toolbar']/a[@class='button']/" +
-                    "i[@class='icon-security-locked']"));
+                By.xpath("//span[@id='toolbar']/a[@class='button "
+                    + "icon-security-locked']"));
 
         assertTrue("Icon must be unlocked when starting the test",
             elems.isEmpty());

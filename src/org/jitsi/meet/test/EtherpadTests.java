@@ -67,7 +67,7 @@ public class EtherpadTests
     {
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitsForDisplayedElementByID(
-            ConferenceFixture.getOwner(), "etherpadButton", 15);
+            ConferenceFixture.getOwner(), "toolbar_button_etherpad", 15);
 
         MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");

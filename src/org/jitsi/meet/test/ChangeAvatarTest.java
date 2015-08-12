@@ -69,7 +69,7 @@ public class ChangeAvatarTest
                     + "']/img[@class='userAvatar']");
 
         //change the email for the conference owner
-        MeetUIUtils.clickOnToolbarButton(owner, "settingsButton");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
         TestUtils.waitsForDisplayedElementByXPath(
             owner, "//input[@id='setEmail']", 5);
         owner.findElement(By.xpath("//input[@id='setEmail']")).sendKeys(EMAIL);

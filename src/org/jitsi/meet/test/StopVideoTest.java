@@ -57,7 +57,8 @@ public class StopVideoTest
      */
     public void stopVideoOnOwnerAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_camera");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -69,7 +70,8 @@ public class StopVideoTest
      */
     public void startVideoOnOwnerAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_camera");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
@@ -82,7 +84,7 @@ public class StopVideoTest
     public void stopVideoOnParticipantAndCheck()
     {
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "video");
+            ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getOwner(),
@@ -95,7 +97,7 @@ public class StopVideoTest
     public void startVideoOnParticipantAndCheck()
     {
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "video");
+            ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getOwner(),
@@ -115,7 +117,8 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waits(1000);
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "video");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_camera");
 
         TestUtils.waits(500);
 

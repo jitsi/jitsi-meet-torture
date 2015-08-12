@@ -137,7 +137,7 @@ public class ActiveSpeakerTest
         final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
 
         // Unmute
-        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "mute");
+        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
 
         MeetUIUtils.verifyIsMutedStatus(
             speakerEndpoint, activeSpeaker, peer2, false);
@@ -163,7 +163,7 @@ public class ActiveSpeakerTest
         }
 
         // Mute back again
-        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "mute");
+        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
 
         MeetUIUtils.verifyIsMutedStatus(
             speakerEndpoint, activeSpeaker, peer2, true);
