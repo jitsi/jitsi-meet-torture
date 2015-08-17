@@ -18,6 +18,8 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.firefox.*;
+import org.openqa.selenium.safari.*;
 
 /**
  * The static fixture which holds the drivers to access the conference
@@ -32,6 +34,20 @@ public class ConferenceFixture
 
     public static final String FAKE_AUDIO_FNAME_PROP
         = "jitsi-meet.fakeStreamAudioFile";
+
+    /**
+     * The property to change tested browser.
+     */
+    public static final String BROWSER_NAME_PROP = "browser";
+
+    /**
+     * The available browser type value.
+     */
+    enum BrowserType
+    {
+        firefox,
+        safari
+    }
 
     public static String currentRoomName;
 
@@ -148,6 +164,11 @@ public class ConferenceFixture
         if(fragment != null)
             URL += "&" + fragment;
 
+        String browser = System.getProperty(BROWSER_NAME_PROP);
+        if(browser != null
+            && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
+            URL += "&config.firefox_fake_device=true";
+
         participant.get(URL);
 
         // disables animations
@@ -167,18 +188,36 @@ public class ConferenceFixture
      */
     private static WebDriver startChromeInstance()
     {
-        ChromeOptions ops = new ChromeOptions();
-        ops.addArguments("use-fake-ui-for-media-stream");
-        ops.addArguments("use-fake-device-for-media-stream");
+        String browser = System.getProperty(BROWSER_NAME_PROP);
 
-        if (fakeStreamAudioFName != null)
+        // by default we load chrome, but we can load safari or firefox
+        if(browser != null
+            && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
         {
-            ops.addArguments(
-                "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
+            FirefoxProfile profile = new FirefoxProfile();
+            profile.setPreference("media.navigator.permission.disabled",true);
+            return new FirefoxDriver(profile);
         }
+        else if(browser != null
+            && browser.equalsIgnoreCase(BrowserType.safari.toString()))
+        {
+            return new SafariDriver();
+        }
+        else
+        {
+            ChromeOptions ops = new ChromeOptions();
+            ops.addArguments("use-fake-ui-for-media-stream");
+            ops.addArguments("use-fake-device-for-media-stream");
 
-        ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
-        return new ChromeDriver(ops);
+            if (fakeStreamAudioFName != null)
+            {
+                ops.addArguments(
+                    "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
+            }
+
+            ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+            return new ChromeDriver(ops);
+        }
     }
 
     /**
