@@ -94,9 +94,10 @@ public class SwitchVideoTests
      */
     private String getLargeVideoSource(WebDriver driver)
     {
-        return driver.findElement(By.xpath(
-            "//div[@id='largeVideoContainer']/video[@id='largeVideo']"))
-                .getAttribute("src");
+        // FIXME searching for <video> will fail with Temasys plugin where
+        // <object> elements are used
+        return driver.findElement(
+            By.xpath("//video[@id='largeVideo']")).getAttribute("src");
     }
 
     /**
