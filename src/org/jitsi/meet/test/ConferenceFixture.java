@@ -19,6 +19,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
+import org.openqa.selenium.ie.*;
+import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 
 /**
@@ -46,7 +48,8 @@ public class ConferenceFixture
     enum BrowserType
     {
         firefox,
-        safari
+        safari,
+        ie
     }
 
     public static String currentRoomName;
@@ -202,6 +205,14 @@ public class ConferenceFixture
             && browser.equalsIgnoreCase(BrowserType.safari.toString()))
         {
             return new SafariDriver();
+        }
+        else if(browser != null
+            && browser.equalsIgnoreCase(BrowserType.ie.toString()))
+        {
+            DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
+            caps.setCapability("ignoreZoomSetting", true);
+            System.setProperty("webdriver.ie.driver.silent", "true");
+            return new InternetExplorerDriver(caps);
         }
         else
         {
