@@ -195,7 +195,19 @@ public class ConferenceFixture
             && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
         {
             FirefoxProfile profile = new FirefoxProfile();
-            profile.setPreference("media.navigator.permission.disabled",true);
+            profile.setPreference("media.navigator.permission.disabled", true);
+            profile.setAcceptUntrustedCertificates(true);
+
+            profile.setPreference("browser.download.folderList", 1);
+            //String downloadDir
+            //    = System.getProperty("user.home") + File.separator
+            //          + "Downloads";
+            //profile.setPreference("browser.download.dir", downloadDir);
+            profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
+                "text/plain;text/csv");
+            profile.setPreference("browser.helperApps.alwaysAsk.force", false);
+            profile.setPreference("browser.download.manager.showWhenStarting", false );
+
             return new FirefoxDriver(profile);
         }
         else if(browser != null
@@ -305,7 +317,11 @@ public class ConferenceFixture
             {
                 participant.close();
 
+                TestUtils.waits(500);
+
                 participant.quit();
+
+                TestUtils.waits(500);
             }
         }
         catch(Throwable t)
