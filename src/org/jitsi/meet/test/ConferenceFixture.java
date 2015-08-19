@@ -140,6 +140,8 @@ public class ConferenceFixture
      */
     public static void startOwner(String fragment)
     {
+        System.out.println("Starting owner participant.");
+
         owner = startChromeInstance();
 
         currentRoomName = "torture"
@@ -237,6 +239,7 @@ public class ConferenceFixture
      */
     public static void startParticipant()
     {
+        System.out.println("Starting second participant.");
         secondParticipant = startChromeInstance();
 
         openRoom(secondParticipant, null);
@@ -250,6 +253,8 @@ public class ConferenceFixture
      */
     public static void startThirdParticipant()
     {
+        System.out.println("Starting third participant.");
+
         thirdParticipant = startChromeInstance();
 
         openRoom(thirdParticipant, null);
@@ -330,11 +335,20 @@ public class ConferenceFixture
         }
 
         if(participant == owner)
+        {
+            System.out.println("Quited owner.");
             owner = null;
+        }
         else if(participant == secondParticipant)
+        {
+            System.out.println("Quited second participant.");
             secondParticipant = null;
+        }
         else if(participant == thirdParticipant)
+        {
+            System.out.println("Quited third participant.");
             thirdParticipant = null;
+        }
     }
 
     /**
