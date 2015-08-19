@@ -62,13 +62,16 @@ public class MuteTest
      */
     public void muteOwnerAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_mute");
 
         MeetUIUtils.verifyIsMutedStatus(
             "owner",
             ConferenceFixture.getOwner(),
             ConferenceFixture.getSecondParticipant(),
             true);
+
+        TestUtils.waits(2000);
     }
 
     /**
@@ -76,7 +79,8 @@ public class MuteTest
      */
     public void unMuteOwnerAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_mute");
 
         MeetUIUtils.verifyIsMutedStatus(
             "owner",
@@ -182,12 +186,17 @@ public class MuteTest
      */
     public void participantUnMutesAfterOwnerMutedHimAndCheck()
     {
+        TestUtils.waits(1000);
+
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waits(1000);
+
+        MeetUIUtils.verifyIsMutedStatus("participant2",
+            ConferenceFixture.getSecondParticipant(),
             ConferenceFixture.getOwner(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            false);
 
         // lets give time to the ui to reflect the change in the ui of the owner
         TestUtils.waits(1000);
@@ -204,21 +213,23 @@ public class MuteTest
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
-        TestUtils.waits(1000);
+        TestUtils.waits(3000);
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(), "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+            "toolbar_button_mute");
 
         ConferenceFixture.startParticipant();
 
         ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 10);
+            ConferenceFixture.getSecondParticipant(), 15);
 
         ConferenceFixture.waitsParticipantToJoinConference(
             ConferenceFixture.getSecondParticipant());
 
-        TestUtils.waitsForElementByXPath(
+        MeetUIUtils.verifyIsMutedStatus("owner",
+            ConferenceFixture.getOwner(),
             ConferenceFixture.getSecondParticipant(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            true);
 
         // now lets unmute
         unMuteOwnerAndCheck();
