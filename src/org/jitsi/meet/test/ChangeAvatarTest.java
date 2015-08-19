@@ -113,10 +113,12 @@ public class ChangeAvatarTest
         checkSrcIsCorrect(secondParticipant,
             "//div[@id='contactlist']/ul/li[@id='"
                 + ownerResourceJid + "']/img");
-        //check if the active spekaer avatar has changed for the other
+        //check if the active speaker avatar has changed for the other
         // participant
-        checkSrcIsCorrect(secondParticipant,
-            "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
+        //FIXME: what if the active speaker changes in the meantime
+        // disabling this check
+        //checkSrcIsCorrect(secondParticipant,
+        //    "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
     }
 
     /*
