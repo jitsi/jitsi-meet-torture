@@ -44,7 +44,8 @@ public class DisposeConference
     {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getOwner());
-        disposeThirdParticipant();
+        if(ConferenceFixture.getThirdParticipantInstance() != null)
+            disposeThirdParticipant();
     }
 
     /**
