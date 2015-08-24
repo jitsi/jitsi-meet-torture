@@ -228,7 +228,7 @@ public class FailureListener
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 }

@@ -56,6 +56,11 @@ public class ActiveSpeakerTest
      */
     public void testActiveSpeaker()
     {
+        // skip if we are not chrome
+        if(!ConferenceFixture.getCurrentBrowserType().equals(
+                ConferenceFixture.BrowserType.chrome))
+            return;
+
         // Start 3rd peer
         setupThirdParticipant();
 

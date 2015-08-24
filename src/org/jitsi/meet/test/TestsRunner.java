@@ -27,7 +27,6 @@ import java.util.*;
  * The main test suite which will order tests.
  * @author Damian Minkov
  */
-@RunWith(AllTests.class)
 public class TestsRunner
 {
     /**

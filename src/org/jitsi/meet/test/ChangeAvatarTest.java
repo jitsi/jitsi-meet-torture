@@ -121,6 +121,10 @@ public class ChangeAvatarTest
         // disabling this check
         //checkSrcIsCorrect(secondParticipant,
         //    "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
+
+        // wait a little and close the settings
+        TestUtils.waits(1500);
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
     }
 
     /*

@@ -42,7 +42,8 @@ public class DisposeConference
      */
     public void testDispose()
     {
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        if(ConferenceFixture.getSecondParticipantInstance() != null)
+            ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getOwner());
         if(ConferenceFixture.getThirdParticipantInstance() != null)
             disposeThirdParticipant();

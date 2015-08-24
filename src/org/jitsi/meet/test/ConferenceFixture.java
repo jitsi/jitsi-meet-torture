@@ -45,12 +45,18 @@ public class ConferenceFixture
     /**
      * The available browser type value.
      */
-    enum BrowserType
+    public enum BrowserType
     {
+        chrome, // default one
         firefox,
         safari,
         ie
     }
+
+    /**
+     * The currently used browser that runs tests.
+     */
+    private static BrowserType currentBrowserType = null;
 
     public static String currentRoomName;
 
@@ -213,11 +219,14 @@ public class ConferenceFixture
             profile.setPreference("browser.helperApps.alwaysAsk.force", false);
             profile.setPreference("browser.download.manager.showWhenStarting", false );
 
+            currentBrowserType = BrowserType.firefox;
+
             return new FirefoxDriver(profile);
         }
         else if(browser != null
             && browser.equalsIgnoreCase(BrowserType.safari.toString()))
         {
+            currentBrowserType = BrowserType.safari;
             return new SafariDriver();
         }
         else if(browser != null
@@ -226,6 +235,9 @@ public class ConferenceFixture
             DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
             caps.setCapability("ignoreZoomSetting", true);
             System.setProperty("webdriver.ie.driver.silent", "true");
+
+            currentBrowserType = BrowserType.ie;
+
             return new InternetExplorerDriver(caps);
         }
         else
@@ -241,6 +253,9 @@ public class ConferenceFixture
             }
 
             ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+
+            currentBrowserType = BrowserType.chrome;
+
             return new ChromeDriver(ops);
         }
     }
@@ -373,5 +388,14 @@ public class ConferenceFixture
     public static void setFakeStreamAudioFile(String fakeStreamAudioFile)
     {
         fakeStreamAudioFName = fakeStreamAudioFile;
+    }
+
+    /**
+     * The current used browser.
+     * @return the current used browser.
+     */
+    public static BrowserType getCurrentBrowserType()
+    {
+        return currentBrowserType;
     }
 }
