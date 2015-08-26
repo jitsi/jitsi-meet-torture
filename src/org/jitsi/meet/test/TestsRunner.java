@@ -65,6 +65,8 @@ public class TestsRunner
 
             suite.addTest(StartMutedTest.suite());
 
+            suite.addTestSuite(DisplayNameTest.class);
+
             suite.addTestSuite(DisposeConference.class);
         }
         else
