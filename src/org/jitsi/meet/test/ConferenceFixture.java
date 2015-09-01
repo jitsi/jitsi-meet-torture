@@ -151,7 +151,7 @@ public class ConferenceFixture
     {
         System.out.println("Starting owner participant.");
 
-        owner = startChromeInstance();
+        owner = startDriverInstance();
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
@@ -197,10 +197,24 @@ public class ConferenceFixture
      * Starts chrome instance using some default settings.
      * @return the webdriver instance.
      */
-    private static WebDriver startChromeInstance()
+    private static WebDriver startDriverInstance()
     {
         String browser = System.getProperty(BROWSER_NAME_PROP);
+        WebDriver wd = startDriverInstance(browser);
 
+        // just wait the instance to start before doing some stuff
+        // can kick a renderer bug hanging
+        TestUtils.waits(1000);
+
+        return wd;
+    }
+
+    /**
+     * Starts chrome instance using some default settings.
+     * @return the webdriver instance.
+     */
+    private static WebDriver startDriverInstance(String browser)
+    {
         // by default we load chrome, but we can load safari or firefox
         if(browser != null
             && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
@@ -266,7 +280,7 @@ public class ConferenceFixture
     public static void startParticipant()
     {
         System.out.println("Starting second participant.");
-        secondParticipant = startChromeInstance();
+        secondParticipant = startDriverInstance();
 
         openRoom(secondParticipant, null);
 
@@ -281,7 +295,7 @@ public class ConferenceFixture
     {
         System.out.println("Starting third participant.");
 
-        thirdParticipant = startChromeInstance();
+        thirdParticipant = startDriverInstance();
 
         openRoom(thirdParticipant, null);
 
