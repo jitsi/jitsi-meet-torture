@@ -20,8 +20,11 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.ie.*;
+import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
+
+import java.util.logging.*;
 
 /**
  * The static fixture which holds the drivers to access the conference
@@ -256,9 +259,15 @@ public class ConferenceFixture
         }
         else
         {
+            DesiredCapabilities caps = DesiredCapabilities.chrome();
+            LoggingPreferences logPrefs = new LoggingPreferences();
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
+            caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+
             ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
+
 
             if (fakeStreamAudioFName != null)
             {
@@ -267,6 +276,8 @@ public class ConferenceFixture
             }
 
             ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+
+            caps.setCapability(ChromeOptions.CAPABILITY, ops);
 
             currentBrowserType = BrowserType.chrome;
 

@@ -21,8 +21,10 @@ import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.openqa.selenium.*;
 
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.logging.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Extends the xml formatter so we can detect failures and make screenshots
@@ -79,6 +81,8 @@ public class FailureListener
             saveHtmlSources(test);
 
             saveMeetDebugLog();
+
+            saveBrowserLogs();
         }
         catch(Throwable ex)
         {
@@ -114,7 +118,7 @@ public class FailureListener
     {
         takeScreenshot(ConferenceFixture.getOwner(),
             JUnitVersionHelper.getTestCaseClassName(test)
-                + "." +JUnitVersionHelper.getTestCaseName(test)
+                + "." + JUnitVersionHelper.getTestCaseName(test)
                 + "-owner.png");
 
         WebDriver secondParticipant =
@@ -229,6 +233,49 @@ public class FailureListener
         catch (Exception e)
         {
             //e.printStackTrace();
+        }
+    }
+
+    /**
+     * Saves browser console logs.
+     */
+    private void saveBrowserLogs()
+    {
+        saveBrowserLogs(ConferenceFixture.getOwner(), "console-owner.log");
+
+        WebDriver secondParticipant =
+            ConferenceFixture.getSecondParticipantInstance();
+        if(secondParticipant != null)
+            saveBrowserLogs(secondParticipant, "console-participant.log");
+    }
+
+    /**
+     * Saves browser console logs.
+     */
+    private void saveBrowserLogs(WebDriver driver, String fileName)
+    {
+        try
+        {
+            LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+
+            BufferedWriter out = new BufferedWriter(new FileWriter(
+                new File(outputHtmlSourceParentFolder, fileName)));
+
+            Iterator<LogEntry> iter = logs.iterator();
+            while (iter.hasNext())
+            {
+                LogEntry e = iter.next();
+
+                out.write(e.toString());
+                out.newLine();
+                out.newLine();
+            }
+            out.flush();
+            out.close();
+        }
+        catch (IOException e)
+        {
+            // cannot create file or something
         }
     }
 }
