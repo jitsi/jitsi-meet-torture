@@ -131,9 +131,13 @@ public class StopVideoTest
         ConferenceFixture.waitsParticipantToJoinConference(
             ConferenceFixture.getSecondParticipant());
 
+        TestUtils.waitsForElementByXPath(
+            ConferenceFixture.getSecondParticipant(),
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+
         String ownerJid = (String)((JavascriptExecutor)
             ConferenceFixture.getOwner())
-                .executeScript("return APP.xmpp.myJid();");
+            .executeScript("return APP.xmpp.myJid();");
 
         String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
         System.out.println("Owner jid: " + ownerJid);
@@ -160,10 +164,6 @@ public class StopVideoTest
                 System.out.println("Stream muted : " + videoStreamMuted);
             }
         }
-
-        TestUtils.waitsForElementByXPath(
-            ConferenceFixture.getSecondParticipant(),
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
 
         // now lets start video for owner
         startVideoOnOwnerAndCheck();
