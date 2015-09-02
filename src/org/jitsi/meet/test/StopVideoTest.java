@@ -135,33 +135,37 @@ public class StopVideoTest
             ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
 
-        String ownerJid = (String)((JavascriptExecutor)
-            ConferenceFixture.getOwner())
-            .executeScript("return APP.xmpp.myJid();");
-
-        String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
-        System.out.println("Owner jid: " + ownerJid);
-
-        Object streamExist = ((JavascriptExecutor)
-            ConferenceFixture.getSecondParticipant())
-            .executeScript("return " + streamByJid + " != undefined;");
-        System.out.println("Stream : " + streamExist);
-
-        if(streamExist != null && streamExist.equals(Boolean.TRUE))
+        // just debug messages
         {
-            Object videoStreamExist = ((JavascriptExecutor)
-                ConferenceFixture.getSecondParticipant())
-                .executeScript(
-                    "return " + streamByJid + "['Video'] != undefined;");
-            System.out.println("Stream exist : " + videoStreamExist);
+            String ownerJid = (String) ((JavascriptExecutor)
+                ConferenceFixture.getOwner())
+                .executeScript("return APP.xmpp.myJid();");
 
-            if(videoStreamExist != null && videoStreamExist.equals(Boolean.TRUE))
+            String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
+            System.out.println("Owner jid: " + ownerJid);
+
+            Object streamExist = ((JavascriptExecutor)
+                ConferenceFixture.getSecondParticipant())
+                .executeScript("return " + streamByJid + " != undefined;");
+            System.out.println("Stream : " + streamExist);
+
+            if (streamExist != null && streamExist.equals(Boolean.TRUE))
             {
-                Object videoStreamMuted = ((JavascriptExecutor)
+                Object videoStreamExist = ((JavascriptExecutor)
                     ConferenceFixture.getSecondParticipant())
                     .executeScript(
-                        "return " + streamByJid + "['Video'].muted;");
-                System.out.println("Stream muted : " + videoStreamMuted);
+                        "return " + streamByJid + "['Video'] != undefined;");
+                System.out.println("Stream exist : " + videoStreamExist);
+
+                if (videoStreamExist != null && videoStreamExist
+                    .equals(Boolean.TRUE))
+                {
+                    Object videoStreamMuted = ((JavascriptExecutor)
+                        ConferenceFixture.getSecondParticipant())
+                        .executeScript(
+                            "return " + streamByJid + "['Video'].muted;");
+                    System.out.println("Stream muted : " + videoStreamMuted);
+                }
             }
         }
 
