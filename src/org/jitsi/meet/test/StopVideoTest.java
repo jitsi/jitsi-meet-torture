@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.*;
 
 /**
  * To stop the video on owner and participant side.
@@ -129,6 +130,36 @@ public class StopVideoTest
 
         ConferenceFixture.waitsParticipantToJoinConference(
             ConferenceFixture.getSecondParticipant());
+
+        String ownerJid = (String)((JavascriptExecutor)
+            ConferenceFixture.getOwner())
+                .executeScript("return APP.xmpp.myJid();");
+
+        String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
+        System.out.println("Owner jid: " + ownerJid);
+
+        Object streamExist = ((JavascriptExecutor)
+            ConferenceFixture.getSecondParticipant())
+            .executeScript("return " + streamByJid + " != undefined;");
+        System.out.println("Stream : " + streamExist);
+
+        if(streamExist != null && streamExist.equals(Boolean.TRUE))
+        {
+            Object videoStreamExist = ((JavascriptExecutor)
+                ConferenceFixture.getSecondParticipant())
+                .executeScript(
+                    "return " + streamByJid + "['Video'] != undefined;");
+            System.out.println("Stream exist : " + videoStreamExist);
+
+            if(videoStreamExist != null && videoStreamExist.equals(Boolean.TRUE))
+            {
+                Object videoStreamMuted = ((JavascriptExecutor)
+                    ConferenceFixture.getSecondParticipant())
+                    .executeScript(
+                        "return " + streamByJid + "['Video'].muted;");
+                System.out.println("Stream muted : " + videoStreamMuted);
+            }
+        }
 
         TestUtils.waitsForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
