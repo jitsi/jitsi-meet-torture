@@ -58,6 +58,8 @@ public class StopVideoTest
      */
     public void stopVideoOnOwnerAndCheck()
     {
+        System.out.println("Start stopVideoOnOwnerAndCheck.");
+
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
 
@@ -71,6 +73,8 @@ public class StopVideoTest
      */
     public void startVideoOnOwnerAndCheck()
     {
+        System.out.println("Start startVideoOnOwnerAndCheck.");
+
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
 
@@ -84,6 +88,8 @@ public class StopVideoTest
      */
     public void stopVideoOnParticipantAndCheck()
     {
+        System.out.println("Start stopVideoOnParticipantAndCheck.");
+
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
@@ -97,6 +103,8 @@ public class StopVideoTest
      */
     public void startVideoOnParticipantAndCheck()
     {
+        System.out.println("Start startVideoOnParticipantAndCheck.");
+
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
@@ -113,6 +121,8 @@ public class StopVideoTest
      */
     public void stopOwnerVideoBeforeSecondParticipantJoins()
     {
+        System.out.println("Start stopOwnerVideoBeforeSecondParticipantJoins.");
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait

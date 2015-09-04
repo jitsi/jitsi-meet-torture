@@ -55,6 +55,8 @@ public class StartMutedTest
      */
     public void checkboxesTest()
     {
+        System.out.println("Start checkboxesTest.");
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         TestUtils.waits(1000);
         WebDriver owner = ConferenceFixture.getOwner();
@@ -88,6 +90,8 @@ public class StartMutedTest
      */
     public void configOptionsTest()
     {
+        System.out.println("Start configOptionsTest.");
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getOwner());
         TestUtils.waits(1000);
@@ -116,6 +120,8 @@ public class StartMutedTest
      */
     private void checkSecondParticipantForMute()
     {
+        System.out.println("Start checkSecondParticipantForMute.");
+
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
         WebDriver owner = ConferenceFixture.getOwner();
 
@@ -141,8 +147,5 @@ public class StartMutedTest
             "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
                 25);
-
-
     }
-
 }

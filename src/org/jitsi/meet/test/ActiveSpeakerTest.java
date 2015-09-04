@@ -56,6 +56,8 @@ public class ActiveSpeakerTest
      */
     public void testActiveSpeaker()
     {
+        System.out.println("Start testActiveSpeaker.");
+
         // skip if we are not chrome
         if(!ConferenceFixture.getCurrentBrowserType().equals(
                 ConferenceFixture.BrowserType.chrome))
@@ -91,6 +93,8 @@ public class ActiveSpeakerTest
 
     private void setupThirdParticipant()
     {
+        System.out.println("Start setupThirdParticipant.");
+
         new SetupConference("startThirdParticipant")
             .startThirdParticipant();
 
@@ -106,6 +110,8 @@ public class ActiveSpeakerTest
 
     private void muteAllParticipants()
     {
+        System.out.println("Start muteAllParticipants.");
+
         new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
 
         new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
@@ -116,6 +122,8 @@ public class ActiveSpeakerTest
 
     private void unMuteOwnerAndSecond()
     {
+        System.out.println("Start unMuteOwnerAndSecond.");
+
         new MuteTest("unMuteOwnerAndCheck").unMuteOwnerAndCheck();
 
         new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
@@ -123,6 +131,8 @@ public class ActiveSpeakerTest
 
     private void disposeThirdParticipant()
     {
+        System.out.println("Start disposeThirdParticipant.");
+
         new DisposeConference("disposeThirdParticipant")
             .disposeThirdParticipant();
     }
@@ -139,6 +149,8 @@ public class ActiveSpeakerTest
      */
     private void testActiveSpeaker(WebDriver activeSpeaker, WebDriver peer2)
     {
+        System.out.println("Start testActiveSpeaker.");
+
         final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
 
         // Unmute

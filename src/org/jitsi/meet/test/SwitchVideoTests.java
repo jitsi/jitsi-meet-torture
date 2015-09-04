@@ -65,6 +65,8 @@ public class SwitchVideoTests
      */
     public void ownerClickOnLocalVideoAndTest()
     {
+        System.out.println("Start ownerClickOnLocalVideoAndTest.");
+
         clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
     }
 
@@ -74,6 +76,8 @@ public class SwitchVideoTests
      */
     private void clickOnLocalVideoAndTest(WebDriver driver)
     {
+        System.out.println("Start clickOnLocalVideoAndTest.");
+
         // click on local
         String localVideoSrc = driver.findElement(
             By.xpath("//span[@id='localVideoWrapper']/video"))
@@ -106,6 +110,8 @@ public class SwitchVideoTests
      */
     public void ownerClickOnRemoteVideoAndTest()
     {
+        System.out.println("Start ownerClickOnRemoteVideoAndTest.");
+
         clickOnRemoteVideoAndTest(ConferenceFixture.getOwner());
     }
 
@@ -114,6 +120,8 @@ public class SwitchVideoTests
      */
     public void ownerUnpinRemoteVideoAndTest()
     {
+        System.out.println("Start ownerUnpinRemoteVideoAndTest.");
+
         unpinRemoteVideoAndTest(
             ConferenceFixture.getOwner(),
             ConferenceFixture.getSecondParticipant());
@@ -125,6 +133,8 @@ public class SwitchVideoTests
      */
     public void participantUnpinRemoteVideo()
     {
+        System.out.println("Start participantUnpinRemoteVideo.");
+
         unpinRemoteVideoAndTest(
             ConferenceFixture.getSecondParticipant(),
             ConferenceFixture.getOwner());
@@ -141,6 +151,8 @@ public class SwitchVideoTests
      */
     private void unpinRemoteVideoAndTest(WebDriver host, WebDriver peer)
     {
+        System.out.println("Start unpinRemoteVideoAndTest.");
+
         // Peer's endpoint ID
         String peerEndpointId = MeetUtils.getResourceJid(peer);
 
@@ -176,6 +188,8 @@ public class SwitchVideoTests
      */
     private void clickOnRemoteVideoAndTest(WebDriver driver)
     {
+        System.out.println("Start clickOnRemoteVideoAndTest.");
+
         // first wait for remote video to be visible
         String remoteThumbXpath
             = "//span[starts-with(@id, 'participant_') " +
@@ -219,6 +233,8 @@ public class SwitchVideoTests
      */
     public void participantClickOnLocalVideoAndTest()
     {
+        System.out.println("Start participantClickOnLocalVideoAndTest.");
+
         clickOnLocalVideoAndTest(ConferenceFixture.getSecondParticipant());
     }
 
@@ -228,6 +244,8 @@ public class SwitchVideoTests
      */
     public void participantClickOnRemoteVideoAndTest()
     {
+        System.out.println("Start participantClickOnRemoteVideoAndTest.");
+
         clickOnRemoteVideoAndTest(ConferenceFixture.getSecondParticipant());
     }
 

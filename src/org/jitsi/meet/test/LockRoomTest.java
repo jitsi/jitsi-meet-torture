@@ -68,6 +68,8 @@ public class LockRoomTest
      */
     public void lockRoom()
     {
+        System.out.println("Start lockRoom.");
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
@@ -104,6 +106,8 @@ public class LockRoomTest
      */
     public void enterParticipantInLockedRoom()
     {
+        System.out.println("Start enterParticipantInLockedRoom.");
+
         ConferenceFixture.startParticipant();
 
         TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
@@ -155,6 +159,8 @@ public class LockRoomTest
      */
     public void unlockRoom()
     {
+        System.out.println("Start unlockRoom.");
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
@@ -208,6 +214,8 @@ public class LockRoomTest
      */
     public void enterParticipantInUnlockedRoom()
     {
+        System.out.println("Start enterParticipantInUnlockedRoom.");
+
         ConferenceFixture.startParticipant();
 
         List<WebElement> elems = ConferenceFixture.getSecondParticipant()
