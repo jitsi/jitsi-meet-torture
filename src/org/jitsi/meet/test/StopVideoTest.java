@@ -58,7 +58,7 @@ public class StopVideoTest
      */
     public void stopVideoOnOwnerAndCheck()
     {
-        System.out.println("Start stopVideoOnOwnerAndCheck.");
+        System.err.println("Start stopVideoOnOwnerAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
@@ -73,7 +73,7 @@ public class StopVideoTest
      */
     public void startVideoOnOwnerAndCheck()
     {
-        System.out.println("Start startVideoOnOwnerAndCheck.");
+        System.err.println("Start startVideoOnOwnerAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
@@ -88,7 +88,7 @@ public class StopVideoTest
      */
     public void stopVideoOnParticipantAndCheck()
     {
-        System.out.println("Start stopVideoOnParticipantAndCheck.");
+        System.err.println("Start stopVideoOnParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
@@ -103,7 +103,7 @@ public class StopVideoTest
      */
     public void startVideoOnParticipantAndCheck()
     {
-        System.out.println("Start startVideoOnParticipantAndCheck.");
+        System.err.println("Start startVideoOnParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
@@ -121,7 +121,7 @@ public class StopVideoTest
      */
     public void stopOwnerVideoBeforeSecondParticipantJoins()
     {
-        System.out.println("Start stopOwnerVideoBeforeSecondParticipantJoins.");
+        System.err.println("Start stopOwnerVideoBeforeSecondParticipantJoins.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
@@ -152,12 +152,12 @@ public class StopVideoTest
                 .executeScript("return APP.xmpp.myJid();");
 
             String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
-            System.out.println("Owner jid: " + ownerJid);
+            System.err.println("Owner jid: " + ownerJid);
 
             Object streamExist = ((JavascriptExecutor)
                 ConferenceFixture.getSecondParticipant())
                 .executeScript("return " + streamByJid + " != undefined;");
-            System.out.println("Stream : " + streamExist);
+            System.err.println("Stream : " + streamExist);
 
             if (streamExist != null && streamExist.equals(Boolean.TRUE))
             {
@@ -165,7 +165,7 @@ public class StopVideoTest
                     ConferenceFixture.getSecondParticipant())
                     .executeScript(
                         "return " + streamByJid + "['Video'] != undefined;");
-                System.out.println("Stream exist : " + videoStreamExist);
+                System.err.println("Stream exist : " + videoStreamExist);
 
                 if (videoStreamExist != null && videoStreamExist
                     .equals(Boolean.TRUE))
@@ -174,7 +174,7 @@ public class StopVideoTest
                         ConferenceFixture.getSecondParticipant())
                         .executeScript(
                             "return " + streamByJid + "['Video'].muted;");
-                    System.out.println("Stream muted : " + videoStreamMuted);
+                    System.err.println("Stream muted : " + videoStreamMuted);
                 }
             }
         }

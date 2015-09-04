@@ -65,7 +65,7 @@ public class EtherpadTests
      */
     public void enterEtherpad()
     {
-        System.out.println("Start enterEtherpad.");
+        System.err.println("Start enterEtherpad.");
 
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitsForDisplayedElementByID(
@@ -86,7 +86,7 @@ public class EtherpadTests
      */
     public void writeTextAndCheck()
     {
-        System.out.println("Start writeTextAndCheck.");
+        System.err.println("Start writeTextAndCheck.");
 
         try
         {
@@ -129,7 +129,7 @@ public class EtherpadTests
      */
     public void closeEtherpadCheck()
     {
-        System.out.println("Start closeEtherpadCheck.");
+        System.err.println("Start closeEtherpadCheck.");
 
         MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
@@ -146,7 +146,7 @@ public class EtherpadTests
      */
     public void ownerClickOnLocalVideoAndTest()
     {
-        System.out.println("Start ownerClickOnLocalVideoAndTest.");
+        System.err.println("Start ownerClickOnLocalVideoAndTest.");
 
         new SwitchVideoTests("ownerClickOnLocalVideoAndTest")
             .ownerClickOnLocalVideoAndTest();
@@ -158,7 +158,7 @@ public class EtherpadTests
      */
     public void ownerClickOnRemoteVideoAndTest()
     {
-        System.out.println("Start ownerClickOnRemoteVideoAndTest.");
+        System.err.println("Start ownerClickOnRemoteVideoAndTest.");
 
         new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
             .ownerClickOnRemoteVideoAndTest();

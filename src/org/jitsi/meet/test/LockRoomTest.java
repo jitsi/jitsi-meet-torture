@@ -68,7 +68,7 @@ public class LockRoomTest
      */
     public void lockRoom()
     {
-        System.out.println("Start lockRoom.");
+        System.err.println("Start lockRoom.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
@@ -106,7 +106,7 @@ public class LockRoomTest
      */
     public void enterParticipantInLockedRoom()
     {
-        System.out.println("Start enterParticipantInLockedRoom.");
+        System.err.println("Start enterParticipantInLockedRoom.");
 
         ConferenceFixture.startParticipant();
 
@@ -159,7 +159,7 @@ public class LockRoomTest
      */
     public void unlockRoom()
     {
-        System.out.println("Start unlockRoom.");
+        System.err.println("Start unlockRoom.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 
@@ -214,7 +214,7 @@ public class LockRoomTest
      */
     public void enterParticipantInUnlockedRoom()
     {
-        System.out.println("Start enterParticipantInUnlockedRoom.");
+        System.err.println("Start enterParticipantInUnlockedRoom.");
 
         ConferenceFixture.startParticipant();
 

@@ -62,7 +62,7 @@ public class MuteTest
      */
     public void muteOwnerAndCheck()
     {
-        System.out.println("Start muteOwnerAndCheck.");
+        System.err.println("Start muteOwnerAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_mute");
@@ -81,7 +81,7 @@ public class MuteTest
      */
     public void unMuteOwnerAndCheck()
     {
-        System.out.println("Start unMuteOwnerAndCheck.");
+        System.err.println("Start unMuteOwnerAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_mute");
@@ -98,7 +98,7 @@ public class MuteTest
      */
     public void muteParticipantAndCheck()
     {
-        System.out.println("Start muteParticipantAndCheck.");
+        System.err.println("Start muteParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
@@ -115,7 +115,7 @@ public class MuteTest
      */
     public void unMuteParticipantAndCheck()
     {
-        System.out.println("Start unMuteParticipantAndCheck.");
+        System.err.println("Start unMuteParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
@@ -132,7 +132,7 @@ public class MuteTest
      */
     public void muteThirdParticipantAndCheck()
     {
-        System.out.println("Start muteThirdParticipantAndCheck.");
+        System.err.println("Start muteThirdParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getThirdParticipant(), "toolbar_button_mute");
@@ -149,7 +149,7 @@ public class MuteTest
      */
     public void unMuteThirdParticipantAndCheck()
     {
-        System.out.println("Start unMuteThirdParticipantAndCheck.");
+        System.err.println("Start unMuteThirdParticipantAndCheck.");
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getThirdParticipant(), "toolbar_button_mute");
@@ -168,7 +168,7 @@ public class MuteTest
      */
     public void ownerMutesParticipantAndCheck()
     {
-        System.out.println("Start ownerMutesParticipantAndCheck.");
+        System.err.println("Start ownerMutesParticipantAndCheck.");
 
         WebElement elem = ConferenceFixture.getOwner().findElement(By.xpath(
             "//span[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
@@ -200,7 +200,7 @@ public class MuteTest
      */
     public void participantUnMutesAfterOwnerMutedHimAndCheck()
     {
-        System.out.println("Start participantUnMutesAfterOwnerMutedHimAndCheck.");
+        System.err.println("Start participantUnMutesAfterOwnerMutedHimAndCheck.");
 
         TestUtils.waits(1000);
 
@@ -226,7 +226,7 @@ public class MuteTest
      */
     public void muteOwnerBeforeSecondParticipantJoins()
     {
-        System.out.println("Start muteOwnerBeforeSecondParticipantJoins.");
+        System.err.println("Start muteOwnerBeforeSecondParticipantJoins.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
 

@@ -55,7 +55,7 @@ public class StartMutedTest
      */
     public void checkboxesTest()
     {
-        System.out.println("Start checkboxesTest.");
+        System.err.println("Start checkboxesTest.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         TestUtils.waits(1000);
@@ -90,7 +90,7 @@ public class StartMutedTest
      */
     public void configOptionsTest()
     {
-        System.out.println("Start configOptionsTest.");
+        System.err.println("Start configOptionsTest.");
 
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.quit(ConferenceFixture.getOwner());
@@ -120,7 +120,7 @@ public class StartMutedTest
      */
     private void checkSecondParticipantForMute()
     {
-        System.out.println("Start checkSecondParticipantForMute.");
+        System.err.println("Start checkSecondParticipantForMute.");
 
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
         WebDriver owner = ConferenceFixture.getOwner();

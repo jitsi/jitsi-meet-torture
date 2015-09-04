@@ -134,7 +134,7 @@ public class JVBConferencesCheck
         {
             conferencesList.removeAll(firstRunConferences);
 
-            System.out.println("NEW_CONFERENCES=" + conferencesList);
+            System.err.println("NEW_CONFERENCES=" + conferencesList);
 
             assertFalse("The list of conferences must not be empty",
                 conferencesList.isEmpty());

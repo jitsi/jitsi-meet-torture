@@ -43,7 +43,7 @@ public class DisplayNameTest
      */
     public void testChangingDisplayName()
     {
-        System.out.println("Start testChangingDisplayName.");
+        System.err.println("Start testChangingDisplayName.");
 
         String randomName = "Name"
             + String.valueOf((int)(Math.random()*1000000));
@@ -61,7 +61,7 @@ public class DisplayNameTest
      */
     private void checkDisplayNameChange(String newName)
     {
-        System.out.println("Start checkDisplayNameChange.");
+        System.err.println("Start checkDisplayNameChange.");
 
         changeDisplayName(newName);
 
@@ -76,7 +76,7 @@ public class DisplayNameTest
      */
     private void doLocalDisplayNameCheck(String newName)
     {
-        System.out.println("Start doLocalDisplayNameCheck.");
+        System.err.println("Start doLocalDisplayNameCheck.");
 
         // now lets check whether display name is set locally
         WebElement displayNameElem =
@@ -109,7 +109,7 @@ public class DisplayNameTest
      */
     private void doRemoteDisplayNameCheck(String newName)
     {
-        System.out.println("Start doRemoteDisplayNameCheck.");
+        System.err.println("Start doRemoteDisplayNameCheck.");
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
@@ -151,7 +151,7 @@ public class DisplayNameTest
      */
     private void changeDisplayName(String newName)
     {
-        System.out.println("Start changeDisplayName.");
+        System.err.println("Start changeDisplayName.");
 
         WebElement elem =
             ConferenceFixture.getSecondParticipant().findElement(By.xpath(

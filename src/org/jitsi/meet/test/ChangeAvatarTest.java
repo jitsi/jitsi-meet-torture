@@ -57,7 +57,7 @@ public class ChangeAvatarTest
      */
     public void changeAvatarAndCheck()
     {
-        System.out.println("Start changeAvatarAndCheck.");
+        System.err.println("Start changeAvatarAndCheck.");
 
         WebDriver owner = ConferenceFixture.getOwner();
         final WebDriver secondParticipant

@@ -152,7 +152,7 @@ public class ConferenceFixture
      */
     public static void startOwner(String fragment)
     {
-        System.out.println("Starting owner participant.");
+        System.err.println("Starting owner participant.");
 
         owner = startDriverInstance();
 
@@ -290,7 +290,7 @@ public class ConferenceFixture
      */
     public static void startParticipant()
     {
-        System.out.println("Starting second participant.");
+        System.err.println("Starting second participant.");
         secondParticipant = startDriverInstance();
 
         openRoom(secondParticipant, null);
@@ -304,7 +304,7 @@ public class ConferenceFixture
      */
     public static void startThirdParticipant()
     {
-        System.out.println("Starting third participant.");
+        System.err.println("Starting third participant.");
 
         thirdParticipant = startDriverInstance();
 
@@ -387,17 +387,17 @@ public class ConferenceFixture
 
         if(participant == owner)
         {
-            System.out.println("Quited owner.");
+            System.err.println("Quited owner.");
             owner = null;
         }
         else if(participant == secondParticipant)
         {
-            System.out.println("Quited second participant.");
+            System.err.println("Quited second participant.");
             secondParticipant = null;
         }
         else if(participant == thirdParticipant)
         {
-            System.out.println("Quited third participant.");
+            System.err.println("Quited third participant.");
             thirdParticipant = null;
         }
     }

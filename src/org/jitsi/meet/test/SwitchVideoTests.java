@@ -65,7 +65,7 @@ public class SwitchVideoTests
      */
     public void ownerClickOnLocalVideoAndTest()
     {
-        System.out.println("Start ownerClickOnLocalVideoAndTest.");
+        System.err.println("Start ownerClickOnLocalVideoAndTest.");
 
         clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
     }
@@ -76,7 +76,7 @@ public class SwitchVideoTests
      */
     private void clickOnLocalVideoAndTest(WebDriver driver)
     {
-        System.out.println("Start clickOnLocalVideoAndTest.");
+        System.err.println("Start clickOnLocalVideoAndTest.");
 
         // click on local
         String localVideoSrc = driver.findElement(
@@ -110,7 +110,7 @@ public class SwitchVideoTests
      */
     public void ownerClickOnRemoteVideoAndTest()
     {
-        System.out.println("Start ownerClickOnRemoteVideoAndTest.");
+        System.err.println("Start ownerClickOnRemoteVideoAndTest.");
 
         clickOnRemoteVideoAndTest(ConferenceFixture.getOwner());
     }
@@ -120,7 +120,7 @@ public class SwitchVideoTests
      */
     public void ownerUnpinRemoteVideoAndTest()
     {
-        System.out.println("Start ownerUnpinRemoteVideoAndTest.");
+        System.err.println("Start ownerUnpinRemoteVideoAndTest.");
 
         unpinRemoteVideoAndTest(
             ConferenceFixture.getOwner(),
@@ -133,7 +133,7 @@ public class SwitchVideoTests
      */
     public void participantUnpinRemoteVideo()
     {
-        System.out.println("Start participantUnpinRemoteVideo.");
+        System.err.println("Start participantUnpinRemoteVideo.");
 
         unpinRemoteVideoAndTest(
             ConferenceFixture.getSecondParticipant(),
@@ -151,7 +151,7 @@ public class SwitchVideoTests
      */
     private void unpinRemoteVideoAndTest(WebDriver host, WebDriver peer)
     {
-        System.out.println("Start unpinRemoteVideoAndTest.");
+        System.err.println("Start unpinRemoteVideoAndTest.");
 
         // Peer's endpoint ID
         String peerEndpointId = MeetUtils.getResourceJid(peer);
@@ -188,7 +188,7 @@ public class SwitchVideoTests
      */
     private void clickOnRemoteVideoAndTest(WebDriver driver)
     {
-        System.out.println("Start clickOnRemoteVideoAndTest.");
+        System.err.println("Start clickOnRemoteVideoAndTest.");
 
         // first wait for remote video to be visible
         String remoteThumbXpath
@@ -233,7 +233,7 @@ public class SwitchVideoTests
      */
     public void participantClickOnLocalVideoAndTest()
     {
-        System.out.println("Start participantClickOnLocalVideoAndTest.");
+        System.err.println("Start participantClickOnLocalVideoAndTest.");
 
         clickOnLocalVideoAndTest(ConferenceFixture.getSecondParticipant());
     }
@@ -244,7 +244,7 @@ public class SwitchVideoTests
      */
     public void participantClickOnRemoteVideoAndTest()
     {
-        System.out.println("Start participantClickOnRemoteVideoAndTest.");
+        System.err.println("Start participantClickOnRemoteVideoAndTest.");
 
         clickOnRemoteVideoAndTest(ConferenceFixture.getSecondParticipant());
     }

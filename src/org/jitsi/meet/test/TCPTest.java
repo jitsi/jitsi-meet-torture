@@ -263,7 +263,7 @@ public class TCPTest
         Map<String,String> ownerIPAddresses = new HashMap<String, String>();
         List<Map<String,String>> transports = (List)stats.get("transport");
 
-        System.out.println("Currently connected to:");
+        System.err.println("Currently connected to:");
 
         for(Map<String,String> t : transports)
         {
@@ -272,7 +272,7 @@ public class TCPTest
             String ipAddress = address.substring(0, address.lastIndexOf(':'));
             ownerIPAddresses.put(ipAddress, protocol);
 
-            System.out.println(protocol + ":" + ipAddress);
+            System.err.println(protocol + ":" + ipAddress);
         }
 
         return ownerIPAddresses;
