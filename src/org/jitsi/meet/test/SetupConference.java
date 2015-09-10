@@ -147,14 +147,14 @@ public class SetupConference
      * Checks statistics for received and sent bitrate.
      * @param participant the participant to check.
      */
-    private void waitForSendReceiveData(WebDriver participant)
+    private void waitForSendReceiveData(final WebDriver participant)
     {
         new WebDriverWait(participant, 15)
             .until(new ExpectedCondition<Boolean>()
             {
                 public Boolean apply(WebDriver d)
                 {
-                    Map stats = (Map)((JavascriptExecutor) ConferenceFixture.getOwner())
+                    Map stats = (Map)((JavascriptExecutor) participant)
                         .executeScript("return APP.connectionquality.getStats();");
 
                     Map<String,Long> bitrate =
