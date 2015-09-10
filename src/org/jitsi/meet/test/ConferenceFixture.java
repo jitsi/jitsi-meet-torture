@@ -24,6 +24,7 @@ import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 
+import java.util.Map;
 import java.util.logging.*;
 
 /**
@@ -44,6 +45,15 @@ public class ConferenceFixture
      * The property to change tested browser.
      */
     public static final String BROWSER_NAME_PROP = "browser";
+
+    public static final String ICE_CONNECTED_CHECK_SCRIPT =
+        "for (sid in APP.xmpp.getSessions()) {" +
+            "if (APP.xmpp.getSessions()[sid]."
+            + "peerconnection.iceConnectionState " +
+            "!== 'connected')" +
+            "return false;" +
+            "}" +
+            "return true;";
 
     /**
      * The available browser type value.
@@ -336,16 +346,65 @@ public class ConferenceFixture
      */
     public static void waitsParticipantToJoinConference(WebDriver participant)
     {
-        TestUtils.waitsForBoolean(
-            participant,
-            "for (sid in APP.xmpp.getSessions()) {" +
-                "if (APP.xmpp.getSessions()[sid]."
-                + "peerconnection.iceConnectionState " +
-                "!== 'connected')" +
-                "return false;" +
-                "}" +
-                "return true;"
-            ,30);
+        TestUtils.waitsForBoolean(participant, ICE_CONNECTED_CHECK_SCRIPT, 30);
+    }
+
+    /**
+     * Checks the participant for iceConnectionState is it connected.
+     * @param participant driver instance used by the participant for whom we
+     *                    want to check.
+     */
+    public static boolean checkParticipantIsConnected(WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript(ICE_CONNECTED_CHECK_SCRIPT);
+        return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Checks whether participant is joined the room
+     * @param participant where we check
+     */
+    public static boolean checkParticipantIsInRoom(
+        WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript("return APP.xmpp.isMUCJoined();");
+        return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Returns download bitrate.
+     * @param participant
+     * @return
+     */
+    public static long getDownloadBitrate(WebDriver participant)
+    {
+        Map stats = (Map)((JavascriptExecutor) participant)
+            .executeScript("return APP.connectionquality.getStats();");
+
+        Map<String,Long> bitrate =
+            (Map<String,Long>)stats.get("bitrate");
+
+        if(bitrate != null)
+        {
+            long download =  bitrate.get("download");
+            return download;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Checks whether the strophe connection is connected.
+     * @param participant
+     * @return
+     */
+    public static boolean isXmppConnected(WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript("return APP.xmpp.getConnection().connected;");
+        return res != null && res.equals(Boolean.TRUE);
     }
 
     /**
