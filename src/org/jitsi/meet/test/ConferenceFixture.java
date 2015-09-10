@@ -24,7 +24,8 @@ import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.*;
 
 /**
@@ -214,6 +215,8 @@ public class ConferenceFixture
     {
         String browser = System.getProperty(BROWSER_NAME_PROP);
         WebDriver wd = startDriverInstance(browser);
+
+        wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
         // just wait the instance to start before doing some stuff
         // can kick a renderer bug hanging
