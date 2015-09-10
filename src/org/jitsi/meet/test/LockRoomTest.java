@@ -218,6 +218,11 @@ public class LockRoomTest
 
         ConferenceFixture.startParticipant();
 
+        // if we fail to unlock the room this one will detect it
+        // as participant will fail joining
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getSecondParticipant(), 5);
+
         List<WebElement> elems = ConferenceFixture.getSecondParticipant()
             .findElements(
                 By.xpath("//span[@id='toolbar']/a[@class='button "
