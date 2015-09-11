@@ -43,9 +43,15 @@ public class ConferenceFixture
         = "jitsi-meet.fakeStreamAudioFile";
 
     /**
-     * The property to change tested browser.
+     * The property to change tested browser for the owner.
      */
-    public static final String BROWSER_NAME_PROP = "browser";
+    public static final String BROWSER_OWNER_NAME_PROP = "browser.owner";
+
+    /**
+     * The property to change tested browser for the second participant.
+     */
+    public static final String BROWSER_SECONDP_NAME_PROP
+        = "browser.second.participant";
 
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "for (sid in APP.xmpp.getSessions()) {" +
@@ -165,12 +171,13 @@ public class ConferenceFixture
     {
         System.err.println("Starting owner participant.");
 
-        owner = startDriverInstance();
+        String browser = System.getProperty(BROWSER_OWNER_NAME_PROP);
+        owner = startDriver(browser);
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
 
-        openRoom(owner, fragment);
+        openRoom(owner, fragment, browser);
 
         ((JavascriptExecutor) owner)
             .executeScript("document.title='Owner'");
@@ -181,7 +188,7 @@ public class ConferenceFixture
      * @param participant to open the current test room.
      * @param fragment adds the given string to the fragment part of the URL
      */
-    public static void openRoom(WebDriver participant, String fragment)
+    public static void openRoom(WebDriver participant, String fragment, String browser)
     {
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
@@ -189,7 +196,6 @@ public class ConferenceFixture
         if(fragment != null)
             URL += "&" + fragment;
 
-        String browser = System.getProperty(BROWSER_NAME_PROP);
         if(browser != null
             && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
             URL += "&config.firefox_fake_device=true";
@@ -211,9 +217,8 @@ public class ConferenceFixture
      * Starts chrome instance using some default settings.
      * @return the webdriver instance.
      */
-    private static WebDriver startDriverInstance()
+    private static WebDriver startDriver(String browser)
     {
-        String browser = System.getProperty(BROWSER_NAME_PROP);
         WebDriver wd = startDriverInstance(browser);
 
         wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
@@ -304,9 +309,11 @@ public class ConferenceFixture
     public static void startParticipant()
     {
         System.err.println("Starting second participant.");
-        secondParticipant = startDriverInstance();
 
-        openRoom(secondParticipant, null);
+        String browser = System.getProperty(BROWSER_SECONDP_NAME_PROP);
+        secondParticipant = startDriver(browser);
+
+        openRoom(secondParticipant, null, browser);
 
         ((JavascriptExecutor) secondParticipant)
             .executeScript("document.title='SecondParticipant'");
@@ -319,9 +326,10 @@ public class ConferenceFixture
     {
         System.err.println("Starting third participant.");
 
-        thirdParticipant = startDriverInstance();
+        String browser = BrowserType.chrome.name();
+        thirdParticipant = startDriver(browser);
 
-        openRoom(thirdParticipant, null);
+        openRoom(thirdParticipant, null, browser);
 
         ((JavascriptExecutor) thirdParticipant)
             .executeScript("document.title='ThirdParticipant'");
