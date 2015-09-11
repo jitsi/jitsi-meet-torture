@@ -104,6 +104,10 @@ with the address of the instance to test (add to the command line
         <!-- Get all properties available to pass them to ant -->
         <propertyset id="test.sysproperties" negate="true"/>
 
+        <!-- the name of tests-result-file -->
+        <property name="test.result.filename"
+                  value="TEST-org.jitsi.meet.test.TestsRunner"/>
+
         <junit printsummary="yes"
                fork="yes"
                haltonfailure="no"
@@ -137,7 +141,8 @@ with the address of the instance to test (add to the command line
 
             <!-- The main test suite which will add all tests -->
             <test name="org.jitsi.meet.test.TestsRunner"
-                  todir="${test.reports.dir}"/>
+                  todir="${test.reports.dir}"
+                  outfile="${test.result.filename}"/>
             <!-- this is xml formatter -->
             <formatter classname="org.jitsi.meet.test.FailureListener"
                 usefile="false"/>
@@ -189,7 +194,8 @@ with the address of the instance to test (add to the command line
 
     <!-- internal target - removes the current set of test reports, so
          residual data is not left to confuse a cached browser -->
-    <target name="clean-test-reports">
+    <target name="clean-test-reports"
+            unless="jitsi-meet.disable.clean.reports">
         <delete failonerror="false" includeemptydirs="true">
             <fileset dir="${test.reports.dir}"/>
         </delete>
