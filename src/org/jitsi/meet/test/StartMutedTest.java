@@ -46,6 +46,7 @@ public class StartMutedTest
 
         suite.addTest(new StartMutedTest("checkboxesTest"));
         suite.addTest(new StartMutedTest("configOptionsTest"));
+        suite.addTest(new StartMutedTest("restartParticipants"));
         return suite;
     }
 
@@ -130,12 +131,12 @@ public class StartMutedTest
         TestUtils.waitsForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='audioMuted']/"
-            + "i[@class='icon-mic-disabled']", 25);
+                + "i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitsForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='videoMuted']/"
-            + "i[@class='icon-camera-disabled']", 25);
+                + "i[@class='icon-camera-disabled']", 25);
 
         TestUtils.waitsForElementNotPresentByXPath(
             secondParticipant,
@@ -146,6 +147,32 @@ public class StartMutedTest
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
-                25);
+            25);
+    }
+
+    /**
+     * Restarts the two participants so we clear states of this test.
+     */
+    public void restartParticipants()
+    {
+        System.err.println("Start restartParticipants.");
+
+        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.quit(ConferenceFixture.getOwner());
+        TestUtils.waits(1000);
+        ConferenceFixture.startOwner(null);
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getOwner(), 10);
+
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getOwner());
+
+        ConferenceFixture.startParticipant();
+
+        ConferenceFixture.checkParticipantToJoinRoom(
+            ConferenceFixture.getSecondParticipant(), 10);
+
+        ConferenceFixture.waitsParticipantToJoinConference(
+            ConferenceFixture.getSecondParticipant());
     }
 }
