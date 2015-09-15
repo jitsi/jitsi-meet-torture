@@ -36,7 +36,6 @@ public class AvatarTest
         super(name);
     }
 
-
     public static String EMAIL = "example@jitsi.org";
     public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
 
@@ -49,7 +48,6 @@ public class AvatarTest
         TestSuite suite = new TestSuite();
 
         suite.addTest(new AvatarTest("changeAvatarAndCheck"));
-
         suite.addTest(new AvatarTest("avatarWhenVideoMuted"));
 
         return suite;
@@ -322,5 +320,4 @@ public class AvatarTest
         return getSrcByXPath(perspective,
             "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
     }
-
 }

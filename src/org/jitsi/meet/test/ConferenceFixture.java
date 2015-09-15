@@ -205,10 +205,15 @@ public class ConferenceFixture
 
     /**
      * Opens the room for the given participant.
+     *
      * @param participant to open the current test room.
      * @param fragment adds the given string to the fragment part of the URL
+     * @param browser
      */
-    public static void openRoom(WebDriver participant, String fragment, String browser)
+    public static void openRoom(
+            WebDriver participant,
+            String fragment,
+            String browser)
     {
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
@@ -389,8 +394,11 @@ public class ConferenceFixture
 
     /**
      * Checks the participant for iceConnectionState is it connected.
+     *
      * @param participant driver instance used by the participant for whom we
      *                    want to check.
+     * @return {@code true} if the {@code iceConnectionState} of the specified
+     * {@code participant} is {@code connected}; otherwise, {@code false}
      */
     public static boolean checkParticipantIsConnected(WebDriver participant)
     {
@@ -400,11 +408,13 @@ public class ConferenceFixture
     }
 
     /**
-     * Checks whether participant is joined the room
+     * Checks whether participant is joined the room.
+     *
      * @param participant where we check
+     * @return {@code true} if the specified {@code participant} has joined the
+     * room; otherwise, {@code false}
      */
-    public static boolean checkParticipantIsInRoom(
-        WebDriver participant)
+    public static boolean checkParticipantIsInRoom(WebDriver participant)
     {
         Object res = ((JavascriptExecutor) participant)
             .executeScript("return APP.xmpp.isMUCJoined();");

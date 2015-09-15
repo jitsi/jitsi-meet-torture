@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.openqa.selenium.*;
 
 /**
  * A test which always needs to be the last to clear all resources (browsers)
@@ -29,7 +30,6 @@ public class DisposeConference
 {
     public DisposeConference()
     {
-
     }
 
     public DisposeConference(String testName)
@@ -42,10 +42,19 @@ public class DisposeConference
      */
     public void testDispose()
     {
-        if(ConferenceFixture.getSecondParticipantInstance() != null)
-            ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        if(ConferenceFixture.getThirdParticipantInstance() != null)
-            ConferenceFixture.quit(ConferenceFixture.getThirdParticipant());
+        // secondParticipant
+        WebDriver participant
+            = ConferenceFixture.getSecondParticipantInstance();
+
+        if(participant != null)
+            ConferenceFixture.quit(participant);
+
+        // thirdParticipant
+        participant = ConferenceFixture.getThirdParticipantInstance();
+        if(participant != null)
+            ConferenceFixture.quit(participant);
+
+        // owner
         ConferenceFixture.quit(ConferenceFixture.getOwner());
     }
 }

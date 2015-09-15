@@ -57,6 +57,8 @@ public class MeetUIUtils
      *
      * @param participant <tt>WebDriver</tt> of the participant for whom the
      *                    resource of large video will be extracted.
+     * @return resource JIUD of the user who is currently displayed on large
+     * video area from given <tt>participant</tt> perspective.
      */
     public static String getLargeVideoResource(WebDriver participant)
     {

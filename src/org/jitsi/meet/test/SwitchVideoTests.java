@@ -197,6 +197,8 @@ public class SwitchVideoTests
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
+     *
+     * @param driver
      */
     public static void clickOnRemoteVideoAndTest(WebDriver driver)
     {

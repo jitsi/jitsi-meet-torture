@@ -16,8 +16,6 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -60,9 +58,7 @@ public class TestsRunner
             suite.addTest(TCPTest.suite());
 
             suite.addTest(ActiveSpeakerTest.suite());
-
             suite.addTest(StartMutedTest.suite());
-
             suite.addTestSuite(DisplayNameTest.class);
 
             suite.addTestSuite(DisposeConference.class);
