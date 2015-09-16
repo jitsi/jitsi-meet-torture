@@ -96,7 +96,7 @@ public class SwitchVideoTests
      * Returns the source of the large video currently shown.
      * @return the source of the large video currently shown.
      */
-    private String getLargeVideoSource(WebDriver driver)
+    private static String getLargeVideoSource(WebDriver driver)
     {
         // FIXME searching for <video> will fail with Temasys plugin where
         // <object> elements are used
@@ -186,7 +186,7 @@ public class SwitchVideoTests
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
-    private void clickOnRemoteVideoAndTest(WebDriver driver)
+    public static void clickOnRemoteVideoAndTest(WebDriver driver)
     {
         System.err.println("Start clickOnRemoteVideoAndTest.");
 

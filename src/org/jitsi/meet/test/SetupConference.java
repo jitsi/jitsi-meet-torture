@@ -17,11 +17,6 @@ package org.jitsi.meet.test;
 
 import junit.framework.*;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
-
-import java.util.*;
-
 /**
  * This test will setup the conference and will end when both
  * participants are connected.
@@ -97,23 +92,6 @@ public class SetupConference
     }
 
     /**
-     * Starts the third participant.
-     */
-    public void startThirdParticipant()
-    {
-        ConferenceFixture.startThirdParticipant();
-    }
-
-    /**
-     * Checks whether the third participant has joined the room.
-     */
-    public void checkThirdParticipantJoinRoom()
-    {
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getThirdParticipant(), 10);
-    }
-
-    /**
      * Waits the owner to get event for iceConnectionState that changes
      * to connected.
      */
@@ -134,52 +112,12 @@ public class SetupConference
     }
 
     /**
-     * Waits the participant to get event for iceConnectionState that changes
-     * to connected.
-     */
-    public void waitsThirdParticipantToJoinConference()
-    {
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getThirdParticipant());
-    }
-
-    /**
-     * Checks statistics for received and sent bitrate.
-     * @param participant the participant to check.
-     */
-    private void waitForSendReceiveData(final WebDriver participant)
-    {
-        new WebDriverWait(participant, 15)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Map stats = (Map)((JavascriptExecutor) participant)
-                        .executeScript("return APP.connectionquality.getStats();");
-
-                    Map<String,Long> bitrate =
-                        (Map<String,Long>)stats.get("bitrate");
-
-                    if(bitrate != null)
-                    {
-                        long download =  bitrate.get("download");
-                        long upload = bitrate.get("upload");
-
-                        if(download > 0 && upload > 0)
-                            return true;
-                    }
-
-                    return false;
-                }
-            });
-    }
-
-    /**
      * Checks statistics for received and sent bitrate.
      */
     public void waitForOwnerSendReceiveData()
     {
-        waitForSendReceiveData(ConferenceFixture.getOwner());
+        ConferenceFixture.waitForSendReceiveData(
+            ConferenceFixture.getOwner());
     }
 
     /**
@@ -187,14 +125,7 @@ public class SetupConference
      */
     public void waitForSecondParticipantSendReceiveData()
     {
-        waitForSendReceiveData(ConferenceFixture.getSecondParticipant());
-    }
-
-    /**
-     * Checks statistics for received and sent bitrate.
-     */
-    public void waitForThirdParticipantSendReceiveData()
-    {
-        waitForSendReceiveData(ConferenceFixture.getThirdParticipant());
+        ConferenceFixture.waitForSendReceiveData(
+            ConferenceFixture.getSecondParticipant());
     }
 }

@@ -63,49 +63,30 @@ public class ActiveSpeakerTest
                 ConferenceFixture.BrowserType.chrome))
             return;
 
-        // Start 3rd peer
-        setupThirdParticipant();
+        // This test requires a conference of three
+        ConferenceFixture.ensureThreeParticipants();
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondPeer = ConferenceFixture.getSecondParticipant();
+        WebDriver thirdPeer = ConferenceFixture.getThirdParticipant();
 
         // Mute all
         muteAllParticipants();
 
         // Owner becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant());
+        testActiveSpeaker(owner, secondPeer);
 
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(
-            ConferenceFixture.getThirdParticipant(),
-            ConferenceFixture.getSecondParticipant());
+        testActiveSpeaker(thirdPeer, secondPeer);
 
         // 2nd peer becomes active speaker - check from owner's perspective
-        testActiveSpeaker(
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner());
+        testActiveSpeaker(secondPeer, owner);
 
         // Dispose 3rd
-        disposeThirdParticipant();
+        ConferenceFixture.quit(thirdPeer);
 
         // Unmuted owner and the 2nd
         unMuteOwnerAndSecond();
-    }
-
-    private void setupThirdParticipant()
-    {
-        System.err.println("Start setupThirdParticipant.");
-
-        new SetupConference("startThirdParticipant")
-            .startThirdParticipant();
-
-        new SetupConference("checkThirdParticipantJoinRoom")
-            .checkThirdParticipantJoinRoom();
-
-        new SetupConference("waitsThirdParticipantToJoinConference")
-            .waitsThirdParticipantToJoinConference();
-
-        new SetupConference("waitForThirdParticipantSendReceiveData")
-            .waitForThirdParticipantSendReceiveData();
     }
 
     private void muteAllParticipants()
@@ -127,14 +108,6 @@ public class ActiveSpeakerTest
         new MuteTest("unMuteOwnerAndCheck").unMuteOwnerAndCheck();
 
         new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
-    }
-
-    private void disposeThirdParticipant()
-    {
-        System.err.println("Start disposeThirdParticipant.");
-
-        new DisposeConference("disposeThirdParticipant")
-            .disposeThirdParticipant();
     }
 
     /**

@@ -23,10 +23,13 @@ import org.openqa.selenium.ie.*;
 import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
+import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
+
+import static org.junit.Assert.*;
 
 /**
  * The static fixture which holds the drivers to access the conference
@@ -495,5 +498,131 @@ public class ConferenceFixture
     public static BrowserType getCurrentBrowserType()
     {
         return currentBrowserType;
+    }
+
+    /**
+     * Checks statistics for received and sent bitrate.
+     * @param participant the participant to check.
+     */
+    public static void waitForSendReceiveData(final WebDriver participant)
+    {
+        new WebDriverWait(participant, 15)
+            .until(new ExpectedCondition<Boolean>()
+        {
+            public Boolean apply(WebDriver d)
+            {
+                Map stats = (Map) ((JavascriptExecutor) participant)
+                    .executeScript("return APP.connectionquality.getStats();");
+
+                Map<String, Long> bitrate =
+                    (Map<String, Long>) stats.get("bitrate");
+
+                if (bitrate != null)
+                {
+                    long download = bitrate.get("download");
+                    long upload = bitrate.get("upload");
+
+                    if (download > 0 && upload > 0)
+                        return true;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Methods makes sure that 'conference owner participant' is in the
+     * conference room(might not be sending/receiving any data - if no other
+     * participants in the room).
+     */
+    public static void ensureOwnerRunning()
+    {
+        if (owner == null)
+            startOwner(null);
+
+        ConferenceFixture.checkParticipantToJoinRoom(owner, 15);
+    }
+
+    /**
+     * Makes sure that conference owner is alone in the conference room.
+     */
+    public static void ensureOwnerOnly()
+    {
+        ensureOwnerRunning();
+        ensureSecondParticipantNotRunning();
+        ensureThirdParticipantNotRunning();
+    }
+
+    /**
+     * Method makes sure that 'second participant' is not in the conference
+     * and it's driver is disposed.
+     */
+    public static void ensureSecondParticipantNotRunning()
+    {
+        if (secondParticipant != null)
+        {
+            quit(secondParticipant);
+        }
+    }
+
+    /**
+     * Methods makes sure that 'second participant' is in the conference and is
+     * sending/receiving data.
+     */
+    public static void ensureSecondParticipantRunning()
+    {
+        WebDriver secondPeer = getSecondParticipant();
+        assertNotNull(secondPeer);
+        ConferenceFixture.checkParticipantToJoinRoom(secondPeer, 10);
+        ConferenceFixture.waitsParticipantToJoinConference(secondPeer);
+        ConferenceFixture.waitForSendReceiveData(secondPeer);
+    }
+
+    /**
+     * Method makes sure that 'third participant' is not in the conference and
+     * it's driver is disposed.
+     */
+    public static void ensureThirdParticipantNotRunning()
+    {
+        if (thirdParticipant != null)
+        {
+            quit(thirdParticipant);
+        }
+    }
+
+    /**
+     * Methods makes sure that 'third participant' is in the conference and is
+     * sending/receiving data.
+     */
+    public static void ensureThirdParticipantRunning()
+    {
+        WebDriver thirdPeer = getThirdParticipant();
+        assertNotNull(thirdPeer);
+        ConferenceFixture.checkParticipantToJoinRoom(thirdPeer, 10);
+        ConferenceFixture.waitsParticipantToJoinConference(thirdPeer);
+        ConferenceFixture.waitForSendReceiveData(thirdPeer);
+    }
+
+    /**
+     * Makes sure that there is currently running conference with exactly two
+     * participants(owner and 'second participant').
+     */
+    public static void ensureTwoParticipants()
+    {
+        ensureOwnerRunning();
+        ensureSecondParticipantRunning();
+        ensureThirdParticipantNotRunning();
+    }
+
+    /**
+     * Makes sure that there is currently running conference with three
+     * participants(owner, 'second participant' and 'third participant').
+     */
+    public static void ensureThreeParticipants()
+    {
+        ensureOwnerRunning();
+        ensureSecondParticipantRunning();
+        ensureThirdParticipantRunning();
     }
 }
