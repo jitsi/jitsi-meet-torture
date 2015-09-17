@@ -188,7 +188,12 @@ public class AvatarTest
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
         TestUtils.waitsForDisplayedElementByXPath(
             owner, "//input[@id='setEmail']", 5);
-        owner.findElement(By.xpath("//input[@id='setEmail']")).sendKeys(EMAIL);
+
+        // set the value of the field through the jquery, or on FF we can
+        // activate the key listener and m can mute the call and break tests
+        ((JavascriptExecutor) owner)
+            .executeScript("$('#setEmail').val('" + EMAIL + "');");
+
         owner.findElement(By.id("updateSettings")).click();
 
         //check if the local avatar in the settings menu has changed
@@ -240,6 +245,14 @@ public class AvatarTest
             });
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
+
+        // the problem on FF where we can send keys to the input field,
+        // and the m from the text can mute the call, check whether we are muted
+        MeetUIUtils.verifyIsMutedStatus(
+            "owner",
+            ConferenceFixture.getOwner(),
+            ConferenceFixture.getSecondParticipant(),
+            false);
     }
 
     /*

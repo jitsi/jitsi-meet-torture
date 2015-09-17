@@ -222,7 +222,7 @@ public class FailureListener
             WebElement el = driver.findElement(By.id("downloadlog"));
             el.click();
 
-            TestUtils.waits(1000);
+            TestUtils.waits(2000);
 
             FileUtils.moveFile(
                 new File(
