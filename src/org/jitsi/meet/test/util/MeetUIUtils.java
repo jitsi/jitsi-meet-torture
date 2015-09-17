@@ -225,7 +225,9 @@ public class MeetUIUtils
     public static void clickOnLocalVideo(WebDriver where)
     {
         where.findElement(
-            By.xpath("//span[@id='localVideoContainer']")).click();
+            By.xpath("//span[@id='localVideoContainer']" +
+                      "/span[@class='focusindicator']")
+        ).click();
     }
 
     /**
