@@ -204,6 +204,9 @@ public class ConferenceFixture
             && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
             URL += "&config.firefox_fake_device=true";
 
+        String participantName = getParticipantName(participant);
+        System.err.println(participantName + " is opening URL: " + URL);
+
         participant.get(URL);
 
         // disables animations
@@ -461,19 +464,19 @@ public class ConferenceFixture
             t.printStackTrace();
         }
 
+        String instanceName = getParticipantName(participant);
+        System.err.println("Quited " + instanceName + ".");
+
         if(participant == owner)
         {
-            System.err.println("Quited owner.");
             owner = null;
         }
         else if(participant == secondParticipant)
         {
-            System.err.println("Quited second participant.");
             secondParticipant = null;
         }
         else if(participant == thirdParticipant)
         {
-            System.err.println("Quited third participant.");
             thirdParticipant = null;
         }
     }
@@ -624,5 +627,34 @@ public class ConferenceFixture
         ensureOwnerRunning();
         ensureSecondParticipantRunning();
         ensureThirdParticipantRunning();
+    }
+
+    /**
+     * Returns human readable name of <tt>WebDriver</tt> instance.
+     * @param driver the instance of <tt>WebDriver</tt> for which we want to get
+     *               human readable name. Should be one of instances managed by
+     *               <tt>ConferenceFixture</tt> class.
+     */
+    public static String getParticipantName(WebDriver driver)
+    {
+        if (driver == null)
+            return "nullDriverInstance";
+
+        if (owner == driver)
+        {
+            return "owner";
+        }
+        else if (secondParticipant == driver)
+        {
+            return "secondParticipant";
+        }
+        else if (thirdParticipant == driver)
+        {
+            return "thirdParticipant";
+        }
+        else
+        {
+            return "unknownDriverInstance";
+        }
     }
 }
