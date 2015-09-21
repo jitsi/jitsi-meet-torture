@@ -311,16 +311,26 @@ public class ConferenceFixture
     }
 
     /**
-     * Start another participant reusing the already generated room name.
+     * Start <tt>secondParticipant</tt>.
      */
     public static void startParticipant()
+    {
+        startParticipant(null);
+    }
+
+    /**
+     * Start <tt>secondParticipant</tt>.
+     * @param fragment A string to be added to the URL as a parameter (i.e.
+     * prefixed with a '&').
+     */
+    public static void startParticipant(String fragment)
     {
         System.err.println("Starting second participant.");
 
         String browser = System.getProperty(BROWSER_SECONDP_NAME_PROP);
         secondParticipant = startDriver(browser);
 
-        openRoom(secondParticipant, null, browser);
+        openRoom(secondParticipant, fragment, browser);
 
         ((JavascriptExecutor) secondParticipant)
             .executeScript("document.title='SecondParticipant'");
@@ -431,15 +441,17 @@ public class ConferenceFixture
      */
     public static void quit(WebDriver participant)
     {
+        if (participant == null)
+        {
+            System.err.println("quit(): participant is null");
+            return;
+        }
+
         try
         {
-            if(participant != null)
-            {
-                MeetUIUtils.clickOnToolbarButtonByClass(
-                    participant, "icon-hangup");
+            MeetUIUtils.clickOnToolbarButtonByClass(participant, "icon-hangup");
 
-                TestUtils.waits(500);
-            }
+            TestUtils.waits(500);
         }
         catch(Throwable t)
         {
@@ -448,16 +460,13 @@ public class ConferenceFixture
 
         try
         {
-            if(participant != null)
-            {
-                participant.close();
+            participant.close();
 
-                TestUtils.waits(500);
+            TestUtils.waits(500);
 
-                participant.quit();
+            participant.quit();
 
-                TestUtils.waits(500);
-            }
+            TestUtils.waits(500);
         }
         catch(Throwable t)
         {
@@ -467,15 +476,15 @@ public class ConferenceFixture
         String instanceName = getParticipantName(participant);
         System.err.println("Quited " + instanceName + ".");
 
-        if(participant == owner)
+        if (participant == owner)
         {
             owner = null;
         }
-        else if(participant == secondParticipant)
+        else if (participant == secondParticipant)
         {
             secondParticipant = null;
         }
-        else if(participant == thirdParticipant)
+        else if (participant == thirdParticipant)
         {
             thirdParticipant = null;
         }

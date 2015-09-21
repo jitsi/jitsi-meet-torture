@@ -57,9 +57,7 @@ public class TestsRunner
             suite.addTest(LockRoomTest.suite());
             suite.addTest(LockRoomTest.suite());
 
-            // enable TCP test only if explicitly set from user
-            if(Boolean.getBoolean(TCPTest.JITSI_MEET_SUDO_CONFIGED_PROP))
-                suite.addTest(TCPTest.suite());
+            suite.addTest(TCPTest.suite());
 
             suite.addTest(ActiveSpeakerTest.suite());
 
