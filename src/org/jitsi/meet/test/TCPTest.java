@@ -77,10 +77,14 @@ public class TCPTest
      * Closes the second participant.
      * Starts it again with UDP disabled and checks that it is connected over
      * TCP.
-     * Stops it, and start it. Checks that it is connected over UDP.
      */
     public void tcpTest()
     {
+        // Initially we should be connected over UDP
+        assertEquals("We must be connected through UDP",
+                     "udp",
+                     getProtocol(ConferenceFixture.getSecondParticipant()));
+
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.startParticipant(DISABLE_UDP_URL_FRAGMENT);
         ConferenceFixture.checkParticipantToJoinRoom(
@@ -90,10 +94,18 @@ public class TCPTest
         ConferenceFixture.waitForSendReceiveData(
                 ConferenceFixture.getSecondParticipant());
 
-        String mustBeTcpProtocol
-                = getProtocol(ConferenceFixture.getSecondParticipant());
+        assertEquals("We must be connected through TCP",
+                     "tcp",
+                     getProtocol(ConferenceFixture.getSecondParticipant()));
+    }
 
-        // Bring the conference to the default state before we return.
+
+    /**
+     * Brings the conference to the default state before.
+     */
+    @Override
+    protected void tearDown()
+    {
         ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
         ConferenceFixture.startParticipant();
         ConferenceFixture.checkParticipantToJoinRoom(
@@ -102,14 +114,6 @@ public class TCPTest
                 ConferenceFixture.getSecondParticipant());
         ConferenceFixture.waitForSendReceiveData(
                 ConferenceFixture.getSecondParticipant());
-
-        assertEquals("We must be connected through TCP",
-                     "tcp", mustBeTcpProtocol);
-
-        // Since we're connected anyway, we may as well check UDP, too.
-        assertEquals("We must be connected through UDP",
-                     "udp",
-                     getProtocol(ConferenceFixture.getSecondParticipant()));
     }
 
     /**
@@ -118,7 +122,7 @@ public class TCPTest
      * (beginning with "error:") or null on failure.
      * @return the transport protocol used by the media connection in the
      * Jitsi-Meet conference running in <tt>driver</tt>.
-     * @param the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
      */
     private String getProtocol(WebDriver driver)
     {
