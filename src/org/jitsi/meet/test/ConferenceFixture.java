@@ -79,7 +79,20 @@ public class ConferenceFixture
         chrome, // default one
         firefox,
         safari,
-        ie
+        ie;
+
+        /**
+         * Default is chrome.
+         * @param browser the browser type string
+         * @return the browser type enum item.
+         */
+        public static BrowserType valueOfString(String browser)
+        {
+            if(browser == null)
+                return chrome;
+            else
+                return BrowserType.valueOf(browser);
+        }
     }
 
     /**
@@ -509,17 +522,17 @@ public class ConferenceFixture
     {
         if(driver == owner)
         {
-            return BrowserType.valueOf(
+            return BrowserType.valueOfString(
                 System.getProperty(BROWSER_OWNER_NAME_PROP));
         }
         else if(driver == secondParticipant)
         {
-            return BrowserType.valueOf(
+            return BrowserType.valueOfString(
                 System.getProperty(BROWSER_SECONDP_NAME_PROP));
         }
         else if(driver == thirdParticipant)
         {
-            return BrowserType.valueOf(
+            return BrowserType.valueOfString(
                 System.getProperty(BROWSER_THIRDP_NAME_PROP));
         }
 
