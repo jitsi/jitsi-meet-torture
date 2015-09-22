@@ -64,12 +64,12 @@ public class MuteTest
     {
         System.err.println("Start muteOwnerAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_mute");
+        WebDriver owner = ConferenceFixture.getOwner();
 
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_mute");
         MeetUIUtils.verifyIsMutedStatus(
             "owner",
-            ConferenceFixture.getOwner(),
+            owner,
             ConferenceFixture.getSecondParticipant(),
             true);
 
@@ -83,12 +83,12 @@ public class MuteTest
     {
         System.err.println("Start unMuteOwnerAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_mute");
+        WebDriver owner = ConferenceFixture.getOwner();
 
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_mute");
         MeetUIUtils.verifyIsMutedStatus(
             "owner",
-            ConferenceFixture.getOwner(),
+            owner,
             ConferenceFixture.getSecondParticipant(),
             false);
     }
@@ -100,12 +100,13 @@ public class MuteTest
     {
         System.err.println("Start muteParticipantAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
+        MeetUIUtils.clickOnToolbarButton(
+            secondParticipant, "toolbar_button_mute");
         MeetUIUtils.verifyIsMutedStatus(
             "participant2",
-            ConferenceFixture.getSecondParticipant(),
+            secondParticipant,
             ConferenceFixture.getOwner(),
             true);
     }
@@ -117,12 +118,13 @@ public class MuteTest
     {
         System.err.println("Start unMuteParticipantAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
+        MeetUIUtils.clickOnToolbarButton(
+            secondParticipant, "toolbar_button_mute");
         MeetUIUtils.verifyIsMutedStatus(
             "participant2",
-            ConferenceFixture.getSecondParticipant(),
+            secondParticipant,
             ConferenceFixture.getOwner(),
             false);
     }
