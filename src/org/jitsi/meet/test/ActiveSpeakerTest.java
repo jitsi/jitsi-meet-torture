@@ -58,15 +58,16 @@ public class ActiveSpeakerTest
     {
         System.err.println("Start testActiveSpeaker.");
 
+        WebDriver owner = ConferenceFixture.getOwner();
+
         // skip if we are not chrome
-        if(!ConferenceFixture.getCurrentBrowserType().equals(
+        if(!ConferenceFixture.getBrowserType(owner).equals(
                 ConferenceFixture.BrowserType.chrome))
             return;
 
         // This test requires a conference of three
         ConferenceFixture.ensureThreeParticipants();
 
-        WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondPeer = ConferenceFixture.getSecondParticipant();
         WebDriver thirdPeer = ConferenceFixture.getThirdParticipant();
 

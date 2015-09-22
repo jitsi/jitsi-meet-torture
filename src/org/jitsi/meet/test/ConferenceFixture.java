@@ -56,6 +56,12 @@ public class ConferenceFixture
     public static final String BROWSER_SECONDP_NAME_PROP
         = "browser.second.participant";
 
+    /**
+     * The property to change tested browser for the second participant.
+     */
+        public static final String BROWSER_THIRDP_NAME_PROP
+        = "browser.third.participant";
+
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "for (sid in APP.xmpp.getSessions()) {" +
             "if (APP.xmpp.getSessions()[sid]."
@@ -77,10 +83,8 @@ public class ConferenceFixture
     }
 
     /**
-     * The currently used browser that runs tests.
+     * The current room name used.
      */
-    private static BrowserType currentBrowserType = null;
-
     public static String currentRoomName;
 
     /**
@@ -261,14 +265,11 @@ public class ConferenceFixture
             profile.setPreference("browser.helperApps.alwaysAsk.force", false);
             profile.setPreference("browser.download.manager.showWhenStarting", false );
 
-            currentBrowserType = BrowserType.firefox;
-
             return new FirefoxDriver(profile);
         }
         else if(browser != null
             && browser.equalsIgnoreCase(BrowserType.safari.toString()))
         {
-            currentBrowserType = BrowserType.safari;
             return new SafariDriver();
         }
         else if(browser != null
@@ -277,8 +278,6 @@ public class ConferenceFixture
             DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
             caps.setCapability("ignoreZoomSetting", true);
             System.setProperty("webdriver.ie.driver.silent", "true");
-
-            currentBrowserType = BrowserType.ie;
 
             return new InternetExplorerDriver(caps);
         }
@@ -303,8 +302,6 @@ public class ConferenceFixture
             ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
 
             caps.setCapability(ChromeOptions.CAPABILITY, ops);
-
-            currentBrowserType = BrowserType.chrome;
 
             return new ChromeDriver(ops);
         }
@@ -343,7 +340,7 @@ public class ConferenceFixture
     {
         System.err.println("Starting third participant.");
 
-        String browser = BrowserType.chrome.name();
+        String browser = System.getProperty(BROWSER_THIRDP_NAME_PROP);
         thirdParticipant = startDriver(browser);
 
         openRoom(thirdParticipant, null, browser);
@@ -504,12 +501,29 @@ public class ConferenceFixture
     }
 
     /**
-     * The current used browser.
-     * @return the current used browser.
+     * The currently used browser that runs tests for driver.
+     * @param driver the driver to test.
+     * @return browser type.
      */
-    public static BrowserType getCurrentBrowserType()
+    public static BrowserType getBrowserType(WebDriver driver)
     {
-        return currentBrowserType;
+        if(driver == owner)
+        {
+            return BrowserType.valueOf(
+                System.getProperty(BROWSER_OWNER_NAME_PROP));
+        }
+        else if(driver == secondParticipant)
+        {
+            return BrowserType.valueOf(
+                System.getProperty(BROWSER_SECONDP_NAME_PROP));
+        }
+        else if(driver == thirdParticipant)
+        {
+            return BrowserType.valueOf(
+                System.getProperty(BROWSER_THIRDP_NAME_PROP));
+        }
+
+        return null;
     }
 
     /**
