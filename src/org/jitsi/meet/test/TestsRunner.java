@@ -54,12 +54,11 @@ public class TestsRunner
             // https://github.com/jitsi/jitsi-meet/issues/83
             suite.addTest(LockRoomTest.suite());
             suite.addTest(LockRoomTest.suite());
-
             suite.addTest(TCPTest.suite());
-
             suite.addTest(ActiveSpeakerTest.suite());
             suite.addTest(StartMutedTest.suite());
             suite.addTestSuite(DisplayNameTest.class);
+            suite.addTest(DataChannelTest.suite());
 
             suite.addTestSuite(DisposeConference.class);
         }

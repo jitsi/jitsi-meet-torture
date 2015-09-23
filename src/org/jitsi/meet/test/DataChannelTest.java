@@ -57,6 +57,18 @@ public class DataChannelTest
         super(name);
     }
 
+    /**
+     * Executes a specific (piece of) JavaScript script in the browser
+     * controlled by a specific {@code WebDriver} and returns the result of its
+     * execution as a {@code Boolean} value.
+     *
+     * @param webDriver the {@code WebDriver} which controls the browser in
+     * which the specified {@code script} is to be executed
+     * @param script the script to execute in the browser controlled by
+     * {@code webDriver}
+     * @return the result of the execution of {@code script} in the browser
+     * controlled by {@code webDriver} as a {@code Boolean} value
+     */
     private Boolean executeScriptAndReturnBoolean(
             WebDriver webDriver,
             String script)
@@ -86,6 +98,18 @@ public class DataChannelTest
         return executeScriptAndReturnBoolean(webDriver, script);
     }
 
+    /**
+     * Determines whether a {@code ServerHello} has been received by a specific
+     * Meet conference participant from Videobridge over the respective WebRTC
+     * data channel.
+     *
+     * @param webDriver the {@code WebDriver} which represents the Meet
+     * conference participant to check for the receipt of a {@code ServerHello}
+     * from Videobridge over the respective WebRTC data channel
+     * @return {@link Boolean#TRUE} if the specified Meet conference participant
+     * has received a {@code ServerHello} from Videobridge over the respective
+     * WebRTC data channel; otherwise, {@link Boolean#FALSE}
+     */
     private Boolean isServerHelloReceived(WebDriver webDriver)
     {
         String script = "return APP.RTC.DataChannels.receivedServerHello;";
@@ -183,6 +207,15 @@ public class DataChannelTest
                 });
     }
 
+    /**
+     * Waits for the receipt of a {@code ServerHello} from Videobridge to a
+     * specific Meet conference participant over the respective WebRTC data
+     * channel.
+     *
+     * @param webDriver the {@code WebDriver} which represents the Meet
+     * conference participant who is to receive a {@code ServerHello} from
+     * Videobridge over the respective WebRTC data channel
+     */
     private void waitToReceiveServerHello(WebDriver webDriver)
     {
         new WebDriverWait(webDriver, 15).until(
