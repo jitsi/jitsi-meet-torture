@@ -78,18 +78,30 @@ public class SwitchVideoTests
     {
         System.err.println("Start clickOnLocalVideoAndTest.");
 
-        // click on local
-        String localVideoSrc = driver.findElement(
-            By.xpath("//span[@id='localVideoWrapper']/video"))
-            .getAttribute("src");
+        WebElement localVideoElem = driver.findElement(
+            By.xpath("//span[@id='localVideoWrapper']/video"));
 
+        String localVideoSrc = localVideoElem.getAttribute("src");
+
+        // click on local
         driver.findElement(By.className("focusindicator")).click();
 
         TestUtils.waits(1000);
 
-        // test is this the video seen
-        assertEquals("Video didn't change to local",
-            localVideoSrc, getLargeVideoSource(driver));
+        if(ConferenceFixture.getBrowserType(driver).equals(
+            ConferenceFixture.BrowserType.firefox))
+        {
+            String localVideoId = localVideoElem.getAttribute("id");
+
+            assertTrue("Video didn't change to local",
+                ffCheckVideoDisplayedOnLarge(driver, localVideoId));
+        }
+        else
+        {
+            // test is this the video seen
+            assertEquals("Video didn't change to local",
+                localVideoSrc, getLargeVideoSource(driver));
+        }
     }
 
     /**
@@ -185,6 +197,8 @@ public class SwitchVideoTests
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
+     *
+     * @param driver
      */
     public static void clickOnRemoteVideoAndTest(WebDriver driver)
     {
@@ -193,12 +207,18 @@ public class SwitchVideoTests
         // first wait for remote video to be visible
         String remoteThumbXpath
             = "//span[starts-with(@id, 'participant_') " +
-            "           and contains(@class,'videocontainer')]";
+            " and contains(@class,'videocontainer')]";
         // has the src attribute, those without it is the videobridge video tag
         // which is not displayed, it is used for rtcp
         String remoteThumbVideoXpath
             = remoteThumbXpath
-                + "/video[starts-with(@id, 'remoteVideo_') and @src]";
+                + "/video[starts-with(@id, 'remoteVideo_')";
+
+        if(ConferenceFixture.getBrowserType(driver).equals(
+                ConferenceFixture.BrowserType.firefox))
+            remoteThumbVideoXpath += "]";
+        else
+            remoteThumbVideoXpath += " and @src]";
 
         TestUtils.waitsForElementByXPath(
             driver,
@@ -217,14 +237,43 @@ public class SwitchVideoTests
 
         TestUtils.waits(1000);
 
-        // Obtain the remote video src *after* we have clicked the thumbnail
-        // and have waited. With simulcast enabled, the remote stream may
-        // change.
-        String remoteVideoSrc = remoteThumb.getAttribute("src");
+        if(ConferenceFixture.getBrowserType(driver).equals(
+            ConferenceFixture.BrowserType.firefox))
+        {
+            String remoteVideoId = remoteThumb.getAttribute("id");
 
-        // test is this the video seen
-        assertEquals("Video didn't change to remote one",
-            remoteVideoSrc, getLargeVideoSource(driver));
+            assertTrue("Video didn't change to remote one",
+                ffCheckVideoDisplayedOnLarge(driver, remoteVideoId));
+        }
+        else
+        {
+            // Obtain the remote video src *after* we have clicked the thumbnail
+            // and have waited. With simulcast enabled, the remote stream may
+            // change.
+            String remoteVideoSrc = remoteThumb.getAttribute("src");
+
+            // test is this the video seen
+            assertEquals("Video didn't change to remote one",
+                remoteVideoSrc, getLargeVideoSource(driver));
+        }
+    }
+
+    /**
+     * Checks whether video with id is displayed on the large video.
+     * @param driver the driver
+     * @param videoID the video
+     * @return
+     */
+    private static boolean ffCheckVideoDisplayedOnLarge(
+        WebDriver driver, String videoID)
+    {
+        Object res = ((JavascriptExecutor) driver)
+            .executeScript(
+                "return document.getElementById('" + videoID
+                    + "').mozSrcObject "
+                    + "== document.getElementById('largeVideo').mozSrcObject;");
+
+        return  res != null && res.equals(Boolean.TRUE);
     }
 
     /**

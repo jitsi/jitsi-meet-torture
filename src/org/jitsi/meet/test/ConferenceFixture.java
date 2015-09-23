@@ -56,6 +56,12 @@ public class ConferenceFixture
     public static final String BROWSER_SECONDP_NAME_PROP
         = "browser.second.participant";
 
+    /**
+     * The property to change tested browser for the second participant.
+     */
+        public static final String BROWSER_THIRDP_NAME_PROP
+        = "browser.third.participant";
+
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "for (sid in APP.xmpp.getSessions()) {" +
             "if (APP.xmpp.getSessions()[sid]."
@@ -73,14 +79,25 @@ public class ConferenceFixture
         chrome, // default one
         firefox,
         safari,
-        ie
+        ie;
+
+        /**
+         * Default is chrome.
+         * @param browser the browser type string
+         * @return the browser type enum item.
+         */
+        public static BrowserType valueOfString(String browser)
+        {
+            if(browser == null)
+                return chrome;
+            else
+                return BrowserType.valueOf(browser);
+        }
     }
 
     /**
-     * The currently used browser that runs tests.
+     * The current room name used.
      */
-    private static BrowserType currentBrowserType = null;
-
     public static String currentRoomName;
 
     /**
@@ -188,10 +205,15 @@ public class ConferenceFixture
 
     /**
      * Opens the room for the given participant.
+     *
      * @param participant to open the current test room.
      * @param fragment adds the given string to the fragment part of the URL
+     * @param browser
      */
-    public static void openRoom(WebDriver participant, String fragment, String browser)
+    public static void openRoom(
+            WebDriver participant,
+            String fragment,
+            String browser)
     {
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
@@ -261,14 +283,11 @@ public class ConferenceFixture
             profile.setPreference("browser.helperApps.alwaysAsk.force", false);
             profile.setPreference("browser.download.manager.showWhenStarting", false );
 
-            currentBrowserType = BrowserType.firefox;
-
             return new FirefoxDriver(profile);
         }
         else if(browser != null
             && browser.equalsIgnoreCase(BrowserType.safari.toString()))
         {
-            currentBrowserType = BrowserType.safari;
             return new SafariDriver();
         }
         else if(browser != null
@@ -277,8 +296,6 @@ public class ConferenceFixture
             DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
             caps.setCapability("ignoreZoomSetting", true);
             System.setProperty("webdriver.ie.driver.silent", "true");
-
-            currentBrowserType = BrowserType.ie;
 
             return new InternetExplorerDriver(caps);
         }
@@ -303,8 +320,6 @@ public class ConferenceFixture
             ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
 
             caps.setCapability(ChromeOptions.CAPABILITY, ops);
-
-            currentBrowserType = BrowserType.chrome;
 
             return new ChromeDriver(ops);
         }
@@ -343,7 +358,7 @@ public class ConferenceFixture
     {
         System.err.println("Starting third participant.");
 
-        String browser = BrowserType.chrome.name();
+        String browser = System.getProperty(BROWSER_THIRDP_NAME_PROP);
         thirdParticipant = startDriver(browser);
 
         openRoom(thirdParticipant, null, browser);
@@ -379,8 +394,11 @@ public class ConferenceFixture
 
     /**
      * Checks the participant for iceConnectionState is it connected.
+     *
      * @param participant driver instance used by the participant for whom we
      *                    want to check.
+     * @return {@code true} if the {@code iceConnectionState} of the specified
+     * {@code participant} is {@code connected}; otherwise, {@code false}
      */
     public static boolean checkParticipantIsConnected(WebDriver participant)
     {
@@ -390,11 +408,13 @@ public class ConferenceFixture
     }
 
     /**
-     * Checks whether participant is joined the room
+     * Checks whether participant is joined the room.
+     *
      * @param participant where we check
+     * @return {@code true} if the specified {@code participant} has joined the
+     * room; otherwise, {@code false}
      */
-    public static boolean checkParticipantIsInRoom(
-        WebDriver participant)
+    public static boolean checkParticipantIsInRoom(WebDriver participant)
     {
         Object res = ((JavascriptExecutor) participant)
             .executeScript("return APP.xmpp.isMUCJoined();");
@@ -504,12 +524,29 @@ public class ConferenceFixture
     }
 
     /**
-     * The current used browser.
-     * @return the current used browser.
+     * The currently used browser that runs tests for driver.
+     * @param driver the driver to test.
+     * @return browser type.
      */
-    public static BrowserType getCurrentBrowserType()
+    public static BrowserType getBrowserType(WebDriver driver)
     {
-        return currentBrowserType;
+        if(driver == owner)
+        {
+            return BrowserType.valueOfString(
+                System.getProperty(BROWSER_OWNER_NAME_PROP));
+        }
+        else if(driver == secondParticipant)
+        {
+            return BrowserType.valueOfString(
+                System.getProperty(BROWSER_SECONDP_NAME_PROP));
+        }
+        else if(driver == thirdParticipant)
+        {
+            return BrowserType.valueOfString(
+                System.getProperty(BROWSER_THIRDP_NAME_PROP));
+        }
+
+        return null;
     }
 
     /**

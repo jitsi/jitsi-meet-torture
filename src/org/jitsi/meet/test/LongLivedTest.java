@@ -153,7 +153,6 @@ public class LongLivedTest
                     if (millsToRun <= 0)
                     {
                         timer.cancel();
-                        return;
                     }
                 }
                 catch (Exception e)
@@ -161,7 +160,6 @@ public class LongLivedTest
                     e.printStackTrace();
 
                     assertAndQuit("Unexpected error occurred.");
-                    return;
                 }
             }
 

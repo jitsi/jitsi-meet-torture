@@ -30,6 +30,8 @@ public class MeetUtils
      *
      * @param participant the <tt>WebDriver</tt> instance which runs conference
      *                    participant.
+     * @return resource JID which corresponds to XMPP MUC nickname of the given
+     * <tt>participant</tt>.
      */
     public static String getResourceJid(WebDriver participant)
     {

@@ -39,14 +39,13 @@ public class ActiveSpeakerTest
 
     /**
      * Orders the tests.
-     * @return the suite with order tests.
+     * @return the suite with ordered tests.
      */
     public static Test suite()
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(
-            new ActiveSpeakerTest("testActiveSpeaker"));
+        suite.addTest(new ActiveSpeakerTest("testActiveSpeaker"));
 
         return suite;
     }
@@ -58,15 +57,18 @@ public class ActiveSpeakerTest
     {
         System.err.println("Start testActiveSpeaker.");
 
+        WebDriver owner = ConferenceFixture.getOwner();
+
         // skip if we are not chrome
-        if(!ConferenceFixture.getCurrentBrowserType().equals(
+        if(!ConferenceFixture.getBrowserType(owner).equals(
                 ConferenceFixture.BrowserType.chrome))
+        {
             return;
+        }
 
         // This test requires a conference of three
         ConferenceFixture.ensureThreeParticipants();
 
-        WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondPeer = ConferenceFixture.getSecondParticipant();
         WebDriver thirdPeer = ConferenceFixture.getThirdParticipant();
 
@@ -75,10 +77,8 @@ public class ActiveSpeakerTest
 
         // Owner becomes active speaker - check from 2nd peer's perspective
         testActiveSpeaker(owner, secondPeer);
-
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
         testActiveSpeaker(thirdPeer, secondPeer);
-
         // 2nd peer becomes active speaker - check from owner's perspective
         testActiveSpeaker(secondPeer, owner);
 
@@ -94,9 +94,7 @@ public class ActiveSpeakerTest
         System.err.println("Start muteAllParticipants.");
 
         new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
-
         new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
-
         new MuteTest("muteThirdParticipantAndCheck")
                 .muteThirdParticipantAndCheck();
     }
@@ -106,7 +104,6 @@ public class ActiveSpeakerTest
         System.err.println("Start unMuteOwnerAndSecond.");
 
         new MuteTest("unMuteOwnerAndCheck").unMuteOwnerAndCheck();
-
         new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
     }
 
@@ -128,22 +125,21 @@ public class ActiveSpeakerTest
 
         // Unmute
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
-
         MeetUIUtils.verifyIsMutedStatus(
             speakerEndpoint, activeSpeaker, peer2, false);
 
         // Verify that the user is now an active speaker from peer2 perspective
         try
         {
-            new WebDriverWait(peer2, 10)
-                .until(new ExpectedCondition<Boolean>()
-                {
-                    public Boolean apply(WebDriver d)
+            new WebDriverWait(peer2, 10).until(
+                    new ExpectedCondition<Boolean>()
                     {
-                        return speakerEndpoint.equals(
-                            MeetUIUtils.getLargeVideoResource(d));
-                    }
-                });
+                        public Boolean apply(WebDriver d)
+                        {
+                            return speakerEndpoint.equals(
+                                MeetUIUtils.getLargeVideoResource(d));
+                        }
+                    });
         }
         catch (TimeoutException exc)
         {
@@ -154,7 +150,6 @@ public class ActiveSpeakerTest
 
         // Mute back again
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
-
         MeetUIUtils.verifyIsMutedStatus(
             speakerEndpoint, activeSpeaker, peer2, true);
     }

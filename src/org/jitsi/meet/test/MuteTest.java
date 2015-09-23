@@ -21,8 +21,10 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 
 /**
- * Mutes and unmutes tests.
+ * Tests the muting and unmuting of the participants in Meet conferences.
+ *
  * @author Damian Minkov
+ * @author Lyubomir Marinov
  */
 public class MuteTest
     extends TestCase
@@ -62,16 +64,12 @@ public class MuteTest
      */
     public void muteOwnerAndCheck()
     {
-        System.err.println("Start muteOwnerAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "owner",
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant(),
-            true);
+        toggleMuteAndCheck(
+                "muteOwnerAndCheck",
+                ConferenceFixture.getOwner(),
+                "owner",
+                ConferenceFixture.getSecondParticipant(),
+                true);
 
         TestUtils.waits(2000);
     }
@@ -81,16 +79,12 @@ public class MuteTest
      */
     public void unMuteOwnerAndCheck()
     {
-        System.err.println("Start unMuteOwnerAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "owner",
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant(),
-            false);
+        toggleMuteAndCheck(
+                "unMuteOwnerAndCheck",
+                ConferenceFixture.getOwner(),
+                "owner",
+                ConferenceFixture.getSecondParticipant(),
+                false);
     }
 
     /**
@@ -98,16 +92,12 @@ public class MuteTest
      */
     public void muteParticipantAndCheck()
     {
-        System.err.println("Start muteParticipantAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "participant2",
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
-            true);
+        toggleMuteAndCheck(
+                "muteParticipantAndCheck",
+                ConferenceFixture.getSecondParticipant(),
+                "participant2",
+                ConferenceFixture.getOwner(),
+                true);
     }
 
     /**
@@ -115,16 +105,12 @@ public class MuteTest
      */
     public void unMuteParticipantAndCheck()
     {
-        System.err.println("Start unMuteParticipantAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "participant2",
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
-            false);
+        toggleMuteAndCheck(
+                "unMuteParticipantAndCheck",
+                ConferenceFixture.getSecondParticipant(),
+                "participant2",
+                ConferenceFixture.getOwner(),
+                false);
     }
 
     /**
@@ -132,16 +118,12 @@ public class MuteTest
      */
     public void muteThirdParticipantAndCheck()
     {
-        System.err.println("Start muteThirdParticipantAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getThirdParticipant(), "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "participant3",
-            ConferenceFixture.getThirdParticipant(),
-            ConferenceFixture.getOwner(),
-            true);
+        toggleMuteAndCheck(
+                "muteThirdParticipantAndCheck",
+                ConferenceFixture.getThirdParticipant(),
+                "participant3",
+                ConferenceFixture.getOwner(),
+                true);
     }
 
     /**
@@ -149,16 +131,12 @@ public class MuteTest
      */
     public void unMuteThirdParticipantAndCheck()
     {
-        System.err.println("Start unMuteThirdParticipantAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getThirdParticipant(), "toolbar_button_mute");
-
-        MeetUIUtils.verifyIsMutedStatus(
-            "participant3",
-            ConferenceFixture.getThirdParticipant(),
-            ConferenceFixture.getOwner(),
-            false);
+        toggleMuteAndCheck(
+                "unMuteThirdParticipantAndCheck",
+                ConferenceFixture.getThirdParticipant(),
+                "participant3",
+                ConferenceFixture.getOwner(),
+                false);
     }
 
     /**
@@ -251,5 +229,32 @@ public class MuteTest
 
         // now lets unmute
         unMuteOwnerAndCheck();
+    }
+
+    /**
+     * Toggles the mute state of a specific Meet conference participant and
+     * verifies that a specific other Meet conference participants sees a
+     * specific mute state for the former.
+     *
+     * @param testName the name of test (to be logged)
+     * @param testee the {@code WebDriver} which represents the Meet conference
+     * participant whose mute state is to be toggled
+     * @param testeeName the name of {@code testee} to be displayed should the
+     * test fail
+     * @param observer the {@code WebDriver} which represents the Meet
+     * conference participant to verify the mute state of {@code testee}
+     * @param muted the mute state of {@code testee} expected to be observed by
+     * {@code observer}
+     */
+    private void toggleMuteAndCheck(
+            String testName,
+            WebDriver testee,
+            String testeeName,
+            WebDriver observer,
+            boolean muted)
+    {
+        System.err.println("Start " + testName + ".");
+        MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
+        MeetUIUtils.verifyIsMutedStatus(testeeName, testee, observer, muted);
     }
 }

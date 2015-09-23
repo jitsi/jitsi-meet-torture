@@ -16,8 +16,6 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -78,10 +76,10 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add("TCPTest");
 
         DEFAULT_TESTS_TO_RUN.add("ActiveSpeakerTest");
-
         DEFAULT_TESTS_TO_RUN.add("StartMutedTest");
 
         DEFAULT_TESTS_TO_RUN.add("DisplayNameTest");
+        DEFAULT_TESTS_TO_RUN.add("DataChannelTest");
     }
 
     /**
@@ -132,7 +130,6 @@ public class TestsRunner
             ;
         testsToRun.add(0, SETUP_CONFERENCE_NAME);
         testsToRun.add(DISPOSE_CONFERENCE_NAME);
-
 
         for (String testName : testsToRun)
         {
