@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import sun.security.x509.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -40,16 +41,6 @@ public class TestsRunner
             = "jitsi-meet.tests.toExclude";
 
     /**
-     * The name of the SetupConference class.
-     */
-    private static final String SETUP_CONFERENCE_NAME = "SetupConference";
-
-    /**
-     * The name of the DisposeConference class.
-     */
-    private static final String DISPOSE_CONFERENCE_NAME = "DisposeConference";
-
-    /**
      * The default list of tests to run. This does not include SetupConference
      * and DisposeConference; they will be added separately.
      *
@@ -60,26 +51,26 @@ public class TestsRunner
 
     static
     {
-        DEFAULT_TESTS_TO_RUN.add("AvatarTest");
-        DEFAULT_TESTS_TO_RUN.add("MuteTest");
-        DEFAULT_TESTS_TO_RUN.add("StopVideoTest");
-        DEFAULT_TESTS_TO_RUN.add("SwitchVideoTests");
-        DEFAULT_TESTS_TO_RUN.add("EtherpadTests");
-        DEFAULT_TESTS_TO_RUN.add("LockRoomTest");
+        DEFAULT_TESTS_TO_RUN.add(AvatarTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(MuteTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(EtherpadTests.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         // doing the same test two more times to be sure it is
         // not a problem, as there was reported an issue about that
         // https://github.com/jitsi/jitsi-meet/issues/83
-        DEFAULT_TESTS_TO_RUN.add("LockRoomTest");
-        DEFAULT_TESTS_TO_RUN.add("LockRoomTest");
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add("UDPTest");
-        DEFAULT_TESTS_TO_RUN.add("TCPTest");
+        DEFAULT_TESTS_TO_RUN.add(UDPTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(TCPTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add("ActiveSpeakerTest");
-        DEFAULT_TESTS_TO_RUN.add("StartMutedTest");
+        DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add("DisplayNameTest");
-        DEFAULT_TESTS_TO_RUN.add("DataChannelTest");
+        DEFAULT_TESTS_TO_RUN.add(DisplayNameTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(DataChannelTest.class.getSimpleName());
     }
 
     /**
@@ -124,12 +115,12 @@ public class TestsRunner
         // SetupConference and DisposeConference must always be run exactly
         // once in the beginning and end of the tests.
         // They could potentially be moved to setUp() and tearDown().
-        while(testsToRun.remove(SETUP_CONFERENCE_NAME))
+        while(testsToRun.remove(SetupConference.class.getSimpleName()))
             ;
-        while(testsToRun.remove(DISPOSE_CONFERENCE_NAME))
+        while(testsToRun.remove(DisposeConference.class.getSimpleName()))
             ;
-        testsToRun.add(0, SETUP_CONFERENCE_NAME);
-        testsToRun.add(DISPOSE_CONFERENCE_NAME);
+        testsToRun.add(0, SetupConference.class.getSimpleName());
+        testsToRun.add(DisposeConference.class.getSimpleName());
 
         for (String testName : testsToRun)
         {
