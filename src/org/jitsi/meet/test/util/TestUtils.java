@@ -18,6 +18,8 @@ package org.jitsi.meet.test.util;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.util.*;
+
 /**
  * Utility class.
  * @author Damian Minkov
@@ -120,12 +122,12 @@ public class TestUtils
     {
         new WebDriverWait(participant, timeout)
             .until(new ExpectedCondition<Boolean>()
-        {
-            public Boolean apply(WebDriver d)
             {
-                return !d.findElements(By.xpath(xpath)).isEmpty();
-            }
-        });
+                public Boolean apply(WebDriver d)
+                {
+                    return !d.findElements(By.xpath(xpath)).isEmpty();
+                }
+            });
     }
 
     /**
@@ -146,6 +148,39 @@ public class TestUtils
                 {
                     return d.findElements(By.xpath(xpath))
                         .isEmpty();
+                }
+            });
+    }
+
+    /**
+     * Waits till an element becomes unavailable or not displayed.
+     * @param participant where we check
+     * @param xpath the xpath to search for the element
+     * @param timeout the time to wait for the element to disappear in seconds.
+     */
+    public static void waitsForElementNotPresentOrNotDisplayedByXPath(
+        WebDriver participant,
+        final String xpath,
+        long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    List<WebElement> elems = d.findElements(By.xpath(xpath));
+
+                    // element missing
+                    if (elems.isEmpty())
+                        return true;
+
+                    // let's check whether all elements are not displayed
+                    for (WebElement e : elems)
+                    {
+                        if(e.isDisplayed())
+                            return false;
+                    }
+                    return true;
                 }
             });
     }

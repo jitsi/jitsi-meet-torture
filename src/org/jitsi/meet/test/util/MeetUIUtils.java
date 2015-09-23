@@ -258,7 +258,7 @@ public class MeetUIUtils
         TestUtils.waitsForDisplayedElementByXPath(
             where, "//span[@id='localVideoContainer']/img[@class='userAvatar']",
             5);
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waitsForElementNotPresentOrNotDisplayedByXPath(
             where, "//span[@id='localVideoWrapper']/video", 5);
     }
 }
