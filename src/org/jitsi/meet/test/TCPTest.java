@@ -33,15 +33,6 @@ public class TCPTest
     extends TestCase
 {
     /**
-     * The property that will indicate that the test will not check whether
-     * meet reports connected to tcp.
-     * When using TURN statistics do not show whether we are connected with tcp
-     * to the turn server.
-     */
-    public static final String JITSI_MEET_DISABLE_TCP_PROTOCOL_CHECK_PROP
-        = "jitsi-meet.tcp.protocol.check.disabled";
-
-    /**
      * The URL fragment which when added to a Jitsi-Meet URL will effectively
      * disable the use of UDP for media.
      */
@@ -124,8 +115,10 @@ public class TCPTest
      * Jitsi-Meet conference running in <tt>driver</tt>.
      * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
      */
-    private String getProtocol(WebDriver driver)
+    static String getProtocol(WebDriver driver)
     {
+        if (driver == null)
+            return "error: driver is null";
         Object protocol = ((JavascriptExecutor) driver).executeScript(
             "try {" +
                 "return APP.connectionquality.getStats().transport[0].type;" +
@@ -141,14 +134,6 @@ public class TCPTest
      */
     private static boolean isEnabled()
     {
-        if (Boolean.valueOf(
-                System.getProperty(
-                        JITSI_MEET_DISABLE_TCP_PROTOCOL_CHECK_PROP, "false")))
-        {
-            System.err.println("Not running TCPTest, because it is disabled.");
-            return false;
-        }
-
         // TCP doesn't currently work on firefox.
         String browser
             = System.getProperty(ConferenceFixture.BROWSER_SECONDP_NAME_PROP);
