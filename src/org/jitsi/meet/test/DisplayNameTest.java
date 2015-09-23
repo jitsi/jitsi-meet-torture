@@ -76,26 +76,39 @@ public class DisplayNameTest
      */
     private void doLocalDisplayNameCheck(String newName)
     {
-        System.err.println("Start doLocalDisplayNameCheck.");
+        System.err.println("Start doLocalDisplayNameCheck for " + newName + ".");
 
         // now lets check whether display name is set locally
         WebElement displayNameElem =
             ConferenceFixture.getSecondParticipant().findElement(By.xpath(
                 "//span[@id='localVideoContainer']/span[@id='localDisplayName']"));
 
-        WebElement localVideoWrapperElem =
+        WebElement localVideoContainerElem =
             ConferenceFixture.getSecondParticipant().findElement(By.xpath(
-                "//span[@id='localVideoWrapper']"));
+                "//span[@id='localVideoContainer']"));
         Actions action = new Actions(ConferenceFixture.getSecondParticipant());
-        action.moveToElement(localVideoWrapperElem);
-        action.perform();
+        action.moveToElement(localVideoContainerElem);
+        action.build().perform();
 
-        assertTrue("Display name not visible", displayNameElem.isDisplayed());
+        boolean isFF = ConferenceFixture.getBrowserType(
+            ConferenceFixture.getSecondParticipant()).equals(
+                ConferenceFixture.BrowserType.firefox);
+        if (!isFF)
+        {
+            assertTrue("Display name not visible",
+                displayNameElem.isDisplayed());
+        }
 
         String displayNameText = displayNameElem.getText();
+        // there is a bug in FF with hovering over elements
+        // so we workaround this
+        if (isFF)
+        {
+            displayNameText = displayNameElem.getAttribute("innerHTML");
+        }
 
         if(newName != null && newName.length() > 0)
-            assertTrue("Display name not changed! Content of elem is:"
+            assertTrue("Display name not changed! Content of elem is: "
                 + displayNameText, displayNameText.contains(newName));
         else
             assertTrue("Display name is not removed! ("
@@ -109,7 +122,7 @@ public class DisplayNameTest
      */
     private void doRemoteDisplayNameCheck(String newName)
     {
-        System.err.println("Start doRemoteDisplayNameCheck.");
+        System.err.println("Start doRemoteDisplayNameCheck for " + newName + ".");
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
@@ -132,10 +145,20 @@ public class DisplayNameTest
                 "//span[@id='participant_" + secondParticipantResourceJid +
                 "']/span[@id='participant_" + secondParticipantResourceJid + "_name']"));
 
-        // FF driver sometimes not hovering over element
-        //assertTrue("Display name not visible", displayNameElem.isDisplayed());
+        boolean isFF = ConferenceFixture.getBrowserType(
+            ConferenceFixture.getOwner()).equals(
+            ConferenceFixture.BrowserType.firefox);
+        if (!isFF)
+        {
+            assertTrue("Display name not visible",
+                displayNameElem.isDisplayed());
+        }
 
         String displayNameText = displayNameElem.getText();
+        if (isFF)
+        {
+            displayNameText = displayNameElem.getAttribute("innerHTML");
+        }
 
         if(newName != null && newName.length() > 0)
             assertTrue("Display name not remotely changed! Content of elem is:"
@@ -152,7 +175,7 @@ public class DisplayNameTest
      */
     private void changeDisplayName(String newName)
     {
-        System.err.println("Start changeDisplayName.");
+        System.err.println("Start changeDisplayName for " + newName + ".");
 
         WebElement elem =
             ConferenceFixture.getSecondParticipant().findElement(By.xpath(
