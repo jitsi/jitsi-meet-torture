@@ -88,6 +88,26 @@ public class MeetUIUtils
     }
 
     /**
+     * Makes sure that the contact list panel is displayed. If not then opens it.
+     *
+     * @param user <tt>WebDriver</tt> instance of the participant for whom we'll
+     *             try to open the settings panel.
+     * @throws TimeoutException if we fail to open the contact list panel
+     */
+    public static void makeSureContactListIsDisplayed(WebDriver user)
+    {
+        String contactListXPath = "//div[@id='contactlist']";
+        WebElement contactList = user.findElement(By.xpath(contactListXPath));
+
+        if (!contactList.isDisplayed())
+        {
+            clickOnToolbarButton(user, "bottom_toolbar_contact_list");
+
+            TestUtils.waitsForDisplayedElementByXPath(user, contactListXPath, 5);
+        }
+    }
+
+    /**
      * Verifies if given peer is muted from other peer's perspective. Will fail
      * the test if the verification is negative.
      *
