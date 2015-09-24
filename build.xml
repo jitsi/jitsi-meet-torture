@@ -148,7 +148,7 @@ with the address of the instance to test (add to the command line
                 usefile="false"/>
         </junit>
 
-        <antcall target="-generate-html-reports"/>
+        <antcall target="generate-html-reports"/>
 
         <!-- Check whether testing went alright and fail if not.-->
         <fail if="testing.failed"/>
@@ -156,7 +156,7 @@ with the address of the instance to test (add to the command line
 
     <!-- Separates generating html reports in own target so we are able to
      to disable them -->
-    <target name="-generate-html-reports"
+    <target name="generate-html-reports"
             unless="jitsi-meet.disable.htmlreports">
         <junitreport todir="${test.reports.dir}">
             <fileset dir="${test.reports.dir}">
