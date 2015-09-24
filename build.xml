@@ -82,6 +82,9 @@
 
     <property environment="env"/>
 
+    <taskdef resource="net/sf/antcontrib/antlib.xml"
+             classpath="lib/ant-contrib-1.0b3.jar"/>
+
     <!--<property name="jitsi-meet.instance.url"-->
               <!--value="https://meet.example.com"/>-->
 
@@ -107,6 +110,13 @@ with the address of the instance to test (add to the command line
         <!-- the name of tests-result-file -->
         <property name="test.result.filename"
                   value="TEST-org.jitsi.meet.test.TestsRunner"/>
+
+        <!-- checks whether we have used custom filenames for the test result-->
+        <condition property="test.result.modify">
+            <not>
+                <matches string="${test.result.filename}" pattern="^TEST-.*$"/>
+            </not>
+        </condition>
 
         <junit printsummary="yes"
                fork="yes"
@@ -148,10 +158,43 @@ with the address of the instance to test (add to the command line
                 usefile="false"/>
         </junit>
 
+        <antcall target="add-filename-info-to-test-results"/>
+
         <antcall target="generate-html-reports"/>
 
         <!-- Check whether testing went alright and fail if not.-->
         <fail if="testing.failed"/>
+    </target>
+
+    <!-- If we have used custom filename for the test result process
+        result xmls and add the filename as a class name so we can see it in
+        the html reports -->
+    <target name="add-filename-info-to-test-results"
+            if="test.result.modify">
+        <foreach param="test-res-file"
+                 target="-add-filename-info-to-test-results-perfile"
+                 inheritall="true" inheritrefs="true">
+            <path>
+                <fileset dir="${test.reports.dir}">
+                    <include name="*.xml"/>
+                    <exclude name="TEST-*"/>
+                    <exclude name="html"/>
+                    <exclude name="html-sources"/>
+                </fileset>
+            </path>
+        </foreach>
+
+    </target>
+    <!-- Replaces in a test result xml the parameter to be its
+        class name, by default all tests are under TestsRunner -->
+    <target name="-add-filename-info-to-test-results-perfile">
+
+        <basename property="test-res-file-noext" file="${test-res-file}"
+                  suffix=".xml"/>
+
+        <replace file="${test-res-file}"
+                 token="name=&quot;org.jitsi.meet.test.TestsRunner&quot;"
+                value="name=&quot;org.jitsi.meet.test.${test-res-file-noext}&quot;"/>
     </target>
 
     <!-- Separates generating html reports in own target so we are able to
