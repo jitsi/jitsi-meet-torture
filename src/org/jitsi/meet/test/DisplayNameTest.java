@@ -167,6 +167,9 @@ public class DisplayNameTest
             assertTrue("Display name is not remotely removed! ("
                     + displayNameText + ")",
                 displayNameText.equals(DEFAULT_DISPLAY_NAME));
+
+        new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
+            .ownerClickOnRemoteVideoAndTest();
     }
 
     /**
