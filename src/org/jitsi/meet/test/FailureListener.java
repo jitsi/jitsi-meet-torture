@@ -57,6 +57,10 @@ public class FailureListener
             takeScreenshots(test);
 
             saveHtmlSources(test);
+
+            saveMeetDebugLog();
+
+            saveBrowserLogs();
         }
         catch(Throwable ex)
         {
