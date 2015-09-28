@@ -20,6 +20,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.util.*;
+
 /**
  * The tests for active speaker detection feature.
  *
@@ -144,7 +146,7 @@ public class ActiveSpeakerTest
         catch (TimeoutException exc)
         {
             assertEquals(
-                "Active speaker not displayed on large video",
+                "Active speaker not displayed on large video " + new Date(),
                 speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2));
         }
 
