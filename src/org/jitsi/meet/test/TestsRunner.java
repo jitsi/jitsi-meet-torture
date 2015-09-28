@@ -115,7 +115,8 @@ public class TestsRunner
 
             while (tokens.hasMoreTokens())
             {
-                while (testsToRun.remove(tokens.nextToken()));
+                String test = tokens.nextToken();
+                while (testsToRun.remove(test));
             }
         }
 
