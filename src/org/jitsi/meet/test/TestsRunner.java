@@ -16,7 +16,6 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
-import sun.security.x509.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -75,18 +74,23 @@ public class TestsRunner
     }
 
     /**
-     * The tests that are currently started.
-     * If the property jitsi-meet.tests.toRun exists we use its values to
-     * add only the tests mentioned in it.
-     * @return tests that are currently started.
+     * Gets a list of (the simple class names of) the {@code TestCase}s to run.
+     * The returned value includes the {@code TestCase}s specified by the
+     * property {@link #TESTS_TO_RUN_PNAME} (defaults to
+     * {@link #DEFAULT_TESTS_TO_RUN} and excludes the {@code TestCase}s
+     * specified by the property {@link #TESTS_TO_EXCLUDE_PNAME} (if a value is
+     * assigned to the respective property).
+     *
+     * @return a list of (the simple class names of) the {@code TestCase}s to
+     * run
      */
-    public static TestSuite suite()
+    private static List<String> getTestsToRun()
     {
-        TestSuite suite = new TestSuite();
-
         List<String> testsToRun = new LinkedList<String>();
 
+        // Add the tests which are to run.
         String testsToRunString = System.getProperty(TESTS_TO_RUN_PNAME);
+
         if (testsToRunString == null
                 || testsToRunString.equalsIgnoreCase("all"))
         {
@@ -95,39 +99,90 @@ public class TestsRunner
         else
         {
             StringTokenizer tokens = new StringTokenizer(testsToRunString, ",");
+
             while (tokens.hasMoreTokens())
             {
                 testsToRun.add(tokens.nextToken());
             }
         }
 
+        // Remove the tests which are to be excluded i.e. to not run.
         String testsToExclude = System.getProperty(TESTS_TO_EXCLUDE_PNAME);
+
         if (testsToExclude != null)
         {
             StringTokenizer tokens = new StringTokenizer(testsToExclude, ",");
+
             while (tokens.hasMoreTokens())
             {
-                String token = tokens.nextToken();
-                while (testsToRun.remove(token))
-                    ;
+                while (testsToRun.remove(tokens.nextToken()));
             }
         }
 
         // SetupConference and DisposeConference must always be run exactly
-        // once in the beginning and end of the tests.
-        // They could potentially be moved to setUp() and tearDown().
-        while(testsToRun.remove(SetupConference.class.getSimpleName()))
-            ;
-        while(testsToRun.remove(DisposeConference.class.getSimpleName()))
-            ;
+        // once in the beginning and end of the tests. They could potentially be
+        // moved to setUp() and tearDown().
+        while (testsToRun.remove(SetupConference.class.getSimpleName()));
+        while (testsToRun.remove(DisposeConference.class.getSimpleName()));
         testsToRun.add(0, SetupConference.class.getSimpleName());
         testsToRun.add(DisposeConference.class.getSimpleName());
+
+        return testsToRun;
+    }
+
+    /**
+     * Sets the audio file to be streamed through a fake audio device by the
+     * conference participants.
+     */
+    private static void setFakeAudioStreamFile()
+    {
+        String fakeStreamAudioFile
+            = System.getProperty(ConferenceFixture.FAKE_AUDIO_FNAME_PROP);
+
+        if (fakeStreamAudioFile == null)
+        {
+            fakeStreamAudioFile
+                = new File("resources/fakeAudioStream.wav").getAbsolutePath();
+        }
+
+        ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);
+    }
+
+    /**
+     * Gets (a suite of) the tests to run. If the property
+     * {@code jitsi-meet.tests.toRun} exists, we use its value to add only the
+     * tests it mentions.
+     *
+     * @return (a suite of) the tests to run
+     */
+    public static TestSuite suite()
+    {
+        List<String> testsToRun = getTestsToRun();
+        TestSuite suite = suite(testsToRun);
+
+        setFakeAudioStreamFile();
+
+        return suite;
+    }
+
+    /**
+     * Initializes a new {@code TestSuite} instance from a specific sequence of
+     * test cases.
+     *
+     * @param testsToRun the simple class names of the {@code TestCase}s which
+     * comprise the new {@code TestSuite} instance
+     * @return a new {@code TestSuite} instance which consists of the specified
+     * {@code testsToRun}
+     */
+    private static TestSuite suite(List<String> testsToRun)
+    {
+        String packageName = TestsRunner.class.getPackage().getName();
+        TestSuite suite = new TestSuite();
 
         for (String testName : testsToRun)
         {
             // class names are relative to this package
-            String className = TestsRunner.class.getPackage().getName()
-                + "." + testName;
+            String className = packageName + "." + testName;
 
             try
             {
@@ -162,17 +217,6 @@ public class TestsRunner
                 t.printStackTrace();
             }
         }
-
-        String fakeStreamAudioFile
-            = System.getProperty(ConferenceFixture.FAKE_AUDIO_FNAME_PROP);
-
-        if (fakeStreamAudioFile == null)
-        {
-            File file = new File("resources/fakeAudioStream.wav");
-            fakeStreamAudioFile = file.getAbsolutePath();
-        }
-
-        ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);
 
         return suite;
     }
