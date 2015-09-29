@@ -78,9 +78,13 @@ public class StopVideoTest
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
 
+        // make sure we check at the remote videos on the second participant
+        // side, otherwise if local is muted will fail
         TestUtils.waitsForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 10);
+            "//span[starts-with(@id, 'participant_')]"
+                + "/span[@class='videoMuted']"
+                + "/i[@class='icon-camera-disabled']", 10);
     }
 
     /**

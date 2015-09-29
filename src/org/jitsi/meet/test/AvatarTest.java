@@ -70,6 +70,9 @@ public class AvatarTest
         TestUtils.waitsForDisplayedElementByXPath(
             owner, "//a[@id='toolbar_button_camera']", 10);
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
+        TestUtils.waitsForElementByXPath(
+            owner,
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
 
         // Check if avatar on large video is the same as on local thumbnail
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
@@ -95,15 +98,19 @@ public class AvatarTest
         // Check if avatar is displayed on owner's local video thumbnail
         MeetUIUtils.verifyAvatarOnLocalThumbnail(owner);
         // Unmute - now local avatar should be hidden and local video displayed
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
+        new StopVideoTest("startVideoOnOwnerAndCheck")
+            .startVideoOnOwnerAndCheck();
+
         // Check if owner is unmuted from second peer perspective
         MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, false);
         MeetUIUtils.verifyVideoOnLocalThumbnail(owner);
 
         // Now both owner and 2nd have video muted
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
+        new StopVideoTest("stopVideoOnOwnerAndCheck")
+            .stopVideoOnOwnerAndCheck();
         MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, true);
-        MeetUIUtils.clickOnToolbarButton(secondPeer, "toolbar_button_camera");
+        new StopVideoTest("stopVideoOnParticipantAndCheck")
+            .stopVideoOnParticipantAndCheck();
         MeetUIUtils.verifyVideoMuted(
             "secondParticipant", secondPeer, owner, true);
 
@@ -147,10 +154,14 @@ public class AvatarTest
         // Close 3rd participant
         ConferenceFixture.quit(thirdPeer);
 
+        TestUtils.waits(1500);
+
         // Unmute owner and 2nd videos
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
+        new StopVideoTest("startVideoOnOwnerAndCheck")
+            .startVideoOnOwnerAndCheck();
         MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, false);
-        MeetUIUtils.clickOnToolbarButton(secondPeer, "toolbar_button_camera");
+        new StopVideoTest("startVideoOnParticipantAndCheck")
+            .startVideoOnParticipantAndCheck();
         MeetUIUtils.verifyVideoMuted(
             "secondParticipant", secondPeer, owner, false);
     }
