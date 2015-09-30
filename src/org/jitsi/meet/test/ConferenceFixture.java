@@ -59,6 +59,13 @@ public class ConferenceFixture
         = "browser.chrome.binary";
 
     /**
+     * The property to change tested ff browser binary. To specify
+     * different versions.
+     */
+    public static final String BROWSER_FF_BINARY_NAME_PROP
+        = "browser.firefox.binary";
+
+    /**
      * The property to change tested browser for the second participant.
      */
     public static final String BROWSER_SECONDP_NAME_PROP
@@ -277,6 +284,15 @@ public class ConferenceFixture
         if(browser != null
             && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
         {
+            String browserBinary
+                = System.getProperty(BROWSER_FF_BINARY_NAME_PROP);
+            if(browserBinary != null && browserBinary.trim().length() > 0)
+            {
+                File binaryFile = new File(browserBinary);
+                if(binaryFile.exists())
+                    System.setProperty("webdriver.firefox.bin", browserBinary);
+            }
+
             FirefoxProfile profile = new FirefoxProfile();
             profile.setPreference("media.navigator.permission.disabled", true);
             profile.setAcceptUntrustedCertificates(true);
@@ -289,7 +305,8 @@ public class ConferenceFixture
             profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
                 "text/plain;text/csv");
             profile.setPreference("browser.helperApps.alwaysAsk.force", false);
-            profile.setPreference("browser.download.manager.showWhenStarting", false );
+            profile.setPreference("browser.download.manager.showWhenStarting",
+                false);
 
             return new FirefoxDriver(profile);
         }
