@@ -25,6 +25,7 @@ import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
@@ -49,6 +50,13 @@ public class ConferenceFixture
      * The property to change tested browser for the owner.
      */
     public static final String BROWSER_OWNER_NAME_PROP = "browser.owner";
+
+    /**
+     * The property to change tested chrome browser binary. To specify
+     * different versions.
+     */
+    public static final String BROWSER_CHROME_BINARY_NAME_PROP
+        = "browser.chrome.binary";
 
     /**
      * The property to change tested browser for the second participant.
@@ -310,6 +318,14 @@ public class ConferenceFixture
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
 
+            String browserBinary
+                = System.getProperty(BROWSER_CHROME_BINARY_NAME_PROP);
+            if(browserBinary != null && browserBinary.trim().length() > 0)
+            {
+                File binaryFile = new File(browserBinary);
+                if(binaryFile.exists())
+                    ops.setBinary(binaryFile);
+            }
 
             if (fakeStreamAudioFName != null)
             {
