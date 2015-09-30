@@ -55,8 +55,15 @@ public class ConferenceFixture
      * The property to change tested chrome browser binary. To specify
      * different versions.
      */
-    public static final String BROWSER_CHROME_BINARY_NAME_PROP
-        = "browser.chrome.binary";
+    public static final String BROWSER_CHROME_BINARY_OWNER_NAME_PROP
+        = "browser.chrome.owner.binary";
+
+    /**
+     * The property to change tested chrome browser binary. To specify
+     * different versions.
+     */
+    public static final String BROWSER_CHROME_BINARY_SECOND_NAME_PROP
+        = "browser.chrome.second.binary";
 
     /**
      * The property to change tested ff browser binary. To specify
@@ -137,6 +144,16 @@ public class ConferenceFixture
     private static WebDriver thirdParticipant;
 
     /**
+     * Participant drivers enum.
+     */
+    private enum Participant
+    {
+        ownerDriver,
+        secondParticipantDriver,
+        thirdParticipantDriver;
+    }
+
+    /**
      * Returns the currently allocated conference owner.
      * @return the currently allocated conference owner.
      */
@@ -207,7 +224,7 @@ public class ConferenceFixture
         System.err.println("Starting owner participant.");
 
         String browser = System.getProperty(BROWSER_OWNER_NAME_PROP);
-        owner = startDriver(browser);
+        owner = startDriver(browser, Participant.ownerDriver);
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
@@ -259,11 +276,14 @@ public class ConferenceFixture
 
     /**
      * Starts chrome instance using some default settings.
+     * @param browser the browser to use
+     * @param participant the participant we are creating driver for
      * @return the webdriver instance.
      */
-    private static WebDriver startDriver(String browser)
+    private static WebDriver startDriver(String browser,
+        Participant participant)
     {
-        WebDriver wd = startDriverInstance(browser);
+        WebDriver wd = startDriverInstance(browser, participant);
 
         wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
@@ -276,9 +296,12 @@ public class ConferenceFixture
 
     /**
      * Starts chrome instance using some default settings.
+     * @param browser the browser to use
+     * @param participant the participant we are creating driver for
      * @return the webdriver instance.
      */
-    private static WebDriver startDriverInstance(String browser)
+    private static WebDriver startDriverInstance(String browser,
+        Participant participant)
     {
         // by default we load chrome, but we can load safari or firefox
         if(browser != null
@@ -335,8 +358,13 @@ public class ConferenceFixture
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
 
-            String browserBinary
-                = System.getProperty(BROWSER_CHROME_BINARY_NAME_PROP);
+            String browserProp = null;
+            if (participant == Participant.secondParticipantDriver)
+                browserProp = BROWSER_CHROME_BINARY_SECOND_NAME_PROP;
+            else
+                browserProp = BROWSER_CHROME_BINARY_OWNER_NAME_PROP;
+
+            String browserBinary = System.getProperty(browserProp);
             if(browserBinary != null && browserBinary.trim().length() > 0)
             {
                 File binaryFile = new File(browserBinary);
@@ -376,7 +404,8 @@ public class ConferenceFixture
         System.err.println("Starting second participant.");
 
         String browser = System.getProperty(BROWSER_SECONDP_NAME_PROP);
-        secondParticipant = startDriver(browser);
+        secondParticipant
+            = startDriver(browser, Participant.secondParticipantDriver);
 
         openRoom(secondParticipant, fragment, browser);
 
@@ -392,7 +421,8 @@ public class ConferenceFixture
         System.err.println("Starting third participant.");
 
         String browser = System.getProperty(BROWSER_THIRDP_NAME_PROP);
-        thirdParticipant = startDriver(browser);
+        thirdParticipant
+            = startDriver(browser, Participant.thirdParticipantDriver);
 
         openRoom(thirdParticipant, null, browser);
 
