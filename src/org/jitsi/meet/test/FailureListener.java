@@ -133,6 +133,15 @@ public class FailureListener
                 JUnitVersionHelper.getTestCaseClassName(test)
                     + "." + JUnitVersionHelper.getTestCaseName(test)
                     + "-participant.png");
+
+        WebDriver thirdParticipant =
+            ConferenceFixture.getThirdParticipantInstance();
+
+        if(thirdParticipant != null)
+            takeScreenshot(thirdParticipant,
+                JUnitVersionHelper.getTestCaseClassName(test)
+                    + "." + JUnitVersionHelper.getTestCaseName(test)
+                    + "-third.png");
     }
 
     /**
@@ -177,6 +186,15 @@ public class FailureListener
                 JUnitVersionHelper.getTestCaseClassName(test)
                     + "." + JUnitVersionHelper.getTestCaseName(test)
                     + "-participant.html");
+
+        WebDriver thirdParticipant =
+            ConferenceFixture.getThirdParticipantInstance();
+
+        if(thirdParticipant != null)
+            saveHtmlSource(thirdParticipant,
+                JUnitVersionHelper.getTestCaseClassName(test)
+                    + "." + JUnitVersionHelper.getTestCaseName(test)
+                    + "-third.html");
     }
 
     /**
@@ -212,6 +230,14 @@ public class FailureListener
         if(secondParticipant != null)
         {
             saveMeetDebugLog(secondParticipant, "meetlog-participant.json");
+        }
+
+        WebDriver thirdParticipant =
+            ConferenceFixture.getThirdParticipantInstance();
+
+        if(thirdParticipant != null)
+        {
+            saveMeetDebugLog(thirdParticipant, "meetlog-third.json");
         }
     }
 
@@ -251,6 +277,11 @@ public class FailureListener
             ConferenceFixture.getSecondParticipantInstance();
         if(secondParticipant != null)
             saveBrowserLogs(secondParticipant, "console-participant.log");
+
+        WebDriver thirdParticipant =
+            ConferenceFixture.getThirdParticipantInstance();
+        if(thirdParticipant != null)
+            saveBrowserLogs(thirdParticipant, "console-third.log");
     }
 
     /**
