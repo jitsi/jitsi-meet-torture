@@ -159,6 +159,7 @@ public class TestsRunner
     public static TestSuite suite()
     {
         List<String> testsToRun = getTestsToRun();
+        System.err.println("Will run the following tests: " + testsToRun);
         TestSuite suite = suite(testsToRun);
 
         setFakeAudioStreamFile();
