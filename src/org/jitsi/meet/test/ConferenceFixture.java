@@ -215,15 +215,16 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts the conference owner, the first participant that generates
-     * the random room name.
-     * @param fragment adds the given string to the fragment part of the URL
+     * Initializes <tt>currentRoomName</tt> and starts the "owner".
+     * @param fragment fragment to be added the URL opened by the "owner".
      */
     public static void startOwner(String fragment)
     {
         System.err.println("Starting owner participant.");
 
-        String browser = System.getProperty(BROWSER_OWNER_NAME_PROP);
+        BrowserType browser
+            = BrowserType.valueOfString(System.getProperty(
+                    BROWSER_OWNER_NAME_PROP));
         owner = startDriver(browser, Participant.ownerDriver);
 
         currentRoomName = "torture"
@@ -245,7 +246,7 @@ public class ConferenceFixture
     public static void openRoom(
             WebDriver participant,
             String fragment,
-            String browser)
+            BrowserType browser)
     {
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
@@ -254,8 +255,7 @@ public class ConferenceFixture
         if(fragment != null)
             URL += "&" + fragment;
 
-        if(browser != null
-            && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
+        if (browser == BrowserType.firefox)
             URL += "&config.firefox_fake_device=true";
 
         String participantName = getParticipantName(participant);
@@ -280,7 +280,7 @@ public class ConferenceFixture
      * @param participant the participant we are creating driver for
      * @return the webdriver instance.
      */
-    private static WebDriver startDriver(String browser,
+    private static WebDriver startDriver(BrowserType browser,
         Participant participant)
     {
         WebDriver wd = startDriverInstance(browser, participant);
@@ -295,17 +295,16 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts chrome instance using some default settings.
+     * Starts a <tt>WebDriver</tt> instance using default settings.
      * @param browser the browser to use
      * @param participant the participant we are creating driver for
-     * @return the webdriver instance.
+     * @return the <tt>WebDriver</tt> instance.
      */
-    private static WebDriver startDriverInstance(String browser,
+    private static WebDriver startDriverInstance(BrowserType browser,
         Participant participant)
     {
         // by default we load chrome, but we can load safari or firefox
-        if(browser != null
-            && browser.equalsIgnoreCase(BrowserType.firefox.toString()))
+        if (browser == BrowserType.firefox)
         {
             String browserBinary
                 = System.getProperty(BROWSER_FF_BINARY_NAME_PROP);
@@ -333,13 +332,11 @@ public class ConferenceFixture
 
             return new FirefoxDriver(profile);
         }
-        else if(browser != null
-            && browser.equalsIgnoreCase(BrowserType.safari.toString()))
+        else if (browser == BrowserType.safari)
         {
             return new SafariDriver();
         }
-        else if(browser != null
-            && browser.equalsIgnoreCase(BrowserType.ie.toString()))
+        else if (browser == BrowserType.ie)
         {
             DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
             caps.setCapability("ignoreZoomSetting", true);
@@ -403,7 +400,9 @@ public class ConferenceFixture
     {
         System.err.println("Starting second participant.");
 
-        String browser = System.getProperty(BROWSER_SECONDP_NAME_PROP);
+        BrowserType browser
+            = BrowserType.valueOfString(
+                System.getProperty(BROWSER_SECONDP_NAME_PROP));
         secondParticipant
             = startDriver(browser, Participant.secondParticipantDriver);
 
@@ -420,7 +419,9 @@ public class ConferenceFixture
     {
         System.err.println("Starting third participant.");
 
-        String browser = System.getProperty(BROWSER_THIRDP_NAME_PROP);
+        BrowserType browser
+            = BrowserType.valueOfString(
+                System.getProperty(BROWSER_THIRDP_NAME_PROP));
         thirdParticipant
             = startDriver(browser, Participant.thirdParticipantDriver);
 
