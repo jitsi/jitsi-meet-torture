@@ -222,6 +222,10 @@ public class LockRoomTest
         // as participant will fail joining
         ConferenceFixture.checkParticipantToJoinRoom(
             ConferenceFixture.getSecondParticipant(), 5);
+        ConferenceFixture.waitsParticipantToJoinConference(
+                ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.waitForSendReceiveData(
+                ConferenceFixture.getSecondParticipant());
 
         List<WebElement> elems = ConferenceFixture.getSecondParticipant()
             .findElements(
