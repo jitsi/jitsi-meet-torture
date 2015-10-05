@@ -54,13 +54,17 @@ public class FailureListener
     {
         try
         {
+            String fileNamePrefix
+                = JUnitVersionHelper.getTestCaseClassName(test)
+                    + "." + JUnitVersionHelper.getTestCaseName(test);
+
             takeScreenshots(test);
 
             saveHtmlSources(test);
 
-            saveMeetDebugLog();
+            saveMeetDebugLog(fileNamePrefix);
 
-            saveBrowserLogs();
+            saveBrowserLogs(fileNamePrefix);
         }
         catch(Throwable ex)
         {
@@ -80,13 +84,17 @@ public class FailureListener
     {
         try
         {
+            String fileNamePrefix
+                = JUnitVersionHelper.getTestCaseClassName(test)
+                + "." + JUnitVersionHelper.getTestCaseName(test);
+
             takeScreenshots(test);
 
             saveHtmlSources(test);
 
-            saveMeetDebugLog();
+            saveMeetDebugLog(fileNamePrefix);
 
-            saveBrowserLogs();
+            saveBrowserLogs(fileNamePrefix);
         }
         catch(Throwable ex)
         {
@@ -120,28 +128,25 @@ public class FailureListener
      */
     private void takeScreenshots(Test test)
     {
+        String fileName = JUnitVersionHelper.getTestCaseClassName(test)
+            + "." + JUnitVersionHelper.getTestCaseName(test);
+
         takeScreenshot(ConferenceFixture.getOwner(),
-            JUnitVersionHelper.getTestCaseClassName(test)
-                + "." + JUnitVersionHelper.getTestCaseName(test)
-                + "-owner.png");
+            fileName + "-owner.png");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
 
         if(secondParticipant != null)
             takeScreenshot(secondParticipant,
-                JUnitVersionHelper.getTestCaseClassName(test)
-                    + "." + JUnitVersionHelper.getTestCaseName(test)
-                    + "-participant.png");
+                fileName + "-participant.png");
 
         WebDriver thirdParticipant =
             ConferenceFixture.getThirdParticipantInstance();
 
         if(thirdParticipant != null)
             takeScreenshot(thirdParticipant,
-                JUnitVersionHelper.getTestCaseClassName(test)
-                    + "." + JUnitVersionHelper.getTestCaseName(test)
-                    + "-third.png");
+                fileName + "-third.png");
     }
 
     /**
@@ -173,28 +178,25 @@ public class FailureListener
      */
     private void saveHtmlSources(Test test)
     {
+        String fileName = JUnitVersionHelper.getTestCaseClassName(test)
+            + "." + JUnitVersionHelper.getTestCaseName(test);
+
         saveHtmlSource(ConferenceFixture.getOwner(),
-            JUnitVersionHelper.getTestCaseClassName(test)
-                + "." + JUnitVersionHelper.getTestCaseName(test)
-                + "-owner.html");
+            fileName + "-owner.html");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
 
         if(secondParticipant != null)
             saveHtmlSource(secondParticipant,
-                JUnitVersionHelper.getTestCaseClassName(test)
-                    + "." + JUnitVersionHelper.getTestCaseName(test)
-                    + "-participant.html");
+                fileName + "-participant.html");
 
         WebDriver thirdParticipant =
             ConferenceFixture.getThirdParticipantInstance();
 
         if(thirdParticipant != null)
             saveHtmlSource(thirdParticipant,
-                JUnitVersionHelper.getTestCaseClassName(test)
-                    + "." + JUnitVersionHelper.getTestCaseName(test)
-                    + "-third.html");
+                fileName + "-third.html");
     }
 
     /**
@@ -220,16 +222,18 @@ public class FailureListener
      * Saves the log from meet. Normally when clicked it is saved in Downloads
      * if we do not find it we skip it.
      */
-    private void saveMeetDebugLog()
+    private void saveMeetDebugLog(String fileNamePrefix)
     {
-        saveMeetDebugLog(ConferenceFixture.getOwner(), "meetlog-owner.json");
+        saveMeetDebugLog(ConferenceFixture.getOwner(),
+            fileNamePrefix + "-meetlog-owner.json");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
 
         if(secondParticipant != null)
         {
-            saveMeetDebugLog(secondParticipant, "meetlog-participant.json");
+            saveMeetDebugLog(secondParticipant,
+                fileNamePrefix + "meetlog-participant.json");
         }
 
         WebDriver thirdParticipant =
@@ -237,7 +241,8 @@ public class FailureListener
 
         if(thirdParticipant != null)
         {
-            saveMeetDebugLog(thirdParticipant, "meetlog-third.json");
+            saveMeetDebugLog(thirdParticipant,
+                fileNamePrefix + "meetlog-third.json");
         }
     }
 
@@ -269,19 +274,22 @@ public class FailureListener
     /**
      * Saves browser console logs.
      */
-    private void saveBrowserLogs()
+    private void saveBrowserLogs(String fileNamePrefix)
     {
-        saveBrowserLogs(ConferenceFixture.getOwner(), "console-owner.log");
+        saveBrowserLogs(ConferenceFixture.getOwner(),
+            fileNamePrefix + "-console-owner.log");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
         if(secondParticipant != null)
-            saveBrowserLogs(secondParticipant, "console-participant.log");
+            saveBrowserLogs(secondParticipant,
+                fileNamePrefix + "-console-participant.log");
 
         WebDriver thirdParticipant =
             ConferenceFixture.getThirdParticipantInstance();
         if(thirdParticipant != null)
-            saveBrowserLogs(thirdParticipant, "console-third.log");
+            saveBrowserLogs(thirdParticipant,
+                fileNamePrefix + "-console-third.log");
     }
 
     /**
