@@ -78,21 +78,22 @@ public class DisplayNameTest
     {
         System.err.println("Start doLocalDisplayNameCheck for " + newName + ".");
 
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
         // now lets check whether display name is set locally
-        WebElement displayNameElem =
-            ConferenceFixture.getSecondParticipant().findElement(By.xpath(
+        WebElement displayNameElem
+            = secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']/span[@id='localDisplayName']"));
 
-        WebElement localVideoContainerElem =
-            ConferenceFixture.getSecondParticipant().findElement(By.xpath(
+        WebElement localVideoContainerElem
+            = secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"));
-        Actions action = new Actions(ConferenceFixture.getSecondParticipant());
+        Actions action = new Actions(secondParticipant);
         action.moveToElement(localVideoContainerElem);
         action.build().perform();
 
-        boolean isFF = ConferenceFixture.getBrowserType(
-            ConferenceFixture.getSecondParticipant()).equals(
-                ConferenceFixture.BrowserType.firefox);
+        boolean isFF
+            = ConferenceFixture.getBrowserType(secondParticipant) ==
+                    ConferenceFixture.BrowserType.firefox;
         if (!isFF)
         {
             assertTrue("Display name not visible",
@@ -129,25 +130,29 @@ public class DisplayNameTest
         new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
             .ownerClickOnRemoteVideoAndTest();
 
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
         final String secondParticipantResourceJid = MeetUtils
-            .getResourceJid(ConferenceFixture.getSecondParticipant());
+            .getResourceJid(secondParticipant);
 
         WebElement localVideoWrapperElem =
-            ConferenceFixture.getOwner().findElement(By.xpath(
+            owner.findElement(By.xpath(
                 "//span[@id='participant_" + secondParticipantResourceJid + "']"));
-        Actions action = new Actions(ConferenceFixture.getOwner());
+        Actions action = new Actions(owner);
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
         // now lets check whether display name is set locally
         WebElement displayNameElem =
-            ConferenceFixture.getOwner().findElement(By.xpath(
-                "//span[@id='participant_" + secondParticipantResourceJid +
-                "']/span[@id='participant_" + secondParticipantResourceJid + "_name']"));
+            owner.findElement(By.xpath(
+                    "//span[@id='participant_" + secondParticipantResourceJid +
+                            "']/span[@id='participant_" +
+                            secondParticipantResourceJid + "_name']"));
 
-        boolean isFF = ConferenceFixture.getBrowserType(
-            ConferenceFixture.getOwner()).equals(
-            ConferenceFixture.BrowserType.firefox);
+        boolean isFF
+                = ConferenceFixture.getBrowserType(secondParticipant)
+                    == ConferenceFixture.BrowserType.firefox;
         if (!isFF)
         {
             assertTrue("Display name not visible",

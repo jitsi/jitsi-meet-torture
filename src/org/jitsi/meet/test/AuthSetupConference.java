@@ -184,7 +184,7 @@ public class AuthSetupConference
         String authButtonName = "jqi_state0_" +
                 "buttonspandatai18ndialogIamHostIamthehostspan";
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             moderator, "//button[@name='" + authButtonName + "']", 15);
 
         WebElement authButton = moderator.findElement(By.name(authButtonName));
@@ -206,7 +206,7 @@ public class AuthSetupConference
                                      String idpName,
                                      String idSubmitBtnName)
     {
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             participant, "//input[@id='" + idpSelectListId + "']", 15);
 
         WebElement idpInput = participant.findElement(By.id(idpSelectListId));
@@ -223,7 +223,7 @@ public class AuthSetupConference
                                      String    username,
                                      String    password )
     {
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             participant, "//input[@id='" + usernameInputId + "']", 15);
 
         WebElement usernameElem

@@ -76,18 +76,16 @@ public class TCPTest
                      "udp",
                      getProtocol(ConferenceFixture.getSecondParticipant()));
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.startParticipant(DISABLE_UDP_URL_FRAGMENT);
-        ConferenceFixture.checkParticipantToJoinRoom(
-                ConferenceFixture.getSecondParticipant(), 10);
-        ConferenceFixture.waitsParticipantToJoinConference(
-                ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.waitForSendReceiveData(
-                ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant(DISABLE_UDP_URL_FRAGMENT);
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        ConferenceFixture.waitForSendReceiveData(secondParticipant);
 
         assertEquals("We must be connected through TCP",
                      "tcp",
-                     getProtocol(ConferenceFixture.getSecondParticipant()));
+                     getProtocol(secondParticipant));
     }
 
 
@@ -97,14 +95,12 @@ public class TCPTest
     @Override
     protected void tearDown()
     {
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.startParticipant();
-        ConferenceFixture.checkParticipantToJoinRoom(
-                ConferenceFixture.getSecondParticipant(), 10);
-        ConferenceFixture.waitsParticipantToJoinConference(
-                ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.waitForSendReceiveData(
-                ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        ConferenceFixture.waitForSendReceiveData(secondParticipant);
     }
 
     /**

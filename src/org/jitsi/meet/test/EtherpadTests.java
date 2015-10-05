@@ -67,17 +67,17 @@ public class EtherpadTests
     {
         System.err.println("Start enterEtherpad.");
 
+        WebDriver owner = ConferenceFixture.getOwner();
+
         // waits for etherpad button to be displayed in the toolbar
-        TestUtils.waitsForDisplayedElementByID(
-            ConferenceFixture.getOwner(), "toolbar_button_etherpad", 15);
+        TestUtils.waitForDisplayedElementByID(
+                owner, "toolbar_button_etherpad", 15);
 
-        MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
-            "icon-share-doc");
+        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
 
-        TestUtils.waits(5000);
+        TestUtils.waitMillis(5000);
 
-        TestUtils.waitsForNotDisplayedElementByID(
-            ConferenceFixture.getOwner(), "largeVideo", 10);
+        TestUtils.waitForNotDisplayedElementByID(owner, "largeVideo", 10);
     }
 
     /**
@@ -88,39 +88,37 @@ public class EtherpadTests
     {
         System.err.println("Start writeTextAndCheck.");
 
+        WebDriver owner = ConferenceFixture.getOwner();
         try
         {
-            WebDriverWait wait = new WebDriverWait(
-                ConferenceFixture.getOwner(), 30);
+
+            WebDriverWait wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.tagName("iframe")));
 
-            wait = new WebDriverWait(
-                ConferenceFixture.getOwner(), 30);
+            wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.name("ace_outer")));
 
-            wait = new WebDriverWait(
-                ConferenceFixture.getOwner(), 30);
+            wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.name("ace_inner")));
 
             String textToEnter = "SomeTestText";
 
-            ConferenceFixture.getOwner().findElement(
-                By.id("innerdocbody")).sendKeys(textToEnter);
+            owner.findElement(By.id("innerdocbody")).sendKeys(textToEnter);
 
-            TestUtils.waits(2000);
+            TestUtils.waitMillis(2000);
 
             // now search and check the text
-            String txt = ConferenceFixture.getOwner().findElement(
+            String txt = owner.findElement(
                 By.xpath("//span[contains(@class, 'author')]")).getText();
 
             assertEquals("Texts do not match", textToEnter, txt);
         }
         finally
         {
-            ConferenceFixture.getOwner().switchTo().defaultContent();
+            owner.switchTo().defaultContent();
         }
     }
 
@@ -134,9 +132,9 @@ public class EtherpadTests
         MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
             "icon-share-doc");
 
-        TestUtils.waits(5000);
+        TestUtils.waitMillis(5000);
 
-        TestUtils.waitsForDisplayedElementByID(
+        TestUtils.waitForDisplayedElementByID(
             ConferenceFixture.getOwner(), "largeVideo", 10);
     }
 

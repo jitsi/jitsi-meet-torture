@@ -58,31 +58,28 @@ public class StartMutedTest
     {
         System.err.println("Start checkboxesTest.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        TestUtils.waits(1000);
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        TestUtils.waitMillis(1000);
         WebDriver owner = ConferenceFixture.getOwner();
 
         // Make sure settings panel is displayed
-        MeetUIUtils.makeSureSettingsAreDisplayed(owner);
+        MeetUIUtils.displaySettingsPanel(owner);
         // Wait for 'start muted' checkboxes
-        TestUtils.waitsForDisplayedElementByXPath(
+        TestUtils.waitForDisplayedElementByXPath(
             owner, "//input[@id='startAudioMuted']", 5);
-        TestUtils.waitsForDisplayedElementByXPath(
-            owner, "//input[@id='startVideoMuted']", 5);
+        TestUtils.waitForDisplayedElementByXPath(
+                owner, "//input[@id='startVideoMuted']", 5);
 
         owner.findElement(By.id("startAudioMuted")).click();
         owner.findElement(By.id("startVideoMuted")).click();
         owner.findElement(By.id("updateSettings")).click();
 
-        ConferenceFixture.startParticipant();
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 10);
-
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getSecondParticipant());
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
 
         checkSecondParticipantForMute();
-
     }
 
     /**
@@ -93,24 +90,19 @@ public class StartMutedTest
     {
         System.err.println("Start configOptionsTest.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.quit(ConferenceFixture.getOwner());
-        TestUtils.waits(1000);
-        ConferenceFixture.startOwner("config.startAudioMuted=1&"
-            + "config.startVideoMuted=1");
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getOwner(), 10);
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getOwner());
+        TestUtils.waitMillis(1000);
+        WebDriver owner
+            = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
+                                           "config.startVideoMuted=1");
+        WebDriver secondParticipant = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getOwner());
+        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        ConferenceFixture.startParticipant();
-
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 10);
-
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.waitForIceCompleted(owner);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
 
         checkSecondParticipantForMute();
     }
@@ -128,22 +120,22 @@ public class StartMutedTest
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='audioMuted']/"
                 + "i[@class='icon-mic-disabled']", 25);
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='videoMuted']/"
                 + "i[@class='icon-camera-disabled']", 25);
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='audioMuted']/i[@class='icon-mic-disabled']", 25);
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']/"
                 + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
@@ -157,22 +149,18 @@ public class StartMutedTest
     {
         System.err.println("Start restartParticipants.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.quit(ConferenceFixture.getOwner());
-        TestUtils.waits(1000);
-        ConferenceFixture.startOwner(null);
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getOwner(), 10);
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getOwner());
+        TestUtils.waitMillis(1000);
 
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getOwner());
+        WebDriver owner = ConferenceFixture.startOwner(null);
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.startParticipant();
+        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 10);
-
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.waitForIceCompleted(owner);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
     }
 }

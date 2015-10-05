@@ -62,8 +62,8 @@ public class ActiveSpeakerTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         // skip if we are not chrome
-        if(!ConferenceFixture.getBrowserType(owner).equals(
-                ConferenceFixture.BrowserType.chrome))
+        if (ConferenceFixture.getBrowserType(owner) !=
+                ConferenceFixture.BrowserType.chrome)
         {
             return;
         }
@@ -71,21 +71,21 @@ public class ActiveSpeakerTest
         // This test requires a conference of three
         ConferenceFixture.ensureThreeParticipants();
 
-        WebDriver secondPeer = ConferenceFixture.getSecondParticipant();
-        WebDriver thirdPeer = ConferenceFixture.getThirdParticipant();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
 
         // Mute all
         muteAllParticipants();
 
         // Owner becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(owner, secondPeer);
+        testActiveSpeaker(owner, secondParticipant);
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(thirdPeer, secondPeer);
+        testActiveSpeaker(thirdParticipant, secondParticipant);
         // 2nd peer becomes active speaker - check from owner's perspective
-        testActiveSpeaker(secondPeer, owner);
+        testActiveSpeaker(secondParticipant, owner);
 
         // Dispose 3rd
-        ConferenceFixture.quit(thirdPeer);
+        ConferenceFixture.close(thirdParticipant);
 
         // Unmuted owner and the 2nd
         unMuteOwnerAndSecond();
@@ -127,8 +127,12 @@ public class ActiveSpeakerTest
 
         // Unmute
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
-        MeetUIUtils.verifyIsMutedStatus(
-            speakerEndpoint, activeSpeaker, peer2, false);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                peer2,
+                MeetUtils.getResourceJid(activeSpeaker),
+                false,
+                false, //audio
+                speakerEndpoint);
 
         // Verify that the user is now an active speaker from peer2 perspective
         try
@@ -152,7 +156,11 @@ public class ActiveSpeakerTest
 
         // Mute back again
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
-        MeetUIUtils.verifyIsMutedStatus(
-            speakerEndpoint, activeSpeaker, peer2, true);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                peer2,
+                MeetUtils.getResourceJid(activeSpeaker),
+                true,
+                false, //audio
+                speakerEndpoint);
     }
 }

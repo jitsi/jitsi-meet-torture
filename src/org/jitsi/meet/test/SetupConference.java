@@ -70,7 +70,7 @@ public class SetupConference
     public void checkOwnerJoinRoom()
     {
         // first lets wait 10 secs to join
-        ConferenceFixture.checkParticipantToJoinRoom(
+        ConferenceFixture.waitForParticipantToJoinMUC(
             ConferenceFixture.getOwner(), 10);
     }
 
@@ -79,7 +79,7 @@ public class SetupConference
      */
     public void startSecondParticipant()
     {
-        ConferenceFixture.startParticipant();
+        ConferenceFixture.startSecondParticipant();
     }
 
     /**
@@ -87,7 +87,7 @@ public class SetupConference
      */
     public void checkSecondParticipantJoinRoom()
     {
-        ConferenceFixture.checkParticipantToJoinRoom(
+        ConferenceFixture.waitForParticipantToJoinMUC(
             ConferenceFixture.getSecondParticipant(), 10);
     }
 
@@ -97,7 +97,7 @@ public class SetupConference
      */
     public void waitsOwnerToJoinConference()
     {
-        ConferenceFixture.waitsParticipantToJoinConference(
+        ConferenceFixture.waitForIceCompleted(
             ConferenceFixture.getOwner());
     }
 
@@ -107,7 +107,7 @@ public class SetupConference
      */
     public void waitsSecondParticipantToJoinConference()
     {
-        ConferenceFixture.waitsParticipantToJoinConference(
+        ConferenceFixture.waitForIceCompleted(
             ConferenceFixture.getSecondParticipant());
     }
 

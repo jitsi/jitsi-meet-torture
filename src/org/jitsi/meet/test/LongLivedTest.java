@@ -65,21 +65,21 @@ public class LongLivedTest
                     System.err.println("Checking at " + new Date()
                         + " / to finish: " + millsToRun + " ms.");
 
-                    if (!ConferenceFixture.checkParticipantIsConnected(
+                    if (!ConferenceFixture.isIceConnected(
                             ConferenceFixture.getOwner()))
                     {
                         assertAndQuit("Owner ice is not connected.");
                         return;
                     }
 
-                    if(!ConferenceFixture.checkParticipantIsInRoom(
+                    if(!ConferenceFixture.isInMuc(
                             ConferenceFixture.getOwner()))
                     {
                         assertAndQuit("Owner is not in the muc.");
                         return;
                     }
 
-                    if(!ConferenceFixture.checkParticipantIsConnected(
+                    if(!ConferenceFixture.isIceConnected(
                             ConferenceFixture.getSecondParticipant()))
                     {
                         assertAndQuit(
@@ -87,7 +87,7 @@ public class LongLivedTest
                         return;
                     }
 
-                    if(!ConferenceFixture.checkParticipantIsInRoom(
+                    if(!ConferenceFixture.isInMuc(
                             ConferenceFixture.getSecondParticipant()))
                     {
                         assertAndQuit(

@@ -22,8 +22,9 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
- * A test making sure that the contact list panel can be open, that it contains lines for every participant in the
- * call and that when clicked the participant will be focused in the call.
+ * A test making sure that the contact list panel can be open, that it contains
+ * lines for every participant in the call and that when clicked the participant
+ * will be focused in the call.
  *
  * @author Yana Stamcheva
  */
@@ -31,8 +32,9 @@ public class ContactListTest
         extends TestCase
 {
     /**
-     * Tests if the contact list contains the right number of participants, but also if the list contains every
-     * participant in the call. Tests if a click pins a participant.
+     * Tests if the contact list contains the right number of participants, but
+     * also if the list contains every participant in the call. Tests if a click
+     * pins a participant.
      */
     public void testContactList()
     {
@@ -44,22 +46,24 @@ public class ContactListTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         // Make sure that the contact list panel is open.
-        MeetUIUtils.makeSureContactListIsDisplayed(owner);
+        MeetUIUtils.displayContactListPanel(owner);
 
-        // Make sure we have the 2 initial participants shown in the contact list.
+        // Make sure we have the 2 initial participants shown in the contact
+        // list.
         doContactCountCheck(owner, 2);
 
         // Add a third participant to the call.
-        ConferenceFixture.ensureThirdParticipantRunning();
+        ConferenceFixture.waitForThirdParticipantToConnect();
 
-        // Make sure we have a line in the contact list for every participant on the call.
+        // Make sure we have a line in the contact list for every participant on
+        // the call.
         doContactIdsCheck(owner);
 
         // Pins a participant clicking on a contact list entry.
         doPinSecondParticipantCheck(owner);
 
         // Dispose the third participant.
-        ConferenceFixture.ensureThirdParticipantNotRunning();
+        ConferenceFixture.closeThirdParticipant();
     }
 
     /**
@@ -72,52 +76,64 @@ public class ContactListTest
     private void doContactCountCheck(WebDriver user, int expectedCount)
     {
         String contactListXPath = "//ul[@id='contacts']";
-        WebElement contactListElem = user.findElement(By.xpath(contactListXPath));
+        WebElement contactListElem
+            = user.findElement(By.xpath(contactListXPath));
 
-        int contactCount = contactListElem.findElements(By.className("clickable")).size();
+        int contactCount
+            = contactListElem.findElements(By.className("clickable")).size();
 
         assertEquals(expectedCount, contactCount);
     }
 
     /**
-     * Checks if we have a line in the contact list for every participant in the call.
+     * Checks if we have a line in the contact list for every participant in
+     * the call.
      *
      * @param owner the owner of the conference
      */
     private void doContactIdsCheck(WebDriver owner)
     {
         String ownerJid = MeetUtils.getResourceJid(owner);
-        String secondParticipantJid = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
-        String thirdParticipantJid = MeetUtils.getResourceJid(ConferenceFixture.getThirdParticipant());
+        String secondParticipantJid
+            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+        String thirdParticipantJid
+            = MeetUtils.getResourceJid(ConferenceFixture.getThirdParticipant());
 
         String ownerLiXPath = getContactListParticipantXPath(ownerJid);
-        String secondParticipantLiXPath = getContactListParticipantXPath(secondParticipantJid);
-        String thirdParticipantLiXPath = getContactListParticipantXPath(thirdParticipantJid);
+        String secondParticipantLiXPath
+            = getContactListParticipantXPath(secondParticipantJid);
+        String thirdParticipantLiXPath
+            = getContactListParticipantXPath(thirdParticipantJid);
 
-        TestUtils.waitsForElementByXPath(owner, ownerLiXPath, 5);
-        TestUtils.waitsForElementByXPath(owner, secondParticipantLiXPath, 5);
-        TestUtils.waitsForElementByXPath(owner, thirdParticipantLiXPath, 5);
+        TestUtils.waitForElementByXPath(owner, ownerLiXPath, 5);
+        TestUtils.waitForElementByXPath(owner, secondParticipantLiXPath, 5);
+        TestUtils.waitForElementByXPath(owner, thirdParticipantLiXPath, 5);
     }
 
     /**
-     * Checks if clicking on a participant in the contact list would pin the participant small and large videos.
+     * Checks if clicking on a participant in the contact list would pin the
+     * participant small and large videos.
      *
      * @param owner <tt>WebDriver</tt> instance of the participant for whom we'll
      *             try to check the contact list pin
      */
     private void doPinSecondParticipantCheck(WebDriver owner)
     {
-        final String secondParticipantJid = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
-        WebElement secondPartLi = owner.findElement(By.xpath(getContactListParticipantXPath(secondParticipantJid)));
+        final String secondParticipantJid
+            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+        WebElement secondPartLi
+            = owner.findElement(By.xpath(getContactListParticipantXPath(
+                secondParticipantJid)));
 
         secondPartLi.click();
 
-        TestUtils.waitsForDisplayedElementByXPath(owner,
+        TestUtils.waitForDisplayedElementByXPath(owner,
                 "//span[@id='participant_" + secondParticipantJid
                         + "' and contains(@class,'videoContainerFocused') ]", 5);
 
 
-        // Verify that the user is now the focused participant from the owner perspective.
+        // Verify that the user is now the focused participant from the owner's
+        // perspective.
         try
         {
             new WebDriverWait(owner, 10).until(
@@ -134,12 +150,14 @@ public class ContactListTest
         {
             assertEquals(
                     "Pinned participant not displayed on large video",
-                    secondParticipantJid, MeetUIUtils.getLargeVideoResource(owner));
+                    secondParticipantJid,
+                    MeetUIUtils.getLargeVideoResource(owner));
         }
     }
 
     /**
-     * Returns the XPath string corresponding to the contact list participant element with the given jid.
+     * Returns the XPath string corresponding to the contact list participant
+     * element with the given jid.
      *
      * @param jid the jid of the participant we're looking for
      * @return a String corresponding to the XPath element we're looking for

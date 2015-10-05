@@ -70,35 +70,36 @@ public class LockRoomTest
     {
         System.err.println("Start lockRoom.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
-        List<WebElement> elems = ConferenceFixture.getOwner().findElements(
+        WebDriver owner = ConferenceFixture.getOwner();
+        List<WebElement> elems = owner.findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button "
                 + "icon-security-locked']"));
 
         assertTrue("Icon must be unlocked when starting the test",
             elems.isEmpty());
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "toolbar_button_security");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
         // fill in the dialog
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
-            "//input[@name='lockKey']", 5);
+        TestUtils.waitForElementByXPath(owner, "//input[@name='lockKey']", 5);
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
-        ConferenceFixture.getOwner().findElement(
-            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
+        owner.findElement(
+                By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
 
-        ConferenceFixture.getOwner().findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
+        owner.findElement(
+                By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
 
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
+        TestUtils.waitForElementByXPath(
+                owner,
+                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+                5);
     }
 
     /**
@@ -108,49 +109,48 @@ public class LockRoomTest
     {
         System.err.println("Start enterParticipantInLockedRoom.");
 
-        ConferenceFixture.startParticipant();
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
-        TestUtils.waitsForElementByXPath(ConferenceFixture.getOwner(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
+        TestUtils.waitForElementByXPath(
+            ConferenceFixture.getOwner(),
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            5);
 
         try
         {
-            ConferenceFixture.checkParticipantToJoinRoom(
-                ConferenceFixture.getSecondParticipant(), 5);
+            ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
 
-            assertTrue("Second participant cannot join room as it is locked",
-                false);
+            fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
         {}
 
-        ConferenceFixture.getSecondParticipant().findElement(
+        secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
-        ConferenceFixture.getSecondParticipant().findElement(
+        secondParticipant.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
         try
         {
-            ConferenceFixture.checkParticipantToJoinRoom(
-                ConferenceFixture.getSecondParticipant(), 5);
+            ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
 
-            assertTrue("Second participant cannot join room as it is locked",
-                false);
+            fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
         {}
 
-        ConferenceFixture.getSecondParticipant().findElement(
+        secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
-        ConferenceFixture.getSecondParticipant().findElement(
+        secondParticipant.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 5);
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
 
-        TestUtils.waitsForElementByXPath(
-            ConferenceFixture.getSecondParticipant(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']", 5);
+        TestUtils.waitForElementByXPath(
+            secondParticipant,
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            5);
     }
 
     /**
@@ -161,26 +161,27 @@ public class LockRoomTest
     {
         System.err.println("Start unlockRoom.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
-        List<WebElement> elems = ConferenceFixture.getOwner().findElements(
+        WebDriver owner = ConferenceFixture.getOwner();
+
+        List<WebElement> elems = owner.findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
         assertTrue("Icon must be locked when starting this test",
             elems.isEmpty());
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "toolbar_button_security");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
-        ConferenceFixture.getOwner().findElement(
+        owner.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
                 .click();
 
-        elems = ConferenceFixture.getOwner().findElements(
+        elems = owner.findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
@@ -188,20 +189,19 @@ public class LockRoomTest
                 "for room",
             elems.isEmpty());
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getOwner(), "toolbar_button_security");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
-        ConferenceFixture.getOwner().findElement(
+        owner.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
                 .click();
 
         // Wait for the lock icon to disappear
         try
         {
-            TestUtils.waitsForElementNotPresentByXPath(
-                ConferenceFixture.getOwner(),
-                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
-                10);
+            TestUtils.waitForElementNotPresentByXPath(
+                    owner,
+                    "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+                    10);
         }
         catch (TimeoutException exc)
         {
@@ -216,19 +216,16 @@ public class LockRoomTest
     {
         System.err.println("Start enterParticipantInUnlockedRoom.");
 
-        ConferenceFixture.startParticipant();
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
         // if we fail to unlock the room this one will detect it
         // as participant will fail joining
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 5);
-        ConferenceFixture.waitsParticipantToJoinConference(
-                ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.waitForSendReceiveData(
-                ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        ConferenceFixture.waitForSendReceiveData(secondParticipant);
 
-        List<WebElement> elems = ConferenceFixture.getSecondParticipant()
-            .findElements(
+        List<WebElement> elems = secondParticipant.findElements(
                 By.xpath("//span[@id='toolbar']/a[@class='button "
                     + "icon-security-locked']"));
 

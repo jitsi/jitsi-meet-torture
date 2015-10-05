@@ -71,7 +71,7 @@ public class MuteTest
                 ConferenceFixture.getSecondParticipant(),
                 true);
 
-        TestUtils.waits(2000);
+        TestUtils.waitMillis(2000);
     }
 
     /**
@@ -148,24 +148,26 @@ public class MuteTest
     {
         System.err.println("Start ownerMutesParticipantAndCheck.");
 
-        WebElement elem = ConferenceFixture.getOwner().findElement(By.xpath(
+        WebDriver owner = ConferenceFixture.getOwner();
+
+        WebElement elem = owner.findElement(By.xpath(
             "//span[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
 
-        Actions action = new Actions(ConferenceFixture.getOwner());
+        Actions action = new Actions(owner);
         action.moveToElement(elem);
         action.perform();
 
-        TestUtils.waitsForDisplayedElementByXPath(
-            ConferenceFixture.getOwner(),
+        TestUtils.waitForDisplayedElementByXPath(
+            owner,
             "//ul[@class='popupmenu']/li/a[@class='mutelink']",
             5);
 
-        ConferenceFixture.getOwner().findElement(
+        owner.findElement(
                 By.xpath("//ul[@class='popupmenu']/li/a[@class='mutelink']"))
             .click();
 
         // and now check whether second participant is muted
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
             "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
 
@@ -180,20 +182,24 @@ public class MuteTest
     {
         System.err.println("Start participantUnMutesAfterOwnerMutedHimAndCheck.");
 
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
 
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
-        MeetUIUtils.verifyIsMutedStatus("participant2",
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
-            false);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                ConferenceFixture.getOwner(),
+                MeetUtils.getResourceJid(ConferenceFixture
+                                                 .getSecondParticipant()),
+                false, //should be unmuted
+                false, //audio
+                "participant2"
+        );
 
         // lets give time to the ui to reflect the change in the ui of the owner
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
     }
 
     /**
@@ -206,26 +212,28 @@ public class MuteTest
     {
         System.err.println("Start muteOwnerBeforeSecondParticipantJoins.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        WebDriver owner = ConferenceFixture.getOwner();
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_mute");
 
-        ConferenceFixture.startParticipant();
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 15);
+        ConferenceFixture.waitForParticipantToJoinMUC(
+                secondParticipant, 15);
 
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
 
-        MeetUIUtils.verifyIsMutedStatus("owner",
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant(),
-            true);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                true, //should be muted
+                false, //audio
+                "owner");
 
         // now lets unmute
         unMuteOwnerAndCheck();
@@ -255,6 +263,11 @@ public class MuteTest
     {
         System.err.println("Start " + testName + ".");
         MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
-        MeetUIUtils.verifyIsMutedStatus(testeeName, testee, observer, muted);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                observer,
+                MeetUtils.getResourceJid(testee),
+                muted,
+                false, //audio
+                testeeName);
     }
 }

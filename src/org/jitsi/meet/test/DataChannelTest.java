@@ -123,7 +123,7 @@ public class DataChannelTest
      *
      * @param webDriver the {@code WebDriver} which represents the participant
      * in the Meet conference who is to send the {@code ClientHello} to
-     * Videobrdige
+     * Videobridge
      * @return {@link Boolean#TRUE} if {@code webDriver} sent a
      * {@code ClientHello} to Videobridge; otherwise, {@link Boolean#FALSE}
      */
@@ -187,7 +187,7 @@ public class DataChannelTest
     }
 
     /**
-     * Waits for the opening of a WebRTC data channel between Videbridge and a
+     * Waits for the opening of a WebRTC data channel between Videobridge and a
      * specific Meet conference participant.
      *
      * @param webDriver the {@code WebDriver} which represents the participant

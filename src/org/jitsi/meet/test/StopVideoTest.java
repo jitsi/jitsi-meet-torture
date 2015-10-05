@@ -63,7 +63,7 @@ public class StopVideoTest
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
@@ -80,7 +80,7 @@ public class StopVideoTest
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
             "//span[starts-with(@id, 'participant_')]"
                 + "/span[@class='videoMuted']"
@@ -97,7 +97,7 @@ public class StopVideoTest
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             ConferenceFixture.getOwner(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
@@ -112,7 +112,7 @@ public class StopVideoTest
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
 
-        TestUtils.waitsForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getOwner(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
@@ -127,27 +127,26 @@ public class StopVideoTest
     {
         System.err.println("Start stopOwnerVideoBeforeSecondParticipantJoins.");
 
-        ConferenceFixture.quit(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
 
         // just in case wait
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
         MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
             "toolbar_button_camera");
 
-        TestUtils.waits(500);
+        TestUtils.waitMillis(500);
 
-        ConferenceFixture.startParticipant();
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.checkParticipantToJoinRoom(
-            ConferenceFixture.getSecondParticipant(), 10);
+        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
+        ConferenceFixture.waitForIceCompleted(secondParticipant);
 
-        ConferenceFixture.waitsParticipantToJoinConference(
-            ConferenceFixture.getSecondParticipant());
-
-        TestUtils.waitsForElementByXPath(
-            ConferenceFixture.getSecondParticipant(),
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+        TestUtils.waitForElementByXPath(
+            secondParticipant,
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']",
+            5);
 
         // just debug messages
         {
@@ -158,26 +157,24 @@ public class StopVideoTest
             String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
             System.err.println("Owner jid: " + ownerJid);
 
-            Object streamExist = ((JavascriptExecutor)
-                ConferenceFixture.getSecondParticipant())
+            Object streamExist = ((JavascriptExecutor)secondParticipant)
                 .executeScript("return " + streamByJid + " != undefined;");
             System.err.println("Stream : " + streamExist);
 
             if (streamExist != null && streamExist.equals(Boolean.TRUE))
             {
-                Object videoStreamExist = ((JavascriptExecutor)
-                    ConferenceFixture.getSecondParticipant())
-                    .executeScript(
+                Object videoStreamExist
+                    = ((JavascriptExecutor)secondParticipant).executeScript(
                         "return " + streamByJid + "['Video'] != undefined;");
                 System.err.println("Stream exist : " + videoStreamExist);
 
                 if (videoStreamExist != null && videoStreamExist
                     .equals(Boolean.TRUE))
                 {
-                    Object videoStreamMuted = ((JavascriptExecutor)
-                        ConferenceFixture.getSecondParticipant())
-                        .executeScript(
-                            "return " + streamByJid + "['Video'].muted;");
+                    Object videoStreamMuted
+                        = ((JavascriptExecutor) secondParticipant)
+                            .executeScript(
+                                "return " + streamByJid + "['Video'].muted;");
                     System.err.println("Stream muted : " + videoStreamMuted);
                 }
             }
@@ -187,7 +184,7 @@ public class StopVideoTest
         startVideoOnOwnerAndCheck();
 
         // just in case wait
-        TestUtils.waits(1500);
+        TestUtils.waitMillis(1500);
     }
 
 }

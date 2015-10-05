@@ -22,7 +22,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
 /**
- * Tests for user's avatars.
+ * Tests for users' avatars.
  */
 public class AvatarTest
     extends TestCase
@@ -61,109 +61,137 @@ public class AvatarTest
     {
         System.err.println("Start avatarWhenVideoMuted.");
 
-        ConferenceFixture.ensureOwnerOnly();
+        ConferenceFixture.closeAllParticipantsExceptTheOwner();
 
         // Start owner
         WebDriver owner = ConferenceFixture.getOwner();
 
         // Mute owner video
-        TestUtils.waitsForDisplayedElementByXPath(
-            owner, "//a[@id='toolbar_button_camera']", 10);
+        TestUtils.waitForDisplayedElementByXPath(
+                owner, "//a[@id='toolbar_button_camera']", 10);
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
-        TestUtils.waitsForElementByXPath(
-            owner,
-            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+        TestUtils.waitForElementByXPath(
+                owner,
+                "//span[@class='videoMuted']/i[@class='icon-camera-disabled']",
+                5);
 
         // Check if avatar on large video is the same as on local thumbnail
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
         String ownerLargeSrc = getLargeVideoSrc(owner);
         assertTrue(
-            "invalid avatar on the large video: " + ownerLargeSrc +
-                          ", should start with: " + ownerThumbSrc,
-            ownerLargeSrc.startsWith(ownerThumbSrc));
+                "invalid avatar on the large video: " + ownerLargeSrc +
+                        ", should start with: " + ownerThumbSrc,
+                ownerLargeSrc.startsWith(ownerThumbSrc));
 
         // Join with second participant
-        ConferenceFixture.ensureSecondParticipantRunning();
-        WebDriver secondPeer = ConferenceFixture.getSecondParticipantInstance();
+        ConferenceFixture.waitForSecondParticipantToConnect();
+        WebDriver secondParticipant
+                = ConferenceFixture.getSecondParticipantInstance();
 
         // Verify that the owner is muted from 2nd peer perspective
-        MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, true);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                true,
+                true, //video
+                "owner");
         // Pin owner's thumbnail
-        SwitchVideoTests.clickOnRemoteVideoAndTest(secondPeer);
+        SwitchVideoTests.clickOnRemoteVideoAndTest(secondParticipant);
         // Check if owner's avatar is on large video now
-        assertEquals(ownerLargeSrc, getLargeVideoSrc(secondPeer));
+        assertEquals(ownerLargeSrc, getLargeVideoSrc(secondParticipant));
 
         // Owner pins second participant's video
         SwitchVideoTests.clickOnRemoteVideoAndTest(owner);
         // Check if avatar is displayed on owner's local video thumbnail
-        MeetUIUtils.verifyAvatarOnLocalThumbnail(owner);
+        MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
         new StopVideoTest("startVideoOnOwnerAndCheck")
             .startVideoOnOwnerAndCheck();
 
-        // Check if owner is unmuted from second peer perspective
-        MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, false);
-        MeetUIUtils.verifyVideoOnLocalThumbnail(owner);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                false,
+                true, //video
+                "owner");
+        MeetUIUtils.assertLocalThumbnailShowsVideo(owner);
 
         // Now both owner and 2nd have video muted
         new StopVideoTest("stopVideoOnOwnerAndCheck")
             .stopVideoOnOwnerAndCheck();
-        MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, true);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                true,
+                true, //video
+                "owner");
         new StopVideoTest("stopVideoOnParticipantAndCheck")
             .stopVideoOnParticipantAndCheck();
-        MeetUIUtils.verifyVideoMuted(
-            "secondParticipant", secondPeer, owner, true);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                owner,
+                MeetUtils.getResourceJid(secondParticipant),
+                true,
+                true, //video
+                "secondParticipant");
 
-        // Join with 3rd
-        ConferenceFixture.ensureThirdParticipantRunning();
-        WebDriver thirdPeer = ConferenceFixture.getThirdParticipant();
+        // Start the third participant
+        ConferenceFixture.waitForThirdParticipantToConnect();
+        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
 
-        String secondPeerSrc = getLocalThumbnailSrc(secondPeer);
-        String secondPeerResource = MeetUtils.getResourceJid(secondPeer);
+        String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
+        String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
         String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Pin local video and verify avatars are displayed
-        MeetUIUtils.clickOnLocalVideo(thirdPeer);
+        MeetUIUtils.clickOnLocalVideo(thirdParticipant);
 
-        MeetUIUtils.verifyAvatarDisplayed(thirdPeer, ownerResource);
-        MeetUIUtils.verifyAvatarDisplayed(thirdPeer, secondPeerResource);
+        MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
+        MeetUIUtils.assertAvatarDisplayed(thirdParticipant, secondPeerResource);
 
         assertEquals(secondPeerSrc,
-            getThumbnailSrc(thirdPeer, secondPeerResource));
+            getThumbnailSrc(thirdParticipant, secondPeerResource));
         assertEquals(ownerThumbSrc,
-            getThumbnailSrc(thirdPeer, ownerResource));
+            getThumbnailSrc(thirdParticipant, ownerResource));
 
         // Click on owner's video
-        MeetUIUtils.clickOnRemoteVideo(thirdPeer, ownerResource);
+        MeetUIUtils.clickOnRemoteVideo(thirdParticipant, ownerResource);
         // His avatar should be on large video and
         // display name instead of an avatar, local video displayed
         assertEquals(ownerResource,
-            MeetUIUtils.getLargeVideoResource(thirdPeer));
-        MeetUIUtils.verifyDisplayNameVisible(thirdPeer, ownerResource);
-        MeetUIUtils.verifyAvatarDisplayed(thirdPeer, secondPeerResource);
-        MeetUIUtils.verifyVideoOnLocalThumbnail(thirdPeer);
+                     MeetUIUtils.getLargeVideoResource(thirdParticipant));
+        MeetUIUtils.assertDisplayNameVisible(thirdParticipant, ownerResource);
+        MeetUIUtils.assertAvatarDisplayed(thirdParticipant, secondPeerResource);
+        MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
-        // Click on second peer's video
-        MeetUIUtils.clickOnRemoteVideo(thirdPeer, secondPeerResource);
+        // Click on second participant's video
+        MeetUIUtils.clickOnRemoteVideo(thirdParticipant, secondPeerResource);
         assertEquals(secondPeerResource,
-            MeetUIUtils.getLargeVideoResource(thirdPeer));
-        MeetUIUtils.verifyDisplayNameVisible(thirdPeer, secondPeerResource);
-        MeetUIUtils.verifyAvatarDisplayed(thirdPeer, ownerResource);
-        MeetUIUtils.verifyVideoOnLocalThumbnail(thirdPeer);
+                     MeetUIUtils.getLargeVideoResource(thirdParticipant));
+        MeetUIUtils.assertDisplayNameVisible(thirdParticipant, secondPeerResource);
+        MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
+        MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
-        // Close 3rd participant
-        ConferenceFixture.quit(thirdPeer);
+        ConferenceFixture.close(thirdParticipant);
 
-        TestUtils.waits(1500);
+        TestUtils.waitMillis(1500);
 
         // Unmute owner and 2nd videos
         new StopVideoTest("startVideoOnOwnerAndCheck")
             .startVideoOnOwnerAndCheck();
-        MeetUIUtils.verifyVideoMuted("owner", owner, secondPeer, false);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                false,
+                true, //video
+                "owner");
         new StopVideoTest("startVideoOnParticipantAndCheck")
             .startVideoOnParticipantAndCheck();
-        MeetUIUtils.verifyVideoMuted(
-            "secondParticipant", secondPeer, owner, false);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+                secondParticipant,
+                MeetUtils.getResourceJid(owner),
+                false,
+                true, //video
+                "secondParticipant");
     }
 
     /**
@@ -187,7 +215,7 @@ public class AvatarTest
                                          + "']/img[@class='userAvatar']";
 
         // Wait for the avatar element to be created
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             secondParticipant, ownerAvatarXPath, 5000);
 
         final String srcOneSecondParticipant =
@@ -195,7 +223,7 @@ public class AvatarTest
 
         //change the email for the conference owner
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
-        TestUtils.waitsForDisplayedElementByXPath(
+        TestUtils.waitForDisplayedElementByXPath(
             owner, "//input[@id='setEmail']", 5);
 
         // set the value of the field through the jquery, or on FF we can
@@ -257,11 +285,12 @@ public class AvatarTest
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted
-        MeetUIUtils.verifyIsMutedStatus(
-            "owner",
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant(),
-            false);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            secondParticipant,
+            MeetUtils.getResourceJid(owner),
+            false,
+            false, //audio
+            "owner");
     }
 
     /*

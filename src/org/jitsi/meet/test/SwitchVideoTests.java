@@ -86,7 +86,7 @@ public class SwitchVideoTests
         // click on local
         driver.findElement(By.className("focusindicator")).click();
 
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
         if(ConferenceFixture.getBrowserType(driver).equals(
             ConferenceFixture.BrowserType.firefox))
@@ -185,7 +185,7 @@ public class SwitchVideoTests
         // Wait for the video to unpin
         try
         {
-            TestUtils.waitsForElementNotPresentByXPath(
+            TestUtils.waitForElementNotPresentByXPath(
                 host, pinnedThumbXpath, 2);
         }
         catch (TimeoutException exc)
@@ -220,7 +220,7 @@ public class SwitchVideoTests
         else
             remoteThumbVideoXpath += " and @src]";
 
-        TestUtils.waitsForElementByXPath(
+        TestUtils.waitForElementByXPath(
             driver,
             remoteThumbVideoXpath,
             5
@@ -235,7 +235,7 @@ public class SwitchVideoTests
         driver.findElement(By.xpath(remoteThumbXpath))
             .click();
 
-        TestUtils.waits(1000);
+        TestUtils.waitMillis(1000);
 
         if(ConferenceFixture.getBrowserType(driver).equals(
             ConferenceFixture.BrowserType.firefox))
