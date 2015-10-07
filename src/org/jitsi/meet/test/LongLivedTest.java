@@ -52,7 +52,11 @@ public class LongLivedTest
         timer.schedule(new TimerTask()
         {
             long lastRun = System.currentTimeMillis();
-            int millsToRun = minutesToRun*60*1000;
+            // sometimes the check is executed once more
+            // at the time while we are in a process of disposing
+            // the two participants and ~9 secs before finishing successful
+            // it fails.
+            int millsToRun = (minutesToRun - 1)*60*1000;
 
             CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
             CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
