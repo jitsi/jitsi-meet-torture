@@ -335,17 +335,6 @@ public class ConferenceFixture
             profile.setPreference("media.navigator.permission.disabled", true);
             profile.setAcceptUntrustedCertificates(true);
 
-            profile.setPreference("browser.download.folderList", 1);
-            //String downloadDir
-            //    = System.getProperty("user.home") + File.separator
-            //          + "Downloads";
-            //profile.setPreference("browser.download.dir", downloadDir);
-            profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
-                "text/plain;text/csv");
-            profile.setPreference("browser.helperApps.alwaysAsk.force", false);
-            profile.setPreference("browser.download.manager.showWhenStarting",
-                false);
-
             return new FirefoxDriver(profile);
         }
         else if (browser == BrowserType.safari)

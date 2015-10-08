@@ -254,16 +254,27 @@ public class FailureListener
     {
         try
         {
-            WebElement el = driver.findElement(By.id("downloadlog"));
-            el.click();
+            Object log = ((JavascriptExecutor) driver)
+                .executeScript("try{"
+                    + "    var data = APP.xmpp.getJingleLog();\n"
+                    + "    var metadata = {};\n"
+                    + "    metadata.time = new Date();\n"
+                    + "    metadata.url = window.location.href;\n"
+                    + "    metadata.ua = navigator.userAgent;\n"
+                    + "    var log = APP.xmpp.getXmppLog();\n"
+                    + "    if (log) {\n"
+                    + "        metadata.xmpp = log;\n"
+                    + "    }\n"
+                    + "    data.metadata = metadata;\n"
+                    + "    return JSON.stringify(data, null, '  ');"
+                    + "}catch (e) {}");
 
-            TestUtils.waitMillis(2000);
+            if(log == null)
+                return;
 
-            FileUtils.moveFile(
-                new File(
-                    new File(System.getProperty("user.home"), "Downloads"),
-                    "meetlog.json"),
-                new File(outputHtmlSourceParentFolder, fileName));
+            FileUtils.write(
+                new File(outputHtmlSourceParentFolder, fileName),
+                (String)log);
         }
         catch (Exception e)
         {
