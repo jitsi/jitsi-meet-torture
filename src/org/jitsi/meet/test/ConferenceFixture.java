@@ -283,6 +283,11 @@ public class ConferenceFixture
 
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
+
+        // Hack-in disabling of callstats (old versions of jitsi-meet don't
+        // handle URL parameters)
+        ((JavascriptExecutor) participant)
+                .executeScript("config.callStatsID=false;");
     }
 
     /**
