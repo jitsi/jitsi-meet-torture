@@ -88,6 +88,8 @@ public class AvatarTest
         WebDriver secondParticipant
                 = ConferenceFixture.getSecondParticipantInstance();
 
+        TestUtils.waitMillis(2000);
+
         // Verify that the owner is muted from 2nd peer perspective
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
