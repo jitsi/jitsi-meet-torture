@@ -359,6 +359,7 @@ public class ConferenceFixture
             ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
+            ops.addArguments("no-sandbox");
 
             String browserProp;
             if (participant == Participant.secondParticipantDriver)
