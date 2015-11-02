@@ -301,7 +301,7 @@ public class ConferenceFixture
     {
         WebDriver wd = startDriverInstance(browser, participant);
 
-        wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+        //wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
         // just wait the instance to start before doing some stuff
         // can kick a renderer bug hanging
