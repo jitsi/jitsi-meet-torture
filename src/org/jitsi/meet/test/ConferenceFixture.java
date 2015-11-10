@@ -351,6 +351,11 @@ public class ConferenceFixture
         }
         else
         {
+            System.setProperty("webdriver.chrome.verboseLogging", "true");
+            System.setProperty("webdriver.chrome.logfile",
+                FailureListener.createLogsFolder() +
+                "/chrome-console-" + getParticipantName(participant) + ".log");
+
             DesiredCapabilities caps = DesiredCapabilities.chrome();
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);
@@ -801,6 +806,34 @@ public class ConferenceFixture
             return "secondParticipant";
         }
         else if (thirdParticipant == driver)
+        {
+            return "thirdParticipant";
+        }
+        else
+        {
+            return "unknownDriverInstance";
+        }
+    }
+
+    /**
+     * Returns human readable name of <tt>Participant</tt> instance.
+     * @param p the instance of <tt>Participant</tt> for which we want to get
+     *               human readable name.
+     */
+    public static String getParticipantName(Participant p)
+    {
+        if (p == null)
+            return "nullDriverInstance";
+
+        if (Participant.ownerDriver == p)
+        {
+            return "owner";
+        }
+        else if (Participant.secondParticipantDriver == p)
+        {
+            return "secondParticipant";
+        }
+        else if (Participant.thirdParticipantDriver == p)
         {
             return "thirdParticipant";
         }

@@ -45,6 +45,11 @@ public class FailureListener
     private File outputHtmlSourceParentFolder = null;
 
     /**
+     * The folder where the logs will be saved.
+     */
+    private static File outputLogsParentFolder = null;
+
+    /**
      * Creates a screenshot named by the class and name of the failure.
      * @param test the test
      * @param t the assertion error
@@ -117,8 +122,25 @@ public class FailureListener
         outputHtmlSourceParentFolder = new File("test-reports/html-sources");
         outputHtmlSourceParentFolder.mkdirs();
 
+        createLogsFolder();
+
         // skip output so we do not print in console
         //super.setOutput(out);
+    }
+
+    /**
+     * Creates the logs folder.
+     * @return the logs folder.
+     */
+    public static String createLogsFolder()
+    {
+        if(outputLogsParentFolder == null)
+        {
+            outputLogsParentFolder = new File("test-reports/logs");
+            outputLogsParentFolder.mkdirs();
+        }
+
+        return outputLogsParentFolder.getAbsolutePath();
     }
 
     /**
@@ -273,7 +295,7 @@ public class FailureListener
                 return;
 
             FileUtils.write(
-                new File(outputHtmlSourceParentFolder, fileName),
+                new File(outputLogsParentFolder, fileName),
                 (String)log);
         }
         catch (Exception e)
@@ -313,7 +335,7 @@ public class FailureListener
             LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
 
             BufferedWriter out = new BufferedWriter(new FileWriter(
-                new File(outputHtmlSourceParentFolder, fileName)));
+                new File(outputLogsParentFolder, fileName)));
 
             Iterator<LogEntry> iter = logs.iterator();
             while (iter.hasNext())
