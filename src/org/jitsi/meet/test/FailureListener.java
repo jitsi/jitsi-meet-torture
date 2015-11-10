@@ -233,7 +233,7 @@ public class FailureListener
         if(secondParticipant != null)
         {
             saveMeetDebugLog(secondParticipant,
-                fileNamePrefix + "meetlog-participant.json");
+                fileNamePrefix + "-meetlog-participant.json");
         }
 
         WebDriver thirdParticipant =
@@ -242,7 +242,7 @@ public class FailureListener
         if(thirdParticipant != null)
         {
             saveMeetDebugLog(thirdParticipant,
-                fileNamePrefix + "meetlog-third.json");
+                fileNamePrefix + "-meetlog-third.json");
         }
     }
 
