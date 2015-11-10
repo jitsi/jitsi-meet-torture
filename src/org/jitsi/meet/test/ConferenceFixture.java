@@ -761,6 +761,33 @@ public class ConferenceFixture
         waitForParticipantToJoinMUC(thirdParticipant, 10);
         waitForIceCompleted(thirdParticipant);
         waitForSendReceiveData(thirdParticipant);
+        waitForRemoteStreams(thirdParticipant, 2);
+    }
+
+    /**
+     * Waits for number of remote streams.
+     * @param participant the driver to use for the check.
+     * @param n number of remote streams to wait for
+     */
+    public static void waitForRemoteStreams(
+            final WebDriver participant,
+            final int n)
+    {
+        new WebDriverWait(participant, 15)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    long streams = (Long)((JavascriptExecutor) participant)
+                        .executeScript("return "
+                            + "Object.keys(APP.RTC.remoteStreams).length;");
+
+                    if(streams >= n)
+                        return true;
+                    else
+                        return false;
+                }
+            });
     }
 
     /**
