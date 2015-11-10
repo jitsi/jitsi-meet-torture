@@ -361,6 +361,13 @@ public class ConferenceFixture
             ops.addArguments("use-fake-device-for-media-stream");
             ops.addArguments("no-sandbox");
 
+            // starting version 46 we see crashes of chrome GPU process when
+            // running in headless mode
+            // which leaves the browser opened and selenium hang forever.
+            // There are reports that in older version crashes like that will
+            // fallback to software graphics, we try to disable gpu for now
+            ops.addArguments("disable-gpu");
+
             String browserProp;
             if (participant == Participant.secondParticipantDriver)
                 browserProp = BROWSER_CHROME_BINARY_SECOND_NAME_PROP;
