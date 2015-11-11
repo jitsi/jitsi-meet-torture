@@ -43,21 +43,30 @@ public class VideoLayoutTest
         System.err.println("Start testVideoLayout.");
 
         WebDriver owner = ConferenceFixture.getOwner();
+        driverVideoLayoutTest(owner);
+    }
 
+    /**
+     * The webdriver to test.
+     * @param webDriver to test.
+     */
+    public void driverVideoLayoutTest(WebDriver webDriver)
+    {
         String chatXPath = "//div[@id='chatspace']";
         String contactListXPath = "//div[@id='contactlist']";
         String settingsXPath = "//div[@id='settingsmenu']";
 
-        WebElement chatElem = owner.findElement(By.xpath(chatXPath));
+        WebElement chatElem = webDriver.findElement(By.xpath(chatXPath));
         WebElement contactListElem
-                = owner.findElement(By.xpath(contactListXPath));
-        WebElement settingsElem = owner.findElement(By.xpath(settingsXPath));
+            = webDriver.findElement(By.xpath(contactListXPath));
+        WebElement settingsElem
+            = webDriver.findElement(By.xpath(settingsXPath));
 
         if (!chatElem.isDisplayed()
                 && !contactListElem.isDisplayed()
                 && !settingsElem.isDisplayed())
         {
-            doLargeVideoSizeCheck(owner);
+            doLargeVideoSizeCheck(webDriver);
         }
     }
 
@@ -80,5 +89,14 @@ public class VideoLayoutTest
 
         assertEquals(largeVideo.getSize().getWidth(), innerWidth.intValue());
         assertEquals(largeVideo.getSize().getHeight(), innerHeight.intValue());
+
+        // now let's check whether the video wrapper take all the height
+        // this should not be the case only for desktop sharing with thumbs
+        // visible
+        WebElement largeVideoWrapper = webDriver.findElement(
+            By.xpath("//div[@id='largeVideoWrapper']"));
+
+        assertEquals(largeVideoWrapper.getSize().getHeight(),
+            innerHeight.intValue());
     }
 }
