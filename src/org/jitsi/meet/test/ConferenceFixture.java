@@ -365,6 +365,7 @@ public class ConferenceFixture
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
             ops.addArguments("no-sandbox");
+            ops.addArguments("disable-setuid-sandbox");
 
             // starting version 46 we see crashes of chrome GPU process when
             // running in headless mode
