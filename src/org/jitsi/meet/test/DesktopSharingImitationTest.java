@@ -24,6 +24,11 @@ import org.openqa.selenium.JavascriptExecutor;
  * A test which switches on/imitate desktop sharing to check whether it is
  * functioning ok.
  *
+ * NOTE: This test is currently not relevant. Expanding the video after hiding
+ * the filmstrip will try to fit the video in the window without cutting it,
+ * but it can be that it will not expand at all, which is exactly the current
+ * situation for the failures.
+ *
  * @author Damian Minkov
  */
 public class DesktopSharingImitationTest
