@@ -38,6 +38,11 @@ public class DesktopSharingTest
     public final static String HOOK_SCRIPT = "desktop.sharing.hook.script";
 
     /**
+     * Exception on starting the hook, null if script has started successfully.
+     */
+    private Exception hookException = null;
+
+    /**
      * Ensure we have only one participant available in the room - the owner.
      * Starts the new participants using the external script and check whether
      * the stream we are receiving from him is screen.
@@ -54,7 +59,12 @@ public class DesktopSharingTest
 
         ConferenceFixture.closeAllParticipantsExceptTheOwner();
 
-        final CountDownLatch waitSignal = new CountDownLatch(1);
+        // Counter we wait for the process execution in the thread to finish
+        final CountDownLatch waitEndSignal = new CountDownLatch(1);
+
+        // counter we wait for indication that the process has started
+        // or that it ended up with an exception - hookException
+        final CountDownLatch waitStartSignal = new CountDownLatch(1);
 
         // this will fire a hook script, which needs to launch a browser that
         // will join our room
@@ -82,18 +92,37 @@ public class DesktopSharingTest
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
                     Process p = pb.start();
 
+                    waitStartSignal.countDown();
+
                     p.waitFor();
                     System.err.println("Script ended execution.");
-                    waitSignal.countDown();
+                    waitEndSignal.countDown();
                 }
                 catch (IOException | InterruptedException e)
                 {
-                    assertFalse("Error executing hook script", true);
+                    hookException = e;
+                    waitStartSignal.countDown();
                 }
             }
         }).start();
 
         WebDriver owner = ConferenceFixture.getOwner();
+
+        // now lets wait satarting or error on startup
+        try
+        {
+            waitStartSignal.await(2, TimeUnit.SECONDS);
+            if(hookException != null)
+            {
+                hookException.printStackTrace();
+                assertFalse("Error executing hook script:"
+                    + hookException.getMessage(), true);
+            }
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
         // let's wait some time the user to joins
         TestUtils.waitForBoolean(
@@ -122,7 +151,7 @@ public class DesktopSharingTest
         // allow the participant to leave
         try
         {
-            waitSignal.await(10, TimeUnit.SECONDS);
+            waitEndSignal.await(10, TimeUnit.SECONDS);
             System.err.println("End DesktopSharingTest.");
         }
         catch (InterruptedException e)
