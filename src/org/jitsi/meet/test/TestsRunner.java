@@ -75,6 +75,7 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(VideoLayoutTest.class.getSimpleName());
         //DEFAULT_TESTS_TO_RUN.add(
         //    DesktopSharingImitationTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(DesktopSharingTest.class.getSimpleName());
     }
 
     /**
