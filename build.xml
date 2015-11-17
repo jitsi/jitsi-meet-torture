@@ -216,7 +216,7 @@ with the address of the instance to test (add to the command line
                deprecation="true" destdir="${dest}"
                nowarn="false"
                includeantruntime="false"
-               source="1.6" target="1.6"
+               source="1.7" target="1.7"
                fork="true">
             <src path="src"/>
             <include name="**/*.java" />
