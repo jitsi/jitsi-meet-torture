@@ -84,11 +84,37 @@ public class ActiveSpeakerTest
         // 2nd peer becomes active speaker - check from owner's perspective
         testActiveSpeaker(secondParticipant, owner);
 
+        // check the displayed speakers, there should be only one speaker
+        checkDisplayNames(owner);
+        checkDisplayNames(secondParticipant);
+        checkDisplayNames(thirdParticipant);
+
         // Dispose 3rd
         ConferenceFixture.close(thirdParticipant);
 
         // Unmuted owner and the 2nd
         unMuteOwnerAndSecond();
+    }
+
+    /**
+     * Checks the number of Speakers shown, it should be only one.
+     * @param driver the participant to check
+     */
+    private void checkDisplayNames(WebDriver driver)
+    {
+        List<WebElement> displayNamesElem =
+            driver.findElements(By.xpath(
+                "//span[contains(@class,'dominantspeakerindicator')]"
+                ));
+
+        int speakers = 0;
+        for (WebElement el : displayNamesElem)
+        {
+            if(el.isDisplayed())
+                speakers++;
+        }
+
+        assertEquals("Speakers should not be more then one", 1, speakers);
     }
 
     private void muteAllParticipants()
