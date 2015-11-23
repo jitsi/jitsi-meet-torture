@@ -27,7 +27,6 @@ import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.logging.*;
 
 import static org.junit.Assert.*;
@@ -81,8 +80,14 @@ public class ConferenceFixture
     /**
      * The property to change tested browser for the second participant.
      */
-        public static final String BROWSER_THIRDP_NAME_PROP
-        = "browser.third.participant";
+    public static final String BROWSER_THIRDP_NAME_PROP
+    = "browser.third.participant";
+
+    /**
+     * The property to disable no-sandbox parameter for chrome.
+     */
+    public static final String DISABLE_NOSANBOX_PARAM
+        = "chrome.disable.nosanbox";
 
     /**
      * The javascript code which returns {@code true} iff the ICE connection
@@ -364,8 +369,13 @@ public class ConferenceFixture
             ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
-            ops.addArguments("no-sandbox");
-            ops.addArguments("disable-setuid-sandbox");
+
+            String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
+            if(disProp == null && !Boolean.parseBoolean(disProp))
+            {
+                ops.addArguments("no-sandbox");
+                ops.addArguments("disable-setuid-sandbox");
+            }
 
             // starting version 46 we see crashes of chrome GPU process when
             // running in headless mode
