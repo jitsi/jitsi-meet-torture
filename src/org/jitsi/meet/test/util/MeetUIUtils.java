@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 import static org.junit.Assert.fail;
 
@@ -112,23 +113,26 @@ public class MeetUIUtils
      * Asserts that {@code participant} shows or doesn't show the audio or
      * video mute icon for the conference participant identified by
      * {@code resource}.
+     *
      * @param name the name that will be displayed in eventual failure message.
-     * @param resource the resource part of a participant's JID, used to
-     * identify the participant.
-     * @param participant the {@code WebDriver} where the check will be
+     * @param observer the {@code WebDriver} where the check will be
      * performed.
+     * @param testee the <tt>WebDriver</tt> of the participant for whom we're
+     *               checking the status of audio muted icon.
      * @param isMuted if {@code true}, the method will assert the presence of
      * the "mute" icon; otherwise, it will assert its absence.
      * @param isVideo if {@code true} the icon for "video mute" will be checked;
      * otherwise, the "audio mute" icon will be checked.
      */
     public static void assertMuteIconIsDisplayed(
-            WebDriver participant,
-            String resource,
+            WebDriver observer,
+            WebDriver testee,
             boolean isMuted,
             boolean isVideo,
             String name)
     {
+        String resource = MeetUtils.getResourceJid(testee);
+
         String icon = isVideo
             ? "/span[@class='videoMuted']/i[@class='icon-camera-disabled']"
             : "/span[@class='audioMuted']/i[@class='icon-mic-disabled']";
@@ -140,12 +144,12 @@ public class MeetUIUtils
         {
             if (isMuted)
             {
-                TestUtils.waitForElementByXPath(participant, mutedIconXPath, 5);
+                TestUtils.waitForElementByXPath(observer, mutedIconXPath, 5);
             }
             else
             {
                 TestUtils.waitForElementNotPresentByXPath(
-                    participant, mutedIconXPath, 5);
+                    observer, mutedIconXPath, 5);
             }
         }
         catch (TimeoutException exc)
@@ -153,6 +157,91 @@ public class MeetUIUtils
             fail(
                 name + (isMuted ? " should" : " shouldn't")
                     + " be muted at this point, xpath: " + mutedIconXPath);
+        }
+    }
+
+    /**
+     * For for the peer to have his audio muted/unmuted from given observer's
+     * perspective. The method will fail the test if something goes wrong or
+     * the audio muted status is different than the expected one. We wait up to
+     * 3 seconds for the expected status to appear.
+     *
+     * @param observer <tt>WebDriver</tt> instance of the participant that
+     *                 observes the audio status
+     * @param testee <tt>WebDriver</tt> instance of the peer for whom we're
+     *               checking the audio muted status.
+     * @param testeeName the name of the testee that will be printed in failure
+     *                   logs
+     * @param muted <tt>true</tt> to wait for audio muted status or
+     *              <tt>false</tt> to wait for the peer to unmute.
+     */
+    public static void waitForAudioMuted(final WebDriver observer,
+                                         final WebDriver testee,
+                                         final String testeeName,
+                                         final boolean muted)
+    {
+        // Waits for the correct icon
+        assertMuteIconIsDisplayed(
+            observer,
+            testee,
+            muted,
+            false, //audio
+            testeeName);
+
+        // The code below check verifies audio muted status by checking peer's
+        // audio levels on the oberver side. Statistics support is required to
+        // do that
+        if (!MeetUtils.areRtpStatsSupported(observer))
+            return;
+
+        // Give it 3 seconds to not get any audio or to receive some
+        // depending on "muted" argument
+        try
+        {
+            TestUtils.waitForCondition(
+                observer,
+                3,
+                new ExpectedCondition<Boolean>()
+                {
+                    @Override
+                    public Boolean apply(WebDriver webDriver)
+                    {
+                        Double audioLevel
+                            = MeetUtils.getPeerAudioLevel(webDriver, testee);
+
+                        // NOTE: audioLevel == null also when it is 0
+
+                        // When testing for muted we want audio level to stay
+                        // 'null' or 0, so we wait to timeout this condition
+                        if (muted)
+                        {
+                            return audioLevel != null && audioLevel > 0;
+                        }
+                        // When testing for unmuted we wait for first sound
+                        else
+                        {
+                            return audioLevel != null && audioLevel > 0.2;
+                        }
+                    }
+                }
+            );
+            // When testing for muted we don't want to have
+            // the condition succeeded
+            if (muted)
+            {
+                fail("There was some sound coming from muted: '" +
+                    testeeName + "'");
+            }
+            // else we're good for unmuted peer
+        }
+        catch (TimeoutException timeout)
+        {
+            if (!muted)
+            {
+                fail("There was no sound from unmuted: '" +
+                    testeeName + "'");
+            }
+            // else we're good for muted peer
         }
     }
 

@@ -155,7 +155,7 @@ public class ActiveSpeakerTest
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
         MeetUIUtils.assertMuteIconIsDisplayed(
                 peer2,
-                MeetUtils.getResourceJid(activeSpeaker),
+                activeSpeaker,
                 false,
                 false, //audio
                 speakerEndpoint);
@@ -184,7 +184,7 @@ public class ActiveSpeakerTest
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
         MeetUIUtils.assertMuteIconIsDisplayed(
                 peer2,
-                MeetUtils.getResourceJid(activeSpeaker),
+                activeSpeaker,
                 true,
                 false, //audio
                 speakerEndpoint);

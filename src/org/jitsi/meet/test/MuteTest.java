@@ -191,8 +191,7 @@ public class MuteTest
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 ConferenceFixture.getOwner(),
-                MeetUtils.getResourceJid(ConferenceFixture
-                                                 .getSecondParticipant()),
+                ConferenceFixture.getSecondParticipant(),
                 false, //should be unmuted
                 false, //audio
                 "participant2"
@@ -230,7 +229,7 @@ public class MuteTest
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 true, //should be muted
                 false, //audio
                 "owner");
@@ -265,7 +264,7 @@ public class MuteTest
         MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
         MeetUIUtils.assertMuteIconIsDisplayed(
                 observer,
-                MeetUtils.getResourceJid(testee),
+                testee,
                 muted,
                 false, //audio
                 testeeName);

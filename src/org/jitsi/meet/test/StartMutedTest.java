@@ -23,6 +23,7 @@ import org.openqa.selenium.*;
 /**
  * Start muted tests
  * @author Hristo Terezov
+ * @author Pawel Domas
  */
 public class StartMutedTest
     extends TestCase
@@ -90,13 +91,13 @@ public class StartMutedTest
     {
         System.err.println("Start configOptionsTest.");
 
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.close(ConferenceFixture.getOwner());
-        TestUtils.waitMillis(1000);
+        new DisposeConference().testDispose();
+
         WebDriver owner
             = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
                                            "config.startVideoMuted=1");
-        WebDriver secondParticipant = ConferenceFixture.startSecondParticipant();
+        final WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
 
         ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
         ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
@@ -105,6 +106,12 @@ public class StartMutedTest
         ConferenceFixture.waitForIceCompleted(secondParticipant);
 
         checkSecondParticipantForMute();
+
+        // Unmute and see if the audio works
+        MeetUIUtils.clickOnToolbarButton(
+            secondParticipant, "toolbar_button_mute");
+        MeetUIUtils.waitForAudioMuted(
+            owner, secondParticipant, "second peer", false /* unmuted */);
     }
 
     /**
@@ -129,6 +136,12 @@ public class StartMutedTest
             secondParticipant,
             "//span[@id='localVideoContainer']/span[@class='videoMuted']/"
                 + "i[@class='icon-camera-disabled']", 25);
+
+        MeetUIUtils.waitForAudioMuted(
+            owner,
+            secondParticipant,
+            "secondParticipant",
+            true);
 
         TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,

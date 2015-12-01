@@ -93,7 +93,7 @@ public class AvatarTest
         // Verify that the owner is muted from 2nd peer perspective
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 true,
                 true, //video
                 "owner");
@@ -112,7 +112,7 @@ public class AvatarTest
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 false,
                 true, //video
                 "owner");
@@ -123,7 +123,7 @@ public class AvatarTest
             .stopVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 true,
                 true, //video
                 "owner");
@@ -131,7 +131,7 @@ public class AvatarTest
             .stopVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 owner,
-                MeetUtils.getResourceJid(secondParticipant),
+                secondParticipant,
                 true,
                 true, //video
                 "secondParticipant");
@@ -182,7 +182,7 @@ public class AvatarTest
             .startVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 false,
                 true, //video
                 "owner");
@@ -190,7 +190,7 @@ public class AvatarTest
             .startVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
-                MeetUtils.getResourceJid(owner),
+                owner,
                 false,
                 true, //video
                 "secondParticipant");
@@ -289,7 +289,7 @@ public class AvatarTest
         // and the m from the text can mute the call, check whether we are muted
         MeetUIUtils.assertMuteIconIsDisplayed(
             secondParticipant,
-            MeetUtils.getResourceJid(owner),
+            owner,
             false,
             false, //audio
             "owner");
