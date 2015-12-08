@@ -369,6 +369,8 @@ public class ConferenceFixture
             ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
+            ops.addArguments("disable-extensions");
+            ops.addArguments("disable-plugins");
 
             String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
             if(disProp == null && !Boolean.parseBoolean(disProp))
