@@ -404,7 +404,9 @@ public class ConferenceFixture
                     "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
             }
 
-            ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+            //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+            ops.addArguments("enable-logging");
+            ops.addArguments("vmodule=*=3");
 
             caps.setCapability(ChromeOptions.CAPABILITY, ops);
 
