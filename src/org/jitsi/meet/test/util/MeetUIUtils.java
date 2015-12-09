@@ -220,7 +220,7 @@ public class MeetUIUtils
                         // When testing for unmuted we wait for first sound
                         else
                         {
-                            return audioLevel != null && audioLevel > 0.2;
+                            return audioLevel != null && audioLevel > 0.1;
                         }
                     }
                 }
