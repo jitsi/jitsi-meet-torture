@@ -101,6 +101,17 @@ public class ConferenceFixture
         "} catch (err) { return false; }";
 
     /**
+     * The javascript code which returns {@code true} iff the ICE connection
+     * is in state 'disconnected'.
+     */
+    public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
+        "try {" +
+            "var jingle = APP.xmpp.getConnection().jingle.activecall;" +
+            "if (jingle.peerconnection.iceConnectionState === 'disconnected')" +
+                "return true;" +
+        "} catch (err) { return false; }";
+
+    /**
      * The available browser type value.
      */
     public enum BrowserType
@@ -508,12 +519,51 @@ public class ConferenceFixture
     }
 
     /**
-     * Waits for the given participant to enter the ICE 'connected' state.
+     * Waits 30 sec for the given participant to enter the ICE 'connected'
+     * state.
+     *
      * @param participant the participant.
      */
     public static void waitForIceCompleted(WebDriver participant)
     {
-        TestUtils.waitForBoolean(participant, ICE_CONNECTED_CHECK_SCRIPT, 30);
+        waitForIceCompleted(participant, 30);
+    }
+
+    /**
+     * Waits 30 sec for the given participant to enter the ICE 'connected'
+     * state.
+     *
+     * @param participant the participant.
+     * @param timeout timeout in seconds.
+     */
+    public static void waitForIceCompleted(WebDriver participant, long timeout)
+    {
+        TestUtils.waitForBoolean(
+            participant, ICE_CONNECTED_CHECK_SCRIPT, timeout);
+    }
+
+    /**
+     * Waits 30 sec for the given participant to enter the ICE 'disconnected'
+     * state.
+     *
+     * @param participant the participant.
+     */
+    public static void waitForIceDisconnected(WebDriver participant)
+    {
+        waitForIceDisconnected(participant, 30);
+    }
+
+    /**
+     * Waits for the given participant to enter the ICE 'disconnected' state.
+     *
+     * @param participant the participant.
+     * @param timeout timeout in seconds.
+     */
+    public static void waitForIceDisconnected(WebDriver    participant,
+                                              long         timeout)
+    {
+        TestUtils.waitForBoolean(
+            participant, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
     }
 
     /**
