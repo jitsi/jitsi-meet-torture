@@ -27,6 +27,8 @@ import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
 import static org.junit.Assert.*;
@@ -377,7 +379,7 @@ public class ConferenceFixture
             logPrefs.enable(LogType.BROWSER, Level.ALL);
             caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-            ChromeOptions ops = new ChromeOptions();
+            final ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
             ops.addArguments("disable-extensions");
@@ -423,6 +425,45 @@ public class ConferenceFixture
 
             caps.setCapability(ChromeOptions.CAPABILITY, ops);
 
+            try
+            {
+                final ExecutorService pool = Executors.newFixedThreadPool(1);
+                // we will retry four times for 1 minute to obtain
+                // the chrome driver, on headless environments chrome hangs
+                // and we wait forever
+                for (int i = 0; i < 4; i++)
+                {
+                    try
+                    {
+                        ChromeDriver res =
+                            pool.submit(
+                                new Callable<ChromeDriver>()
+                            {
+                                @Override
+                                public ChromeDriver call() throws Exception
+                                {
+                                    return new ChromeDriver(ops);
+                                }
+                            }).get(1, TimeUnit.MINUTES);
+                        if(res != null)
+                            return res;
+                    }
+                    catch (TimeoutException te)
+                    {
+                        System.err.println("Timeout waiting for "
+                            + "chrome instance! We will retry now, this was our"
+                            + "attempt " + i);
+                    }
+
+                }
+            }
+            catch (InterruptedException | ExecutionException e)
+            {
+                e.printStackTrace();
+            }
+
+            // keep the old code
+            System.err.println("Just create ChromeDriver, may hang!");
             return new ChromeDriver(ops);
         }
     }
