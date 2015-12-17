@@ -76,6 +76,8 @@ public class TestsRunner
         //DEFAULT_TESTS_TO_RUN.add(
         //    DesktopSharingImitationTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(DesktopSharingTest.class.getSimpleName());
+        if(Boolean.getBoolean(RestTests.ENABLE_REST_API_TESTS))
+            DEFAULT_TESTS_TO_RUN.add(RestTests.class.getSimpleName());
     }
 
     /**
