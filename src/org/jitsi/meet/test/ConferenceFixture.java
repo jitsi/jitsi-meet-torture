@@ -92,26 +92,25 @@ public class ConferenceFixture
         = "chrome.disable.nosanbox";
 
     /**
-     * The javascript code which returns {@code true} iff the ICE connection
+     * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "try {" +
-            "var jingle = APP.xmpp.getConnection().jingle.activecall;" +
-            "if (jingle.peerconnection.iceConnectionState === 'connected')" +
-                "return true;" +
-        "} catch (err) { return false; }";
+        "return APP.conference.getConnectionState() === 'connected';";
 
     /**
-     * The javascript code which returns {@code true} iff the ICE connection
+     * The javascript code which returns {@code true} if the ICE connection
      * is in state 'disconnected'.
      */
     public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
-        "try {" +
-            "var jingle = APP.xmpp.getConnection().jingle.activecall;" +
-            "if (jingle.peerconnection.iceConnectionState === 'disconnected')" +
-                "return true;" +
-        "} catch (err) { return false; }";
+        "return APP.conference.getConnectionState() === 'disconnected';";
+
+    /**
+     * The javascript code which returns {@code true} if we are joined in
+     * the muc.
+     */
+    public static final String IS_MUC_JOINED =
+        "return APP.conference.isJoined();";
 
     /**
      * The available browser type value.
@@ -554,8 +553,7 @@ public class ConferenceFixture
     {
         TestUtils.waitForBoolean(
             participant,
-            "return (APP.xmpp.getConnection() != null) &&" +
-                    "APP.xmpp.isMUCJoined();",
+            IS_MUC_JOINED,
             timeout);
     }
 
@@ -633,7 +631,7 @@ public class ConferenceFixture
     public static boolean isInMuc(WebDriver participant)
     {
         Object res = ((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.isMUCJoined();");
+            .executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
     }
 
