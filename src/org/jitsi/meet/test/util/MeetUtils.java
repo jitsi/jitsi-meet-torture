@@ -37,7 +37,7 @@ public class MeetUtils
     public static String getResourceJid(WebDriver participant)
     {
         return (String)((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.myResource();");
+            .executeScript("return APP.conference.getMyUserId();");
     }
 
     /**
