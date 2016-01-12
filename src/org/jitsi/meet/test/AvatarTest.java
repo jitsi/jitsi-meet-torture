@@ -360,6 +360,6 @@ public class AvatarTest
     private String getLargeVideoSrc(WebDriver perspective)
     {
         return getSrcByXPath(perspective,
-            "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
+            "//div[@id='dominantSpeaker']/img[@id='dominantSpeakerAvatar']");
     }
 }
