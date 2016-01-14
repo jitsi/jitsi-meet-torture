@@ -882,14 +882,9 @@ public class ConferenceFixture
             {
                 public Boolean apply(WebDriver d)
                 {
-                    long streams = (Long)((JavascriptExecutor) participant)
-                        .executeScript("return "
-                            + "Object.keys(APP.RTC.remoteStreams).length;");
-
-                    if(streams >= n)
-                        return true;
-                    else
-                        return false;
+                    return (Boolean)((JavascriptExecutor) participant)
+                        .executeScript(
+                "return APP.conference.checkEnoughParticipants(" + n +");");
                 }
             });
     }
