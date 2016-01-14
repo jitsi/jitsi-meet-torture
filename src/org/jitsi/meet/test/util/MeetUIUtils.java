@@ -64,7 +64,7 @@ public class MeetUIUtils
     public static String getLargeVideoResource(WebDriver participant)
     {
         return (String)((JavascriptExecutor) participant)
-                .executeScript("return APP.UI.getLargeVideoResource();");
+                .executeScript("return APP.UI.getLargeVideoID();");
     }
 
     /**
