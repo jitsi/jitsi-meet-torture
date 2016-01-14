@@ -79,11 +79,23 @@ public class DisplayNameTest
         System.err.println("Start doLocalDisplayNameCheck for " + newName + ".");
 
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        // make sure we hover over other element first, cause when hovering
+        // local element we may not out of it when editing
+        WebElement remoteVideoElem =
+            secondParticipant.findElement(By.xpath(
+                "//span[@id='participant_" + MeetUtils
+                    .getResourceJid(ConferenceFixture.getOwner()) + "']"));
+        Actions action0 = new Actions(secondParticipant);
+        action0.moveToElement(remoteVideoElem);
+        action0.perform();
+
         // now lets check whether display name is set locally
         WebElement displayNameElem
             = secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']/span[@id='localDisplayName']"));
 
+        // hover over local display name
         WebElement localVideoContainerElem
             = secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"));
@@ -202,6 +214,9 @@ public class DisplayNameTest
         else
             inputElem.sendKeys(Keys.BACK_SPACE);
 
-        inputElem.sendKeys(Keys.RETURN);
+        //inputElem.sendKeys(Keys.RETURN);
+        // just click somewhere to lose focus
+        ConferenceFixture.getSecondParticipant().findElement(
+            By.className("focusindicator")).click();
     }
 }
