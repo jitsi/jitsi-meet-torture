@@ -51,7 +51,7 @@ public class MeetUtils
     public static String getFullMucJid(WebDriver participant)
     {
         return (String)((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.myJid();");
+            .executeScript("return APP.conference._room.room.myroomjid;");
     }
 
     /**
@@ -75,7 +75,8 @@ public class MeetUtils
     {
         return String.valueOf(((JavascriptExecutor) participant)
             .executeScript(
-                "return APP.xmpp.getLocalSSRC('audio');"));
+        "var sess = APP.conference._room.room.xmpp.connection.jingle.sessions;"
+        + "return sess[Object.keys(sess)[0]].getLocalSSRC('audio');"));
     }
 
     // NOTE: audioLevel == null also when it is 0
