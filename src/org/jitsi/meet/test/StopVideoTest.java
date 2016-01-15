@@ -149,7 +149,7 @@ public class StopVideoTest
             5);
 
         // just debug messages
-        {
+        /*{
             String ownerJid = (String) ((JavascriptExecutor)
                 ConferenceFixture.getOwner())
                 .executeScript("return APP.xmpp.myJid();");
@@ -178,7 +178,7 @@ public class StopVideoTest
                     System.err.println("Stream muted : " + videoStreamMuted);
                 }
             }
-        }
+        }*/
 
         // now lets start video for owner
         startVideoOnOwnerAndCheck();
