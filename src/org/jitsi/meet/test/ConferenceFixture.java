@@ -279,6 +279,7 @@ public class ConferenceFixture
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
         URL += "#config.requireDisplayName=false";
+        URL += "&config.debug=true";
         URL += "&config.callStatsID=false";
         if(fragment != null)
             URL += "&" + fragment;
