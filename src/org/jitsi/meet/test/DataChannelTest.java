@@ -91,7 +91,7 @@ public class DataChannelTest
     private Boolean isDataChannelOpen(WebDriver webDriver)
     {
         String script
-            = "return APP.RTC.DataChannels.some(function (dataChannel) {"
+            = "return APP.conference._room.rtc.dataChannels._some(function (dataChannel) {"
                 + "    return dataChannel.readyState == 'open';"
                 + "});";
 
@@ -112,7 +112,7 @@ public class DataChannelTest
      */
     private Boolean isServerHelloReceived(WebDriver webDriver)
     {
-        String script = "return APP.RTC.DataChannels.receivedServerHello;";
+        String script = "return APP.conference._room.rtc.dataChannels.receivedServerHello;";
 
         return executeScriptAndReturnBoolean(webDriver, script);
     }
@@ -130,14 +130,14 @@ public class DataChannelTest
     private Boolean sendClientHello(WebDriver webDriver)
     {
         String script
-            = "APP.RTC.addListener("
+            = "APP.conference._room.rtc.addListener("
                 + "        'rtc.datachannel.ServerHello',"
                 + "        function (o) {"
-                + "            APP.RTC.DataChannels.receivedServerHello = true;"
+                + "            APP.conference._room.rtc.dataChannels.receivedServerHello = true;"
                 + "        });"
-                + "return APP.RTC.DataChannels.some(function (dataChannel) {"
+                + "return APP.conference._room.rtc.dataChannels._some(function (dataChannel) {"
                 + "    if (dataChannel.readyState == 'open') {"
-                + "        APP.RTC.DataChannels.receivedServerHello = false;"
+                + "        APP.conference._room.rtc.dataChannels.receivedServerHello = false;"
                 + "        dataChannel.send(JSON.stringify({"
                 + "            'colibriClass': 'ClientHello'"
                 + "        }));"
