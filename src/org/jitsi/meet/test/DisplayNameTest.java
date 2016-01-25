@@ -201,13 +201,13 @@ public class DisplayNameTest
     {
         System.err.println("Start doRemoteDisplayNameCheck for " + newName + ".");
 
-        // first when checking make sure we click on video so we avoid
-        // the situation of dominant speaker detection and changing display
-        new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
-            .ownerClickOnRemoteVideoAndTest();
-
         WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        // first when checking make sure we click on video so we avoid
+        // the situation of dominant speaker detection and changing display
+        MeetUIUtils.clickOnRemoteVideo(
+            owner, MeetUtils.getResourceJid(secondParticipant));
 
         final String secondParticipantResourceJid = MeetUtils
             .getResourceJid(secondParticipant);
