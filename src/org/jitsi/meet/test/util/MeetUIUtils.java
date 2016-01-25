@@ -18,6 +18,8 @@ package org.jitsi.meet.test.util;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.util.*;
+
 import static org.junit.Assert.fail;
 
 /**
@@ -263,9 +265,17 @@ public class MeetUIUtils
                     "/img[@class='userAvatar']",
             5);
 
-        // User's video
-        TestUtils.waitForNotDisplayedElementByXPath(
-            participant, "//span[@id='participant_" + resource + "']/video", 5);
+        // User's video if available should be hidden, the element is missing
+        // if remote participant started muted when we joined
+        String videoElementXPath
+            = "//span[@id='participant_" + resource + "']/video";
+        List<WebElement> videoElems
+            = participant.findElements(By.xpath(videoElementXPath));
+        if(videoElems.size() > 0)
+        {
+            TestUtils.waitForNotDisplayedElementByXPath(
+                participant, videoElementXPath, 5);
+        }
     }
 
     /**
@@ -286,9 +296,16 @@ public class MeetUIUtils
             participant, "//span[@id='participant_" + resource + "']" +
                    "/img[@class='userAvatar']", 5);
 
-        // User's video - hidden
-        TestUtils.waitForNotDisplayedElementByXPath(
-            participant, "//span[@id='participant_" + resource + "']/video", 5);
+        // User's video - hidden, if it is available
+        String videoElementXPath
+            = "//span[@id='participant_" + resource + "']/video";
+        List<WebElement> videoElems
+            = participant.findElements(By.xpath(videoElementXPath));
+        if(videoElems.size() > 0)
+        {
+            TestUtils.waitForNotDisplayedElementByXPath(
+                participant, videoElementXPath, 5);
+        }
 
         // Display name - visible
         TestUtils.waitForDisplayedElementByXPath(

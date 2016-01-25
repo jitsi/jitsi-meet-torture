@@ -167,13 +167,9 @@ public class StartMutedTest
         TestUtils.waitMillis(1000);
 
         WebDriver owner = ConferenceFixture.startOwner(null);
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
 
         ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
-
+        ConferenceFixture.waitForSecondParticipantToConnect();
         ConferenceFixture.waitForIceCompleted(owner);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
     }
 }

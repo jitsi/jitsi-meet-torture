@@ -79,9 +79,7 @@ public class TCPTest
         ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
         WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant(DISABLE_UDP_URL_FRAGMENT);
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
-        ConferenceFixture.waitForSendReceiveData(secondParticipant);
+        ConferenceFixture.waitForSecondParticipantToConnect();
 
         assertEquals("We must be connected through TCP",
                      "tcp",
@@ -96,11 +94,7 @@ public class TCPTest
     protected void tearDown()
     {
         ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
-        ConferenceFixture.waitForSendReceiveData(secondParticipant);
+        ConferenceFixture.waitForSecondParticipantToConnect();
     }
 
     /**

@@ -65,6 +65,7 @@ public class AvatarTest
 
         // Start owner
         WebDriver owner = ConferenceFixture.getOwner();
+        String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
         TestUtils.waitForDisplayedElementByXPath(
@@ -88,8 +89,6 @@ public class AvatarTest
         WebDriver secondParticipant
                 = ConferenceFixture.getSecondParticipantInstance();
 
-        TestUtils.waitMillis(2000);
-
         // Verify that the owner is muted from 2nd peer perspective
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
@@ -97,8 +96,11 @@ public class AvatarTest
                 true,
                 true, //video
                 "owner");
-        // Pin owner's thumbnail
-        SwitchVideoTests.clickOnRemoteVideoAndTest(secondParticipant);
+        // Pin owner's thumbnail, as owner is started muted for second
+        // participant, there is no video element, so don't use
+        // SwitchVideoTests.clickOnRemoteVideoAndTest which will check for
+        // remote video switching on large
+        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
         assertEquals(ownerLargeSrc, getLargeVideoSrc(secondParticipant));
 
@@ -142,7 +144,6 @@ public class AvatarTest
 
         String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
         String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
-        String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Pin local video and verify avatars are displayed
         MeetUIUtils.clickOnLocalVideo(thirdParticipant);

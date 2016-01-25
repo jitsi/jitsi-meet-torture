@@ -842,6 +842,8 @@ public class ConferenceFixture
         waitForParticipantToJoinMUC(secondParticipant, 10);
         waitForIceCompleted(secondParticipant);
         waitForSendReceiveData(secondParticipant);
+
+        TestUtils.waitMillis(5000);
     }
 
     /**
@@ -867,6 +869,8 @@ public class ConferenceFixture
         waitForIceCompleted(thirdParticipant);
         waitForSendReceiveData(thirdParticipant);
         waitForRemoteStreams(thirdParticipant, 2);
+
+        TestUtils.waitMillis(3000);
     }
 
     /**
