@@ -221,8 +221,8 @@ public class DisplayNameTest
 
         checkRemoteVideoForName(owner, secondParticipant, newName);
 
-        new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
-            .ownerClickOnRemoteVideoAndTest();
+        MeetUIUtils.clickOnRemoteVideo(
+            owner, MeetUtils.getResourceJid(secondParticipant));
     }
 
     /**
