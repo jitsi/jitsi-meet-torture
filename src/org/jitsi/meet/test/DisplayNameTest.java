@@ -233,15 +233,18 @@ public class DisplayNameTest
     {
         System.err.println("Start changeDisplayName for " + newName + ".");
 
+        WebDriver secondParticipant
+            = ConferenceFixture.getSecondParticipantInstance();
+
         WebElement elem =
-            ConferenceFixture.getSecondParticipant().findElement(By.xpath(
+            secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']/a[@class='displayname']"));
         elem.click();
 
         WebElement inputElem =
-            ConferenceFixture.getSecondParticipant().findElement(By.xpath(
+            secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']/input[@class='displayname']"));
-        Actions action = new Actions(ConferenceFixture.getSecondParticipant());
+        Actions action = new Actions(secondParticipant);
         action.moveToElement(inputElem);
         action.perform();
 
@@ -250,9 +253,11 @@ public class DisplayNameTest
         else
             inputElem.sendKeys(Keys.BACK_SPACE);
 
-        //inputElem.sendKeys(Keys.RETURN);
-        // just click somewhere to lose focus
-        ConferenceFixture.getSecondParticipant().findElement(
-            By.className("focusindicator")).click();
+        inputElem.sendKeys(Keys.RETURN);
+        // just click somewhere to lose focus, to make sure editing has ended
+        String ownerResource
+            = MeetUtils.getResourceJid(ConferenceFixture.getOwner());
+        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
+        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
     }
 }
