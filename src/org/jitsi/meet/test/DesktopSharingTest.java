@@ -127,7 +127,7 @@ public class DesktopSharingTest
         // let's wait some time the user to joins
         TestUtils.waitForBoolean(
             owner,
-            "return (Object.keys(APP.xmpp.getMembers()).length == 2);",
+            "return (APP.conference.membersCount == 2);",
             15);
         ConferenceFixture.waitForIceCompleted(owner);
         ConferenceFixture.waitForSendReceiveData(owner);

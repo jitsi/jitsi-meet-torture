@@ -65,6 +65,7 @@ public class AvatarTest
 
         // Start owner
         WebDriver owner = ConferenceFixture.getOwner();
+        String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
         TestUtils.waitForDisplayedElementByXPath(
@@ -87,8 +88,7 @@ public class AvatarTest
         ConferenceFixture.waitForSecondParticipantToConnect();
         WebDriver secondParticipant
                 = ConferenceFixture.getSecondParticipantInstance();
-
-        TestUtils.waitMillis(2000);
+        String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
 
         // Verify that the owner is muted from 2nd peer perspective
         MeetUIUtils.assertMuteIconIsDisplayed(
@@ -97,13 +97,16 @@ public class AvatarTest
                 true,
                 true, //video
                 "owner");
-        // Pin owner's thumbnail
-        SwitchVideoTests.clickOnRemoteVideoAndTest(secondParticipant);
+        // Pin owner's thumbnail, as owner is started muted for second
+        // participant, there is no video element, so don't use
+        // SwitchVideoTests.clickOnRemoteVideoAndTest which will check for
+        // remote video switching on large
+        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
         assertEquals(ownerLargeSrc, getLargeVideoSrc(secondParticipant));
 
         // Owner pins second participant's video
-        SwitchVideoTests.clickOnRemoteVideoAndTest(owner);
+        MeetUIUtils.clickOnRemoteVideo(owner, secondPeerResource);
         // Check if avatar is displayed on owner's local video thumbnail
         MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
@@ -141,8 +144,6 @@ public class AvatarTest
         WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
 
         String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
-        String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
-        String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Pin local video and verify avatars are displayed
         MeetUIUtils.clickOnLocalVideo(thirdParticipant);
@@ -360,6 +361,6 @@ public class AvatarTest
     private String getLargeVideoSrc(WebDriver perspective)
     {
         return getSrcByXPath(perspective,
-            "//div[@id='activeSpeaker']/img[@id='activeSpeakerAvatar']");
+            "//div[@id='dominantSpeaker']/img[@id='dominantSpeakerAvatar']");
     }
 }

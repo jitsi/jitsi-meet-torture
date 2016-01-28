@@ -277,19 +277,10 @@ public class FailureListener
         try
         {
             Object log = ((JavascriptExecutor) driver)
-                .executeScript("try{"
-                    + "    var data = APP.xmpp.getJingleLog();\n"
-                    + "    var metadata = {};\n"
-                    + "    metadata.time = new Date();\n"
-                    + "    metadata.url = window.location.href;\n"
-                    + "    metadata.ua = navigator.userAgent;\n"
-                    + "    var log = APP.xmpp.getXmppLog();\n"
-                    + "    if (log) {\n"
-                    + "        metadata.xmpp = log;\n"
-                    + "    }\n"
-                    + "    data.metadata = metadata;\n"
-                    + "    return JSON.stringify(data, null, '  ');"
-                    + "}catch (e) {}");
+                .executeScript(
+            "try{ "
+            + "return JSON.stringify(APP.conference.getLogs(), null, '    ');"
+            + "}catch (e) {}");
 
             if(log == null)
                 return;

@@ -92,26 +92,25 @@ public class ConferenceFixture
         = "chrome.disable.nosanbox";
 
     /**
-     * The javascript code which returns {@code true} iff the ICE connection
+     * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "try {" +
-            "var jingle = APP.xmpp.getConnection().jingle.activecall;" +
-            "if (jingle.peerconnection.iceConnectionState === 'connected')" +
-                "return true;" +
-        "} catch (err) { return false; }";
+        "return APP.conference.getConnectionState() === 'connected';";
 
     /**
-     * The javascript code which returns {@code true} iff the ICE connection
+     * The javascript code which returns {@code true} if the ICE connection
      * is in state 'disconnected'.
      */
     public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
-        "try {" +
-            "var jingle = APP.xmpp.getConnection().jingle.activecall;" +
-            "if (jingle.peerconnection.iceConnectionState === 'disconnected')" +
-                "return true;" +
-        "} catch (err) { return false; }";
+        "return APP.conference.getConnectionState() === 'disconnected';";
+
+    /**
+     * The javascript code which returns {@code true} if we are joined in
+     * the muc.
+     */
+    public static final String IS_MUC_JOINED =
+        "return APP.conference.isJoined();";
 
     /**
      * The available browser type value.
@@ -280,6 +279,7 @@ public class ConferenceFixture
         String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
             + currentRoomName;
         URL += "#config.requireDisplayName=false";
+        URL += "&config.debug=true";
         URL += "&config.callStatsID=false";
         if(fragment != null)
             URL += "&" + fragment;
@@ -554,8 +554,7 @@ public class ConferenceFixture
     {
         TestUtils.waitForBoolean(
             participant,
-            "return (APP.xmpp.getConnection() != null) &&" +
-                    "APP.xmpp.isMUCJoined();",
+            IS_MUC_JOINED,
             timeout);
     }
 
@@ -633,7 +632,7 @@ public class ConferenceFixture
     public static boolean isInMuc(WebDriver participant)
     {
         Object res = ((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.isMUCJoined();");
+            .executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
     }
 
@@ -843,6 +842,8 @@ public class ConferenceFixture
         waitForParticipantToJoinMUC(secondParticipant, 10);
         waitForIceCompleted(secondParticipant);
         waitForSendReceiveData(secondParticipant);
+
+        TestUtils.waitMillis(5000);
     }
 
     /**
@@ -868,6 +869,8 @@ public class ConferenceFixture
         waitForIceCompleted(thirdParticipant);
         waitForSendReceiveData(thirdParticipant);
         waitForRemoteStreams(thirdParticipant, 2);
+
+        TestUtils.waitMillis(3000);
     }
 
     /**
@@ -884,14 +887,9 @@ public class ConferenceFixture
             {
                 public Boolean apply(WebDriver d)
                 {
-                    long streams = (Long)((JavascriptExecutor) participant)
-                        .executeScript("return "
-                            + "Object.keys(APP.RTC.remoteStreams).length;");
-
-                    if(streams >= n)
-                        return true;
-                    else
-                        return false;
+                    return (Boolean)((JavascriptExecutor) participant)
+                        .executeScript(
+                "return APP.conference.checkEnoughParticipants(" + n +");");
                 }
             });
     }

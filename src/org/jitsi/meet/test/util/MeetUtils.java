@@ -37,21 +37,7 @@ public class MeetUtils
     public static String getResourceJid(WebDriver participant)
     {
         return (String)((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.myResource();");
-    }
-
-    /**
-     * Returns full user MUC jid. For example:<br/>
-     *
-     * testroom1@muc.server.com/nickname1
-     *
-     * @param participant the <tt>WebDriver</tt> instance which runs conference
-     *                    participant.
-     */
-    public static String getFullMucJid(WebDriver participant)
-    {
-        return (String)((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.myJid();");
+            .executeScript("return APP.conference.getMyUserId();");
     }
 
     /**
@@ -67,29 +53,22 @@ public class MeetUtils
     }
 
     /**
-     * Get
+     * NOTE: audioLevel == null also when it is 0
+     * Returns the audio level for a participant.
+     *
+     * @param observer
      * @param participant
      * @return
      */
-    public static String getLocalAudioSSRC(WebDriver participant)
-    {
-        return String.valueOf(((JavascriptExecutor) participant)
-            .executeScript(
-                "return APP.xmpp.getLocalSSRC('audio');"));
-    }
-
-    // NOTE: audioLevel == null also when it is 0
     public static Double getPeerAudioLevel(WebDriver observer,
                                            WebDriver participant)
     {
 
-        String jid = MeetUtils.getFullMucJid(participant);
-
-        String ssrc = getLocalAudioSSRC(participant);
+        String jid = MeetUtils.getResourceJid(participant);
 
         String script = "" +
-            "var level = APP.statistics." +
-            "getPeerSSRCAudioLevel(\"" + jid + "\"," + ssrc + ");" +
+            "var level = APP.conference." +
+            "getPeerSSRCAudioLevel(\"" + jid + "\");" +
             "return level ? level.toFixed(2) : null;";
 
         Object levelObj
