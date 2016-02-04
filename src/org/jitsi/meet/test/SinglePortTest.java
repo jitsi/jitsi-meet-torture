@@ -110,7 +110,7 @@ public class SinglePortTest
             return null;
         Object result = ((JavascriptExecutor) driver).executeScript(
             "try {" +
-                    "return APP.connectionquality.getStats().transport[0].ip;" +
+                    "return APP.conference.getStats().transport[0].ip;" +
                 "} catch (err) { return 'error: '+err; }");
 
         if (result != null && result instanceof String)

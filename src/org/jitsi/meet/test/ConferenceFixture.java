@@ -644,7 +644,7 @@ public class ConferenceFixture
     public static long getDownloadBitrate(WebDriver participant)
     {
         Map stats = (Map)((JavascriptExecutor) participant)
-            .executeScript("return APP.connectionquality.getStats();");
+            .executeScript("return APP.conference.getStats();");
 
         Map<String,Long> bitrate =
             (Map<String,Long>)stats.get("bitrate");
@@ -778,8 +778,7 @@ public class ConferenceFixture
                 public Boolean apply(WebDriver d)
                 {
                     Map stats = (Map) ((JavascriptExecutor) participant)
-                            .executeScript("return APP.connectionquality" +
-                                                   ".getStats();");
+                            .executeScript("return APP.conference.getStats();");
 
                     Map<String, Long> bitrate =
                             (Map<String, Long>) stats.get("bitrate");

@@ -111,7 +111,7 @@ public class TCPTest
             return "error: driver is null";
         Object protocol = ((JavascriptExecutor) driver).executeScript(
             "try {" +
-                "return APP.connectionquality.getStats().transport[0].type;" +
+                "return APP.conference.getStats().transport[0].type;" +
             "} catch (err) { return 'error: '+err; }");
 
         return (protocol == null) ? null : protocol.toString().toLowerCase();
