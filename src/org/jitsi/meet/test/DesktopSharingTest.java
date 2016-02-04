@@ -146,7 +146,7 @@ public class DesktopSharingTest
                     + remoteParticipantID + "');");
 
         assertEquals("Wrong video type, maybe desktop sharing didn't work",
-            "screen", remoteVideoType);
+            "desktop", remoteVideoType);
 
         // allow the participant to leave
         try
