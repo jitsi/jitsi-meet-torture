@@ -31,6 +31,13 @@ public class ActiveSpeakerTest
     extends TestCase
 {
     /**
+     * When doing mute/unmute to force detecting dominant speaker, we need
+     * to remember which one was the last dominant so we do not check it for
+     * the dominant speaker icon.
+     */
+    private WebDriver lastActiveSpeaker = null;
+
+    /**
      * Constructs test
      * @param name the method name for the test.
      */
@@ -85,9 +92,15 @@ public class ActiveSpeakerTest
         testActiveSpeaker(secondParticipant, owner);
 
         // check the displayed speakers, there should be only one speaker
-        checkDisplayNames(owner, 1);
-        checkDisplayNames(secondParticipant, 0);
-        checkDisplayNames(thirdParticipant, 1);
+        checkDisplayNames(
+            owner,
+            owner == lastActiveSpeaker ? 0 : 1);
+        checkDisplayNames(
+            secondParticipant,
+            secondParticipant == lastActiveSpeaker ? 0 : 1);
+        checkDisplayNames(
+            thirdParticipant,
+            thirdParticipant == lastActiveSpeaker ? 0 : 1);
 
         // Dispose 3rd
         ConferenceFixture.close(thirdParticipant);
@@ -152,6 +165,14 @@ public class ActiveSpeakerTest
     {
         System.err.println("Start testActiveSpeaker.");
 
+        // we cannot use firefox as active speaker as it uses constant beep
+        // audio which is not detected as speech
+        if (ConferenceFixture.getBrowserType(activeSpeaker)
+                == ConferenceFixture.BrowserType.firefox)
+        {
+            return;
+        }
+
         final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
 
         // Unmute
@@ -182,6 +203,7 @@ public class ActiveSpeakerTest
                 "Active speaker not displayed on large video " + new Date(),
                 speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2));
         }
+        lastActiveSpeaker = activeSpeaker;
 
         // Mute back again
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
