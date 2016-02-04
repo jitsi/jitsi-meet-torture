@@ -85,9 +85,9 @@ public class ActiveSpeakerTest
         testActiveSpeaker(secondParticipant, owner);
 
         // check the displayed speakers, there should be only one speaker
-        checkDisplayNames(owner);
-        checkDisplayNames(secondParticipant);
-        checkDisplayNames(thirdParticipant);
+        checkDisplayNames(owner, 1);
+        checkDisplayNames(secondParticipant, 0);
+        checkDisplayNames(thirdParticipant, 1);
 
         // Dispose 3rd
         ConferenceFixture.close(thirdParticipant);
@@ -99,8 +99,10 @@ public class ActiveSpeakerTest
     /**
      * Checks the number of Speakers shown, it should be only one.
      * @param driver the participant to check
+     * @param speakersCount count of speakers can be 1 or 0. It is 0 when the
+     * user we check is the actual dominant speaker.
      */
-    private void checkDisplayNames(WebDriver driver)
+    private void checkDisplayNames(WebDriver driver, int speakersCount)
     {
         List<WebElement> displayNamesElem =
             driver.findElements(By.xpath(
@@ -114,7 +116,8 @@ public class ActiveSpeakerTest
                 speakers++;
         }
 
-        assertEquals("Speakers should not be more then one", 1, speakers);
+        assertEquals("Speakers should not be more then one",
+            speakersCount, speakers);
     }
 
     private void muteAllParticipants()
