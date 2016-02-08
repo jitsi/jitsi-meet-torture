@@ -31,13 +31,6 @@ public class ActiveSpeakerTest
     extends TestCase
 {
     /**
-     * When doing mute/unmute to force detecting dominant speaker, we need
-     * to remember which one was the last dominant so we do not check it for
-     * the dominant speaker icon.
-     */
-    private WebDriver lastActiveSpeaker = null;
-
-    /**
      * Constructs test
      * @param name the method name for the test.
      */
@@ -92,15 +85,9 @@ public class ActiveSpeakerTest
         testActiveSpeaker(secondParticipant, owner);
 
         // check the displayed speakers, there should be only one speaker
-        checkDisplayNames(
-            owner,
-            owner == lastActiveSpeaker ? 0 : 1);
-        checkDisplayNames(
-            secondParticipant,
-            secondParticipant == lastActiveSpeaker ? 0 : 1);
-        checkDisplayNames(
-            thirdParticipant,
-            thirdParticipant == lastActiveSpeaker ? 0 : 1);
+        checkDisplayNames(owner);
+        checkDisplayNames(secondParticipant);
+        checkDisplayNames(thirdParticipant);
 
         // Dispose 3rd
         ConferenceFixture.close(thirdParticipant);
@@ -112,10 +99,8 @@ public class ActiveSpeakerTest
     /**
      * Checks the number of Speakers shown, it should be only one.
      * @param driver the participant to check
-     * @param speakersCount count of speakers can be 1 or 0. It is 0 when the
-     * user we check is the actual dominant speaker.
      */
-    private void checkDisplayNames(WebDriver driver, int speakersCount)
+    private void checkDisplayNames(WebDriver driver)
     {
         List<WebElement> displayNamesElem =
             driver.findElements(By.xpath(
@@ -129,8 +114,7 @@ public class ActiveSpeakerTest
                 speakers++;
         }
 
-        assertEquals("Speakers should not be more then one",
-            speakersCount, speakers);
+        assertEquals("Speakers should not be more then one", 1, speakers);
     }
 
     private void muteAllParticipants()
@@ -203,7 +187,6 @@ public class ActiveSpeakerTest
                 "Active speaker not displayed on large video " + new Date(),
                 speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2));
         }
-        lastActiveSpeaker = activeSpeaker;
 
         // Mute back again
         MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
