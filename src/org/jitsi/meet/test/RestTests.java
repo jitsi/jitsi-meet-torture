@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import com.google.gson.*;
 import junit.framework.*;
 import org.apache.http.*;
+import org.apache.http.client.config.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.*;
@@ -99,7 +100,13 @@ public class RestTests
     private static String runRestClient(
         String serverAddress, int port, String queryURL)
     {
-        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+            .setSocketTimeout(5000)
+            .setConnectTimeout(5000)
+            .setConnectionRequestTimeout(5000)
+            .build();
+        CloseableHttpClient httpclient = HttpClientBuilder.create()
+            .setDefaultRequestConfig(defaultRequestConfig).build();
 
         HttpHost targetHost = new HttpHost(serverAddress, port, "http");
 
