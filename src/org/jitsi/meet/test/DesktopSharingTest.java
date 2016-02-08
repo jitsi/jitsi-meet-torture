@@ -128,7 +128,7 @@ public class DesktopSharingTest
         TestUtils.waitForBoolean(
             owner,
             "return (APP.conference.membersCount == 2);",
-            15);
+            25);
         ConferenceFixture.waitForIceCompleted(owner);
         ConferenceFixture.waitForSendReceiveData(owner);
         ConferenceFixture.waitForRemoteStreams(owner, 1);
