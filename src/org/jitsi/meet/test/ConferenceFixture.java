@@ -696,9 +696,14 @@ public class ConferenceFixture
 
         try
         {
-            participant.close();
+            // no need to call close and then quit, as close doc says:
+            // Close the current window, quitting the browser if it's the
+            // last window currently open.
+            // where quit doc says:
+            // Quits this driver, closing every associated window.
+            //participant.close();
 
-            TestUtils.waitMillis(500);
+            //TestUtils.waitMillis(500);
 
             participant.quit();
 
