@@ -147,8 +147,6 @@ public class ActiveSpeakerTest
      */
     private void testActiveSpeaker(WebDriver activeSpeaker, WebDriver peer2)
     {
-        System.err.println("Start testActiveSpeaker.");
-
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
         if (ConferenceFixture.getBrowserType(activeSpeaker)
@@ -156,6 +154,9 @@ public class ActiveSpeakerTest
         {
             return;
         }
+
+        System.err.println("Start testActiveSpeaker for participant: "
+            + ConferenceFixture.getParticipantName(activeSpeaker));
 
         final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
 
