@@ -184,9 +184,7 @@ public class FailureListener
         File destFile = new File(outputScreenshotsParentFolder, fileName);
         try
         {
-            //System.err.println("Took screenshot " + destFile);
             FileUtils.copyFile(scrFile, destFile);
-            //System.err.println("Saved screenshot " + destFile);
         } catch (IOException ioe)
         {
             throw new RuntimeException(ioe);
@@ -301,32 +299,34 @@ public class FailureListener
     private void saveBrowserLogs(String fileNamePrefix)
     {
         saveBrowserLogs(ConferenceFixture.getOwner(),
-            fileNamePrefix + "-console-owner.log");
+            fileNamePrefix, "-console-owner", ".log");
 
         WebDriver secondParticipant =
             ConferenceFixture.getSecondParticipantInstance();
         if(secondParticipant != null)
             saveBrowserLogs(secondParticipant,
-                fileNamePrefix + "-console-participant.log");
+                fileNamePrefix, "-console-secondParticipant", ".log");
 
         WebDriver thirdParticipant =
             ConferenceFixture.getThirdParticipantInstance();
         if(thirdParticipant != null)
             saveBrowserLogs(thirdParticipant,
-                fileNamePrefix + "-console-third.log");
+                fileNamePrefix, "-console-thirdParticipant", ".log");
     }
 
     /**
      * Saves browser console logs.
      */
-    private void saveBrowserLogs(WebDriver driver, String fileName)
+    private void saveBrowserLogs(WebDriver driver,
+        String fileNamePrefix, String suffix, String extension)
     {
         try
         {
             LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
 
             BufferedWriter out = new BufferedWriter(new FileWriter(
-                new File(outputLogsParentFolder, fileName)));
+                new File(outputLogsParentFolder,
+                        fileNamePrefix + suffix + "-driver" + extension)));
 
             Iterator<LogEntry> iter = logs.iterator();
             while (iter.hasNext())
@@ -339,6 +339,17 @@ public class FailureListener
             }
             out.flush();
             out.close();
+
+            if (ConferenceFixture.getBrowserType(driver)
+                == ConferenceFixture.BrowserType.chrome)
+            {
+                FileUtils.copyFile(
+                    new File(outputLogsParentFolder,
+                            "chrome" + suffix + ".log"),
+                    new File(outputLogsParentFolder,
+                            fileNamePrefix + suffix + "-chrome" + extension)
+                    );
+            }
         }
         catch (IOException e)
         {
