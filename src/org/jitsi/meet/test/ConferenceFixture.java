@@ -666,7 +666,8 @@ public class ConferenceFixture
     public static boolean isXmppConnected(WebDriver participant)
     {
         Object res = ((JavascriptExecutor) participant)
-            .executeScript("return APP.xmpp.getConnection().connected;");
+            .executeScript(
+                "return APP.conference._room.xmpp.connection.connected;");
         return res != null && res.equals(Boolean.TRUE);
     }
 
