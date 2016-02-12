@@ -431,25 +431,37 @@ public class ConferenceFixture
                 // we will retry four times for 1 minute to obtain
                 // the chrome driver, on headless environments chrome hangs
                 // and we wait forever
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 2; i++)
                 {
+                    Future<ChromeDriver> future = null;
                     try
                     {
-                        ChromeDriver res =
-                            pool.submit(
+                        future = pool.submit(
                                 new Callable<ChromeDriver>()
                             {
                                 @Override
                                 public ChromeDriver call() throws Exception
                                 {
-                                    return new ChromeDriver(ops);
+                                    long start = System.currentTimeMillis();
+                                    ChromeDriver resDr = new ChromeDriver(ops);
+                                    System.err.println(
+                                        "ChromeDriver created for:"
+                                        + (System.currentTimeMillis() - start)
+                                        + " ms.");
+                                    return resDr;
                                 }
-                            }).get(1, TimeUnit.MINUTES);
+                            });
+
+                        ChromeDriver res = future.get(2, TimeUnit.MINUTES);
                         if(res != null)
                             return res;
                     }
                     catch (TimeoutException te)
                     {
+                        // cancel current task
+                        if (future != null)
+                            future.cancel(true);
+
                         System.err.println("Timeout waiting for "
                             + "chrome instance! We will retry now, this was our"
                             + "attempt " + i);
