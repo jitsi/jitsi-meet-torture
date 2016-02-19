@@ -100,20 +100,8 @@ public class SwitchVideoTests
         {
             // test is this the video seen
             assertEquals("Video didn't change to local",
-                localVideoSrc, getLargeVideoSource(driver));
+                localVideoSrc, MeetUIUtils.getLargeVideoSource(driver));
         }
-    }
-
-    /**
-     * Returns the source of the large video currently shown.
-     * @return the source of the large video currently shown.
-     */
-    private static String getLargeVideoSource(WebDriver driver)
-    {
-        // FIXME searching for <video> will fail with Temasys plugin where
-        // <object> elements are used
-        return driver.findElement(
-            By.xpath("//video[@id='largeVideo']")).getAttribute("src");
     }
 
     /**
@@ -254,7 +242,7 @@ public class SwitchVideoTests
 
             // test is this the video seen
             assertEquals("Video didn't change to remote one",
-                remoteVideoSrc, getLargeVideoSource(driver));
+                remoteVideoSrc, MeetUIUtils.getLargeVideoSource(driver));
         }
     }
 

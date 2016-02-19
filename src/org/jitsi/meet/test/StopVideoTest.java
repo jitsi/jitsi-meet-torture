@@ -45,6 +45,7 @@ public class StopVideoTest
 
         suite.addTest(new StopVideoTest("stopVideoOnOwnerAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnOwnerAndCheck"));
+        suite.addTest(new StopVideoTest("stopAndStartVideoOnOwnerAndCheckStream"));
         suite.addTest(new StopVideoTest("stopVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest(
@@ -85,6 +86,31 @@ public class StopVideoTest
             "//span[starts-with(@id, 'participant_')]"
                 + "/span[@class='videoMuted']"
                 + "/i[@class='icon-camera-disabled']", 10);
+    }
+
+    /**
+     * Checks if muting/unmuting of the local video stream affects
+     * large video of other participant.
+     */
+    public void stopAndStartVideoOnOwnerAndCheckStream()
+    {
+        System.err.println("Start stopAndStartVideoOnOwnerAndCheckStream.");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+
+        // mute owner
+        stopVideoOnOwnerAndCheck();
+
+        // now second participant should be on large video
+
+        String secondParticipantStreamURL = MeetUIUtils.getLargeVideoSource(owner);
+
+        // unmute owner
+        startVideoOnOwnerAndCheck();
+
+        // check if video stream from second participant is still on large video
+        assertEquals("Large video stream id",
+                     secondParticipantStreamURL, MeetUIUtils.getLargeVideoSource(owner));
     }
 
     /**
