@@ -351,6 +351,8 @@ public class ConferenceFixture
 
             FirefoxProfile profile = new FirefoxProfile();
             profile.setPreference("media.navigator.permission.disabled", true);
+            // Enables tcp in firefox, disabled by default in 44
+            profile.setPreference("media.peerconnection.ice.tcp", true);
             profile.setAcceptUntrustedCertificates(true);
 
             return new FirefoxDriver(profile);

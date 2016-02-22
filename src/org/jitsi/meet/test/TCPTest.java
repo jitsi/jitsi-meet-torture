@@ -56,10 +56,7 @@ public class TCPTest
     {
         TestSuite suite = new TestSuite();
 
-        if (isEnabled())
-        {
-            suite.addTest(new TCPTest("tcpTest"));
-        }
+        suite.addTest(new TCPTest("tcpTest"));
 
         return suite;
     }
@@ -115,25 +112,5 @@ public class TCPTest
             "} catch (err) { return 'error: '+err; }");
 
         return (protocol == null) ? null : protocol.toString().toLowerCase();
-    }
-
-    /**
-     * Checks whether this test should be run or not.
-     * @return <tt>true</tt> if this test should be run, <tt>false</tt>
-     * otherwise.
-     */
-    private static boolean isEnabled()
-    {
-        // TCP doesn't currently work on firefox.
-        String browser
-            = System.getProperty(ConferenceFixture.BROWSER_SECONDP_NAME_PROP);
-        if (ConferenceFixture.BrowserType.firefox.toString()
-                .equalsIgnoreCase(browser))
-        {
-            System.err.println("Not running TCPTest on firefox.");
-            return false;
-        }
-
-        return true;
     }
 }
