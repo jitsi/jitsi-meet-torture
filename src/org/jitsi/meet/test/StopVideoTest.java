@@ -45,7 +45,8 @@ public class StopVideoTest
 
         suite.addTest(new StopVideoTest("stopVideoOnOwnerAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnOwnerAndCheck"));
-        suite.addTest(new StopVideoTest("stopAndStartVideoOnOwnerAndCheckStream"));
+        suite.addTest(
+            new StopVideoTest("stopAndStartVideoOnOwnerAndCheckStream"));
         suite.addTest(new StopVideoTest("stopVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest(
@@ -103,14 +104,16 @@ public class StopVideoTest
 
         // now second participant should be on large video
 
-        String secondParticipantStreamURL = MeetUIUtils.getLargeVideoSource(owner);
+        String secondParticipantStreamURL
+            = MeetUIUtils.getLargeVideoSource(owner);
 
         // unmute owner
         startVideoOnOwnerAndCheck();
 
         // check if video stream from second participant is still on large video
         assertEquals("Large video stream id",
-                     secondParticipantStreamURL, MeetUIUtils.getLargeVideoSource(owner));
+                     secondParticipantStreamURL,
+                     MeetUIUtils.getLargeVideoSource(owner));
     }
 
     /**
