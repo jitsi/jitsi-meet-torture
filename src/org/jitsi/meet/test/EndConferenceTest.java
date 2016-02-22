@@ -23,14 +23,14 @@ import org.jitsi.meet.test.util.*;
 /**
  * Test if we can hangup the call.
  */
-public class DisposeConferenceTest
+public class EndConferenceTest
     extends TestCase
 {
     /**
      * Constructs test.
      * @param name the method name for the test.
      */
-    public DisposeConferenceTest(String name)
+    public EndConferenceTest(String name)
     {
         super(name);
     }
@@ -43,7 +43,7 @@ public class DisposeConferenceTest
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new DisposeConferenceTest("hangupCallAndCheck"));
+        suite.addTest(new EndConferenceTest("hangupCallAndCheck"));
 
         return suite;
     }

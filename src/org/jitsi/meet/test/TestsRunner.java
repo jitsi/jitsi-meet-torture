@@ -53,7 +53,6 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(AvatarTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(MuteTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(DisposeConferenceTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(EtherpadTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
@@ -79,6 +78,7 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(DesktopSharingTest.class.getSimpleName());
         if(Boolean.getBoolean(RestTests.ENABLE_REST_API_TESTS))
             DEFAULT_TESTS_TO_RUN.add(RestTests.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 
     /**
