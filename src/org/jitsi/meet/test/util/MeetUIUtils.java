@@ -381,7 +381,9 @@ public class MeetUIUtils
     public static String getLargeVideoSource(WebDriver driver)
     {
         Object res = ((JavascriptExecutor) driver)
-            .executeScript("JitsiMeetJS.util.RTCUIHelper.getVideoId(document.getElementById('largeVideo'))");
+            .executeScript(
+                "return JitsiMeetJS.util.RTCUIHelper.getVideoId(" +
+                    "document.getElementById('largeVideo'))");
 
         return (String)res;
     }
