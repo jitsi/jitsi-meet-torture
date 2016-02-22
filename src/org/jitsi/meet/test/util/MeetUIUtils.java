@@ -17,6 +17,7 @@ package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.jitsi.meet.test.ConferenceFixture;
 
 import java.util.*;
 
@@ -371,5 +372,17 @@ public class MeetUIUtils
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             participant, "//span[@id='localVideoWrapper']/video", 5);
+    }
+
+    /**
+     * Returns the source of the large video currently shown.
+     * @return the source of the large video currently shown.
+     */
+    public static String getLargeVideoSource(WebDriver driver)
+    {
+        Object res = ((JavascriptExecutor) driver)
+            .executeScript("JitsiMeetJS.util.RTCUIHelper.getVideoId(document.getElementById('largeVideo'))");
+
+        return (String)res;
     }
 }
