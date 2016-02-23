@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.jitsi.meet.test.util.TestUtils;
 
 /**
  * Tests the WebRTC data channels in a Meet conference (i.e.
@@ -58,27 +59,6 @@ public class DataChannelTest
     }
 
     /**
-     * Executes a specific (piece of) JavaScript script in the browser
-     * controlled by a specific {@code WebDriver} and returns the result of its
-     * execution as a {@code Boolean} value.
-     *
-     * @param webDriver the {@code WebDriver} which controls the browser in
-     * which the specified {@code script} is to be executed
-     * @param script the script to execute in the browser controlled by
-     * {@code webDriver}
-     * @return the result of the execution of {@code script} in the browser
-     * controlled by {@code webDriver} as a {@code Boolean} value
-     */
-    private Boolean executeScriptAndReturnBoolean(
-            WebDriver webDriver,
-            String script)
-    {
-        Object o = ((JavascriptExecutor) webDriver).executeScript(script);
-
-        return (o instanceof Boolean) ? (Boolean) o : Boolean.FALSE;
-    }
-
-    /**
      * Determines whether a WebRTC data channel between Videobridge and a
      * specific participant in the Meet conference is open.
      *
@@ -95,7 +75,7 @@ public class DataChannelTest
                 + "    return dataChannel.readyState == 'open';"
                 + "});";
 
-        return executeScriptAndReturnBoolean(webDriver, script);
+        return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
 
     /**
@@ -114,7 +94,7 @@ public class DataChannelTest
     {
         String script = "return APP.conference._room.rtc.dataChannels.receivedServerHello;";
 
-        return executeScriptAndReturnBoolean(webDriver, script);
+        return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
 
     /**
@@ -147,7 +127,7 @@ public class DataChannelTest
                 + "    }"
                 + "});";
 
-        return executeScriptAndReturnBoolean(webDriver, script);
+        return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
 
     /**

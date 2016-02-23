@@ -47,6 +47,8 @@ public class StopVideoTest
         suite.addTest(new StopVideoTest("startVideoOnOwnerAndCheck"));
         suite.addTest(
             new StopVideoTest("stopAndStartVideoOnOwnerAndCheckStream"));
+        suite.addTest(
+            new StopVideoTest("stopAndStartVideoOnOwnerAndCheckEvents"));
         suite.addTest(new StopVideoTest("stopVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest("startVideoOnParticipantAndCheck"));
         suite.addTest(new StopVideoTest(
@@ -114,6 +116,44 @@ public class StopVideoTest
         assertEquals("Large video stream id",
                      secondParticipantStreamURL,
                      MeetUIUtils.getLargeVideoSource(owner));
+    }
+
+    /**
+     * Checks if muting/unmuting remote video triggers TRACK_ADDED or
+     * TRACK_REMOVED events for the local participant.
+     */
+    public void stopAndStartVideoOnOwnerAndCheckEvents()
+    {
+        System.err.println("Start stopAndStartVideoOnOwnerAndCheckEvents.");
+
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        JavascriptExecutor executor = (JavascriptExecutor) secondParticipant;
+
+        String listenForTrackRemoved = "APP.conference._room.addEventListener("
+            + "JitsiMeetJS.events.conference.TRACK_REMOVED,"
+            + "function () { APP._remoteRemoved = true; }"
+            + ");";
+        executor.executeScript(listenForTrackRemoved);
+
+        String listenForTrackAdded = "APP.conference._room.addEventListener("
+            + "JitsiMeetJS.events.conference.TRACK_ADDED,"
+            + "function () { APP._remoteAdded = true; }"
+            + ");";
+        executor.executeScript(listenForTrackAdded);
+
+        stopVideoOnOwnerAndCheck();
+        startVideoOnOwnerAndCheck();
+
+        TestUtils.waitMillis(1000);
+
+        assertFalse("Remote stream was removed",
+                    TestUtils.executeScriptAndReturnBoolean(
+                                secondParticipant,
+                                "return APP._remoteRemoved;"));
+        assertFalse("Remote stream was added",
+                    TestUtils.executeScriptAndReturnBoolean(
+                                secondParticipant,
+                                "return APP._remoteAdded;"));
     }
 
     /**
