@@ -57,6 +57,21 @@ public class MeetUIUtils
     }
 
     /**
+     * Shows the toolbar and clicks on a button identified by class name.
+     * Does nothing if the element is not displayed
+     * @param participant the {@code WebDriver}.
+     * @param buttonClass the class of the button to click.
+     */
+    public static void clickOnToolbarButtonByClassIfDisplayed(
+        WebDriver participant, String buttonClass)
+    {
+        WebElement hangupButton = participant.findElement(
+            By.xpath("//a[@class='button " + buttonClass + "']"));
+        if(hangupButton != null && hangupButton.isDisplayed())
+            hangupButton.click();
+    }
+
+    /**
      * Returns resource part of the JID of the user who is currently displayed
      * in the large video area in {@code participant}.
      *
