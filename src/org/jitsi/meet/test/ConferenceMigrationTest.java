@@ -116,7 +116,7 @@ public class ConferenceMigrationTest
                     ".replace(/\\&?config.enforcedBridge=\".+\"/,\"\");" +
                     "config.enforcedBridge=undefined;");
 
-        // Graceful shutdown migrated bridge
+        // Migrated bridge
         final String jvbEndpoint = jvbRESTEndpoint;
         new Thread(new Runnable()
         {
@@ -140,9 +140,9 @@ public class ConferenceMigrationTest
         }).start();
 
         System.err.println("Wait for disconnected...");
-        ConferenceFixture.waitForIceDisconnected(owner, 45);
+        ConferenceFixture.waitForIceDisconnected(owner, 15);
         System.err.println("Owner - ICE disconnected!");
-        ConferenceFixture.waitForIceDisconnected(secondParticipant, 45);
+        ConferenceFixture.waitForIceDisconnected(secondParticipant, 15);
         System.err.println("Second peer - ICE disconnected!");
 
         // Wait for conference restart
