@@ -55,16 +55,6 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(EtherpadTests.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-        // doing the same test two more times to be sure it is
-        // not a problem, as there was reported an issue about that
-        // https://github.com/jitsi/jitsi-meet/issues/83
-        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-
-        DEFAULT_TESTS_TO_RUN.add(UDPTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(SinglePortTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(TCPTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
@@ -78,6 +68,18 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(DesktopSharingTest.class.getSimpleName());
         if(Boolean.getBoolean(RestTests.ENABLE_REST_API_TESTS))
             DEFAULT_TESTS_TO_RUN.add(RestTests.class.getSimpleName());
+
+        DEFAULT_TESTS_TO_RUN.add(UDPTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(SinglePortTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(TCPTest.class.getSimpleName());
+
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+        // doing the same test two more times to be sure it is
+        // not a problem, as there was reported an issue about that
+        // https://github.com/jitsi/jitsi-meet/issues/83
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 
