@@ -402,4 +402,91 @@ public class MeetUIUtils
 
         return (String)res;
     }
+
+
+    /**
+     * Returns list of participant's thumbnails.
+     * @param participant the instance of <tt>WebDriver</tt>
+     * @return list of thumbnails <tt>WebElement</tt> elements
+     */
+    public static List<WebElement> getThumbnails(WebDriver participant)
+    {
+        return participant.findElements(By.xpath("//div[@id='remoteVideos']/span[@class='videocontainer']"));
+    }
+
+    /**
+     * Returns list of currently visible participant's thumbnails.
+     * @param participant the instance of <tt>WebDriver</tt>
+     * @return list of thumbnails <tt>WebElement</tt> elements
+     */
+    public static List<WebElement> getVisibleThumbnails(WebDriver participant)
+    {
+        List<WebElement> thumbnails = getThumbnails(participant);
+
+        Iterator<WebElement> it = thumbnails.iterator();
+        while (it.hasNext()) {
+            WebElement thumb = it.next();
+            if (!thumb.isDisplayed()) {
+                it.remove();
+            }
+        }
+
+        return thumbnails;
+    }
+
+    /**
+     * Checks if observer's active speaker is testee.
+     * @param observer <tt>WebDriver</tt> instance of the participant that
+     *                 should check active speaker.
+     * @param testee <tt>WebDriver</tt> instance of the peer for may be
+     *               active speaker for the observer.
+     * @return <tt>true</tt> true if observer's active speaker is testee,
+     *               <tt>false</tt> otherwise.
+     */
+    public static boolean isActiveSpeaker(
+        WebDriver observer, WebDriver testee)
+    {
+        final String expectedJid =
+            MeetUtils.getResourceJid(testee);
+
+        try {
+            TestUtils.waitForCondition(observer, 5,
+                new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
+                        String currentJid = MeetUIUtils.getLargeVideoResource(d);
+
+                        return expectedJid.equals(currentJid);
+                    }
+                });
+
+            return true;
+        }
+        catch (TimeoutException ignored)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Asserts that observer shows the audio mute icon for the testee.
+     *
+     * @param observer <tt>WebDriver</tt> instance of the participant that
+     *                 observes the audio status
+     * @param testee <tt>WebDriver</tt> instance of the peer for whom we're
+     *               checking the audio muted status.
+     * @param testeeName the name of the testee that will be printed in failure
+     *                   logs
+     */
+    public static void assertAudioMuted(
+        WebDriver observer, WebDriver testee, String testeeName)
+    {
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            observer,
+            testee,
+            true, //should be muted
+            false, //audio
+            testeeName);
+    }
 }

@@ -59,6 +59,8 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
 
+        DEFAULT_TESTS_TO_RUN.add(LastNTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(DisplayNameTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(DataChannelTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ContactListTest.class.getSimpleName());

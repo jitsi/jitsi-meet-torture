@@ -522,10 +522,21 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts the third participant reusing the already generated room name.
+     * Starts <tt>thirdParticipant</tt>.
      * @return the {@code WebDriver} which was started.
      */
     public static WebDriver startThirdParticipant()
+    {
+        return startThirdParticipant(null);
+    }
+
+    /**
+     * Starts the third participant reusing the already generated room name.
+     * @param fragment A string to be added to the URL as a parameter (i.e.
+     * prefixed with a '&').
+     * @return the {@code WebDriver} which was started.
+     */
+    public static WebDriver startThirdParticipant(String fragment)
     {
         System.err.println("Starting third participant.");
 
@@ -541,7 +552,7 @@ public class ConferenceFixture
         thirdParticipant
             = startDriver(browser, Participant.thirdParticipantDriver);
 
-        openRoom(thirdParticipant, null, browser);
+        openRoom(thirdParticipant, fragment, browser);
 
         ((JavascriptExecutor) thirdParticipant)
             .executeScript("document.title='ThirdParticipant'");
@@ -828,6 +839,16 @@ public class ConferenceFixture
             startOwner(null);
 
         waitForParticipantToJoinMUC(owner, 15);
+    }
+
+    /**
+     * Closes all participants.
+     */
+    public static void closeAllParticipants ()
+    {
+        ConferenceFixture.closeSecondParticipant();
+        ConferenceFixture.closeThirdParticipant();
+        ConferenceFixture.close(ConferenceFixture.getOwner());
     }
 
     /**
