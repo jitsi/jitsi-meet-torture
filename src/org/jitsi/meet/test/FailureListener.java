@@ -20,10 +20,10 @@ import org.apache.commons.io.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
 import org.openqa.selenium.*;
 
-import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.logging.*;
 
 import java.io.*;
+import java.lang.management.*;
 import java.util.*;
 
 /**
@@ -70,6 +70,8 @@ public class FailureListener
             saveMeetDebugLog(fileNamePrefix);
 
             saveBrowserLogs(fileNamePrefix);
+
+            saveThreadDump(fileNamePrefix);
         }
         catch(Throwable ex)
         {
@@ -100,6 +102,8 @@ public class FailureListener
             saveMeetDebugLog(fileNamePrefix);
 
             saveBrowserLogs(fileNamePrefix);
+
+            saveThreadDump(fileNamePrefix);
         }
         catch(Throwable ex)
         {
@@ -312,6 +316,33 @@ public class FailureListener
         if(thirdParticipant != null)
             saveBrowserLogs(thirdParticipant,
                 fileNamePrefix, "-console-thirdParticipant", ".log");
+    }
+
+    /**
+     * Saves current java thread dump.
+     */
+    private void saveThreadDump(String fileNamePrefix)
+    {
+        StringBuilder dump = new StringBuilder();
+        ThreadMXBean tbean = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] threads
+            = tbean.getThreadInfo(tbean.getAllThreadIds(), 150);
+        for (ThreadInfo tinfo : threads)
+        {
+            dump.append(tinfo);
+            dump.append("\n");
+        }
+
+        try
+        {
+            BufferedWriter out = new BufferedWriter(new FileWriter(
+                new File(outputLogsParentFolder,
+                    fileNamePrefix + ".tdump")));
+            out.write(dump.toString());
+            out.flush();
+            out.close();
+        }
+        catch (IOException e){}
     }
 
     /**
