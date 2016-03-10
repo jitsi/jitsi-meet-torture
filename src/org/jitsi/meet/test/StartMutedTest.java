@@ -73,7 +73,6 @@ public class StartMutedTest
 
         owner.findElement(By.id("startAudioMuted")).click();
         owner.findElement(By.id("startVideoMuted")).click();
-        owner.findElement(By.id("updateSettings")).click();
 
         WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();

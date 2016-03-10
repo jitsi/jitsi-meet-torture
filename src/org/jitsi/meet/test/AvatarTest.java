@@ -232,9 +232,7 @@ public class AvatarTest
         // set the value of the field through the jquery, or on FF we can
         // activate the key listener and m can mute the call and break tests
         ((JavascriptExecutor) owner)
-            .executeScript("$('#setEmail').val('" + EMAIL + "');");
-
-        owner.findElement(By.id("updateSettings")).click();
+            .executeScript("$('#setEmail').val('" + EMAIL + "').focusout();");
 
         //check if the local avatar in the settings menu has changed
         TestUtils.waitForCondition(owner, 5,
