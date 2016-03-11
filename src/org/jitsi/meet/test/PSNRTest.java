@@ -25,9 +25,10 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * A test that will run for hours (configurable) and will continuously check
- * the connection and the conference and if it detects a problem will fail.
- * @author Damian Minkov
+ * A test that will run 1 minute (configurable) and will perform a PSNR test
+ * on the received video stream.
+ *
+ * @author George Politis
  */
 public class PSNRTest
     extends TestCase
@@ -36,31 +37,27 @@ public class PSNRTest
      * A test where we read some configurations or fallback to default values
      * and we expect a conference to be already established (by SetupConference)
      * and we keep checking whether this is still the case, and if something
-     * is not working we fail. This one is supposed to run for a long period
-     * of time.
+     * is not working we fail.
      */
-    public void testLongLive()
+    public void testPSNR()
     {
         String timeToRunInMin = System.getProperty("psnr.duration");
 
-        // default is 10 minutes
+        // default is 1 minute
         if(timeToRunInMin == null || timeToRunInMin.length() == 0)
-            timeToRunInMin = "10";
+            timeToRunInMin = "1";
 
         final int minutesToRun = Integer.valueOf(timeToRunInMin);
 
         final CountDownLatch waitSignal = new CountDownLatch(1);
 
-        // execute every 10 secs.
+        // execute every 1 sec.
         final Timer timer = new Timer();
         timer.schedule(new TimerTask()
         {
             long lastRun = System.currentTimeMillis();
-            // sometimes the check is executed once more
-            // at the time while we are in a process of disposing
-            // the two participants and ~9 secs before finishing successful
-            // it fails.
-            int millsToRun = (minutesToRun - 1)*60*1000;
+
+            int millsToRun = minutesToRun*60*1000;
 
             CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
             CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
@@ -160,8 +157,7 @@ public class PSNRTest
                         JavascriptExecutor js = ((JavascriptExecutor) driver);
 
                         List<WebElement> remoteThumb = driver
-                            .findElements(By.tagName("video"));
-
+                            .findElements(By.xpath("video[starts-with(@id, 'remoteVideo_')]"));
 
                         for (WebElement webElement : remoteThumb)
                         {
@@ -221,7 +217,7 @@ public class PSNRTest
                 timer.cancel();
             }
 
-        }, 10 * 1000, 10 * 1000);
+        }, /* delay */ 1000, /* period */ 1000);
 
         try
         {
