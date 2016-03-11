@@ -15,29 +15,36 @@
 # limitations under the License.
 #
 
+OUTPUT_FRAME_DIR=$1
+INPUT_FRAME_DIR=$2
+RESIZED_FRAME_DIR=$3
 
-# TODO return the worst PSNR value.
-for REMOTE_VIDEO_FRAME in /tmp/remoteVideo_*
+for OUTPUT_FRAME in $OUTPUT_FRAME_DIR/*.png
 do
-    FRAME_NUMBER=$(zbarimg --quiet $REMOTE_VIDEO_FRAME|cut -d: -f2)
-    if [ "$FRAME_NUMBER" != "" ]
+    FRAME_NUMBER=$(zbarimg --quiet $OUTPUT_FRAME|cut -d: -f2)
+    if [ "$FRAME_NUMBER" = "" ]
     then
-
-      ORIGIN_IMAGE=resources/psnr/output/stamped/stamped-FourPeople_1280x720_60-$FRAME_NUMBER.png
-
-        # Test quality/success of conversion by looking at PSNR
-        # TODO We might want to avoid resizing the video
-        PSNR=$(convert "$REMOTE_VIDEO_FRAME" -resize 1280x720\! "$ORIGIN_IMAGE" -metric PSNR -format "%[distortion]" -compare info:)
-        echo DEBUG: PSNR=$PSNR
-
-        # PSNR above 20 is pretty indicative of good similarity - use "bc" as shell doesn't do floats
-        if [ $(echo "$PSNR>20" | bc) -eq 1 ]; then
-           echo $ORIGIN_IMAGE looks good
-        else
-           echo $ORIGIN_IMAGE something wrong
-        fi
-    else
-        echo something went really wrong!
+        FRAME_NUMBER="-1"
     fi
-    
+
+    PSNR=-1
+    if [ "$FRAME_NUMBER" != "-1" ]
+    then
+        INPUT_FRAME=$INPUT_FRAME_DIR/$FRAME_NUMBER.png
+        dimensions=$(identify -format "%wx%h" $OUTPUT_FRAME)
+        if [ ${dimensions} != "1280x720" ]
+        then
+            mkdir -p $RESIZED_FRAME_DIR
+            convert "$OUTPUT_FRAME" -resize 1280x720 "$RESIZED_FRAME_DIR/$FRAME_NUMBER.png"
+            PSNR=$(compare "$RESIZED_FRAME_DIR/$FRAME_NUMBER.png" "$INPUT_FRAME" -metric PSNR /tmp/psnr_diff.png 2>&1)
+        else
+            PSNR=$(compare "$OUTPUT_FRAME" "$INPUT_FRAME" -metric PSNR /tmp/psnr_diff.png 2>&1)
+        fi
+
+        # PSNR above 20 is pretty indicative of good similarity. For example:
+        # Downscaling a 720p image to 360p gives a PSNR of 27.2299
+        # Downscaling a 720p image to 180p gives a PSNR of 21.8882
+        # Downscaling a 720p image to 90p gives a PSNR of 20.1337
+    fi
+    echo $FRAME_NUMBER $PSNR
 done
