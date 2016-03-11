@@ -170,9 +170,10 @@ public class TestsRunner
         String fakeStreamVideoFile
             = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
 
-        if (fakeStreamVideoFile != null)
+        if (fakeStreamVideoFile != null
+            && fakeStreamVideoFile.trim().length() != 0)
         {
-            ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile);
+            ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile.trim());
         }
     }
 
