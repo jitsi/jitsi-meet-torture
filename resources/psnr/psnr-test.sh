@@ -18,5 +18,8 @@ do
         else
            echo $ORIGIN_IMAGE something wrong
         fi
+    else
+        echo something went really wrong!
     fi
+    
 done
