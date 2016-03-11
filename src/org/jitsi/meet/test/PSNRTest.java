@@ -42,7 +42,7 @@ public class PSNRTest
     {
         String timeToRunInMin = System.getProperty("psnr.duration");
 
-        // default is 6 hours
+        // default is 10 minutes
         if(timeToRunInMin == null || timeToRunInMin.length() == 0)
             timeToRunInMin = "10";
 
