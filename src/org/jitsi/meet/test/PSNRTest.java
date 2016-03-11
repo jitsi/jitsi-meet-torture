@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import com.gargoylesoftware.htmlunit.javascript.background.*;
 import junit.framework.*;
 import org.openqa.selenium.*;
+import org.apache.commons.codec.binary.*;
 
 import java.io.*;
 import java.util.*;
@@ -185,7 +186,7 @@ public class PSNRTest
                                 = pngUrl.toString().substring("data:image/png;base64,".length());
 
                             // Convert it to binary
-                            byte[] data = Base64.getDecoder().decode(strBase64);
+                            byte[] data = Base64.decodeBase64(strBase64);
                             try (OutputStream stream = new FileOutputStream("/tmp/" + elmId + "-" + lastRun + ".png")) {
                                 stream.write(data);
                             }
