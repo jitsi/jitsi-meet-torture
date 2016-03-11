@@ -162,6 +162,21 @@ public class TestsRunner
     }
 
     /**
+     * Sets the video file to be streamed through a fake video device by the
+     * conference participants.
+     */
+    private static void setFakeVideoStreamFile()
+    {
+        String fakeStreamVideoFile
+            = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
+
+        if (fakeStreamVideoFile != null)
+        {
+            ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile);
+        }
+    }
+
+    /**
      * Gets (a suite of) the tests to run. If the property
      * {@code jitsi-meet.tests.toRun} exists, we use its value to add only the
      * tests it mentions.
@@ -175,6 +190,7 @@ public class TestsRunner
         TestSuite suite = suite(testsToRun);
 
         setFakeAudioStreamFile();
+        setFakeVideoStreamFile();
 
         return suite;
     }
