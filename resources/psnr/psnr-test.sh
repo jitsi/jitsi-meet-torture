@@ -1,15 +1,17 @@
 #!/bin/sh -e
 
-for i in /tmp/remoteVideo_*
+# TODO return the worst PSNR value.
+for REMOTE_VIDEO_FRAME in /tmp/remoteVideo_*
 do
-    FRAME_NUMBER=$(zbarimg --quiet $i|cut -d: -f2)
+    FRAME_NUMBER=$(zbarimg --quiet $REMOTE_VIDEO_FRAME|cut -d: -f2)
     if [ "$FRAME_NUMBER" != "" ]
     then
 
       ORIGIN_IMAGE=resources/psnr/output/stamped/stamped-FourPeople_1280x720_60-$FRAME_NUMBER.png
 
         # Test quality/success of conversion by looking at PSNR
-        PSNR=$(convert "$i" -resize 1280x720\! "$ORIGIN_IMAGE" -metric PSNR -format "%[distortion]" -compare info:)
+        # TODO We might want to avoid resizing the video
+        PSNR=$(convert "$REMOTE_VIDEO_FRAME" -resize 1280x720\! "$ORIGIN_IMAGE" -metric PSNR -format "%[distortion]" -compare info:)
         echo DEBUG: PSNR=$PSNR
 
         # PSNR above 20 is pretty indicative of good similarity - use "bc" as shell doesn't do floats
