@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+# This script requires ffmpeg and qrencode. You can grab some test
+# sequences from here: https://media.xiph.org/video/derf/y4m/
+
 VIDEO_SZ=1280x720
 VIDEO_FPS=60
 VIDEO_FMT=yuv4mpegpipe 

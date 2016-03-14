@@ -40,11 +40,6 @@ do
         else
             PSNR=$(compare "$OUTPUT_FRAME" "$INPUT_FRAME" -metric PSNR /tmp/psnr_diff.png 2>&1)
         fi
-
-        # PSNR above 20 is pretty indicative of good similarity. For example:
-        # Downscaling a 720p image to 360p gives a PSNR of 27.2299
-        # Downscaling a 720p image to 180p gives a PSNR of 21.8882
-        # Downscaling a 720p image to 90p gives a PSNR of 20.1337
-    fi
+   fi
     echo $FRAME_NUMBER $PSNR
 done

@@ -35,7 +35,7 @@ public class PSNRTest
      * The PSNR script that produces PSNR results for every frame that we've
      * captured.
      */
-    private static final String PSNR_SCRIPT = "resources/psnr/psnr-test.sh";
+    private static final String PSNR_SCRIPT = "resources/psnr-test.sh";
 
     /**
      * The directory where we save the captured frames.
@@ -45,7 +45,7 @@ public class PSNRTest
     /**
      * The directory where we get the input frames.
      */
-    private static final String INPUT_FRAME_DIR= "resources/psnr/output/stamped/";
+    private static final String INPUT_FRAME_DIR= "resources/psnr/stamped/";
 
     /**
      * The directory to use for frame resizing.
@@ -53,7 +53,11 @@ public class PSNRTest
     private static final String RESIZED_FRAME_DIR = "test-reports/psnr/resized-frames/";
 
     /**
-     * The minimum PSNR value that we will accept before failing.
+     * The minimum PSNR value that we will accept before failing. PSNR above 20
+     * is pretty indicative of good similarity. For example: Downscaling a 720p
+     * image to 360p gives a PSNR of 27.2299. Downscaling a 720p image to 180p
+     * gives a PSNR of 21.8882. Downscaling a 720p image to 90p gives a PSNR of
+     * 20.1337
      */
     private static final float MIN_PSNR = 22f;
 
@@ -65,6 +69,13 @@ public class PSNRTest
      */
     public void testPSNR()
     {
+        File inputFrameDir = new File(INPUT_FRAME_DIR);
+        if (!inputFrameDir.exists())
+        {
+            // Skip the PSNR tests because we don't have any PSNR
+            // resources.
+            return;
+        }
         // Create the output directory for captured frames.
         File outputFrameDir = new File(OUTPUT_FRAME_DIR);
         if (!outputFrameDir.exists())
