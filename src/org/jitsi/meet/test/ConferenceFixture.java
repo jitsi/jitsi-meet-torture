@@ -291,6 +291,7 @@ public class ConferenceFixture
         System.err.println(participantName + " is opening URL: " + URL);
 
         participant.get(URL);
+        waitForPageToLoad(participant);
 
         // disables animations
         ((JavascriptExecutor) participant)
@@ -1012,6 +1013,34 @@ public class ConferenceFixture
         else
         {
             return "unknownDriverInstance";
+        }
+    }
+
+    /**
+     * Waits for the page to be loaded before continuing with the operations.
+     * @param driver the webdriver that just loaded a page
+     */
+    private static void waitForPageToLoad(WebDriver driver)
+    {
+        ExpectedCondition<Boolean> expectation = new
+            ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver driver)
+                {
+                    return ((JavascriptExecutor)driver)
+                        .executeScript("return document.readyState")
+                        .equals("complete");
+                }
+            };
+        Wait<WebDriver> wait = new WebDriverWait(driver, 10);
+        try
+        {
+            wait.until(expectation);
+        }
+        catch(Throwable error)
+        {
+            assertFalse("Timeout waiting for Page Load Request to complete.",
+                true);
         }
     }
 }
