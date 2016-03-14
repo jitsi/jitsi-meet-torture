@@ -16,8 +16,8 @@
 package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.*;
-import org.jitsi.meet.test.ConferenceFixture;
 
 import java.util.*;
 
@@ -65,10 +65,18 @@ public class MeetUIUtils
     public static void clickOnToolbarButtonByClassIfDisplayed(
         WebDriver participant, String buttonClass)
     {
-        WebElement hangupButton = participant.findElement(
-            By.xpath("//a[@class='button " + buttonClass + "']"));
-        if(hangupButton != null && hangupButton.isDisplayed())
-            hangupButton.click();
+        try
+        {
+            WebElement hangupButton = participant.findElement(
+                By.xpath("//a[@class='button " + buttonClass + "']"));
+            if (hangupButton != null && hangupButton.isDisplayed())
+                hangupButton.click();
+        }
+        catch (NoSuchElementException e)
+        {
+            // there is no element, so its not visible, just continue
+            System.err.println("Button is missing:" + buttonClass);
+        }
     }
 
     /**
