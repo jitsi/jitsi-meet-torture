@@ -47,14 +47,14 @@ public class DisposeConference
             = ConferenceFixture.getSecondParticipantInstance();
 
         if(participant != null)
-            ConferenceFixture.close(participant);
+            ConferenceFixture.quit(participant);
 
         // thirdParticipant
         participant = ConferenceFixture.getThirdParticipantInstance();
         if(participant != null)
-            ConferenceFixture.close(participant);
+            ConferenceFixture.quit(participant);
 
         // owner
-        ConferenceFixture.close(ConferenceFixture.getOwner());
+        ConferenceFixture.quit(ConferenceFixture.getOwner());
     }
 }

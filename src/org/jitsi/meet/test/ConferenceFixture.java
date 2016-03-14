@@ -163,6 +163,21 @@ public class ConferenceFixture
     private static WebDriver thirdParticipant;
 
     /**
+     * Owner is hung up.
+     */
+    private static boolean ownerHungUp = false;
+
+    /**
+     * SecondParticipant is hung up.
+     */
+    private static boolean secondParticipantHungUp = false;
+
+    /**
+     * ThirdParticipant is hung up.
+     */
+    private static boolean thirdParticipantHungUp = false;
+
+    /**
      * Participant drivers enum.
      */
     private enum Participant
@@ -178,6 +193,8 @@ public class ConferenceFixture
      */
     public static WebDriver getOwner()
     {
+        if(ownerHungUp)
+            startOwner(null);
         return owner;
     }
 
@@ -197,7 +214,7 @@ public class ConferenceFixture
      */
     public static WebDriver getSecondParticipant()
     {
-        if(secondParticipant == null)
+        if(secondParticipant == null || secondParticipantHungUp)
         {
             // this will only happen if some test that quits the
             // second participant fails, and couldn't open it
@@ -223,7 +240,7 @@ public class ConferenceFixture
      */
     public static WebDriver getThirdParticipant()
     {
-        if(thirdParticipant == null)
+        if(thirdParticipant == null || thirdParticipantHungUp)
         {
             // this will only happen if some test that quits the
             // third participant fails, and couldn't open it
@@ -260,12 +277,15 @@ public class ConferenceFixture
                 "Starting 'owner' while an old instance exists!");
         }
 
-        owner = startDriver(browser, Participant.ownerDriver);
+        if(owner == null)
+            owner = startDriver(browser, Participant.ownerDriver);
 
         currentRoomName = "torture"
             + String.valueOf((int)(Math.random()*1000000));
 
         openRoom(owner, fragment, browser);
+
+        ownerHungUp = false;
 
         ((JavascriptExecutor) owner)
             .executeScript("document.title='Owner'");
@@ -493,7 +513,7 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts <tt>secondParticipant</tt>.
+     * Starts <tt>secondParticipant</tt> if needed.
      * @return the {@code WebDriver} which was started.
      */
     public static WebDriver startSecondParticipant()
@@ -502,7 +522,7 @@ public class ConferenceFixture
     }
 
     /**
-     * Starts <tt>secondParticipant</tt>.
+     * Starts <tt>secondParticipant</tt> if needed, joins the room if not there.
      * @param fragment A string to be added to the URL as a parameter (i.e.
      * prefixed with a '&').
      * @return the {@code WebDriver} which was started.
@@ -515,15 +535,13 @@ public class ConferenceFixture
             = BrowserType.valueOfString(
                 System.getProperty(BROWSER_SECONDP_NAME_PROP));
 
-        if (secondParticipant != null)
-        {
-            System.err.println(
-                "Starting 'secondParticipant' while an old instance exists!");
-        }
-        secondParticipant
-            = startDriver(browser, Participant.secondParticipantDriver);
+        if(secondParticipant == null)
+            secondParticipant
+                = startDriver(browser, Participant.secondParticipantDriver);
 
         openRoom(secondParticipant, fragment, browser);
+
+        secondParticipantHungUp = false;
 
         ((JavascriptExecutor) secondParticipant)
             .executeScript("document.title='SecondParticipant'");
@@ -542,6 +560,8 @@ public class ConferenceFixture
 
     /**
      * Starts the third participant reusing the already generated room name.
+     * Checks if instance is created do not create it again, if its just not in
+     * the room just join there.
      * @param fragment A string to be added to the URL as a parameter (i.e.
      * prefixed with a '&').
      * @return the {@code WebDriver} which was started.
@@ -554,15 +574,13 @@ public class ConferenceFixture
             = BrowserType.valueOfString(
                 System.getProperty(BROWSER_THIRDP_NAME_PROP));
 
-        if (thirdParticipant != null)
-        {
-            System.err.println(
-                "Starting 'thirdParticipant' while an old instance exists!");
-        }
-        thirdParticipant
-            = startDriver(browser, Participant.thirdParticipantDriver);
+        if (thirdParticipant == null)
+            thirdParticipant
+                = startDriver(browser, Participant.thirdParticipantDriver);
 
         openRoom(thirdParticipant, fragment, browser);
+
+        thirdParticipantHungUp = false;
 
         ((JavascriptExecutor) thirdParticipant)
             .executeScript("document.title='ThirdParticipant'");
@@ -707,8 +725,8 @@ public class ConferenceFixture
     }
 
     /**
-     * Hangs up the Jitsi-Meet call running in {@code participant} and closes
-     * the driver.
+     * Hangs up the Jitsi-Meet call running in {@code participant} without
+     * closing the driver. If we fail hanging up we close and the driver.
      * @param participant the participant.
      */
     public static void close(WebDriver participant)
@@ -725,23 +743,60 @@ public class ConferenceFixture
                 participant, "icon-hangup");
 
             TestUtils.waitMillis(500);
+
+            if (participant == owner)
+            {
+                ownerHungUp = true;
+            }
+            else if (participant == secondParticipant)
+            {
+                secondParticipantHungUp = true;
+            }
+            else if (participant == thirdParticipant)
+            {
+                thirdParticipantHungUp = true;
+            }
         }
         catch(Throwable t)
         {
             t.printStackTrace();
+
+            quit(participant, false);
         }
+
+        String instanceName = getParticipantName(participant);
+        System.err.println("Hanguped " + instanceName + ".");
+
+        // open a blank page after hanging up, to make sure
+        // we will successfully navigate to the new link containing the
+        // parameters, which change during testing
+        participant.get("about:blank");
+        waitForPageToLoad(participant);
+    }
+
+    /**
+     * Hangs up the Jitsi-Meet call running in {@code participant} and closes
+     * the driver.
+     * @param participant the participant.
+     */
+    public static void quit(WebDriver participant)
+    {
+        quit(participant, true);
+    }
+
+    /**
+     * Hangs up the Jitsi-Meet call running in {@code participant} and closes
+     * the driver.
+     * @param participant the participant.
+     * @param hangup whether we need to hangup the call first
+     */
+    public static void quit(WebDriver participant, boolean hangup)
+    {
+        if(hangup)
+            close(participant);
 
         try
         {
-            // no need to call close and then quit, as close doc says:
-            // Close the current window, quitting the browser if it's the
-            // last window currently open.
-            // where quit doc says:
-            // Quits this driver, closing every associated window.
-            //participant.close();
-
-            //TestUtils.waitMillis(500);
-
             participant.quit();
 
             TestUtils.waitMillis(500);
