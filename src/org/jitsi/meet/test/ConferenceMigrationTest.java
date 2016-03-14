@@ -94,8 +94,8 @@ public class ConferenceMigrationTest
             "Migrated bridge: " + migratedBridge +
             ", REST endpoint: " + jvbRESTEndpoint);
 
-        // Close any windows
-        new DisposeConference().testDispose();
+        // Close all participants
+        ConferenceFixture.closeAllParticipants();
 
         WebDriver owner
             = ConferenceFixture.startOwner(
@@ -157,6 +157,6 @@ public class ConferenceMigrationTest
     @AfterClass
     static public void tearDown()
     {
-        new DisposeConference().testDispose();
+        ConferenceFixture.closeAllParticipants();
     }
 }

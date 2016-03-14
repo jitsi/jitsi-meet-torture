@@ -90,7 +90,7 @@ public class StartMutedTest
     {
         System.err.println("Start configOptionsTest.");
 
-        new DisposeConference().testDispose();
+        ConferenceFixture.closeAllParticipants();
 
         WebDriver owner
             = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
