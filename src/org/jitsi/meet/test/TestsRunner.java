@@ -82,6 +82,12 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
 
+        File inputFrameDir = new File(PSNRTest.INPUT_FRAME_DIR);
+        if (inputFrameDir.exists())
+        {
+            DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
+        }
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 

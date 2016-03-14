@@ -45,7 +45,7 @@ public class PSNRTest
     /**
      * The directory where we get the input frames.
      */
-    private static final String INPUT_FRAME_DIR= "resources/psnr/stamped/";
+    public static final String INPUT_FRAME_DIR= "resources/psnr/stamped/";
 
     /**
      * The directory to use for frame resizing.

@@ -149,6 +149,13 @@ with the address of the instance to test (add to the command line
             <sysproperty key="jitsi-meet.tests.toRun"
                          value="${jitsi-meet.tests.toRun}"/>
 
+            <if>
+                <available file="resources/psnr/psnr-input.y4m" />
+                <then>
+                    <sysproperty key="jitsi-meet.fakeStreamVideoFile"
+                        value="resources/psnr/psnr-input.y4m"/>
+                </then>
+            </if>
             <!-- The main test suite which will add all tests -->
             <test name="org.jitsi.meet.test.TestsRunner"
                   todir="${test.reports.dir}"
