@@ -95,10 +95,10 @@ public class StartMutedTest
         WebDriver owner
             = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
                                            "config.startVideoMuted=1");
+        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+
         final WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
-
-        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
         ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
 
         ConferenceFixture.waitForIceCompleted(owner);

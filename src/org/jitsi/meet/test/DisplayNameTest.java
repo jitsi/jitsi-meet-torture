@@ -234,7 +234,7 @@ public class DisplayNameTest
         System.err.println("Start changeDisplayName for " + newName + ".");
 
         WebDriver secondParticipant
-            = ConferenceFixture.getSecondParticipantInstance();
+            = ConferenceFixture.getSecondParticipant();
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(

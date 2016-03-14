@@ -182,6 +182,15 @@ public class ConferenceFixture
     }
 
     /**
+     * Returns the currently allocated conference owner instance.
+     * @return the currently allocated conference owner instance.
+     */
+    public static WebDriver getOwnerInstance()
+    {
+        return owner;
+    }
+
+    /**
      * Returns the currently allocated second participant. If missing
      * will create it.
      * @return the currently allocated second participant.

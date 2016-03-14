@@ -157,7 +157,7 @@ public class FailureListener
         String fileName = JUnitVersionHelper.getTestCaseClassName(test)
             + "." + JUnitVersionHelper.getTestCaseName(test);
 
-        takeScreenshot(ConferenceFixture.getOwner(),
+        takeScreenshot(ConferenceFixture.getOwnerInstance(),
             fileName + "-owner.png");
 
         WebDriver secondParticipant =
@@ -205,7 +205,7 @@ public class FailureListener
         String fileName = JUnitVersionHelper.getTestCaseClassName(test)
             + "." + JUnitVersionHelper.getTestCaseName(test);
 
-        saveHtmlSource(ConferenceFixture.getOwner(),
+        saveHtmlSource(ConferenceFixture.getOwnerInstance(),
             fileName + "-owner.html");
 
         WebDriver secondParticipant =

@@ -87,7 +87,7 @@ public class AvatarTest
         // Join with second participant
         ConferenceFixture.waitForSecondParticipantToConnect();
         WebDriver secondParticipant
-                = ConferenceFixture.getSecondParticipantInstance();
+                = ConferenceFixture.getSecondParticipant();
         String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
 
         // Verify that the owner is muted from 2nd peer perspective
