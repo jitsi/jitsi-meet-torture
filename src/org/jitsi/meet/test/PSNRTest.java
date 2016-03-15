@@ -35,7 +35,7 @@ public class PSNRTest
      * The PSNR script that produces PSNR results for every frame that we've
      * captured.
      */
-    private static final String PSNR_SCRIPT = "resources/psnr-test.sh";
+    private static final String PSNR_SCRIPT = "scripts/psnr-test.sh";
 
     /**
      * The directory where we save the captured frames.
