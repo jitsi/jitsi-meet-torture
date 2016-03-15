@@ -83,7 +83,11 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
 
         File inputFrameDir = new File(PSNRTest.INPUT_FRAME_DIR);
-        if (inputFrameDir.exists())
+        String fakeStreamVideoFileName
+            = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
+        File fakeStreamVideoFile = new File(fakeStreamVideoFileName);
+
+        if (inputFrameDir.exists() && fakeStreamVideoFile.exists())
         {
             DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
         }
