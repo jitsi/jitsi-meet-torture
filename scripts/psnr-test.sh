@@ -21,7 +21,7 @@ RESIZED_FRAME_DIR=$3
 
 for OUTPUT_FRAME in $OUTPUT_FRAME_DIR/*.png
 do
-    FRAME_NUMBER=$(zbarimg --quiet $OUTPUT_FRAME|cut -d: -f2)
+    FRAME_NUMBER=$(java -jar javase-3.2.2-SNAPSHOT-jar-with-dependencies.jar $OUTPUT_FRAME |head -3|tail -1)
     if [ "$FRAME_NUMBER" = "" ]
     then
         FRAME_NUMBER="-1"
