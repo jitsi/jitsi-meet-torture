@@ -81,6 +81,8 @@ public class TestsRunner
         // https://github.com/jitsi/jitsi-meet/issues/83
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+        
+//        DEFAULT_TESTS_TO_RUN.add(MaxUsersTests.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }

@@ -184,7 +184,8 @@ public class ConferenceFixture
     {
         ownerDriver,
         secondParticipantDriver,
-        thirdParticipantDriver
+        thirdParticipantDriver,
+        otherParticipantDriver
     }
 
     /**
@@ -586,6 +587,34 @@ public class ConferenceFixture
             .executeScript("document.title='ThirdParticipant'");
 
         return thirdParticipant;
+    }
+    
+    /**
+     * Starts the participant reusing the already generated room name.
+     * Checks if instance is created do not create it again, if its just not in
+     * the room just join there.
+     * @param fragment A string to be added to the URL as a parameter (i.e.
+     * prefixed with a '&').
+     * @return the {@code WebDriver} which was started.
+     * NOTE: Uses the browser type set for the owner.
+     */
+    public static WebDriver startParticipant(String fragment)
+    {
+        System.err.println("Starting participant");
+
+        BrowserType browser
+            = BrowserType.valueOfString(
+                System.getProperty(BROWSER_OWNER_NAME_PROP));
+        
+        WebDriver participant = 
+            startDriver(browser, Participant.otherParticipantDriver);
+
+        openRoom(participant, fragment, browser);
+
+        ((JavascriptExecutor) participant)
+            .executeScript("document.title='Participant'");
+
+        return participant;
     }
 
     /**
