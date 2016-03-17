@@ -77,7 +77,7 @@ public class EtherpadTests
 
         TestUtils.waitMillis(5000);
 
-        TestUtils.waitForNotDisplayedElementByID(owner, "largeVideo", 10);
+        TestUtils.waitForNotDisplayedElementByID(owner, "largeVideo", 20);
     }
 
     /**
