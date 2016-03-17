@@ -80,30 +80,37 @@ public class MaxUsersTests
             
         if(MAX_USERS > 2)
         {
-            // Assuming we have 2 participants already started we have to start 
-            // MAX_USERS - 2 participants more to have MAX_USERS participants
-            // in the call in order to exceed the limit.
+            boolean failed = false;
+            // Assuming we have 2 participants already started we have to
+            // start MAX_USERS - 2 participants more to have MAX_USERS
+            // participants in the call in order to exceed the limit.
             WebDriver[] participants = new WebDriver[MAX_USERS - 2];
-            for(int i = 0; i < participants.length; i++) 
-            {
-                participants[i] = ConferenceFixture.startParticipant(null);
-            }
-            
-        
             try
             {
-                // Check if the error dialog is displayed for the last participant.
+                for(int i = 0; i < participants.length; i++)
+                {
+                    participants[i] = ConferenceFixture.startParticipant(null);
+                }
+                // Check if the error dialog is displayed for
+                // the last participant.
                 int lastParticipantIdx = participants.length - 1;
                 checkDialog(participants[lastParticipantIdx]);
             } 
             catch(TimeoutException timeout)
             {
+                // There was no dialog, so we fail the test !
+                failed = true;
+            }
+            finally
+            {
                 // Clean up the participants in participants array
                 quitParticipants(participants);
+            }
+
+            if (failed)
+            {
                 fail("There was no error dialog.");
             }
-            // Clean up the participants in participants array
-            quitParticipants(participants);
         }
         else
         {
