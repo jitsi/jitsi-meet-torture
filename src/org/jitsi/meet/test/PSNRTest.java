@@ -83,6 +83,27 @@ public class PSNRTest
             outputFrameDir.mkdirs();
         }
 
+        // stop everything to maximize performance
+        new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
+        new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
+        new StopVideoTest("stopVideoOnOwnerAndCheck").stopVideoOnOwnerAndCheck();
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        JavascriptExecutor js = ((JavascriptExecutor) owner);
+
+        List<WebElement> remoteThumbs = owner
+            .findElements(By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
+
+        List<String> ids = new ArrayList<>();
+        for (WebElement thumb: remoteThumbs) {
+            ids.add(thumb.getAttribute("id"));
+        }
+        js.executeScript(
+            "window._operator = new JitsiMeetJS.util.VideoOperator();" +
+            "window._operator.recordAll(arguments[0]);",
+            ids
+        );
+
         String timeToRunInMin = System.getProperty("psnr.duration");
 
         // default is 1 minute
@@ -162,21 +183,21 @@ public class PSNRTest
                         return;
                     }
 
-                    if(downloadParticipant <= 0)
-                    {
-                        System.err.println(
-                            "Second participant no download bitrate");
-                        secondPDownloadSignal.countDown();
-                    }
-                    else
+                    // if(downloadParticipant <= 0)
+                    // {
+                    //     System.err.println(
+                    //         "Second participant no download bitrate");
+                    //     secondPDownloadSignal.countDown();
+                    // }
+                    // else
                         secondPDownloadSignal = new CountDownLatch(3);
 
-                    if(secondPDownloadSignal.getCount() <= 0)
-                    {
-                        assertAndQuit(
-                            "Second participant download rate less than 0");
-                        return;
-                    }
+                    // if(secondPDownloadSignal.getCount() <= 0)
+                    // {
+                    //     assertAndQuit(
+                    //         "Second participant download rate less than 0");
+                    //     return;
+                    // }
 
                     if(!ConferenceFixture.isXmppConnected(
                             ConferenceFixture.getOwner()))
@@ -191,61 +212,6 @@ public class PSNRTest
                         assertAndQuit("The second participant xmpp "
                             + "connection is not connected");
                         return;
-                    }
-
-                    WebDriver driver = ConferenceFixture.getOwner();
-                    if (driver instanceof JavascriptExecutor)
-                    {
-                        JavascriptExecutor js = ((JavascriptExecutor) driver);
-
-                        List<WebElement> remoteThumb = driver
-                            .findElements(By.xpath(
-                                "//video[starts-with(@id, 'remoteVideo_')]"));
-
-                        for (WebElement webElement : remoteThumb)
-                        {
-                            //FIXME This needs to be optimized. We run this
-                            // every second. It encodes an image in base64 and
-                            // it transfers it over the network (that's how
-                            // selenium communicates with the debugger). So this
-                            // might work with a few images per second.. But this
-                            // will fail miserably if we want to capture 30fps.
-                            // The proper solution would be to store the images
-                            // in the sandboxed HTML filesystem that modern
-                            // browsers provide. And transfer them at the end
-                            // of the test. We could follow the same approach
-                            // if we want to grab the whole webm/vp8 stream using
-                            // the Recorder API.
-                            String elmId = webElement.getAttribute("id");
-                            Object pngUrl = js.executeScript(
-                                "var video = document.getElementById(\""+ elmId + "\");" +
-                                "var canvasId = 'canvas-capture';" +
-                                "var canvas = document.getElementById(canvasId);" +
-                                "if (canvas == null) {" +
-                                "    canvas = document.createElement('canvas');" +
-                                "    canvas.id = canvasId;" +
-                                "    document.body.appendChild(canvas);" +
-                                "}" +
-                                "canvas.width = video.videoWidth;" +
-                                "canvas.height = video.videoHeight;" +
-                                "var ctx = canvas.getContext('2d');" +
-                                "ctx.drawImage(video, 0, 0);" +
-                                "return canvas.toDataURL(\"image/png\");");
-
-                            // Parse the URI to get only the base64 part
-                            String strBase64 = pngUrl.toString()
-                                .substring("data:image/png;base64,".length());
-
-                            // Convert it to binary
-                            // Java 8 has a Base64 class.
-                            byte[] data = org.apache.commons.codec.binary.
-                                Base64.decodeBase64(strBase64);
-
-                            try (OutputStream stream = new FileOutputStream(
-                                OUTPUT_FRAME_DIR + elmId + "-" + lastRun + ".png")) {
-                                stream.write(data);
-                            }
-                        }
                     }
 
                     long currentTime = System.currentTimeMillis();
@@ -286,6 +252,49 @@ public class PSNRTest
                 assertTrue("A problem with the conf occurred", false);
             else
             {
+                js.executeScript("window._operator.stop()");
+
+                System.err.println(
+                    "REAL FPS: " +
+                    js.executeScript("return window._operator.getRealFPS()")
+                );
+                System.err.println(
+                    "RAW DATA SIZE: " +
+                    js.executeScript("return window._operator.getRawDataSize() / 1024 / 1024") +
+                    "MB"
+                );
+
+                // now close second participant to maximize performance
+                ConferenceFixture.closeSecondParticipant();
+
+                for (String id: ids) {
+                    Long framesCount = (Long)js.executeScript(
+                        "return window._operator.getFramesCount(arguments[0])",
+                        id
+                    );
+                    System.err.printf("frames count for %s: %s", id, framesCount);
+
+                    for (int i = 0; i < framesCount; i += 1) {
+                        String frame = (String)js.executeScript(
+                            "return window._operator.getFrame(arguments[0], arguments[1])",
+                            id, i
+                        );
+                        // Convert it to binary
+                        // Java 8 has a Base64 class.
+                        byte[] data = org.apache.commons.codec.binary.
+                            Base64.decodeBase64(frame);
+
+                        try (OutputStream stream = new FileOutputStream(
+                                OUTPUT_FRAME_DIR + id + "-" + i + ".png")) {
+                            stream.write(data);
+                        }
+                    }
+                }
+                js.executeScript(
+                    "window._operator.cleanup();" +
+                    "window._operator = null;"
+                );
+
                 Runtime rt = Runtime.getRuntime();
                 String[] commands = {
                     PSNR_SCRIPT, OUTPUT_FRAME_DIR,
@@ -314,6 +323,7 @@ public class PSNRTest
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             assertTrue("An error occurred", false);
         }
     }
