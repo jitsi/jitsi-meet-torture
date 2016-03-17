@@ -32,7 +32,12 @@ public class MaxUsersTests
     extends TestCase
 {
     /**
-     * Number of participants in the call.
+     * muc_max_occupants value set in the prosody config for muc_max_occupants 
+     * module. This value represents the number of people that can join the 
+     * room. That number includes jicofo. This means that if we have 
+     * muc_max_occupants = x and x participants enter the room we are going to
+     * have x + 1 participants because of jicofo. Actually the "x"th 
+     * participant will exceed the limit.
      */
     public static int MAX_USERS = 3;
     
@@ -82,7 +87,8 @@ public class MaxUsersTests
         {
             // Assuming we have 2 participants already started we have to start 
             // MAX_USERS - 2 participants more to have MAX_USERS participants
-            // in the call in order to exceed the limit.
+            // in the call + 1 for jicofo participant. That way the last 
+            // participant will exceed the limit.
             WebDriver[] participants = new WebDriver[MAX_USERS - 2];
             for(int i = 0; i < participants.length; i++) 
             {
