@@ -219,7 +219,7 @@ public class AvatarTest
 
         // Wait for the avatar element to be created
         TestUtils.waitForElementByXPath(
-            secondParticipant, ownerAvatarXPath, 5000);
+            secondParticipant, ownerAvatarXPath, 5);
 
         final String srcOneSecondParticipant =
             getSrcByXPath(secondParticipant, ownerAvatarXPath);
