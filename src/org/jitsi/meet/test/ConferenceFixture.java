@@ -47,6 +47,9 @@ public class ConferenceFixture
     public static final String FAKE_AUDIO_FNAME_PROP
         = "jitsi-meet.fakeStreamAudioFile";
 
+    public static final String FAKE_VIDEO_FNAME_PROP
+        = "jitsi-meet.fakeStreamVideoFile";
+
     /**
      * The property to change tested browser for the owner.
      */
@@ -146,6 +149,12 @@ public class ConferenceFixture
      * audio device.
      */
     private static String fakeStreamAudioFName;
+
+    /**
+     * Full name of wav file which will be streamed through participant's fake
+     * video device.
+     */
+    private static String fakeStreamVideoFName;
 
     /**
      * The conference owner in the tests.
@@ -450,6 +459,12 @@ public class ConferenceFixture
             {
                 ops.addArguments(
                     "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
+            }
+
+            if (fakeStreamVideoFName != null)
+            {
+                ops.addArguments(
+                    "use-file-for-fake-video-capture=" + fakeStreamVideoFName);
             }
 
             //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
@@ -863,6 +878,18 @@ public class ConferenceFixture
     public static void setFakeStreamAudioFile(String fakeStreamAudioFile)
     {
         fakeStreamAudioFName = fakeStreamAudioFile;
+    }
+
+    /**
+     * Sets the name of y4m video file which will be streamed through fake video
+     * device by participants.
+     *
+     * @param fakeStreamVideoFile full name of y4m file for the fake video
+     *                            device.
+     */
+    public static void setFakeStreamVideoFile(String fakeStreamVideoFile)
+    {
+        fakeStreamVideoFName = fakeStreamVideoFile;
     }
 
     /**

@@ -10,3 +10,7 @@ hs_err_pid*
 
 test-reports
 classes
+
+# PSNR test sequences and output files
+resources/psnr/output/
+resources/psnr/test_sequences/

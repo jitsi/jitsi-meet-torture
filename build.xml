@@ -82,6 +82,14 @@
 
     <property environment="env"/>
 
+    <target name="check-psnr-file">
+        <available file="resources/psnr/psnr-input.y4m" property="psnrFileExists"/>
+    </target>
+
+    <target name="set-psnr-file" depends="check-psnr-file" if="psnrFileExists">
+        <property name="psnrFilePath" value="resources/psnr/psnr-input.y4m"/>
+    </target>
+
     <taskdef resource="net/sf/antcontrib/antlib.xml"
              classpath="lib/ant-contrib-1.0b3.jar"/>
 
@@ -89,8 +97,7 @@
               <!--value="https://meet.example.com"/>-->
 
     <!-- default target -->
-    <target name="test" depends="compile,clean-test-reports,check-linux-env">
-
+    <target name="test" depends="compile,clean-test-reports,check-linux-env,set-psnr-file">
         <!-- Fail if we have't setup what to test -->
         <fail unless="jitsi-meet.instance.url"
               message="Please setup the property jitsi-meet.instance.url
@@ -127,6 +134,8 @@ with the address of the instance to test (add to the command line
             <formatter type="xml"/>
             <sysproperty key="webdriver.chrome.driver"
                          value="${webdriver.chrome.driver}"/>
+            <sysproperty key="jitsi-meet.fakeStreamVideoFile"
+                         value="${psnrFilePath}"/>
             <!--
             For IE 11 only, you will need to set a registry entry on the target computer so that the driver can
             maintain a connection to the instance of Internet Explorer it creates. For 32-bit Windows installations,

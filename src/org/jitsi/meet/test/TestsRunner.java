@@ -84,6 +84,16 @@ public class TestsRunner
         
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTests.class.getSimpleName());
 
+        File inputFrameDir = new File(PSNRTest.INPUT_FRAME_DIR);
+        String fakeStreamVideoFileName
+            = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
+        File fakeStreamVideoFile = new File(fakeStreamVideoFileName);
+
+        if (inputFrameDir.exists() && fakeStreamVideoFile.exists())
+        {
+            DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
+        }
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 
@@ -164,6 +174,22 @@ public class TestsRunner
     }
 
     /**
+     * Sets the video file to be streamed through a fake video device by the
+     * conference participants.
+     */
+    private static void setFakeVideoStreamFile()
+    {
+        String fakeStreamVideoFile
+            = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
+
+        if (fakeStreamVideoFile != null
+            && fakeStreamVideoFile.trim().length() != 0)
+        {
+            ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile.trim());
+        }
+    }
+
+    /**
      * Gets (a suite of) the tests to run. If the property
      * {@code jitsi-meet.tests.toRun} exists, we use its value to add only the
      * tests it mentions.
@@ -177,6 +203,7 @@ public class TestsRunner
         TestSuite suite = suite(testsToRun);
 
         setFakeAudioStreamFile();
+        setFakeVideoStreamFile();
 
         return suite;
     }
