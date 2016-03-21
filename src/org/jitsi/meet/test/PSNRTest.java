@@ -21,6 +21,7 @@ import org.openqa.selenium.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.nio.file.*;
 
 /**
  * A test that will run 1 minute (configurable) and will perform a PSNR test
@@ -36,6 +37,11 @@ public class PSNRTest
      * captured.
      */
     private static final String PSNR_SCRIPT = "scripts/psnr-test.sh";
+
+    /**
+     * JS utility which allows to capture frames from the video.
+     */
+    private static final String PSNR_JS_SCRIPT = "resources/PSNRVideoOperator.js";
 
     /**
      * The directory where we save the captured frames.
@@ -91,6 +97,17 @@ public class PSNRTest
         WebDriver owner = ConferenceFixture.getOwner();
         JavascriptExecutor js = ((JavascriptExecutor) owner);
 
+        // read and inject helper script
+        try {
+            Path jsHelperPath = Paths.get(new File(PSNR_JS_SCRIPT).getAbsolutePath());
+            String videoOperatorScript = new String(Files.readAllBytes(jsHelperPath));
+            js.executeScript(videoOperatorScript);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            assertTrue("Failed to inject JS helper.", false);
+        }
+
         List<WebElement> remoteThumbs = owner
             .findElements(By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
 
@@ -99,7 +116,7 @@ public class PSNRTest
             ids.add(thumb.getAttribute("id"));
         }
         js.executeScript(
-            "window._operator = new JitsiMeetJS.util.VideoOperator();" +
+            "window._operator = new window.VideoOperator();" +
             "window._operator.recordAll(arguments[0]);",
             ids
         );
