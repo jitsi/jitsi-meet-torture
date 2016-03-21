@@ -28,6 +28,7 @@ import java.nio.file.*;
  * on the received video stream.
  *
  * @author George Politis
+ * @author Ivan Symchych
  */
 public class PSNRTest
     extends TestCase
