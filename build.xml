@@ -125,6 +125,13 @@ with the address of the instance to test (add to the command line
             </not>
         </condition>
 
+        <!-- set the psnrFilePath to an empty string if a PSNR file does not exist-->
+        <condition property="psnrFilePath" value="">
+            <not>
+                <isset property="psnrFilePath"/>
+            </not>
+        </condition>
+
         <junit printsummary="yes"
                fork="yes"
                haltonfailure="no"
