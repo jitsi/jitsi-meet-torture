@@ -4,8 +4,6 @@
     <property name="dest" value="classes"/>
     <property name="test.reports.dir" value="test-reports"/>
     <property name="test.html.reports.dir" value="${test.reports.dir}/html"/>
-    <!-- default value for the psnr file -->
-    <property name="psnrFilePath" value=""/>
 
     <path id="compile.class.path">
         <path refid="project.class.path"/>
