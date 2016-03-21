@@ -15,13 +15,14 @@
 # limitations under the License.
 #
 
+SCRIPT_DIR=$(dirname $0)
 OUTPUT_FRAME_DIR=$1
 INPUT_FRAME_DIR=$2
 RESIZED_FRAME_DIR=$3
 
 for OUTPUT_FRAME in $OUTPUT_FRAME_DIR/*.png
 do
-    FRAME_NUMBER=$(java -jar javase-3.2.2-SNAPSHOT-jar-with-dependencies.jar $OUTPUT_FRAME |head -3|tail -1)
+    FRAME_NUMBER=$(java -jar $SCRIPT_DIR/javase-3.2.2-SNAPSHOT-jar-with-dependencies.jar $OUTPUT_FRAME |head -3|tail -1)
     if [ "$FRAME_NUMBER" = "" ]
     then
         FRAME_NUMBER="-1"
