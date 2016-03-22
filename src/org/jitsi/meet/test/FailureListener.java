@@ -184,6 +184,13 @@ public class FailureListener
     {
         TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
 
+        if(takesScreenshot == null)
+        {
+            System.err.println("No driver to take screenshot from! FileName:"
+                + fileName);
+            return;
+        }
+
         File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
         File destFile = new File(outputScreenshotsParentFolder, fileName);
         try
