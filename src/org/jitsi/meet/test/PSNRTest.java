@@ -42,12 +42,14 @@ public class PSNRTest
     /**
      * JS utility which allows to capture frames from the video.
      */
-    private static final String PSNR_JS_SCRIPT = "resources/PSNRVideoOperator.js";
+    private static final String PSNR_JS_SCRIPT
+        = "resources/PSNRVideoOperator.js";
 
     /**
      * The directory where we save the captured frames.
      */
-    private static final String OUTPUT_FRAME_DIR= "test-reports/psnr/captured-frames/";
+    private static final String OUTPUT_FRAME_DIR
+        = "test-reports/psnr/captured-frames/";
 
     /**
      * The directory where we get the input frames.
@@ -57,7 +59,8 @@ public class PSNRTest
     /**
      * The directory to use for frame resizing.
      */
-    private static final String RESIZED_FRAME_DIR = "test-reports/psnr/resized-frames/";
+    private static final String RESIZED_FRAME_DIR
+        = "test-reports/psnr/resized-frames/";
 
     /**
      * The minimum PSNR value that we will accept before failing. PSNR above 20
@@ -100,8 +103,10 @@ public class PSNRTest
 
         // read and inject helper script
         try {
-            Path jsHelperPath = Paths.get(new File(PSNR_JS_SCRIPT).getAbsolutePath());
-            String videoOperatorScript = new String(Files.readAllBytes(jsHelperPath));
+            Path jsHelperPath = Paths.get(
+                new File(PSNR_JS_SCRIPT).getAbsolutePath());
+            String videoOperatorScript = new String(
+                Files.readAllBytes(jsHelperPath));
             js.executeScript(videoOperatorScript);
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +137,8 @@ public class PSNRTest
 
         final CountDownLatch waitSignal = new CountDownLatch(1);
 
-        // execute every 1 sec.
+        // execute every 1 sec. This scheduled task isn't necessary for the
+        // PSNR testing but it can provide hints as to why the PSNR has failed.
         final Timer timer = new Timer();
         timer.schedule(new TimerTask()
         {
@@ -277,8 +283,8 @@ public class PSNRTest
                     js.executeScript("return window._operator.getRealFPS()")
                 );
                 System.err.println(
-                    "RAW DATA SIZE: " +
-                    js.executeScript("return window._operator.getRawDataSize() / 1024 / 1024") +
+                    "RAW DATA SIZE: " + js.executeScript(
+                        "return window._operator.getRawDataSize() / 1024 / 1024") +
                     "MB"
                 );
 
@@ -290,7 +296,8 @@ public class PSNRTest
                         "return window._operator.getFramesCount(arguments[0])",
                         id
                     );
-                    System.err.printf("frames count for %s: %s", id, framesCount);
+                    System.err.printf(
+                        "frames count for %s: %s\n", id, framesCount);
 
                     for (int i = 0; i < framesCount; i += 1) {
                         String frame = (String)js.executeScript(
