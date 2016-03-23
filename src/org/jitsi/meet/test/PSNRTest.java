@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.tasks.*;
 import org.openqa.selenium.*;
 
 import java.io.*;
@@ -137,136 +138,12 @@ public class PSNRTest
 
         final CountDownLatch waitSignal = new CountDownLatch(1);
 
-        // execute every 1 sec. This scheduled task isn't necessary for the
+        // execute every 1 sec. This heartbeat task isn't necessary for the
         // PSNR testing but it can provide hints as to why the PSNR has failed.
         final Timer timer = new Timer();
-        timer.schedule(new TimerTask()
-        {
-            long lastRun = System.currentTimeMillis();
-
-            int millsToRun = minutesToRun*60*1000;
-
-            CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
-            CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
-
-            @Override
-            public void run()
-            {
-                try
-                {
-                    System.err.println("Checking at " + new Date()
-                        + " / to finish: " + millsToRun + " ms.");
-
-                    if (!ConferenceFixture.isIceConnected(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner ice is not connected.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isInMuc(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner is not in the muc.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isIceConnected(
-                            ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit(
-                            "Second participant ice is not connected.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isInMuc(
-                            ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit(
-                            "The second participant is not in the muc.");
-                        return;
-                    }
-
-                    long downloadOwner = ConferenceFixture.getDownloadBitrate(
-                        ConferenceFixture.getOwner());
-                    long downloadParticipant =
-                        ConferenceFixture.getDownloadBitrate(
-                            ConferenceFixture.getSecondParticipant());
-
-                    if(downloadOwner <= 0)
-                    {
-                        System.err.println("Owner no download bitrate");
-                        ownerDownloadSignal.countDown();
-                    }
-                    else
-                        ownerDownloadSignal = new CountDownLatch(3);
-
-                    if(ownerDownloadSignal.getCount() <= 0)
-                    {
-                        assertAndQuit("Owner download bitrate less than 0");
-                        return;
-                    }
-
-                    // if(downloadParticipant <= 0)
-                    // {
-                    //     System.err.println(
-                    //         "Second participant no download bitrate");
-                    //     secondPDownloadSignal.countDown();
-                    // }
-                    // else
-                        secondPDownloadSignal = new CountDownLatch(3);
-
-                    // if(secondPDownloadSignal.getCount() <= 0)
-                    // {
-                    //     assertAndQuit(
-                    //         "Second participant download rate less than 0");
-                    //     return;
-                    // }
-
-                    if(!ConferenceFixture.isXmppConnected(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner xmpp connection is not connected");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isXmppConnected(
-                                ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit("The second participant xmpp "
-                            + "connection is not connected");
-                        return;
-                    }
-
-                    long currentTime = System.currentTimeMillis();
-                    millsToRun -= (currentTime - lastRun);
-                    lastRun = currentTime;
-
-                    if (millsToRun <= 0)
-                    {
-                        timer.cancel();
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-
-                    assertAndQuit("Unexpected error occurred.");
-                }
-            }
-
-            /**
-             * Clears what is needed and lowers the assert countdown.
-             * @param msg
-             */
-            private void assertAndQuit(String msg)
-            {
-                System.err.println(msg);
-                waitSignal.countDown();
-                timer.cancel();
-            }
-
-        }, /* delay */ 1000, /* period */ 1000);
+        int millsToRun = minutesToRun * 60 * 1000;
+        timer.schedule(new HeartbeatTask(timer, waitSignal, millsToRun, true),
+            /* delay */ 1000, /* period */ 1000);
 
         try
         {

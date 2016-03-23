@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.tasks.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -48,135 +49,14 @@ public class LongLivedTest
         final CountDownLatch waitSignal = new CountDownLatch(1);
 
         // execute every 10 secs.
+        // sometimes the check is executed once more
+        // at the time while we are in a process of disposing
+        // the two participants and ~9 secs before finishing successful
+        // it fails.
+        int millsToRun = (minutesToRun - 1) * 60 * 1000;
         final Timer timer = new Timer();
-        timer.schedule(new TimerTask()
+        timer.schedule(new HeartbeatTask(timer, waitSignal, millsToRun, true)
         {
-            long lastRun = System.currentTimeMillis();
-            // sometimes the check is executed once more
-            // at the time while we are in a process of disposing
-            // the two participants and ~9 secs before finishing successful
-            // it fails.
-            int millsToRun = (minutesToRun - 1)*60*1000;
-
-            CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
-            CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
-
-            @Override
-            public void run()
-            {
-                try
-                {
-                    System.err.println("Checking at " + new Date()
-                        + " / to finish: " + millsToRun + " ms.");
-
-                    if (!ConferenceFixture.isIceConnected(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner ice is not connected.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isInMuc(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner is not in the muc.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isIceConnected(
-                            ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit(
-                            "Second participant ice is not connected.");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isInMuc(
-                            ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit(
-                            "The second participant is not in the muc.");
-                        return;
-                    }
-
-                    long downloadOwner = ConferenceFixture.getDownloadBitrate(
-                        ConferenceFixture.getOwner());
-                    long downloadParticipant =
-                        ConferenceFixture.getDownloadBitrate(
-                            ConferenceFixture.getSecondParticipant());
-
-                    if(downloadOwner <= 0)
-                    {
-                        System.err.println("Owner no download bitrate");
-                        ownerDownloadSignal.countDown();
-                    }
-                    else
-                        ownerDownloadSignal = new CountDownLatch(3);
-
-                    if(ownerDownloadSignal.getCount() <= 0)
-                    {
-                        assertAndQuit("Owner download bitrate less than 0");
-                        return;
-                    }
-
-                    if(downloadParticipant <= 0)
-                    {
-                        System.err.println(
-                            "Second participant no download bitrate");
-                        secondPDownloadSignal.countDown();
-                    }
-                    else
-                        secondPDownloadSignal = new CountDownLatch(3);
-
-                    if(secondPDownloadSignal.getCount() <= 0)
-                    {
-                        assertAndQuit(
-                            "Second participant download rate less than 0");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isXmppConnected(
-                            ConferenceFixture.getOwner()))
-                    {
-                        assertAndQuit("Owner xmpp connection is not connected");
-                        return;
-                    }
-
-                    if(!ConferenceFixture.isXmppConnected(
-                                ConferenceFixture.getSecondParticipant()))
-                    {
-                        assertAndQuit("The second participant xmpp "
-                            + "connection is not connected");
-                        return;
-                    }
-
-                    long currentTime = System.currentTimeMillis();
-                    millsToRun -= (currentTime - lastRun);
-                    lastRun = currentTime;
-
-                    if (millsToRun <= 0)
-                    {
-                        timer.cancel();
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-
-                    assertAndQuit("Unexpected error occurred.");
-                }
-            }
-
-            /**
-             * Clears what is needed and lowers the assert countdown.
-             * @param msg
-             */
-            private void assertAndQuit(String msg)
-            {
-                System.err.println(msg);
-                waitSignal.countDown();
-                timer.cancel();
-            }
 
         }, 10 * 1000, 10 * 1000);
 
