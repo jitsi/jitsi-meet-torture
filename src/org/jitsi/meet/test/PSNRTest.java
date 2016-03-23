@@ -103,13 +103,16 @@ public class PSNRTest
         JavascriptExecutor js = ((JavascriptExecutor) owner);
 
         // read and inject helper script
-        try {
+        try
+        {
             Path jsHelperPath = Paths.get(
                 new File(PSNR_JS_SCRIPT).getAbsolutePath());
             String videoOperatorScript = new String(
                 Files.readAllBytes(jsHelperPath));
             js.executeScript(videoOperatorScript);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
 
             assertTrue("Failed to inject JS helper.", false);
@@ -119,19 +122,20 @@ public class PSNRTest
             .findElements(By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
 
         List<String> ids = new ArrayList<>();
-        for (WebElement thumb: remoteThumbs) {
+        for (WebElement thumb : remoteThumbs)
+        {
             ids.add(thumb.getAttribute("id"));
         }
         js.executeScript(
             "window._operator = new window.VideoOperator();" +
-            "window._operator.recordAll(arguments[0]);",
+                "window._operator.recordAll(arguments[0]);",
             ids
         );
 
         String timeToRunInMin = System.getProperty("psnr.duration");
 
         // default is 1 minute
-        if(timeToRunInMin == null || timeToRunInMin.length() == 0)
+        if (timeToRunInMin == null || timeToRunInMin.length() == 0)
             timeToRunInMin = "1";
 
         final int minutesToRun = Integer.valueOf(timeToRunInMin);
@@ -142,91 +146,140 @@ public class PSNRTest
         // PSNR testing but it can provide hints as to why the PSNR has failed.
         final Timer timer = new Timer();
         int millsToRun = minutesToRun * 60 * 1000;
-        timer.schedule(new HeartbeatTask(timer, waitSignal, millsToRun, true),
+        timer.schedule(new HeartbeatTask(timer, waitSignal, millsToRun, false),
             /* delay */ 1000, /* period */ 1000);
 
         try
         {
             waitSignal.await(minutesToRun, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException e)
+        {
+        }
 
-            if(waitSignal.getCount() == 0)
-                assertTrue("A problem with the conf occurred", false);
-            else
-            {
-                js.executeScript("window._operator.stop()");
+        if (waitSignal.getCount() == 0)
+            assertTrue("A problem with the conf occurred", false);
+        else
+        {
+            js.executeScript("window._operator.stop()");
 
-                System.err.println(
-                    "REAL FPS: " +
+            System.err.println(
+                "REAL FPS: " +
                     js.executeScript("return window._operator.getRealFPS()")
-                );
-                System.err.println(
-                    "RAW DATA SIZE: " + js.executeScript(
-                        "return window._operator.getRawDataSize() / 1024 / 1024") +
+            );
+            System.err.println(
+                "RAW DATA SIZE: " + js.executeScript(
+                    "return window._operator.getRawDataSize() / 1024 / 1024") +
                     "MB"
+            );
+
+            // now close second participant to maximize performance
+            ConferenceFixture.closeSecondParticipant();
+
+            for (String id : ids)
+            {
+                Long framesCount = (Long) js.executeScript(
+                    "return window._operator.getFramesCount(arguments[0])",
+                    id
                 );
+                System.err.printf(
+                    "frames count for %s: %s\n", id, framesCount);
 
-                // now close second participant to maximize performance
-                ConferenceFixture.closeSecondParticipant();
-
-                for (String id: ids) {
-                    Long framesCount = (Long)js.executeScript(
-                        "return window._operator.getFramesCount(arguments[0])",
-                        id
+                for (int i = 0; i < framesCount; i += 1)
+                {
+                    String frame = (String) js.executeScript(
+                        "return window._operator.getFrame(arguments[0], arguments[1])",
+                        id, i
                     );
-                    System.err.printf(
-                        "frames count for %s: %s\n", id, framesCount);
+                    // Convert it to binary
+                    // Java 8 has a Base64 class.
+                    byte[] data = org.apache.commons.codec.binary.
+                        Base64.decodeBase64(frame);
 
-                    for (int i = 0; i < framesCount; i += 1) {
-                        String frame = (String)js.executeScript(
-                            "return window._operator.getFrame(arguments[0], arguments[1])",
-                            id, i
-                        );
-                        // Convert it to binary
-                        // Java 8 has a Base64 class.
-                        byte[] data = org.apache.commons.codec.binary.
-                            Base64.decodeBase64(frame);
+                    String outputFrame
+                        = OUTPUT_FRAME_DIR + id + "-" + i + ".png";
 
+                    try
+                    {
                         try (OutputStream stream = new FileOutputStream(
-                                OUTPUT_FRAME_DIR + id + "-" + i + ".png")) {
+                            outputFrame))
+                        {
                             stream.write(data);
                         }
                     }
-                }
-                js.executeScript(
-                    "window._operator.cleanup();" +
-                    "window._operator = null;"
-                );
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                        assertTrue("An error occurred", false);
+                    }
 
-                Runtime rt = Runtime.getRuntime();
-                String[] commands = {
-                    PSNR_SCRIPT, OUTPUT_FRAME_DIR,
-                    INPUT_FRAME_DIR, RESIZED_FRAME_DIR
-                };
-                Process proc = rt.exec(commands);
+                    Runtime rt = Runtime.getRuntime();
+                    String[] commands = {
+                        PSNR_SCRIPT, outputFrame,
+                        INPUT_FRAME_DIR, RESIZED_FRAME_DIR
+                    };
 
-                BufferedReader stdInput = new BufferedReader(new
-                    InputStreamReader(proc.getInputStream()));
+                    Process proc = null;
+                    try
+                    {
+                        proc = rt.exec(commands);
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                        assertTrue("An error occurred", false);
+                    }
 
-                BufferedReader stdError = new BufferedReader(new
-                    InputStreamReader(proc.getErrorStream()));
+                    BufferedReader stdInput = new BufferedReader(new
+                        InputStreamReader(proc.getInputStream()));
 
-                // read the output from the command
-                String s = null;
-                while ((s = stdInput.readLine()) != null) {
-                    assertTrue(s == null
-                        || Float.parseFloat(s.split(" ")[1]) > MIN_PSNR);
-                }
+                    BufferedReader stdError = new BufferedReader(new
+                        InputStreamReader(proc.getErrorStream()));
 
-                // read any errors from the attempted command
-                while ((s = stdError.readLine()) != null) {
-                    System.err.println(s);
+                    // read the output from the command
+                    String s = null;
+                    try
+                    {
+                        while ((s = stdInput.readLine()) != null)
+                        {
+                            System.err.println(s);
+                            assertTrue("Frame is bellow the PSNR threshold",
+                                s == null
+                                    || Float.parseFloat(s.split(" ")[1]) > MIN_PSNR);
+                        }
+
+                        // read any errors from the attempted command
+                        while ((s = stdError.readLine()) != null)
+                        {
+                            System.err.println(s);
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    try
+                    {
+                        assertTrue("The psnr-test.sh failed.",
+                            proc.waitFor() == 0);
+                    }
+                    catch (InterruptedException e)
+                    {
+
+                    }
+
+                    // If the test has passed for a specific frame, delete
+                    // it to optimize disk space usage.
+                    File outputFrameFile = new File(outputFrame);
+                    outputFrameFile.delete();
                 }
             }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            assertTrue("An error occurred", false);
+
+            js.executeScript(
+                "window._operator.cleanup();" +
+                    "window._operator = null;"
+            );
         }
     }
 }
