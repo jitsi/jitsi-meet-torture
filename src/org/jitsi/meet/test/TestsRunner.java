@@ -75,6 +75,8 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(SinglePortTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(TCPTest.class.getSimpleName());
 
+        DEFAULT_TESTS_TO_RUN.add(SharedVideoTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         // doing the same test two more times to be sure it is
         // not a problem, as there was reported an issue about that

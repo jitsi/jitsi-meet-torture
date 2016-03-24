@@ -281,17 +281,14 @@ public class ConferenceFixture
         BrowserType browser
             = BrowserType.valueOfString(System.getProperty(
                     BROWSER_OWNER_NAME_PROP));
-        if (owner != null)
-        {
-            System.err.println(
-                "Starting 'owner' while an old instance exists!");
-        }
 
         if(owner == null)
-            owner = startDriver(browser, Participant.ownerDriver);
+        {
+            currentRoomName = "torture"
+                + String.valueOf((int)(Math.random()*1000000));
 
-        currentRoomName = "torture"
-            + String.valueOf((int)(Math.random()*1000000));
+            owner = startDriver(browser, Participant.ownerDriver);
+        }
 
         openRoom(owner, fragment, browser);
 
@@ -969,7 +966,7 @@ public class ConferenceFixture
     {
         ConferenceFixture.closeSecondParticipant();
         ConferenceFixture.closeThirdParticipant();
-        ConferenceFixture.close(ConferenceFixture.getOwner());
+        ConferenceFixture.close(ConferenceFixture.getOwnerInstance());
     }
 
     /**

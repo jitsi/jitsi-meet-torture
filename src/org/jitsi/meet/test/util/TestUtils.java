@@ -345,4 +345,25 @@ public class TestUtils
 
         return (o instanceof Boolean) ? (Boolean) o : Boolean.FALSE;
     }
+
+    /**
+     * Executes a specific (piece of) JavaScript script in the browser
+     * controlled by a specific {@code WebDriver} and returns the result of its
+     * execution as a {@code String} value.
+     *
+     * @param webDriver the {@code WebDriver} which controls the browser in
+     * which the specified {@code script} is to be executed
+     * @param script the script to execute in the browser controlled by
+     * {@code webDriver}
+     * @return the result of the execution of {@code script} in the browser
+     * controlled by {@code webDriver} as a {@code String} value
+     */
+    public static String executeScriptAndReturnString(
+        WebDriver webDriver,
+        String script)
+    {
+        Object o = ((JavascriptExecutor) webDriver).executeScript(script);
+
+        return (o instanceof String) ? (String) o : null;
+    }
 }
