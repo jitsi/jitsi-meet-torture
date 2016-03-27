@@ -479,6 +479,9 @@ public class SharedVideoTest
             stateToCheck = "YT.PlayerState.PAUSED";
             ((JavascriptExecutor) ConferenceFixture.getOwner()).executeScript(
                 JS_GET_SHARED_VIDEO_CONTAINER
+                    + "c.player.seekTo(15);");
+            ((JavascriptExecutor) ConferenceFixture.getOwner()).executeScript(
+                JS_GET_SHARED_VIDEO_CONTAINER
                     + "c.player.pauseVideo();");
         }
 
@@ -513,5 +516,32 @@ public class SharedVideoTest
             ConferenceFixture.getSecondParticipant(),
             "YT.PlayerState.PAUSED"
         );
+
+        Object ownerTimeObj = ((JavascriptExecutor)
+            ConferenceFixture.getOwner()).executeScript(
+            JS_GET_SHARED_VIDEO_CONTAINER
+                + "return c.player.getCurrentTime();");
+
+        Object secondTimeObj = ((JavascriptExecutor)
+            ConferenceFixture.getSecondParticipant()).executeScript(
+            JS_GET_SHARED_VIDEO_CONTAINER
+                + "return c.player.getCurrentTime();");
+
+        double ownerTime = 0;
+        if (ownerTimeObj instanceof Double)
+            ownerTime = (Double)ownerTimeObj;
+        else if (ownerTimeObj instanceof Long)
+            ownerTime = (Long)ownerTimeObj;
+
+        double secondTime = 0;
+        if (secondTimeObj instanceof Double)
+            secondTime = (Double)secondTimeObj;
+        else if (secondTimeObj instanceof Long)
+            secondTime = (Long)secondTimeObj;
+
+        // let's check that time difference is less than 10 seconds
+        assertTrue("Players time differ owner:" + ownerTime
+                + " second:" + secondTime,
+            (Math.abs(ownerTime - secondTime) < 10));
     }
 }
