@@ -343,6 +343,11 @@ public class ConferenceFixture
         // handle URL parameters)
         ((JavascriptExecutor) participant)
                 .executeScript("config.callStatsID=false;");
+
+        String version = TestUtils.executeScriptAndReturnString(participant,
+            "return JitsiMeetJS.version;");
+        System.err.println(
+            participantName + " lib-jitsi-meet version: " + version);
     }
 
     /**
