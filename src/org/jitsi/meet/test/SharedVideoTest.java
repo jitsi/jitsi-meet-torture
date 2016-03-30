@@ -413,10 +413,26 @@ public class SharedVideoTest
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
             .click();
 
-        TestUtils.waitForNotDisplayedElementByID(
-            owner, "sharedVideoIFrame", 5);
-        TestUtils.waitForNotDisplayedElementByID(
-            secondParticipant, "sharedVideoIFrame", 5);
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                owner, "sharedVideoIFrame", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means its not visible anymore
+        }
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                secondParticipant, "sharedVideoIFrame", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means its not visible anymore
+        }
     }
 
     /**
