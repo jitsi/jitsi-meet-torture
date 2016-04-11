@@ -290,6 +290,23 @@ public class TestUtils
     }
 
     /**
+     * Waits until the given condition is fulfilled and fails the currently
+     * running test if this doesn't happen within {@code timeoutSeconds} seconds.
+     * @param participant the {@code WebDriver}.
+     * @param timeoutSeconds the time to wait for the element in seconds.
+     * @param condition the condition to be met.
+     * @param pollWaitTime configure waits between checks
+     */
+    public static void waitForCondition(WebDriver participant,
+                                        int timeoutSeconds,
+                                        ExpectedCondition<?> condition,
+                                        long pollWaitTime)
+    {
+        (new WebDriverWait(participant, timeoutSeconds, pollWaitTime))
+            .until(condition);
+    }
+
+    /**
      * Waits for the specified amount of <tt>time</tt> in milliseconds.
      * @param time to wait in milliseconds.
      * XXX Any reason we're not using Thread.sleep() instead of?
