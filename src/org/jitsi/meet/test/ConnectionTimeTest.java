@@ -24,13 +24,13 @@ import org.openqa.selenium.support.ui.*;
 import junit.framework.*;
 
 /**
- * This test is going to get the performance times measurements from Jitsi Meet
+ * This test is going to get the connection times measurements from Jitsi Meet
  * and fail if they are too slow.
  * 
  *
  * @author Hristo Terezov
  */
-public class PerformanceTimeTest
+public class ConnectionTimeTest
     extends TestCase
 {
     /**
@@ -53,44 +53,44 @@ public class PerformanceTimeTest
      */
     private static enum TimeMeasurements
     {
-        INDEX_LOADED("return APP.performanceTimes['index.loaded']", null, 200.0),
+        INDEX_LOADED("return APP.connectionTimes['index.loaded']", null, 200.0),
         
-        DOCUMENT_READY("return APP.performanceTimes['document.ready']", 
+        DOCUMENT_READY("return APP.connectionTimes['document.ready']", 
             INDEX_LOADED, 600.0),
         
         CONNECTION_ATTACHING(
-            "return APP.connection.getPerformanceTimes()['attaching']",
+            "return APP.connection.getConnectionTimes()['attaching']",
             DOCUMENT_READY, 350.0),
         
         CONNECTION_ATTACHED(
-            "return APP.connection.getPerformanceTimes()['attached']", 
+            "return APP.connection.getConnectionTimes()['attached']", 
             CONNECTION_ATTACHING, 5.0),
         
         CONNECTION_CONNECTING(
-            "return APP.connection.getPerformanceTimes()['connecting']", 
+            "return APP.connection.getConnectionTimes()['connecting']", 
             DOCUMENT_READY, 350.0),
         
         CONNECTION_CONNECTED(
-            "return APP.connection.getPerformanceTimes()['connected']", 
+            "return APP.connection.getConnectionTimes()['connected']", 
             CONNECTION_CONNECTING, 1000.0),
         
         MUC_JOINED(
-            "return APP.conference._room.getPerformanceTimes()['muc.joined']",
+            "return APP.conference._room.getConnectionTimes()['muc.joined']",
             null, 500.0),
         
-        SESSION_INITIATE("return APP.conference._room.getPerformanceTimes()"
+        SESSION_INITIATE("return APP.conference._room.getConnectionTimes()"
             + "['session.initiate']", MUC_JOINED, 600.0),
         
-        ICE_CHECKING("return APP.conference._room.getPerformanceTimes()"
+        ICE_CHECKING("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.checking']", SESSION_INITIATE, 150.0),
         
-        ICE_CONNECTED("return APP.conference._room.getPerformanceTimes()"
+        ICE_CONNECTED("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.connected']", ICE_CHECKING, 500.0),
         
-        AUDIO_RENDER("return APP.performanceTimes['audio.render']", 
+        AUDIO_RENDER("return APP.connectionTimes['audio.render']", 
             ICE_CONNECTED, 200.0),
         
-        VIDEO_RENDER("return APP.performanceTimes['video.render']", 
+        VIDEO_RENDER("return APP.connectionTimes['video.render']", 
             ICE_CONNECTED, 200.0);
         
         /**
@@ -201,7 +201,7 @@ public class PerformanceTimeTest
      * @param name the method name for the test.
      * @param t time measurement that will be tested
      */
-    public PerformanceTimeTest(String name, TimeMeasurements t)
+    public ConnectionTimeTest(String name, TimeMeasurements t)
     {
         super(name);
         this.timeMeasurementToProcess = t;
@@ -215,27 +215,27 @@ public class PerformanceTimeTest
     {
         TestSuite suite = new TestSuite();
         suite.addTest(
-            new PerformanceTimeTest("collectData", null));
+            new ConnectionTimeTest("collectData", null));
         suite.addTest(
-            new PerformanceTimeTest("checkIndexLoaded", TimeMeasurements.INDEX_LOADED));
+            new ConnectionTimeTest("checkIndexLoaded", TimeMeasurements.INDEX_LOADED));
         suite.addTest(
-            new PerformanceTimeTest("checkDocumentReady", TimeMeasurements.DOCUMENT_READY));
+            new ConnectionTimeTest("checkDocumentReady", TimeMeasurements.DOCUMENT_READY));
         suite.addTest(
-            new PerformanceTimeTest("checkConnecting", null));
+            new ConnectionTimeTest("checkConnecting", null));
         suite.addTest(
-            new PerformanceTimeTest("checkConnected", null));
+            new ConnectionTimeTest("checkConnected", null));
         suite.addTest(
-            new PerformanceTimeTest("checkMUCJoined", TimeMeasurements.MUC_JOINED));
+            new ConnectionTimeTest("checkMUCJoined", TimeMeasurements.MUC_JOINED));
         suite.addTest(
-            new PerformanceTimeTest("checkSessionInitiate", TimeMeasurements.SESSION_INITIATE));
+            new ConnectionTimeTest("checkSessionInitiate", TimeMeasurements.SESSION_INITIATE));
         suite.addTest(
-            new PerformanceTimeTest("checkIceChecking", TimeMeasurements.ICE_CHECKING));
+            new ConnectionTimeTest("checkIceChecking", TimeMeasurements.ICE_CHECKING));
         suite.addTest(
-            new PerformanceTimeTest("checkIceConnected", TimeMeasurements.ICE_CONNECTED));
+            new ConnectionTimeTest("checkIceConnected", TimeMeasurements.ICE_CONNECTED));
         suite.addTest(
-            new PerformanceTimeTest("checkAudioRender", TimeMeasurements.AUDIO_RENDER));
+            new ConnectionTimeTest("checkAudioRender", TimeMeasurements.AUDIO_RENDER));
         suite.addTest(
-            new PerformanceTimeTest("checkVideoRender", TimeMeasurements.VIDEO_RENDER));
+            new ConnectionTimeTest("checkVideoRender", TimeMeasurements.VIDEO_RENDER));
 
         return suite;
     }
@@ -250,10 +250,10 @@ public class PerformanceTimeTest
             collectData();
             break;
         case "checkConnecting":
-            checkTime(PerformanceTimeTest.connectingTime);
+            checkTime(ConnectionTimeTest.connectingTime);
             break;
         case "checkConnected":
-            checkTime(PerformanceTimeTest.connectedTime);
+            checkTime(ConnectionTimeTest.connectedTime);
             break;
         default:
             checkTime(this.timeMeasurementToProcess);
