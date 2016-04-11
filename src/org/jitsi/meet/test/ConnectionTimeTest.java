@@ -357,7 +357,11 @@ public class ConnectionTimeTest
     {
         Double[] difference = (previousStepTimes == null)?  data[s.ordinal()] :
             subtractArrays(previousStepTimes, data[s.ordinal()]);
-        assertTrue(getMedian(difference) < s.getThreshold());
+        Double medianValue = getMedian(difference);
+        System.err.println(s + ":" + medianValue);
+        assertTrue(
+            "Expected:" + s.getThreshold() + ", was:" + medianValue,
+            medianValue < s.getThreshold());
     }
     
     /**
@@ -367,7 +371,7 @@ public class ConnectionTimeTest
      */
     private static Double getMedian(Double[] data) {
         Arrays.sort(data);
-        return data[(int)data.length/2];
+        return data[data.length/2];
     }
     
     /**
