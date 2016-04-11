@@ -60,7 +60,7 @@ public class ConnectionTimeTest
         
         CONNECTION_ATTACHING(
             "return APP.connection.getConnectionTimes()['attaching']",
-            DOCUMENT_READY, 350.0),
+            DOCUMENT_READY, 500.0),
         
         CONNECTION_ATTACHED(
             "return APP.connection.getConnectionTimes()['attached']", 
@@ -68,7 +68,7 @@ public class ConnectionTimeTest
         
         CONNECTION_CONNECTING(
             "return APP.connection.getConnectionTimes()['connecting']", 
-            DOCUMENT_READY, 350.0),
+            DOCUMENT_READY, 500.0),
         
         CONNECTION_CONNECTED(
             "return APP.connection.getConnectionTimes()['connected']", 
