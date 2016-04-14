@@ -51,7 +51,7 @@ public class ConnectionTimeTest
      * scripts that is used to get the value for that type, a previous step and
      * threshold.
      */
-    private static enum TimeMeasurements
+    private enum TimeMeasurements
     {
         INDEX_LOADED("return APP.connectionTimes['index.loaded']", null, 200.0),
         
@@ -91,8 +91,18 @@ public class ConnectionTimeTest
             ICE_CONNECTED, 200.0),
         
         VIDEO_RENDER("return APP.connectionTimes['video.render']", 
-            ICE_CONNECTED, 200.0);
-        
+            ICE_CONNECTED, 200.0),
+
+        // The data channel should open about 2 RTTs after DTLS completes, so
+        // this threshold should go down to something like 200ms.
+        // However, there is currently a bug in jitsi-videobridge which adds a
+        // delay of about 3 seconds. Another bug, recently fixed, would cause
+        // a delay of ~15 seconds, which is why we now use a threshold of 4s.
+        DATA_CHANNEL_OPENED(
+            "return APP.conference._room.getConnectionTimes()"
+                + "['data.channel.opened']",
+            ICE_CONNECTED, 4000.0);
+
         /**
          * The script used to get the data for a time measurement type.
          */
@@ -124,7 +134,7 @@ public class ConnectionTimeTest
          * @param threshold Max time between the previous measurement and 
          * the current one 
          */
-        private TimeMeasurements(String script, TimeMeasurements prevStep, 
+        TimeMeasurements(String script, TimeMeasurements prevStep,
             Double threshold)
         {
             this.script = script;
@@ -169,7 +179,7 @@ public class ConnectionTimeTest
             return null;
         }
         
-    };
+    }
 
     /**
      * If jiconop is enabled the value will be 
@@ -236,6 +246,9 @@ public class ConnectionTimeTest
             new ConnectionTimeTest("checkAudioRender", TimeMeasurements.AUDIO_RENDER));
         suite.addTest(
             new ConnectionTimeTest("checkVideoRender", TimeMeasurements.VIDEO_RENDER));
+        suite.addTest(
+                new ConnectionTimeTest(
+                        "checkDataChannelOpen", TimeMeasurements.VIDEO_RENDER));
 
         return suite;
     }
@@ -271,7 +284,7 @@ public class ConnectionTimeTest
         {
             refreshSecondParticipant();
             
-            waitForVideoRender();
+            waitForMeasurements();
             
             for(TimeMeasurements s : TimeMeasurements.values())
             {
@@ -310,18 +323,22 @@ public class ConnectionTimeTest
     }
     
     /**
-     * Waits for VIDEO_RENDER time measurement to be calculated. That way
-     * we can be sure that all other measurements are performed already.
+     * Waits for all measurements to be complete. We only wait for VIDEO_RENDER,
+     * AUDIO_RENDER and DATA_CHANNEL_OPEN, assuming all the rest would have
+     * completed before these three.
      */
-    private static void waitForVideoRender()
+    private static void waitForMeasurements()
     {
-        TestUtils.waitForCondition(participant, 10, new ExpectedCondition<Boolean>()
+        TestUtils.waitForCondition(
+            participant, 10, new ExpectedCondition<Boolean>()
         {
-
             @Override
             public Boolean apply(WebDriver w)
             {
-                return TimeMeasurements.VIDEO_RENDER.execute(participant) != null;
+                return
+                    TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null
+                    && TimeMeasurements.VIDEO_RENDER.execute(w) != null
+                    && TimeMeasurements.AUDIO_RENDER.execute(w) != null;
             }
         });
     }
