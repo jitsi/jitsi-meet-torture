@@ -56,8 +56,8 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(EtherpadTests.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
+//        DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
+//        DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
 
         //DEFAULT_TESTS_TO_RUN.add(LastNTest.class.getSimpleName());
 
