@@ -57,6 +57,12 @@ public class FailureListener
     @Override
     public void addFailure(Test test, AssertionFailedError t)
     {
+        if(t != null)
+        {
+            System.err.println("Failure:");
+            t.printStackTrace();
+        }
+
         try
         {
             String fileNamePrefix
@@ -89,6 +95,12 @@ public class FailureListener
     @Override
     public void addError(Test test, Throwable t)
     {
+        if(t != null)
+        {
+            System.err.println("Error:");
+            t.printStackTrace();
+        }
+
         try
         {
             String fileNamePrefix
