@@ -38,14 +38,7 @@ public class ConnectionTimeTest
      * gather the data.
      */
     private static int NUMBER_OF_CONFERENCES = 10;
-    
-    /**
-     * The second participant. We are using that property to refresh the second
-     * tab.
-     */
-    private static WebDriver participant 
-        = ConferenceFixture.getSecondParticipant();
-    
+
     /**
      * Enum that represents the types of time measurements. We are storing the
      * scripts that is used to get the value for that type, a previous step and
@@ -276,7 +269,7 @@ public class ConnectionTimeTest
             for(TimeMeasurements s : TimeMeasurements.values())
             {
                 data[s.ordinal()][i] 
-                    = s.execute(participant);
+                    = s.execute(ConferenceFixture.getSecondParticipant());
             }
             
         }
@@ -305,8 +298,8 @@ public class ConnectionTimeTest
      */
     private static void refreshSecondParticipant()
     {
-        ConferenceFixture.close(participant);
-        participant = ConferenceFixture.startSecondParticipant();
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.startSecondParticipant();
     }
     
     /**
@@ -315,15 +308,18 @@ public class ConnectionTimeTest
      */
     private static void waitForVideoRender()
     {
-        TestUtils.waitForCondition(participant, 10, new ExpectedCondition<Boolean>()
-        {
-
-            @Override
-            public Boolean apply(WebDriver w)
+        TestUtils.waitForCondition(
+            ConferenceFixture.getSecondParticipant(), 10,
+            new ExpectedCondition<Boolean>()
             {
-                return TimeMeasurements.VIDEO_RENDER.execute(participant) != null;
-            }
-        });
+
+                @Override
+                public Boolean apply(WebDriver w)
+                {
+                    return TimeMeasurements.VIDEO_RENDER.execute(
+                        ConferenceFixture.getSecondParticipant()) != null;
+                }
+            });
     }
     
     /**
