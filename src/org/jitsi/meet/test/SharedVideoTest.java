@@ -118,8 +118,18 @@ public class SharedVideoTest
         TestUtils.waitForElementByXPath(
             owner, "//input[@name='sharedVideoUrl']", 5);
 
-        owner.findElement(
-            By.xpath("//input[@name='sharedVideoUrl']")).sendKeys(url);
+        //owner.findElement(
+        //    By.xpath("//input[@name='sharedVideoUrl']")).sendKeys(url);
+        // sendKeys is not working for FF, seems the input has size of 20
+        // and only 21 chars goes in, the size is not visible in
+        // web-development console
+        MeetUIUtils.setAttribute(
+            owner,
+            owner.findElement(
+                By.xpath("//input[@name='sharedVideoUrl']")),
+            "value",
+            url);
+
         currentVideoTitle = title;
 
         owner.findElement(
