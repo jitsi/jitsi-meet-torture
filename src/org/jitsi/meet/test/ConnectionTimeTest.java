@@ -248,7 +248,7 @@ public class ConnectionTimeTest
             new ConnectionTimeTest("checkVideoRender", TimeMeasurements.VIDEO_RENDER));
         suite.addTest(
                 new ConnectionTimeTest(
-                        "checkDataChannelOpen", TimeMeasurements.VIDEO_RENDER));
+                        "checkDataChannelOpen", TimeMeasurements.DATA_CHANNEL_OPENED));
 
         return suite;
     }
