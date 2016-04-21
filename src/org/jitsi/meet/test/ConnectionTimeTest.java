@@ -270,10 +270,16 @@ public class ConnectionTimeTest
             {
                 data[s.ordinal()][i] 
                     = s.execute(ConferenceFixture.getSecondParticipant());
+                System.err.println(s + ": " + data[s.ordinal()][i] );
             }
             
         }
         
+        for(TimeMeasurements s : TimeMeasurements.values())
+        {
+            System.err.println(s + ": " + Arrays.toString(data[s.ordinal()]) );
+        }
+
         if(data[TimeMeasurements.CONNECTION_ATTACHED.ordinal()][0] == null
             && data[TimeMeasurements.CONNECTION_CONNECTED.ordinal()][0] == null)
         {
