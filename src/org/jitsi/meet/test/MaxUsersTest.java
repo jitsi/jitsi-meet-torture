@@ -28,7 +28,7 @@ import junit.framework.*;
  *
  * @author Hristo Terezov
  */
-public class MaxUsersTests
+public class MaxUsersTest
     extends TestCase
 {
     /**
@@ -45,7 +45,7 @@ public class MaxUsersTests
      * Constructs test
      * @param name the method name for the test.
      */
-    public MaxUsersTests(String name)
+    public MaxUsersTest(String name)
     {
         super(name);
     }
@@ -60,7 +60,7 @@ public class MaxUsersTests
         TestSuite suite = new TestSuite();
 
         suite.addTest(
-            new MaxUsersTests("enterWithMaxParticipantsAndCheckDialog"));
+            new MaxUsersTest("enterWithMaxParticipantsAndCheckDialog"));
 
         return suite;
     }

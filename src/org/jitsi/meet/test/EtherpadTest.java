@@ -24,7 +24,7 @@ import org.openqa.selenium.support.ui.*;
  * Adds various tests with the etherpad functionality.
  * @author Damian Minkov
  */
-public class EtherpadTests
+public class EtherpadTest
     extends TestCase
 {
     /**
@@ -38,7 +38,7 @@ public class EtherpadTests
      * Constructs test.
      * @param name the method name for the test.
      */
-    public EtherpadTests(String name)
+    public EtherpadTest(String name)
     {
         super(name);
     }
@@ -51,17 +51,17 @@ public class EtherpadTests
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new EtherpadTests("enterEtherpad"));
-        suite.addTest(new EtherpadTests("writeTextAndCheck"));
-        suite.addTest(new EtherpadTests("closeEtherpadCheck"));
+        suite.addTest(new EtherpadTest("enterEtherpad"));
+        suite.addTest(new EtherpadTest("writeTextAndCheck"));
+        suite.addTest(new EtherpadTest("closeEtherpadCheck"));
         // lets check after closing etherpad we are able to click on videos
-        suite.addTest(new EtherpadTests("ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new EtherpadTests("ownerClickOnRemoteVideoAndTest"));
-        suite.addTest(new EtherpadTests("enterEtherpad"));
-        //suite.addTest(new EtherpadTests("writeTextAndCheck"));
+        suite.addTest(new EtherpadTest("ownerClickOnLocalVideoAndTest"));
+        suite.addTest(new EtherpadTest("ownerClickOnRemoteVideoAndTest"));
+        suite.addTest(new EtherpadTest("enterEtherpad"));
+        //suite.addTest(new EtherpadTest("writeTextAndCheck"));
         //lets not directly click on videos without closing etherpad
-        suite.addTest(new EtherpadTests("ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new EtherpadTests("ownerClickOnRemoteVideoAndTest"));
+        suite.addTest(new EtherpadTest("ownerClickOnLocalVideoAndTest"));
+        suite.addTest(new EtherpadTest("ownerClickOnRemoteVideoAndTest"));
 
         return suite;
     }
@@ -87,7 +87,7 @@ public class EtherpadTests
                         "return config.etherpad_base !== undefined;");
         if (!enabled)
         {
-            EtherpadTests.enabled = false;
+            EtherpadTest.enabled = false;
             System.err.println(
                     "No etherpad configuration detected. Disabling test.");
             return;
