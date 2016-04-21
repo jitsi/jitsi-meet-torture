@@ -328,8 +328,9 @@ public class ConnectionTimeTest
      */
     private static void waitForMeasurements()
     {
-        TestUtils.waitForCondition(
-            ConferenceFixture.getSecondParticipant(), 10,
+        final WebDriver participant 
+            = ConferenceFixture.getSecondParticipant();
+        TestUtils.waitForCondition(participant, 10,
             new ExpectedCondition<Boolean>()
             {
 
@@ -337,9 +338,12 @@ public class ConnectionTimeTest
                 public Boolean apply(WebDriver w)
                 {
                     return
-                        TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null
-                        && TimeMeasurements.VIDEO_RENDER.execute(w) != null
-                        && TimeMeasurements.AUDIO_RENDER.execute(w) != null;
+                        TimeMeasurements.AUDIO_RENDER.execute(participant) 
+                            != null
+                        && TimeMeasurements.VIDEO_RENDER.execute(participant) 
+                            != null
+                        && TimeMeasurements.DATA_CHANNEL_OPENED.execute(
+                            participant) != null;
                 }
             });
     }
