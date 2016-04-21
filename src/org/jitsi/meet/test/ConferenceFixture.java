@@ -23,10 +23,8 @@ import org.openqa.selenium.ie.*;
 import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
-import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
-import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
@@ -93,27 +91,6 @@ public class ConferenceFixture
      */
     public static final String DISABLE_NOSANBOX_PARAM
         = "chrome.disable.nosanbox";
-
-    /**
-     * The javascript code which returns {@code true} if the ICE connection
-     * is in state 'connected'.
-     */
-    public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'connected';";
-
-    /**
-     * The javascript code which returns {@code true} if the ICE connection
-     * is in state 'disconnected'.
-     */
-    public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'disconnected';";
-
-    /**
-     * The javascript code which returns {@code true} if we are joined in
-     * the muc.
-     */
-    public static final String IS_MUC_JOINED =
-        "return APP.conference.isJoined();";
 
     /**
      * The available browser type value.
@@ -327,7 +304,7 @@ public class ConferenceFixture
         System.err.println(participantName + " is opening URL: " + URL);
 
         participant.get(URL);
-        waitForPageToLoad(participant);
+        MeetUtils.waitForPageToLoad(participant);
 
         // disables animations
         ((JavascriptExecutor) participant)
@@ -635,142 +612,6 @@ public class ConferenceFixture
     }
 
     /**
-     * Waits until {@code participant} joins the MUC.
-     * @param participant the participant.
-     */
-    public static void waitForParticipantToJoinMUC(WebDriver participant)
-    {
-        waitForParticipantToJoinMUC(participant, 5);
-    }
-
-    /**
-     * Waits until {@code participant} joins the MUC.
-     * @param participant the participant.
-     * @param timeout the maximum time to wait in seconds.
-     */
-    public static void waitForParticipantToJoinMUC(
-        WebDriver participant, long timeout)
-    {
-        TestUtils.waitForBoolean(
-            participant,
-            IS_MUC_JOINED,
-            timeout);
-    }
-
-    /**
-     * Waits 30 sec for the given participant to enter the ICE 'connected'
-     * state.
-     *
-     * @param participant the participant.
-     */
-    public static void waitForIceCompleted(WebDriver participant)
-    {
-        waitForIceCompleted(participant, 30);
-    }
-
-    /**
-     * Waits 30 sec for the given participant to enter the ICE 'connected'
-     * state.
-     *
-     * @param participant the participant.
-     * @param timeout timeout in seconds.
-     */
-    public static void waitForIceCompleted(WebDriver participant, long timeout)
-    {
-        TestUtils.waitForBoolean(
-            participant, ICE_CONNECTED_CHECK_SCRIPT, timeout);
-    }
-
-    /**
-     * Waits 30 sec for the given participant to enter the ICE 'disconnected'
-     * state.
-     *
-     * @param participant the participant.
-     */
-    public static void waitForIceDisconnected(WebDriver participant)
-    {
-        waitForIceDisconnected(participant, 30);
-    }
-
-    /**
-     * Waits for the given participant to enter the ICE 'disconnected' state.
-     *
-     * @param participant the participant.
-     * @param timeout timeout in seconds.
-     */
-    public static void waitForIceDisconnected(WebDriver    participant,
-                                              long         timeout)
-    {
-        TestUtils.waitForBoolean(
-            participant, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
-    }
-
-    /**
-     * Checks whether the iceConnectionState of <tt>participant</tt> is in state
-     * {@code connected}.
-     *
-     * @param participant driver instance used by the participant for whom we
-     *                    want to check.
-     * @return {@code true} if the {@code iceConnectionState} of the specified
-     * {@code participant} is {@code connected}; otherwise, {@code false}
-     */
-    public static boolean isIceConnected(WebDriver participant)
-    {
-        Object res = ((JavascriptExecutor) participant)
-            .executeScript(ICE_CONNECTED_CHECK_SCRIPT);
-        return res != null && res.equals(Boolean.TRUE);
-    }
-
-    /**
-     * Checks whether a participant is in the MUC.
-     *
-     * @param participant the participant.
-     * @return {@code true} if the specified {@code participant} has joined the
-     * room; otherwise, {@code false}
-     */
-    public static boolean isInMuc(WebDriver participant)
-    {
-        Object res = ((JavascriptExecutor) participant)
-            .executeScript(IS_MUC_JOINED);
-        return res != null && res.equals(Boolean.TRUE);
-    }
-
-    /**
-     * Returns download bitrate.
-     * @param participant
-     * @return
-     */
-    public static long getDownloadBitrate(WebDriver participant)
-    {
-        Map stats = (Map)((JavascriptExecutor) participant)
-            .executeScript("return APP.conference.getStats();");
-
-        Map<String,Long> bitrate =
-            (Map<String,Long>)stats.get("bitrate");
-
-        if(bitrate != null)
-        {
-            long download =  bitrate.get("download");
-            return download;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Checks whether the strophe connection is connected.
-     * @param participant
-     * @return
-     */
-    public static boolean isXmppConnected(WebDriver participant)
-    {
-        Object res = ((JavascriptExecutor) participant)
-            .executeScript(
-                "return APP.conference._room.xmpp.connection.connected;");
-        return res != null && res.equals(Boolean.TRUE);
-    }
-
-    /**
      * Hangs up the Jitsi-Meet call running in {@code participant} without
      * closing the driver. If we fail hanging up we close and the driver.
      * @param participant the participant.
@@ -811,13 +652,13 @@ public class ConferenceFixture
         }
 
         String instanceName = getParticipantName(participant);
-        System.err.println("Hanguped " + instanceName + ".");
+        System.err.println("Hung up in " + instanceName + ".");
 
         // open a blank page after hanging up, to make sure
         // we will successfully navigate to the new link containing the
         // parameters, which change during testing
         participant.get("about:blank");
-        waitForPageToLoad(participant);
+        MeetUtils.waitForPageToLoad(participant);
     }
 
     /**
@@ -921,38 +762,6 @@ public class ConferenceFixture
     }
 
     /**
-     * Waits until data has been sent and received over the ICE connection
-     * in {@code participant}.
-     * @param participant the participant.
-     */
-    public static void waitForSendReceiveData(final WebDriver participant)
-    {
-        new WebDriverWait(participant, 15)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Map stats = (Map) ((JavascriptExecutor) participant)
-                            .executeScript("return APP.conference.getStats();");
-
-                    Map<String, Long> bitrate =
-                            (Map<String, Long>) stats.get("bitrate");
-
-                    if (bitrate != null)
-                    {
-                        long download = bitrate.get("download");
-                        long upload = bitrate.get("upload");
-
-                        if (download > 0 && upload > 0)
-                            return true;
-                    }
-
-                    return false;
-                }
-            });
-    }
-
-    /**
      * Waits until the owner joins the room, creating and starting the owner
      * if it hasn't been started.
      */
@@ -961,7 +770,7 @@ public class ConferenceFixture
         if (owner == null)
             startOwner(null);
 
-        waitForParticipantToJoinMUC(owner, 15);
+        MeetUtils.waitForParticipantToJoinMUC(owner, 15);
     }
 
     /**
@@ -1003,9 +812,9 @@ public class ConferenceFixture
     {
         WebDriver secondParticipant = getSecondParticipant();
         assertNotNull(secondParticipant);
-        waitForParticipantToJoinMUC(secondParticipant, 10);
-        waitForIceCompleted(secondParticipant);
-        waitForSendReceiveData(secondParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
+        MeetUtils.waitForIceConnected(secondParticipant);
+        MeetUtils.waitForSendReceiveData(secondParticipant);
 
         TestUtils.waitMillis(5000);
     }
@@ -1029,33 +838,12 @@ public class ConferenceFixture
     {
         WebDriver thirdParticipant = getThirdParticipant();
         assertNotNull(thirdParticipant);
-        waitForParticipantToJoinMUC(thirdParticipant, 10);
-        waitForIceCompleted(thirdParticipant);
-        waitForSendReceiveData(thirdParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(thirdParticipant, 10);
+        MeetUtils.waitForIceConnected(thirdParticipant);
+        MeetUtils.waitForSendReceiveData(thirdParticipant);
         MeetUtils.waitForRemoteStreams(thirdParticipant, 2);
 
         TestUtils.waitMillis(3000);
-    }
-
-    /**
-     * Waits for number of remote streams.
-     * @param participant the driver to use for the check.
-     * @param n number of remote streams to wait for
-     */
-    public static void waitForRemoteStreams(
-            final WebDriver participant,
-            final int n)
-    {
-        new WebDriverWait(participant, 15)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return (Boolean)((JavascriptExecutor) participant)
-                        .executeScript(
-                "return APP.conference.checkEnoughParticipants(" + n +");");
-                }
-            });
     }
 
     /**
@@ -1135,34 +923,6 @@ public class ConferenceFixture
         else
         {
             return "unknownDriverInstance";
-        }
-    }
-
-    /**
-     * Waits for the page to be loaded before continuing with the operations.
-     * @param driver the webdriver that just loaded a page
-     */
-    private static void waitForPageToLoad(WebDriver driver)
-    {
-        ExpectedCondition<Boolean> expectation = new
-            ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver driver)
-                {
-                    return ((JavascriptExecutor)driver)
-                        .executeScript("return document.readyState")
-                        .equals("complete");
-                }
-            };
-        Wait<WebDriver> wait = new WebDriverWait(driver, 10);
-        try
-        {
-            wait.until(expectation);
-        }
-        catch(Throwable error)
-        {
-            assertFalse("Timeout waiting for Page Load Request to complete.",
-                true);
         }
     }
 }

@@ -222,10 +222,10 @@ public class MuteTest
         WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.waitForParticipantToJoinMUC(
-                secondParticipant, 15);
+        MeetUtils.waitForParticipantToJoinMUC(
+            secondParticipant, 15);
 
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        MeetUtils.waitForIceConnected(secondParticipant);
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,

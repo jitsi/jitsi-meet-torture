@@ -209,8 +209,8 @@ public class StopVideoTest
         WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
+        MeetUtils.waitForIceConnected(secondParticipant);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,

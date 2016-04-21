@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 /**
@@ -60,8 +61,8 @@ public class SinglePortTest
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
         // Just make sure everyone is ready
-        ConferenceFixture.waitForSendReceiveData(owner);
-        ConferenceFixture.waitForSendReceiveData(secondParticipant);
+        MeetUtils.waitForSendReceiveData(owner);
+        MeetUtils.waitForSendReceiveData(secondParticipant);
 
         String ownerPortStr = getRemotePort(owner);
         String secondParticipantPortStr = getRemotePort(secondParticipant);

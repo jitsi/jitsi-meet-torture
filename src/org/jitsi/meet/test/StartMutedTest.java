@@ -76,8 +76,8 @@ public class StartMutedTest
 
         WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
+        MeetUtils.waitForIceConnected(secondParticipant);
 
         checkSecondParticipantForMute();
     }
@@ -95,14 +95,14 @@ public class StartMutedTest
         WebDriver owner
             = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
                                            "config.startVideoMuted=1");
-        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
 
         final WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        ConferenceFixture.waitForIceCompleted(owner);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        MeetUtils.waitForIceConnected(owner);
+        MeetUtils.waitForIceConnected(secondParticipant);
 
         checkSecondParticipantForMute();
 
@@ -167,8 +167,8 @@ public class StartMutedTest
 
         WebDriver owner = ConferenceFixture.startOwner(null);
 
-        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
         ConferenceFixture.waitForSecondParticipantToConnect();
-        ConferenceFixture.waitForIceCompleted(owner);
+        MeetUtils.waitForIceConnected(owner);
     }
 }

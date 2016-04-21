@@ -119,7 +119,7 @@ public class LockRoomTest
 
         try
         {
-            ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -133,7 +133,7 @@ public class LockRoomTest
 
         try
         {
-            ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -145,7 +145,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
 
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
@@ -221,9 +221,9 @@ public class LockRoomTest
 
         // if we fail to unlock the room this one will detect it
         // as participant will fail joining
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
-        ConferenceFixture.waitForSendReceiveData(secondParticipant);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+        MeetUtils.waitForIceConnected(secondParticipant);
+        MeetUtils.waitForSendReceiveData(secondParticipant);
 
         List<WebElement> elems = secondParticipant.findElements(
                 By.xpath("//span[@id='toolbar']/a[@class='button "

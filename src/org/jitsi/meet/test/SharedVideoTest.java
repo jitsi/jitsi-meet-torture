@@ -492,7 +492,7 @@ public class SharedVideoTest
 
         WebDriver owner = ConferenceFixture.getOwner();
 
-        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
+        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
         TestUtils.waitForDisplayedElementByID(owner,
             "toolbar_button_sharedvideo", 10);
 
@@ -512,8 +512,8 @@ public class SharedVideoTest
         }
 
         ConferenceFixture.waitForSecondParticipantToConnect();
-        ConferenceFixture.waitForIceCompleted(owner);
-        ConferenceFixture.waitForSendReceiveData(owner);
+        MeetUtils.waitForIceConnected(owner);
+        MeetUtils.waitForSendReceiveData(owner);
 
         // Now let's check the second participant state
         WebDriver secondParticipant =
