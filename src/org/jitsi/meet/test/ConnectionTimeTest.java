@@ -38,14 +38,7 @@ public class ConnectionTimeTest
      * gather the data.
      */
     private static int NUMBER_OF_CONFERENCES = 10;
-    
-    /**
-     * The second participant. We are using that property to refresh the second
-     * tab.
-     */
-    private static WebDriver participant 
-        = ConferenceFixture.getSecondParticipant();
-    
+
     /**
      * Enum that represents the types of time measurements. We are storing the
      * scripts that is used to get the value for that type, a previous step and
@@ -289,11 +282,17 @@ public class ConnectionTimeTest
             for(TimeMeasurements s : TimeMeasurements.values())
             {
                 data[s.ordinal()][i] 
-                    = s.execute(participant);
+                    = s.execute(ConferenceFixture.getSecondParticipant());
+                System.err.println(s + ": " + data[s.ordinal()][i] );
             }
             
         }
         
+        for(TimeMeasurements s : TimeMeasurements.values())
+        {
+            System.err.println(s + ": " + Arrays.toString(data[s.ordinal()]) );
+        }
+
         if(data[TimeMeasurements.CONNECTION_ATTACHED.ordinal()][0] == null
             && data[TimeMeasurements.CONNECTION_CONNECTED.ordinal()][0] == null)
         {
@@ -318,8 +317,8 @@ public class ConnectionTimeTest
      */
     private static void refreshSecondParticipant()
     {
-        ConferenceFixture.close(participant);
-        participant = ConferenceFixture.startSecondParticipant();
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.startSecondParticipant();
     }
     
     /**
@@ -330,17 +329,19 @@ public class ConnectionTimeTest
     private static void waitForMeasurements()
     {
         TestUtils.waitForCondition(
-            participant, 10, new ExpectedCondition<Boolean>()
-        {
-            @Override
-            public Boolean apply(WebDriver w)
+            ConferenceFixture.getSecondParticipant(), 10,
+            new ExpectedCondition<Boolean>()
             {
-                return
-                    TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null
-                    && TimeMeasurements.VIDEO_RENDER.execute(w) != null
-                    && TimeMeasurements.AUDIO_RENDER.execute(w) != null;
-            }
-        });
+
+                @Override
+                public Boolean apply(WebDriver w)
+                {
+                    return
+                        TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null
+                        && TimeMeasurements.VIDEO_RENDER.execute(w) != null
+                        && TimeMeasurements.AUDIO_RENDER.execute(w) != null;
+                }
+            });
     }
     
     /**

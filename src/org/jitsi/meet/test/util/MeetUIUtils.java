@@ -497,4 +497,19 @@ public class MeetUIUtils
             false, //audio
             testeeName);
     }
+
+    /**
+     * Sets an attribute on an element
+     * @param element the element
+     * @param attributeName the attribute name to set
+     * @param attributeValue the value to set
+     */
+    public static void setAttribute(
+        WebDriver driver,
+        WebElement element, String attributeName, String attributeValue)
+    {
+        ((JavascriptExecutor)driver).executeScript(
+            "arguments[0][arguments[1]] = arguments[2];",
+            element, attributeName, attributeValue);
+    }
 }

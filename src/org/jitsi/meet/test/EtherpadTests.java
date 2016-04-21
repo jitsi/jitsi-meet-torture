@@ -53,8 +53,8 @@ public class EtherpadTests
         suite.addTest(new EtherpadTests("enterEtherpad"));
         //suite.addTest(new EtherpadTests("writeTextAndCheck"));
         //lets not directly click on videos without closing etherpad
-        suite.addTest(new SwitchVideoTests("ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTests("ownerClickOnRemoteVideoAndTest"));
+        suite.addTest(new EtherpadTests("ownerClickOnLocalVideoAndTest"));
+        suite.addTest(new EtherpadTests("ownerClickOnRemoteVideoAndTest"));
 
         return suite;
     }

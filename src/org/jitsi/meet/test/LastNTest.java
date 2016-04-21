@@ -47,7 +47,7 @@ public class LastNTest
         TestSuite suite = new TestSuite();
 
         suite.addTest(new LastNTest("testLastN"));
-        suite.addTest(new StartMutedTest("restartParticipants"));
+        suite.addTest(new LastNTest("restartParticipants"));
 
         return suite;
     }
@@ -136,5 +136,13 @@ public class LastNTest
         String testeeJid = MeetUtils.getResourceJid(testee);
         assertEquals("active speaker thumbnail id",
                      "participant_" + testeeJid, testeeThumb.getAttribute("id"));
+    }
+
+    /**
+     * Retart participants.
+     */
+    public void restartParticipants()
+    {
+        new StartMutedTest("restartParticipants").restartParticipants();
     }
 }
