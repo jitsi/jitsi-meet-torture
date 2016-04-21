@@ -17,6 +17,7 @@ package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Class contains utility methods related with jitsi-meet application logic.
@@ -76,5 +77,42 @@ public class MeetUtils
 
         return levelObj != null ?
             Double.valueOf(String.valueOf(levelObj)) : null;
+    }
+
+    /**
+     * Waits for number of remote streams.
+     * @param participant the driver to use for the check.
+     * @param n number of remote streams to wait for.
+     */
+    public static void waitForRemoteStreams(
+            final WebDriver participant,
+            final int n)
+    {
+        waitForRemoteStreams(participant, n);
+    }
+
+    /**
+     * Waits for number of remote streams.
+     * @param participant the driver to use for the check.
+     * @param n number of remote streams to wait for.
+     * @param timeout the maximum amount of time in seconds to wait.
+     */
+    public static void waitForRemoteStreams(
+        final WebDriver participant,
+        final int n,
+        int timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    return (Boolean)((JavascriptExecutor) participant)
+                        .executeScript(
+                            "return APP.conference"
+                                + ".getNumberOfParticipantsWithTracks() >= "
+                                + n + ";");
+                }
+            });
     }
 }

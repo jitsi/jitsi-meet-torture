@@ -1032,7 +1032,7 @@ public class ConferenceFixture
         waitForParticipantToJoinMUC(thirdParticipant, 10);
         waitForIceCompleted(thirdParticipant);
         waitForSendReceiveData(thirdParticipant);
-        waitForRemoteStreams(thirdParticipant, 2);
+        MeetUtils.waitForRemoteStreams(thirdParticipant, 2);
 
         TestUtils.waitMillis(3000);
     }
