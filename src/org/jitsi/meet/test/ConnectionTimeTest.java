@@ -38,6 +38,15 @@ public class ConnectionTimeTest
      * gather the data.
      */
     private static int NUMBER_OF_CONFERENCES = 10;
+    
+    /**
+     * Script that checks if the mandatory objects that are going to be used to
+     * get the connection time measurements are created or not. 
+     */
+    private static final String CHECK_OBJECTS_CREATED_SCRIPT 
+        = "return (APP && APP.connection "
+            + "&& APP.conference && APP.conference._room)"
+            + "? true : false";
 
     /**
      * Enum that represents the types of time measurements. We are storing the
@@ -171,6 +180,26 @@ public class ConnectionTimeTest
                 fail("Wrong type returned from selenium!");
             return null;
         }
+        
+        /**
+         * Executes CHECK_OBJECTS_CREATED_SCRIPT for passed WebDriver and 
+         * returns the result. That way we can check if all objects that are 
+         * used to get the time measurements are created or not. 
+         * @param w participant
+         * @return true if ready and false if not.
+         */
+        public static Boolean isReadyToStart(WebDriver w)
+        {
+            Object res = ((JavascriptExecutor) w).executeScript(
+                CHECK_OBJECTS_CREATED_SCRIPT);
+            
+            if(res instanceof Boolean)
+                return (Boolean)res;
+            else 
+                fail("Wrong type returned from selenium!");
+            return null;
+        }
+        
         
     }
 
@@ -328,9 +357,7 @@ public class ConnectionTimeTest
      */
     private static void waitForMeasurements()
     {
-        final WebDriver participant 
-            = ConferenceFixture.getSecondParticipant();
-        TestUtils.waitForCondition(participant, 10,
+        TestUtils.waitForCondition(ConferenceFixture.getSecondParticipant(), 10,
             new ExpectedCondition<Boolean>()
             {
 
@@ -338,12 +365,10 @@ public class ConnectionTimeTest
                 public Boolean apply(WebDriver w)
                 {
                     return
-                        TimeMeasurements.AUDIO_RENDER.execute(participant) 
-                            != null
-                        && TimeMeasurements.VIDEO_RENDER.execute(participant) 
-                            != null
-                        && TimeMeasurements.DATA_CHANNEL_OPENED.execute(
-                            participant) != null;
+                        TimeMeasurements.isReadyToStart(w)
+                        && TimeMeasurements.AUDIO_RENDER.execute(w) != null
+                        && TimeMeasurements.VIDEO_RENDER.execute(w) != null
+                        && TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null;
                 }
             });
     }
