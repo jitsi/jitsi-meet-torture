@@ -15,7 +15,7 @@
  */
 package org.jitsi.meet.test;
 
-import java.util.Arrays;
+import java.util.*;
 
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
@@ -45,8 +45,7 @@ public class ConnectionTimeTest
      */
     private static final String CHECK_OBJECTS_CREATED_SCRIPT 
         = "return (APP && APP.connection "
-            + "&& APP.conference && APP.conference._room)"
-            + "? true : false";
+            + "&& APP.conference && APP.conference._room)? true : false";
 
     /**
      * Enum that represents the types of time measurements. We are storing the
@@ -249,6 +248,8 @@ public class ConnectionTimeTest
         suite.addTest(
             new ConnectionTimeTest("collectData", null));
         suite.addTest(
+            new ConnectionTimeTest("checkConnectMethodAndValidateData", null));
+        suite.addTest(
             new ConnectionTimeTest("checkIndexLoaded", TimeMeasurements.INDEX_LOADED));
         suite.addTest(
             new ConnectionTimeTest("checkDocumentReady", TimeMeasurements.DOCUMENT_READY));
@@ -284,6 +285,9 @@ public class ConnectionTimeTest
         case "collectData":
             collectData();
             break;
+        case "checkConnectMethodAndValidateData":
+            checkConnectMethodAndValidateData();
+            break;
         case "checkConnecting":
             checkTime(ConnectionTimeTest.connectingTime);
             break;
@@ -293,6 +297,49 @@ public class ConnectionTimeTest
         default:
             checkTime(this.timeMeasurementToProcess);
         }
+    }
+    
+    /**
+     * Checks which connect method is used - attach or connect. Validates 
+     */
+    private void checkConnectMethodAndValidateData()
+    {
+        Boolean isUsingAttach = (Boolean)(
+            (JavascriptExecutor) ConferenceFixture.getSecondParticipant())
+                .executeScript(
+                    "return !!config.externalConnectUrl;");
+
+        if (isUsingAttach)
+        {
+            connectingTime = TimeMeasurements.CONNECTION_ATTACHING;
+            connectedTime = TimeMeasurements.CONNECTION_ATTACHED;
+        }
+        else
+        {
+            connectingTime = TimeMeasurements.CONNECTION_CONNECTING;
+            connectedTime = TimeMeasurements.CONNECTION_CONNECTED;
+        }
+        
+        checkForNullInArray(data[connectingTime.ordinal()]);
+        checkForNullInArray(data[connectedTime.ordinal()]);
+    }
+    
+    /**
+     * Fails if the array has null elements.
+     * @param arr the array to be checked
+     * @returns true if there aren't any null elements and false otherwise.
+     */
+    private boolean checkForNullInArray(Double[] arr)
+    {
+        for (int i = 0; i < arr.length; i++)
+        {
+            if(arr[i] == null)
+            {
+                fail("Null value measured");
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -320,24 +367,6 @@ public class ConnectionTimeTest
         for(TimeMeasurements s : TimeMeasurements.values())
         {
             System.err.println(s + ": " + Arrays.toString(data[s.ordinal()]) );
-        }
-
-        if(data[TimeMeasurements.CONNECTION_ATTACHED.ordinal()][0] == null
-            && data[TimeMeasurements.CONNECTION_CONNECTED.ordinal()][0] == null)
-        {
-            // conference failed
-            fail("Conference failed!");
-            return;
-        }
-        else if(data[TimeMeasurements.CONNECTION_ATTACHED.ordinal()][0] != null)
-        {
-            connectingTime = TimeMeasurements.CONNECTION_ATTACHING;
-            connectedTime = TimeMeasurements.CONNECTION_ATTACHED;
-        }
-        else if(data[TimeMeasurements.CONNECTION_CONNECTED.ordinal()][0] != null)
-        {
-            connectingTime = TimeMeasurements.CONNECTION_CONNECTING;
-            connectedTime = TimeMeasurements.CONNECTION_CONNECTED;
         }
     }
     
@@ -404,6 +433,8 @@ public class ConnectionTimeTest
     {
         Double[] difference = (previousStepTimes == null)?  data[s.ordinal()] :
             subtractArrays(previousStepTimes, data[s.ordinal()]);
+        if(difference == null || checkForNullInArray(difference))
+            return;
         Double medianValue = getMedian(difference);
         System.err.println(s + ":" + medianValue);
         assertTrue(
@@ -431,8 +462,17 @@ public class ConnectionTimeTest
     private static Double[] subtractArrays(Double[] a, Double[] b)
     {
         Double[] res = b.clone();
-        for(int i = 0; i < res.length; i++) {
-            res[i] -= a[i]; 
+        for(int i = 0; i < res.length; i++) 
+        {
+            if(res[i] != null && a[i] != null)
+            {
+                res[i] -= a[i];
+            }
+            else
+            {
+                fail("Null value is measured");
+                return null;
+            }
         }
         return res;
     }
