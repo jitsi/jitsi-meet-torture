@@ -113,7 +113,7 @@ public class MeetUtils
             final WebDriver participant,
             final int n)
     {
-        waitForRemoteStreams(participant, n);
+        waitForRemoteStreams(participant, n, 15);
     }
 
     /**
