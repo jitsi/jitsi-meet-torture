@@ -54,7 +54,7 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(MuteTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(EtherpadTests.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(EtherpadTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
@@ -84,7 +84,7 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
         
-//        DEFAULT_TESTS_TO_RUN.add(MaxUsersTests.class.getSimpleName());
+//        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
 
         File inputFrameDir = new File(PSNRTest.INPUT_FRAME_DIR);

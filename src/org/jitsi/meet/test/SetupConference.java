@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 
 /**
  * This test will setup the conference and will end when both
@@ -70,7 +71,7 @@ public class SetupConference
     public void checkOwnerJoinRoom()
     {
         // first lets wait 10 secs to join
-        ConferenceFixture.waitForParticipantToJoinMUC(
+        MeetUtils.waitForParticipantToJoinMUC(
             ConferenceFixture.getOwner(), 10);
     }
 
@@ -87,7 +88,7 @@ public class SetupConference
      */
     public void checkSecondParticipantJoinRoom()
     {
-        ConferenceFixture.waitForParticipantToJoinMUC(
+        MeetUtils.waitForParticipantToJoinMUC(
             ConferenceFixture.getSecondParticipant(), 10);
     }
 
@@ -97,7 +98,7 @@ public class SetupConference
      */
     public void waitsOwnerToJoinConference()
     {
-        ConferenceFixture.waitForIceCompleted(
+        MeetUtils.waitForIceConnected(
             ConferenceFixture.getOwner());
     }
 
@@ -107,7 +108,7 @@ public class SetupConference
      */
     public void waitsSecondParticipantToJoinConference()
     {
-        ConferenceFixture.waitForIceCompleted(
+        MeetUtils.waitForIceConnected(
             ConferenceFixture.getSecondParticipant());
     }
 
@@ -116,7 +117,7 @@ public class SetupConference
      */
     public void waitForOwnerSendReceiveData()
     {
-        ConferenceFixture.waitForSendReceiveData(
+        MeetUtils.waitForSendReceiveData(
             ConferenceFixture.getOwner());
     }
 
@@ -125,7 +126,7 @@ public class SetupConference
      */
     public void waitForSecondParticipantSendReceiveData()
     {
-        ConferenceFixture.waitForSendReceiveData(
+        MeetUtils.waitForSendReceiveData(
             ConferenceFixture.getSecondParticipant());
     }
 }

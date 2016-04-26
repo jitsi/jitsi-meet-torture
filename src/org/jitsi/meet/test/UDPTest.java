@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+import org.jitsi.meet.test.util.*;
 
 /**
  * Checks that 'owner' and 'secondParticipant' are connected via UDP.
@@ -52,10 +53,10 @@ public class UDPTest
         assertEquals(
                  "The owner must be connected through UDP",
                  "udp",
-                 TCPTest.getProtocol(ConferenceFixture.getOwner()));
+                 MeetUtils.getProtocol(ConferenceFixture.getOwner()));
         assertEquals(
                 "The second participant must be connected through UDP",
                 "udp",
-                TCPTest.getProtocol(ConferenceFixture.getSecondParticipant()));
+                MeetUtils.getProtocol(ConferenceFixture.getSecondParticipant()));
     }
 }

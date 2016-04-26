@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.tasks;
 
 import org.jitsi.meet.test.*;
+import org.jitsi.meet.test.util.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -56,21 +57,21 @@ public class HeartbeatTask
             System.err.println("Checking at " + new Date()
                 + " / to finish: " + millsToRun + " ms.");
 
-            if (!ConferenceFixture.isIceConnected(
+            if (!MeetUtils.isIceConnected(
                 ConferenceFixture.getOwner()))
             {
                 assertAndQuit("Owner ice is not connected.");
                 return;
             }
 
-            if (!ConferenceFixture.isInMuc(
+            if (!MeetUtils.isInMuc(
                 ConferenceFixture.getOwner()))
             {
                 assertAndQuit("Owner is not in the muc.");
                 return;
             }
 
-            if (!ConferenceFixture.isIceConnected(
+            if (!MeetUtils.isIceConnected(
                 ConferenceFixture.getSecondParticipant()))
             {
                 assertAndQuit(
@@ -78,7 +79,7 @@ public class HeartbeatTask
                 return;
             }
 
-            if (!ConferenceFixture.isInMuc(
+            if (!MeetUtils.isInMuc(
                 ConferenceFixture.getSecondParticipant()))
             {
                 assertAndQuit(
@@ -86,10 +87,10 @@ public class HeartbeatTask
                 return;
             }
 
-            long downloadOwner = ConferenceFixture.getDownloadBitrate(
+            long downloadOwner = MeetUtils.getDownloadBitrate(
                 ConferenceFixture.getOwner());
             long downloadParticipant =
-                ConferenceFixture.getDownloadBitrate(
+                MeetUtils.getDownloadBitrate(
                     ConferenceFixture.getSecondParticipant());
 
             if (downloadOwner <= 0)
@@ -122,14 +123,14 @@ public class HeartbeatTask
                 return;
             }
 
-            if (!ConferenceFixture.isXmppConnected(
+            if (!MeetUtils.isXmppConnected(
                 ConferenceFixture.getOwner()))
             {
                 assertAndQuit("Owner xmpp connection is not connected");
                 return;
             }
 
-            if (!ConferenceFixture.isXmppConnected(
+            if (!MeetUtils.isXmppConnected(
                 ConferenceFixture.getSecondParticipant()))
             {
                 assertAndQuit("The second participant xmpp "

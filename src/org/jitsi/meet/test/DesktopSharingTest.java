@@ -129,9 +129,9 @@ public class DesktopSharingTest
             owner,
             "return (APP.conference.membersCount == 2);",
             25);
-        ConferenceFixture.waitForIceCompleted(owner);
-        ConferenceFixture.waitForSendReceiveData(owner);
-        ConferenceFixture.waitForRemoteStreams(owner, 1);
+        MeetUtils.waitForIceConnected(owner);
+        MeetUtils.waitForSendReceiveData(owner);
+        MeetUtils.waitForRemoteStreams(owner, 1);
 
         // now lets check whether his stream is screen
         String remoteParticipantID = owner

@@ -17,6 +17,11 @@ package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.support.ui.*;
+
+import java.util.*;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * Class contains utility methods related with jitsi-meet application logic.
@@ -25,6 +30,27 @@ import org.openqa.selenium.chrome.*;
  */
 public class MeetUtils
 {
+    /**
+     * The javascript code which returns {@code true} if we are joined in
+     * the muc.
+     */
+    public static final String IS_MUC_JOINED =
+        "return APP.conference.isJoined();";
+
+    /**
+     * The javascript code which returns {@code true} if the ICE connection
+     * is in state 'connected'.
+     */
+    public static final String ICE_CONNECTED_CHECK_SCRIPT =
+        "return APP.conference.getConnectionState() === 'connected';";
+
+    /**
+     * The javascript code which returns {@code true} if the ICE connection
+     * is in state 'disconnected'.
+     */
+    public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
+        "return APP.conference.getConnectionState() === 'disconnected';";
+
     /**
      * Returns resource JID which corresponds to XMPP MUC nickname of the given
      * <tt>participant</tt>.
@@ -64,7 +90,7 @@ public class MeetUtils
                                            WebDriver participant)
     {
 
-        String jid = MeetUtils.getResourceJid(participant);
+        String jid = getResourceJid(participant);
 
         String script = "" +
             "var level = APP.conference." +
@@ -76,5 +102,258 @@ public class MeetUtils
 
         return levelObj != null ?
             Double.valueOf(String.valueOf(levelObj)) : null;
+    }
+
+    /**
+     * Waits for number of remote streams.
+     * @param participant the driver to use for the check.
+     * @param n number of remote streams to wait for.
+     */
+    public static void waitForRemoteStreams(
+            final WebDriver participant,
+            final int n)
+    {
+        waitForRemoteStreams(participant, n, 15);
+    }
+
+    /**
+     * Waits for number of remote streams.
+     * @param participant the driver to use for the check.
+     * @param n number of remote streams to wait for.
+     * @param timeout the maximum amount of time in seconds to wait.
+     */
+    public static void waitForRemoteStreams(
+        final WebDriver participant,
+        final int n,
+        int timeout)
+    {
+        new WebDriverWait(participant, timeout)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    return (Boolean)((JavascriptExecutor) participant)
+                        .executeScript(
+                            "return APP.conference"
+                                + ".getNumberOfParticipantsWithTracks() >= "
+                                + n + ";");
+                }
+            });
+    }
+
+    /**
+     * Waits for the page to be loaded before continuing with the operations.
+     * @param driver the webdriver that just loaded a page
+     */
+    public static void waitForPageToLoad(WebDriver driver)
+    {
+        ExpectedCondition<Boolean> expectation = new
+            ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver driver)
+                {
+                    return ((JavascriptExecutor)driver)
+                        .executeScript("return document.readyState")
+                        .equals("complete");
+                }
+            };
+        Wait<WebDriver> wait = new WebDriverWait(driver, 10);
+        try
+        {
+            wait.until(expectation);
+        }
+        catch(Throwable error)
+        {
+            assertFalse("Timeout waiting for Page Load Request to complete.",
+                true);
+        }
+    }
+
+    /**
+     * Waits until data has been sent and received over the ICE connection
+     * in {@code participant}.
+     * @param participant the participant.
+     */
+    public static void waitForSendReceiveData(final WebDriver participant)
+    {
+        new WebDriverWait(participant, 15)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    Map stats = (Map) ((JavascriptExecutor) participant)
+                            .executeScript("return APP.conference.getStats();");
+
+                    Map<String, Long> bitrate =
+                            (Map<String, Long>) stats.get("bitrate");
+
+                    if (bitrate != null)
+                    {
+                        long download = bitrate.get("download");
+                        long upload = bitrate.get("upload");
+
+                        if (download > 0 && upload > 0)
+                            return true;
+                    }
+
+                    return false;
+                }
+            });
+    }
+
+    /**
+     * Returns download bitrate.
+     * @param participant
+     * @return
+     */
+    public static long getDownloadBitrate(WebDriver participant)
+    {
+        Map stats = (Map)((JavascriptExecutor) participant)
+            .executeScript("return APP.conference.getStats();");
+
+        Map<String,Long> bitrate =
+            (Map<String,Long>)stats.get("bitrate");
+
+        if(bitrate != null)
+        {
+            long download =  bitrate.get("download");
+            return download;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Checks whether the strophe connection is connected.
+     * @param participant
+     * @return
+     */
+    public static boolean isXmppConnected(WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript(
+                "return APP.conference._room.xmpp.connection.connected;");
+        return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Waits until {@code participant} joins the MUC.
+     * @param participant the participant.
+     * @param timeout the maximum time to wait in seconds.
+     */
+    public static void waitForParticipantToJoinMUC(
+        WebDriver participant, long timeout)
+    {
+        TestUtils.waitForBoolean(
+            participant,
+            IS_MUC_JOINED,
+            timeout);
+    }
+
+    /**
+     * Checks whether a participant is in the MUC.
+     *
+     * @param participant the participant.
+     * @return {@code true} if the specified {@code participant} has joined the
+     * room; otherwise, {@code false}
+     */
+    public static boolean isInMuc(WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript(IS_MUC_JOINED);
+        return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Waits 30 sec for the given participant to enter the ICE 'connected'
+     * state.
+     *
+     * @param participant the participant.
+     */
+    public static void waitForIceConnected(WebDriver participant)
+    {
+        waitForIceConnected(participant, 30);
+    }
+
+    /**
+     * Waits for the given participant to enter the ICE 'connected' state.
+     *
+     * @param participant the participant.
+     * @param timeout timeout in seconds.
+     */
+    public static void waitForIceConnected(WebDriver participant, long timeout)
+    {
+        TestUtils.waitForBoolean(
+            participant, ICE_CONNECTED_CHECK_SCRIPT, timeout);
+    }
+
+    /**
+     * Checks whether the iceConnectionState of <tt>participant</tt> is in state
+     * {@code connected}.
+     *
+     * @param participant driver instance used by the participant for whom we
+     *                    want to check.
+     * @return {@code true} if the {@code iceConnectionState} of the specified
+     * {@code participant} is {@code connected}; otherwise, {@code false}
+     */
+    public static boolean isIceConnected(WebDriver participant)
+    {
+        Object res = ((JavascriptExecutor) participant)
+            .executeScript(ICE_CONNECTED_CHECK_SCRIPT);
+        return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Waits 30 sec for the given participant to enter the ICE 'disconnected'
+     * state.
+     *
+     * @param participant the participant.
+     */
+    public static void waitForIceDisconnected(WebDriver participant)
+    {
+        waitForIceDisconnected(participant, 30);
+    }
+
+    /**
+     * Waits for the given participant to enter the ICE 'disconnected' state.
+     *
+     * @param participant the participant.
+     * @param timeout timeout in seconds.
+     */
+    public static void waitForIceDisconnected(
+            WebDriver participant,
+            long timeout)
+    {
+        TestUtils.waitForBoolean(
+            participant, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
+    }
+
+    /**
+     * Waits until {@code participant} joins the MUC.
+     * @param participant the participant.
+     */
+    public static void waitForParticipantToJoinMUC(WebDriver participant)
+    {
+        waitForParticipantToJoinMUC(participant, 5);
+    }
+
+    /**
+     * Returns the transport protocol used by the media connection in the
+     * Jitsi-Meet conference running in <tt>driver</tt>, or an error string
+     * (beginning with "error:") or null on failure.
+     * @return the transport protocol used by the media connection in the
+     * Jitsi-Meet conference running in <tt>driver</tt>.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     */
+    public static String getProtocol(WebDriver driver)
+    {
+        if (driver == null)
+            return "error: driver is null";
+        Object protocol = ((JavascriptExecutor) driver).executeScript(
+            "try {" +
+                "return APP.conference.getStats().transport[0].type;" +
+            "} catch (err) { return 'error: '+err; }");
+
+        return (protocol == null) ? null : protocol.toString().toLowerCase();
     }
 }

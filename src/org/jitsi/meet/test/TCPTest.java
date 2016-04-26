@@ -19,9 +19,6 @@ import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * Tests whether the Jitsi-Meet client can connect to jitsi-videobridge using
  * TCP.
@@ -71,7 +68,8 @@ public class TCPTest
         // Initially we should be connected over UDP
         assertEquals("We must be connected through UDP",
                      "udp",
-                     getProtocol(ConferenceFixture.getSecondParticipant()));
+                     MeetUtils
+                         .getProtocol(ConferenceFixture.getSecondParticipant()));
 
         ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
         WebDriver secondParticipant
@@ -80,7 +78,7 @@ public class TCPTest
 
         assertEquals("We must be connected through TCP",
                      "tcp",
-                     getProtocol(secondParticipant));
+                     MeetUtils.getProtocol(secondParticipant));
     }
 
 
@@ -94,23 +92,4 @@ public class TCPTest
         ConferenceFixture.waitForSecondParticipantToConnect();
     }
 
-    /**
-     * Returns the transport protocol used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt>, or an error string
-     * (beginning with "error:") or null on failure.
-     * @return the transport protocol used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt>.
-     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
-     */
-    static String getProtocol(WebDriver driver)
-    {
-        if (driver == null)
-            return "error: driver is null";
-        Object protocol = ((JavascriptExecutor) driver).executeScript(
-            "try {" +
-                "return APP.conference.getStats().transport[0].type;" +
-            "} catch (err) { return 'error: '+err; }");
-
-        return (protocol == null) ? null : protocol.toString().toLowerCase();
-    }
 }

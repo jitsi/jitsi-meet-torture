@@ -103,11 +103,11 @@ public class ConferenceMigrationTest
 
         WebDriver secondParticipant = ConferenceFixture.startSecondParticipant();
 
-        ConferenceFixture.waitForParticipantToJoinMUC(owner, 10);
-        ConferenceFixture.waitForParticipantToJoinMUC(secondParticipant, 10);
+        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        ConferenceFixture.waitForIceCompleted(owner);
-        ConferenceFixture.waitForIceCompleted(secondParticipant);
+        MeetUtils.waitForIceConnected(owner);
+        MeetUtils.waitForIceConnected(secondParticipant);
 
         ((JavascriptExecutor) owner)
             .executeScript(
@@ -140,16 +140,16 @@ public class ConferenceMigrationTest
         }).start();
 
         System.err.println("Wait for disconnected...");
-        ConferenceFixture.waitForIceDisconnected(owner, 15);
+        MeetUtils.waitForIceDisconnected(owner, 15);
         System.err.println("Owner - ICE disconnected!");
-        ConferenceFixture.waitForIceDisconnected(secondParticipant, 15);
+        MeetUtils.waitForIceDisconnected(secondParticipant, 15);
         System.err.println("Second peer - ICE disconnected!");
 
         // Wait for conference restart
         System.err.println("Wait for ICE reconnected...");
-        ConferenceFixture.waitForIceCompleted(owner, 60);
+        MeetUtils.waitForIceConnected(owner, 60);
         System.err.println("Owner - ICE reconnected!");
-        ConferenceFixture.waitForIceCompleted(secondParticipant, 60);
+        MeetUtils.waitForIceConnected(secondParticipant, 60);
         System.err.println("Second peer - ICE reconnected!");
 
     }
