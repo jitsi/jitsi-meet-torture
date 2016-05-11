@@ -94,6 +94,31 @@ public class MeetUIUtils
     }
 
     /**
+     * Returns <video> element for the local video.
+     * @param participant the <tt>WebDriver</tt> from which local video element
+     * will be obtained.
+     * @return <tt>WebElement</tt> of the local video.
+     */
+    public static WebElement getLocalVideo(WebDriver participant)
+    {
+        List<WebElement> peerThumbs = participant.findElements(
+                By.xpath("//video[starts-with(@id, 'localVideo_')]"));
+
+        return peerThumbs.get(0);
+    }
+
+    /**
+     * Get's the id of local video element.
+     * @param participant the <tt>WebDriver</tt> instance of the participant for
+     * whom we want to obtain local video element's ID
+     * @return a <tt>String</tt> with the ID of the local video element.
+     */
+    public static String getLocalVideoID(WebDriver participant)
+    {
+        return getLocalVideo(participant).getAttribute("id");
+    }
+
+    /**
      * Returns all remote video elements for given <tt>WebDriver</tt> instance.
      * @param participant the <tt>WebDriver</tt> instance which will be used to
      * obtain remote video elements.

@@ -97,6 +97,8 @@ public class TestsRunner
             DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
         }
 
+        DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 

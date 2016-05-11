@@ -60,6 +60,24 @@ public class VideoOperator
     }
 
     /**
+     * Gets an audio level.
+     * @param videoId the ID of the video element
+     * @param frameIdx the index of captured framed for which audio level will
+     * be obtained
+     * @return a <tt>Double</tt> with audio level value from 0.0 to 1.0
+     */
+    public Double getAudioLevel(String videoId, int frameIdx)
+    {
+        Object levelObj
+            = getJSExecutor().executeScript(
+                    "return window._operator.getAudioLevel(" +
+                        "arguments[0], arguments[1])",
+                    videoId, frameIdx);
+
+        return Double.valueOf(String.valueOf(levelObj));
+    }
+
+    /**
      * Gets raw frame data
      * @param videoId the id of the video element
      * @param frameIdx the index of the frame for which raw data will be
@@ -117,6 +135,40 @@ public class VideoOperator
     }
 
     /**
+     * Gets RGBA values for the center pixel of the video frame.
+     * @param videoId the id of video element
+     * @param frameIdx the frame index
+     * @return a list of <tt>Long</tt> with red, green, blue and alpha values
+     * positioned one after another in the list
+     */
+    @SuppressWarnings("unchecked") // ok to fail the tests with cast exception
+    public List<Long> getRGBAatTheCenter(String videoId, int frameIdx)
+    {
+        Object rgbaObj = getJSExecutor().executeScript(
+                "return window._operator.getRGBAatTheCenter(" +
+                    "arguments[0], arguments[1])",
+                videoId, frameIdx);
+
+        return (List<Long>) rgbaObj;
+    }
+
+    /**
+     * Gets frame timestamp
+     * @param videoId the id of video element
+     * @param frameIdx the frame index
+     * @return a <tt>Long</tt> with the frame timestamp obtained with JavaScript
+     * Date.now().
+     */
+    public Long getTimestamp(String videoId, int frameIdx)
+    {
+        Object tsObj = getJSExecutor().executeScript(
+                "return window._operator.getTimestamp(" +
+                    "arguments[0], arguments[1])",
+                videoId, frameIdx);
+        return (Long) tsObj;
+    }
+
+    /**
      * Injects {@link #PSNR_JS_SCRIPT}.
      */
     public void init()
@@ -135,6 +187,27 @@ public class VideoOperator
                 "window._operator = new window.VideoOperator();" +
                     "window._operator.recordAll(arguments[0]);",
                 videoIDs);
+    }
+
+    /**
+     * Starts the recording for videos which ids are on the <tt>videoIDs</tt>
+     * list. Audio levels will also be recorded.
+     * @param videoIDs the list of video elements IDs which will be recorded.
+     * @param fps recording frame rate
+     * @param aLvlResources the list with MUC resource JIDs for which audio
+     * levels will be recorded. Audio levels are matched with video frames based
+     * the appearance order on <tt>videoIDs</tt> and <tt>aLvlResources</tt>
+     * lists.
+     */
+    public void recordAll(List<String>    videoIDs,
+                          int             fps,
+                          List<String>    aLvlResources)
+    {
+        getJSExecutor().executeScript(
+                "window._operator = new window.VideoOperator();" +
+                    "window._operator.recordAll(" +
+                    "arguments[0], arguments[1], arguments[2]);",
+                videoIDs, fps, aLvlResources);
     }
 
     /**
