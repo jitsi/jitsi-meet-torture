@@ -16,13 +16,16 @@
 package org.jitsi.meet.test;
 
 import junit.framework.*;
+
+import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
+import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.nio.file.*;
 
 /**
  * A test that will run 1 minute (configurable) and will perform a PSNR test
@@ -39,12 +42,6 @@ public class PSNRTest
      * captured.
      */
     private static final String PSNR_SCRIPT = "scripts/psnr-test.sh";
-
-    /**
-     * JS utility which allows to capture frames from the video.
-     */
-    private static final String PSNR_JS_SCRIPT
-        = "resources/PSNRVideoOperator.js";
 
     /**
      * The directory where we save the captured frames.
@@ -79,6 +76,7 @@ public class PSNRTest
      * is not working we fail.
      */
     public void testPSNR()
+        throws Exception
     {
         File inputFrameDir = new File(INPUT_FRAME_DIR);
         if (!inputFrameDir.exists())
@@ -100,37 +98,15 @@ public class PSNRTest
         new StopVideoTest("stopVideoOnOwnerAndCheck").stopVideoOnOwnerAndCheck();
 
         WebDriver owner = ConferenceFixture.getOwner();
-        JavascriptExecutor js = ((JavascriptExecutor) owner);
+
+        VideoOperator ownerVideoOperator = new VideoOperator(owner);
 
         // read and inject helper script
-        try
-        {
-            Path jsHelperPath = Paths.get(
-                new File(PSNR_JS_SCRIPT).getAbsolutePath());
-            String videoOperatorScript = new String(
-                Files.readAllBytes(jsHelperPath));
-            js.executeScript(videoOperatorScript);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        ownerVideoOperator.init();
 
-            assertTrue("Failed to inject JS helper.", false);
-        }
+        List<String> ids = MeetUIUtils.getRemoteVideoIDs(owner);
 
-        List<WebElement> remoteThumbs = owner
-            .findElements(By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
-
-        List<String> ids = new ArrayList<>();
-        for (WebElement thumb : remoteThumbs)
-        {
-            ids.add(thumb.getAttribute("id"));
-        }
-        js.executeScript(
-            "window._operator = new window.VideoOperator();" +
-                "window._operator.recordAll(arguments[0]);",
-            ids
-        );
+        ownerVideoOperator.recordAll(ids);
 
         String timeToRunInMin = System.getProperty("psnr.duration");
 
@@ -150,56 +126,29 @@ public class PSNRTest
 
         heartbeatTask.await(minutesToRun, TimeUnit.MINUTES);
 
-        js.executeScript("window._operator.stop()");
+        ownerVideoOperator.stopRecording();
 
+        System.err.println("REAL FPS: " + ownerVideoOperator.getRealFPS());
         System.err.println(
-            "REAL FPS: " +
-                js.executeScript("return window._operator.getRealFPS()")
-        );
-        System.err.println(
-            "RAW DATA SIZE: " + js.executeScript(
-                "return window._operator.getRawDataSize() / 1024 / 1024") +
-                "MB"
-        );
+                "RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
         ConferenceFixture.closeSecondParticipant();
 
         for (String id : ids)
         {
-            Long framesCount = (Long) js.executeScript(
-                "return window._operator.getFramesCount(arguments[0])",
-                id
-            );
-            System.err.printf(
-                "frames count for %s: %s\n", id, framesCount);
+            Long framesCount = ownerVideoOperator.getFramesCount(id);
+            System.err.printf("frames count for %s: %s\n", id, framesCount);
 
             for (int i = 0; i < framesCount; i += 1)
             {
-                String frame = (String) js.executeScript(
-                    "return window._operator.getFrame(arguments[0], arguments[1])",
-                    id, i
-                );
-                // Convert it to binary
-                // Java 8 has a Base64 class.
-                byte[] data = org.apache.commons.codec.binary.
-                    Base64.decodeBase64(frame);
+                byte[] data = ownerVideoOperator.getFrame(id, i);
 
-                String outputFrame
-                    = OUTPUT_FRAME_DIR + id + "-" + i + ".png";
+                String outputFrame = OUTPUT_FRAME_DIR + id + "-" + i + ".png";
 
-                try
+                try (OutputStream stream = new FileOutputStream(outputFrame))
                 {
-                    try (OutputStream stream = new FileOutputStream(
-                        outputFrame))
-                    {
-                        stream.write(data);
-                    }
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    assertTrue("An error occurred", false);
+                    stream.write(data);
                 }
 
                 Runtime rt = Runtime.getRuntime();
@@ -208,33 +157,25 @@ public class PSNRTest
                     INPUT_FRAME_DIR, RESIZED_FRAME_DIR
                 };
 
-                Process proc = null;
-                try
-                {
-                    proc = rt.exec(commands);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    assertTrue("An error occurred", false);
-                }
+                Process proc = rt.exec(commands);
 
-                BufferedReader stdInput = new BufferedReader(new
-                    InputStreamReader(proc.getInputStream()));
+                BufferedReader stdInput
+                    = new BufferedReader(
+                            new InputStreamReader(proc.getInputStream()));
 
-                BufferedReader stdError = new BufferedReader(new
-                    InputStreamReader(proc.getErrorStream()));
+                BufferedReader stdError
+                    = new BufferedReader(
+                            new InputStreamReader(proc.getErrorStream()));
 
                 // read the output from the command
-                String s = null;
+                String s;
                 try
                 {
                     while ((s = stdInput.readLine()) != null)
                     {
                         System.err.println(s);
                         assertTrue("Frame is bellow the PSNR threshold",
-                            s == null
-                                || Float.parseFloat(s.split(" ")[1]) > MIN_PSNR);
+                                Float.parseFloat(s.split(" ")[1]) > MIN_PSNR);
                     }
 
                     // read any errors from the attempted command
@@ -248,15 +189,7 @@ public class PSNRTest
                     e.printStackTrace();
                 }
 
-                try
-                {
-                    assertTrue("The psnr-test.sh failed.",
-                        proc.waitFor() == 0);
-                }
-                catch (InterruptedException e)
-                {
-
-                }
+                assertTrue("The psnr-test.sh failed.", proc.waitFor() == 0);
 
                 // If the test has passed for a specific frame, delete
                 // it to optimize disk space usage.
@@ -265,9 +198,6 @@ public class PSNRTest
             }
         }
 
-        js.executeScript(
-            "window._operator.cleanup();" +
-                "window._operator = null;"
-        );
+        ownerVideoOperator.dispose();
     }
 }

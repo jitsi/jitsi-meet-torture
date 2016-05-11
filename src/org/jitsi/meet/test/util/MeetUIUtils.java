@@ -94,6 +94,38 @@ public class MeetUIUtils
     }
 
     /**
+     * Returns all remote video elements for given <tt>WebDriver</tt> instance.
+     * @param participant the <tt>WebDriver</tt> instance which will be used to
+     * obtain remote video elements.
+     * @return a list of <tt>WebElement</tt> with the remote videos.
+     */
+    public static List<WebElement> getRemoteVideos(WebDriver participant)
+    {
+        return participant.findElements(
+                By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
+    }
+
+    /**
+     * Obtains the ids for all remote participants <video> elements.
+     * @param participant the <tt>WebDriver</tt> instance for which remote video
+     * ids will be fetched.
+     * @return a list of <tt>String</tt> with the ids of remote participants
+     * video elements.
+     */
+    public static List<String> getRemoteVideoIDs(WebDriver participant)
+    {
+        List<WebElement> remoteThumbs = getRemoteVideos(participant);
+
+        List<String> ids = new ArrayList<>();
+        for (WebElement thumb : remoteThumbs)
+        {
+            ids.add(thumb.getAttribute("id"));
+        }
+
+        return ids;
+    }
+
+    /**
      * Opens the settings panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
