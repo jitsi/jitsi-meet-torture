@@ -374,6 +374,15 @@ public class ConferenceFixture
             profile.setPreference("media.peerconnection.ice.tcp", true);
             profile.setAcceptUntrustedCertificates(true);
 
+            profile.setPreference("webdriver.log.file", FailureListener.createLogsFolder() +
+                "/firefox-js-console-"
+                + getParticipantName(participant) + ".log");
+
+            System.setProperty("webdriver.firefox.logfile",
+                FailureListener.createLogsFolder() +
+                    "/firefox-console-"
+                    + getParticipantName(participant) + ".log");
+
             return new FirefoxDriver(profile);
         }
         else if (browser == BrowserType.safari)
