@@ -52,6 +52,7 @@ public class TestsRunner
     {
         DEFAULT_TESTS_TO_RUN.add(AvatarTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(MuteTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(MediaDeviceChangeTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(EtherpadTest.class.getSimpleName());
