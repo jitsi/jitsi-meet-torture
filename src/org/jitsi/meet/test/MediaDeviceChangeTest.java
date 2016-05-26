@@ -259,9 +259,9 @@ public class MediaDeviceChangeTest
     }
 
     private void stopLocalTracks(WebDriver driver) {
-        // currently there is no other way to access local tracks
         ((JavascriptExecutor) driver).executeScript(
-            "APP.conference._room.getLocalTracks().forEach(jitsiTrack => jitsiTrack.track.stop());"
+            "APP.conference.useVideoStream(null);" +
+            "APP.conference.useAudioStream(null);"
         );
     }
 
