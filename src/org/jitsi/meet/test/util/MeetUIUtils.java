@@ -298,12 +298,30 @@ public class MeetUIUtils
                         // 'null' or 0, so we wait to timeout this condition
                         if (muted)
                         {
-                            return audioLevel != null && audioLevel > 0;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "muted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                         // When testing for unmuted we wait for first sound
                         else
                         {
-                            return audioLevel != null && audioLevel > 0.1;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "unmuted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
