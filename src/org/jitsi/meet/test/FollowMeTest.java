@@ -1,0 +1,194 @@
+/*
+ * Copyright @ 2016 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jitsi.meet.test;
+
+import junit.framework.*;
+import org.jitsi.meet.test.util.*;
+
+import org.openqa.selenium.*;
+
+/**
+ * A test which tests "Follow Me" feature that allows moderators to enable 
+ * a mode in the conference where all participants are seeing what the 
+ * moderator is seeing.
+ *
+ * @author Kostiantyn Tsaregradskyi
+ */
+public class FollowMeTest
+    extends TestCase
+{
+    private final static String filmStripXPath = "//div[@id='remoteVideos']";
+    private final static String etherpadXPath = "//div[@id='etherpad']/iframe";
+    private final static String followMeCheckboxXPath =
+            "//input[@id='followMeCheckBox']";
+
+    /**
+     * Constructs test.
+     * @param name the method name for the test.
+     */
+    public FollowMeTest(String name)
+    {
+        super(name);
+    }
+
+    /**
+     * Orders the tests.
+     * @return the suite with order tests.
+     */
+    public static junit.framework.Test suite()
+    {
+        TestSuite suite = new TestSuite();
+
+        suite.addTest(new FollowMeTest(
+                "testFollowMeCheckboxVisibleOnlyForModerator"));
+        suite.addTest(new FollowMeTest(
+                "testShareDocumentCommandsAreFollowed"));
+        suite.addTest(new FollowMeTest(
+                "testFilmstripCommandsAreFollowed"));
+        suite.addTest(new FollowMeTest(
+                "testNextOnStageCommandsAreFollowed"));
+
+        return suite;
+    }
+
+    /**
+     * Checks that "Follow me" checkbox is only visible for moderator.
+     */
+    public void testFollowMeCheckboxVisibleOnlyForModerator()
+    {
+        System.err.println("Start testFollowMeCheckboxVisibleOnlyForModerator");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        checkFollowMeCheckboxVisible(owner, true);
+        checkFollowMeCheckboxVisible(secondParticipant, false);
+
+        owner.findElement(By.id("followMeCheckBox")).click();
+    }
+
+    /**
+     * Checks if launching and then exiting Etherpad is executed for the second
+     * participant.
+     */
+    public void testShareDocumentCommandsAreFollowed() {
+        System.err.println("Start testShareDocumentCommandsAreFollowed");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
+
+        TestUtils.waitForDisplayedElementByXPath(owner, etherpadXPath, 5);
+        TestUtils.waitForDisplayedElementByXPath(
+                secondParticipant, etherpadXPath, 5);
+
+        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
+
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+                owner, etherpadXPath, 5);
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+                secondParticipant, etherpadXPath, 5);
+    }
+
+    /**
+     * Checks if hiding/showing film strip is executed for the second
+     * participant.
+     */
+    public void testFilmstripCommandsAreFollowed() {
+        System.err.println("Start testFilmstripCommandsAreFollowed");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
+
+        TestUtils.waitMillis(5000);
+
+        assertEquals(owner
+                .findElement(By.xpath(filmStripXPath))
+                .getAttribute("class"), "hidden");
+
+        assertEquals(secondParticipant
+                .findElement(By.xpath(filmStripXPath))
+                .getAttribute("class"), "hidden");
+
+        MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
+
+        TestUtils.waitMillis(5000);
+
+        assertEquals(owner
+                .findElement(By.xpath(filmStripXPath))
+                .getAttribute("class"), "");
+
+        assertEquals(secondParticipant
+                .findElement(By.xpath(filmStripXPath))
+                .getAttribute("class"), "");
+    }
+
+    /**
+     * Checks if selecting a video for moderator selects large video for the
+     * second participant.
+     */
+    public void testNextOnStageCommandsAreFollowed() {
+        System.err.println("Start testNextOnStageCommandsAreFollowed");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        // let's make video of second participant active
+        ((JavascriptExecutor)owner).executeScript(
+                "$(\"span[id^='participant_'][class='videocontainer']\")" +
+                        ".click()");
+
+        TestUtils.waitMillis(5000);
+
+        // and now check that it's active for second particpant too
+        WebElement localVideoThumb = secondParticipant
+            .findElement(By.xpath("//span[@id='localVideoWrapper']/video"));
+
+        if(ConferenceFixture.getBrowserType(secondParticipant).equals(
+                ConferenceFixture.BrowserType.firefox)) {
+            String localVideoId = localVideoThumb.getAttribute("id");
+
+            assertTrue(MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
+                    secondParticipant, localVideoId));
+        } else {
+            assertEquals(
+                    localVideoThumb.getAttribute("src"),
+                    MeetUIUtils.getLargeVideoSource(secondParticipant));
+        }
+
+    }
+
+    /**
+     * Checks visibility of "Follow Me" checkbox.
+     * @param webDriver
+     * @param shouldBeVisible
+     */
+    private void checkFollowMeCheckboxVisible(
+            WebDriver webDriver, boolean shouldBeVisible) {
+        MeetUIUtils.displaySettingsPanel(webDriver);
+
+        if (shouldBeVisible) {
+            TestUtils.waitForDisplayedElementByXPath(
+                    webDriver, followMeCheckboxXPath, 5);
+        } else {
+            TestUtils.waitForNotDisplayedElementByXPath(
+                    webDriver, followMeCheckboxXPath, 5);
+        }
+    }
+}
