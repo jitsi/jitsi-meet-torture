@@ -512,4 +512,21 @@ public class MeetUIUtils
             "arguments[0][arguments[1]] = arguments[2];",
             element, attributeName, attributeValue);
     }
+
+    /**
+     * Checks whether video with id is displayed on the large video.
+     * @param driver the driver
+     * @param videoID the video
+     */
+    public static boolean firefoxCheckVideoDisplayedOnLarge(
+            WebDriver driver, String videoID)
+    {
+        Object res = ((JavascriptExecutor) driver)
+                .executeScript(
+                        "return document.getElementById('" + videoID
+                                + "').mozSrcObject "
+                                + "== document.getElementById('largeVideo').mozSrcObject;");
+
+        return  res != null && res.equals(Boolean.TRUE);
+    }
 }

@@ -94,7 +94,8 @@ public class SwitchVideoTests
             String localVideoId = localVideoElem.getAttribute("id");
 
             assertTrue("Video didn't change to local",
-                ffCheckVideoDisplayedOnLarge(driver, localVideoId));
+                MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
+                        driver, localVideoId));
         }
         else
         {
@@ -231,7 +232,8 @@ public class SwitchVideoTests
             String remoteVideoId = remoteThumb.getAttribute("id");
 
             assertTrue("Video didn't change to remote one",
-                ffCheckVideoDisplayedOnLarge(driver, remoteVideoId));
+                MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
+                        driver, remoteVideoId));
         }
         else
         {
@@ -244,24 +246,6 @@ public class SwitchVideoTests
             assertEquals("Video didn't change to remote one",
                 remoteVideoSrc, MeetUIUtils.getLargeVideoSource(driver));
         }
-    }
-
-    /**
-     * Checks whether video with id is displayed on the large video.
-     * @param driver the driver
-     * @param videoID the video
-     * @return
-     */
-    private static boolean ffCheckVideoDisplayedOnLarge(
-        WebDriver driver, String videoID)
-    {
-        Object res = ((JavascriptExecutor) driver)
-            .executeScript(
-                "return document.getElementById('" + videoID
-                    + "').mozSrcObject "
-                    + "== document.getElementById('largeVideo').mozSrcObject;");
-
-        return  res != null && res.equals(Boolean.TRUE);
     }
 
     /**
