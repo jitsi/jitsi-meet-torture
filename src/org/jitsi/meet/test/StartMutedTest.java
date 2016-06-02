@@ -109,6 +109,12 @@ public class StartMutedTest
         MeetUtils.waitForIceConnected(owner);
         MeetUtils.waitForIceConnected(secondParticipant);
 
+        // On the PR testing machine it seems that some audio is leaking before
+        // we mute. The audio is muted when 'session-initiate' is received, but
+        // seems like a bit of sound goes through in random cases. Let's wait
+        // here a bit, before checking the audio levels.
+        TestUtils.waitMillis(500);
+
         checkSecondParticipantForMute();
 
         // Unmute and see if the audio works
