@@ -85,7 +85,7 @@ public class StartMutedTest
             MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
             MeetUtils.waitForIceConnected(secondParticipant);
 
-
+            TestUtils.waitMillis(500);
 
             checkSecondParticipantForMute();
 
