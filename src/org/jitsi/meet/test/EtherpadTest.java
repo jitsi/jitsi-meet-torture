@@ -81,11 +81,7 @@ public class EtherpadTest
 
         WebDriver owner = ConferenceFixture.getOwner();
 
-        boolean enabled
-            = (boolean) ((JavascriptExecutor) owner)
-                    .executeScript(
-                        "return config.etherpad_base !== undefined;");
-        if (!enabled)
+        if (!MeetUtils.isEtherpadEnabled(owner))
         {
             EtherpadTest.enabled = false;
             System.err.println(
