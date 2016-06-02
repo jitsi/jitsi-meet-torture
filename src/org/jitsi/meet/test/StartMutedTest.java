@@ -85,14 +85,7 @@ public class StartMutedTest
             MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
             MeetUtils.waitForIceConnected(secondParticipant);
 
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
+
 
             checkSecondParticipantForMute();
 
