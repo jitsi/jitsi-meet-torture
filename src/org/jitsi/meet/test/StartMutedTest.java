@@ -46,8 +46,8 @@ public class StartMutedTest
         TestSuite suite = new TestSuite();
 
         suite.addTest(new StartMutedTest("checkboxesTest"));
-        suite.addTest(new StartMutedTest("configOptionsTest"));
-        suite.addTest(new StartMutedTest("restartParticipants"));
+        //suite.addTest(new StartMutedTest("configOptionsTest"));
+        //suite.addTest(new StartMutedTest("restartParticipants"));
         return suite;
     }
 
@@ -57,29 +57,40 @@ public class StartMutedTest
      */
     public void checkboxesTest()
     {
-        System.err.println("Start checkboxesTest.");
+        for (int i=0; i<30;i++)
+        {
+            System.err.println("Start checkboxesTest." + i);
 
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        TestUtils.waitMillis(1000);
-        WebDriver owner = ConferenceFixture.getOwner();
 
-        // Make sure settings panel is displayed
-        MeetUIUtils.displaySettingsPanel(owner);
-        // Wait for 'start muted' checkboxes
-        TestUtils.waitForDisplayedElementByXPath(
-            owner, "//input[@id='startAudioMuted']", 5);
-        TestUtils.waitForDisplayedElementByXPath(
+            WebDriver secondPeer = ConferenceFixture.getSecondParticipantInstance();
+            if (secondPeer != null)
+                ConferenceFixture.close(secondPeer);
+
+            WebDriver owner = ConferenceFixture.getOwner();
+            TestUtils.waitMillis(1000);
+
+            // Make sure settings panel is displayed
+            MeetUIUtils.displaySettingsPanel(owner);
+            // Wait for 'start muted' checkboxes
+            TestUtils.waitForDisplayedElementByXPath(
+                owner, "//input[@id='startAudioMuted']", 5);
+            TestUtils.waitForDisplayedElementByXPath(
                 owner, "//input[@id='startVideoMuted']", 5);
 
-        owner.findElement(By.id("startAudioMuted")).click();
-        owner.findElement(By.id("startVideoMuted")).click();
+            owner.findElement(By.id("startAudioMuted")).click();
+            owner.findElement(By.id("startVideoMuted")).click();
 
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
-        MeetUtils.waitForIceConnected(secondParticipant);
+            WebDriver secondParticipant
+                = ConferenceFixture.startSecondParticipant();
+            MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
+            MeetUtils.waitForIceConnected(secondParticipant);
 
-        checkSecondParticipantForMute();
+            TestUtils.waitMillis(500);
+
+            checkSecondParticipantForMute();
+
+            ConferenceFixture.closeAllParticipants();
+        }
     }
 
     /**

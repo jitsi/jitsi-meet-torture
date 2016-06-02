@@ -50,18 +50,18 @@ public class TestsRunner
 
     static
     {
-        DEFAULT_TESTS_TO_RUN.add(AvatarTest.class.getSimpleName());
+        /*DEFAULT_TESTS_TO_RUN.add(AvatarTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(MuteTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(StopVideoTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(SwitchVideoTests.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(EtherpadTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(ActiveSpeakerTest.class.getSimpleName());*/
         DEFAULT_TESTS_TO_RUN.add(StartMutedTest.class.getSimpleName());
 
         //DEFAULT_TESTS_TO_RUN.add(LastNTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add(DisplayNameTest.class.getSimpleName());
+        /*DEFAULT_TESTS_TO_RUN.add(DisplayNameTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(DataChannelTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ContactListTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(VideoLayoutTest.class.getSimpleName());
@@ -97,7 +97,7 @@ public class TestsRunner
             DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
         }
 
-        DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());*/
     }
 
     /**
