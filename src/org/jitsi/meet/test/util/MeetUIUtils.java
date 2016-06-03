@@ -151,6 +151,28 @@ public class MeetUIUtils
     }
 
     /**
+     * Displays film strip, if not displayed.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to open the settings panel.
+     * @throws TimeoutException if we fail to open the settings panel.
+     */
+    public static void displayFilmStripPanel(WebDriver participant)
+    {
+        String filmStripXPath = "//div[@id='remoteVideos' and @class='hidden']";
+        WebElement filmStrip =
+            participant.findElement(By.xpath(filmStripXPath));
+
+        if (filmStrip != null)
+        {
+            clickOnToolbarButton(participant, "bottom_toolbar_film_strip");
+
+            TestUtils.waitForElementNotPresentByXPath(
+                participant, filmStripXPath, 5);
+        }
+    }
+
+    /**
      * Opens the settings panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for

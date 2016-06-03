@@ -157,6 +157,9 @@ public class FollowMeTest
         WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
+        MeetUIUtils.displayFilmStripPanel(owner);
+        MeetUIUtils.displayFilmStripPanel(secondParticipant);
+
         MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
 
         TestUtils.waitMillis(5000);
