@@ -103,8 +103,13 @@ public class MeetUIUtils
     public static void displayFilmStripPanel(WebDriver participant)
     {
         String filmStripXPath = "//div[@id='remoteVideos' and @class='hidden']";
-        WebElement filmStrip =
-                participant.findElement(By.xpath(filmStripXPath));
+        WebElement filmStrip;
+
+        try {
+            filmStrip = participant.findElement(By.xpath(filmStripXPath));
+        } catch (NoSuchElementException ex) {
+            filmStrip = null;
+        }
 
         if (filmStrip != null)
         {
