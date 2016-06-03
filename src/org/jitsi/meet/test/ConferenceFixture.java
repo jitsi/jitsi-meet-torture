@@ -293,6 +293,8 @@ public class ConferenceFixture
             + currentRoomName;
         URL += "#config.requireDisplayName=false";
         URL += "&config.debug=true";
+        URL += "&config.disableAEC=true";
+        URL += "&config.disableNS=true";
         URL += "&config.callStatsID=false";
         if(fragment != null)
             URL += "&" + fragment;

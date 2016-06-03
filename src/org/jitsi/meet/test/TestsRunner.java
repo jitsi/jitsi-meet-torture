@@ -97,6 +97,8 @@ public class TestsRunner
             DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
         }
 
+        DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 
@@ -186,10 +188,13 @@ public class TestsRunner
             = System.getProperty(ConferenceFixture.FAKE_VIDEO_FNAME_PROP);
 
         if (fakeStreamVideoFile != null
-            && fakeStreamVideoFile.trim().length() != 0)
-        {
-            ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile.trim());
-        }
+            && fakeStreamVideoFile.trim().length() > 0)
+            fakeStreamVideoFile = fakeStreamVideoFile.trim();
+        else
+            fakeStreamVideoFile
+                = new File("resources/fakeVideoStream.y4m").getAbsolutePath();
+
+        ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile);
     }
 
     /**

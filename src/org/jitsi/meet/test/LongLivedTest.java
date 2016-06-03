@@ -46,30 +46,16 @@ public class LongLivedTest
 
         final int minutesToRun = Integer.valueOf(timeToRunInMin);
 
-        final CountDownLatch waitSignal = new CountDownLatch(1);
-
         // execute every 10 secs.
         // sometimes the check is executed once more
         // at the time while we are in a process of disposing
         // the two participants and ~9 secs before finishing successful
         // it fails.
         int millsToRun = (minutesToRun - 1) * 60 * 1000;
-        final Timer timer = new Timer();
-        timer.schedule(new HeartbeatTask(timer, waitSignal, millsToRun, true)
-        {
+        HeartbeatTask heartbeatTask = new HeartbeatTask(millsToRun, true);
 
-        }, 10 * 1000, 10 * 1000);
+        heartbeatTask.start(10 * 1000, 10 * 1000);
 
-        try
-        {
-            waitSignal.await(minutesToRun, TimeUnit.MINUTES);
-
-            if(waitSignal.getCount() == 0)
-                assertTrue("A problem with the conf occurred", false);
-        }
-        catch (Exception e)
-        {
-            assertTrue("An error occurred", false);
-        }
+        heartbeatTask.await(minutesToRun, TimeUnit.MINUTES);
     }
 }

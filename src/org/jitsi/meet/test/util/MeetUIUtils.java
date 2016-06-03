@@ -94,6 +94,63 @@ public class MeetUIUtils
     }
 
     /**
+     * Returns <video> element for the local video.
+     * @param participant the <tt>WebDriver</tt> from which local video element
+     * will be obtained.
+     * @return <tt>WebElement</tt> of the local video.
+     */
+    public static WebElement getLocalVideo(WebDriver participant)
+    {
+        List<WebElement> peerThumbs = participant.findElements(
+                By.xpath("//video[starts-with(@id, 'localVideo_')]"));
+
+        return peerThumbs.get(0);
+    }
+
+    /**
+     * Get's the id of local video element.
+     * @param participant the <tt>WebDriver</tt> instance of the participant for
+     * whom we want to obtain local video element's ID
+     * @return a <tt>String</tt> with the ID of the local video element.
+     */
+    public static String getLocalVideoID(WebDriver participant)
+    {
+        return getLocalVideo(participant).getAttribute("id");
+    }
+
+    /**
+     * Returns all remote video elements for given <tt>WebDriver</tt> instance.
+     * @param participant the <tt>WebDriver</tt> instance which will be used to
+     * obtain remote video elements.
+     * @return a list of <tt>WebElement</tt> with the remote videos.
+     */
+    public static List<WebElement> getRemoteVideos(WebDriver participant)
+    {
+        return participant.findElements(
+                By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
+    }
+
+    /**
+     * Obtains the ids for all remote participants <video> elements.
+     * @param participant the <tt>WebDriver</tt> instance for which remote video
+     * ids will be fetched.
+     * @return a list of <tt>String</tt> with the ids of remote participants
+     * video elements.
+     */
+    public static List<String> getRemoteVideoIDs(WebDriver participant)
+    {
+        List<WebElement> remoteThumbs = getRemoteVideos(participant);
+
+        List<String> ids = new ArrayList<>();
+        for (WebElement thumb : remoteThumbs)
+        {
+            ids.add(thumb.getAttribute("id"));
+        }
+
+        return ids;
+    }
+
+    /**
      * Opens the settings panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
@@ -241,12 +298,30 @@ public class MeetUIUtils
                         // 'null' or 0, so we wait to timeout this condition
                         if (muted)
                         {
-                            return audioLevel != null && audioLevel > 0;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "muted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                         // When testing for unmuted we wait for first sound
                         else
                         {
-                            return audioLevel != null && audioLevel > 0.1;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "unmuted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
