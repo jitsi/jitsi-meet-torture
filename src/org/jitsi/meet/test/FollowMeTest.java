@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import junit.extensions.TestSetup;
 import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 
@@ -61,7 +62,45 @@ public class FollowMeTest
         suite.addTest(new FollowMeTest(
                 "testNextOnStageCommandsAreFollowed"));
 
-        return suite;
+        return new TestSetup(suite) {
+            protected void setUp() {
+                oneTimeSetUp();
+            }
+
+            protected void tearDown() {
+                oneTimeTearDown();
+            }
+        };
+    }
+
+    private static void oneTimeSetUp() {
+        System.err.println("Enabling 'Follow Me' for moderator.");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        MeetUIUtils.displaySettingsPanel(owner);
+        MeetUIUtils.displaySettingsPanel(secondParticipant);
+
+        TestUtils.waitForDisplayedElementByXPath(
+                owner, followMeCheckboxXPath, 5);
+
+        owner.findElement(By.id("followMeCheckBox")).click();
+    }
+
+    private static void oneTimeTearDown() {
+        System.err.println("Disabling 'Follow Me' for moderator.");
+
+        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebElement checkbox = owner.findElement(By.id("followMeCheckBox"));
+
+        if (checkbox.isSelected()) {
+            checkbox.click();
+        }
+
+        MeetUIUtils.hideSettingsPanel(owner);
+        MeetUIUtils.hideSettingsPanel(secondParticipant);
     }
 
     /**
@@ -71,13 +110,10 @@ public class FollowMeTest
     {
         System.err.println("Start testFollowMeCheckboxVisibleOnlyForModerator");
 
-        WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        checkFollowMeCheckboxVisible(owner, true);
-        checkFollowMeCheckboxVisible(secondParticipant, false);
-
-        owner.findElement(By.id("followMeCheckBox")).click();
+        TestUtils.waitForNotDisplayedElementByXPath(
+                secondParticipant, followMeCheckboxXPath, 5);
     }
 
     /**
@@ -89,6 +125,13 @@ public class FollowMeTest
 
         WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
+        if (!MeetUtils.isEtherpadEnabled(owner))
+        {
+            System.err.println(
+                "No etherpad configuration detected. Disabling test.");
+            return;
+        }
 
         MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
 
@@ -172,23 +215,5 @@ public class FollowMeTest
                     MeetUIUtils.getLargeVideoSource(secondParticipant));
         }
 
-    }
-
-    /**
-     * Checks visibility of "Follow Me" checkbox.
-     * @param webDriver
-     * @param shouldBeVisible
-     */
-    private void checkFollowMeCheckboxVisible(
-            WebDriver webDriver, boolean shouldBeVisible) {
-        MeetUIUtils.displaySettingsPanel(webDriver);
-
-        if (shouldBeVisible) {
-            TestUtils.waitForDisplayedElementByXPath(
-                    webDriver, followMeCheckboxXPath, 5);
-        } else {
-            TestUtils.waitForNotDisplayedElementByXPath(
-                    webDriver, followMeCheckboxXPath, 5);
-        }
     }
 }
