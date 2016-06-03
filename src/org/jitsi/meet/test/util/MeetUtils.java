@@ -52,6 +52,12 @@ public class MeetUtils
         "return APP.conference.getConnectionState() === 'disconnected';";
 
     /**
+     * The javascript code which returns {@code true} if etherpad is enabled.
+     */
+    public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
+        "return config.etherpad_base !== undefined;";
+
+    /**
      * Returns resource JID which corresponds to XMPP MUC nickname of the given
      * <tt>participant</tt>.
      *
@@ -355,5 +361,16 @@ public class MeetUtils
             "} catch (err) { return 'error: '+err; }");
 
         return (protocol == null) ? null : protocol.toString().toLowerCase();
+    }
+
+    /**
+     * Checks whether etherpad is enabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if etherpad is enabled.
+     */
+    public static boolean isEtherpadEnabled(WebDriver driver)
+    {
+        return TestUtils.executeScriptAndReturnBoolean(
+            driver, ETHERPAD_ENABLED_CHECK_SCRIPT);
     }
 }
