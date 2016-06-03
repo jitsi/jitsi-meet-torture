@@ -114,6 +114,26 @@ public class MeetUIUtils
     }
 
     /**
+     * Hides the settings panel, if not hidden.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to hide the settings panel.
+     * @throws TimeoutException if we fail to hide the settings panel.
+     */
+    public static void hideSettingsPanel(WebDriver participant)
+    {
+        String settingsXPath = "//div[@id='settingsmenu']";
+        WebElement settings = participant.findElement(By.xpath(settingsXPath));
+        if (settings.isDisplayed())
+        {
+            clickOnToolbarButton(participant, "toolbar_button_settings");
+
+            TestUtils.waitForNotDisplayedElementByXPath(
+                    participant, settingsXPath, 5);
+        }
+    }
+
+    /**
      * Opens the contact list panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
