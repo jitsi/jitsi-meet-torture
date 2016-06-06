@@ -65,7 +65,6 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(DataChannelTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ContactListTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(VideoLayoutTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(FollowMeTest.class.getSimpleName());
         //DEFAULT_TESTS_TO_RUN.add(
         //    DesktopSharingImitationTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(DesktopSharingTest.class.getSimpleName());
@@ -99,6 +98,8 @@ public class TestsRunner
         }
 
         DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
+
+        DEFAULT_TESTS_TO_RUN.add(FollowMeTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
