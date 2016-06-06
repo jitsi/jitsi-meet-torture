@@ -30,11 +30,16 @@ var DEFAULT_MIME = 'image/png';
  * Create new Camera.
  * It allows to capture frames from video element.
  * @param {HTMLVideoElement} video source video element
+ * @param {String} audioLevelsUserResource optional resource part of the MUC JID
+ * which will enable audio level recording for the user identified by it
  * @constructor
  */
-var Camera = function (video) {
-    this.video = video;
+var Camera = function (video, audioLevelsUserResource) {
+    this.audioLevels = [];
     this.frames = [];
+    this.timestamps = [];
+    this.aLvlUserResource = audioLevelsUserResource;
+    this.video = video;
 };
 
 /**
@@ -65,8 +70,22 @@ Camera.prototype.start = function (fps) {
     this.startTime = Date.now();
     this.interval = window.setInterval(function () {
         context.drawImage(this.video, 0, 0);
+        this.timestamps.push(Date.now());
         this.frames.push(context.getImageData(0, 0, width, height));
+        if (this.aLvlUserResource) {
+            this.audioLevels.push(this.recordAudioLevel());
+        }
     }.bind(this), Math.floor(1000 / (fps || DEFAULT_FPS)));
+};
+
+/**
+ * Captures audio level value for the user recorded by this Camera instance
+ * @return {Double} from 0.0 to 1.0 or -1 if undefined
+ */
+Camera.prototype.recordAudioLevel = function () {
+    var level = APP.conference.getPeerSSRCAudioLevel(this.aLvlUserResource);
+    return (level !== null && level !== undefined) ?
+        level.toFixed(3) : (-1.0).toFixed(3);
 };
 
 /**
@@ -75,6 +94,22 @@ Camera.prototype.start = function (fps) {
 Camera.prototype.stop = function () {
     window.clearInterval(this.interval);
     this.endTime = Date.now();
+};
+
+/**
+ * Get audio level for the frame at given position.
+ * @param {number} pos frame position
+ * @returns {number} the audio level value from 0.0 to 1.0 or -1 if undefined
+ */
+Camera.prototype.getAudioLevel = function (pos) {
+    var level = this.audioLevels[pos];
+    if (level == null || level == undefined) {
+        throw new Error(
+            "Cannot find audio level " + pos + " for video " + this.getId() +
+             ", user resource: " + this.aLvlUserResource
+        );
+    }
+    return level;
 };
 
 /**
@@ -126,6 +161,49 @@ Camera.prototype.getRawDataSize = function () {
 };
 
 /**
+ * Get RGBA a value of the pixel at the center of the frame at specified
+ * position.
+ * @param {number} pos frame position
+ * @returns {List of string} with Reg, Green, Blue and Alpha values of the pixel
+ */
+Camera.prototype.getRGBAatTheCenter = function (pos) {
+    var frame = this.frames[pos];
+    if (!frame) {
+        throw new Error(
+            "Cannot find frame at " + pos + " for video " + this.getId()
+        );
+    }
+
+    var pixel = [];
+    var width = frame.width;
+    var height = frame.height;
+    var y = (width * height * 4/* RGBA */) / 2;
+    var x = (width * 4/* RGBA */) / 2;
+
+    for (var i = 0; i < 4; i++) {
+        pixel.push(frame.data[y + x + i]);
+    }
+
+    return pixel;
+};
+
+/**
+ * Get the timestamp of the frame at specified position.
+ * @param {number} pos frame position
+ * @returns {number} the timestamp obtained with Date.now() for the frame at
+ * given position
+ */
+Camera.prototype.getTimestamp = function (pos) {
+    var ts = this.timestamps[pos];
+    if (ts == null || ts == undefined) {
+        throw new Error(
+            "Cannot find timestamp " + pos + " for video " + this.getId()
+        );
+    }
+    return ts;
+};
+
+/**
  * Cleanup.
  */
 Camera.prototype.cleanup = function () {
@@ -147,18 +225,21 @@ var VideoOperator = function () {
  * @param {string[]} videoIds array if ids of target video elements.
  * @param {number} [fps=DEFAULT_FPS] fps for cameras
  */
-VideoOperator.prototype.recordAll = function (videoIds, fps) {
-    videoIds.forEach(function (videoId) {
+VideoOperator.prototype.recordAll = function (videoIds,
+                                              fps, aLvlUserResources) {
+    for (var i =0; i < videoIds.length; i++) {
+        var videoId = videoIds[i];
+        var aLvlUserResource = aLvlUserResources ? aLvlUserResources[i] : null;
         var element = document.getElementById(videoId);
         if (!element) {
             throw new Error("cannot find element with id " + videoId);
         }
 
-        var recorder = new Camera(element);
+        var recorder = new Camera(element, aLvlUserResource);
         recorder.start(fps);
 
         this.cameras.push(recorder);
-    }.bind(this));
+    }
 };
 
 /**
@@ -223,6 +304,33 @@ VideoOperator.prototype.getFramesCount = function (videoId) {
  */
 VideoOperator.prototype.getFrame = function (videoId, pos, mimeType) {
     return this.getCamera(videoId).getFrame(pos, mimeType);
+};
+
+/**
+ * Get audio level for the frame at specified position.
+ * @param {number} pos frame position
+ * @returns {number} audio level value from 0.0 to 1.0
+ */
+VideoOperator.prototype.getAudioLevel = function (videoId, pos) {
+    return this.getCamera(videoId).getAudioLevel(pos);
+};
+
+/**
+ * Get RGBA value of the pixel at the center of the frame at specified position.
+ * @param {number} pos frame position
+ * @returns {array of number} [R,G,B,A] pixel values from 0 to 255.
+ */
+VideoOperator.prototype.getRGBAatTheCenter = function (videoId, pos) {
+    return this.getCamera(videoId).getRGBAatTheCenter(pos);
+};
+
+/**
+ * Get timestamp of the frame at specified position.
+ * @param {number} pos frame position
+ * @returns {number} timestamp of the frame obtained with Date.now()
+ */
+VideoOperator.prototype.getTimestamp = function (videoId, pos) {
+    return this.getCamera(videoId).getTimestamp(pos);
 };
 
 /**

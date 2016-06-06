@@ -21,25 +21,29 @@ import org.jitsi.meet.test.util.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.Assert.fail;
+
 /**
+ * A HeartbeatTask class can be used to make sure that the conference is running
+ * for specific period of time. Calling {@link #await(long, TimeUnit)} will
+ * block the thread until either the specified time elapses or the conference
+ * breaks. The latter will result in the current test failure.
  *
  * @author George Politis
+ * @author Pawel Domas
  */
 public class HeartbeatTask
     extends TimerTask
 {
-    private final Timer timer;
-    private final CountDownLatch waitSignal;
+    private final Timer timer = new Timer();
+    private final CountDownLatch waitSignal = new CountDownLatch(1);
     private final boolean enableBitrateCheck;
 
-    public HeartbeatTask(Timer timer, CountDownLatch waitSignal, int millsToRun,
-                         boolean enableBitrateCheck)
+    public HeartbeatTask(int millsToRun, boolean enableBitrateCheck)
     {
         // XXX bitrate checks fail on beta. not enough bandwidth to check
         // why.
         this.enableBitrateCheck = enableBitrateCheck;
-        this.timer = timer;
-        this.waitSignal = waitSignal;
         this.millsToRun = millsToRun;
     }
 
@@ -48,6 +52,19 @@ public class HeartbeatTask
 
     CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
     CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
+
+    /**
+     * Starts the <tt>HeartbeatTask</tt>. From now on it will be checking
+     * conference state for failures.
+     * @param startDelayMs delay between call to this method and first
+     * conference state check(in milliseconds).
+     * @param intervalMs how often this <tt>HeartbeatTask</tt> will be doing
+     * conference state checks(in milliseconds).
+     */
+    public void start(long startDelayMs, long intervalMs)
+    {
+        timer.schedule(this, startDelayMs, intervalMs);
+    }
 
     @Override
     public void run()
@@ -165,5 +182,30 @@ public class HeartbeatTask
         System.err.println(msg);
         waitSignal.countDown();
         timer.cancel();
+    }
+
+    /**
+     * Calling this will make the current thread wait till the conference runs
+     * for specified amount of time. If conference breaks in the meantime the
+     * current test will fail(Assert.fail() method is called}.
+     * @param timeout the amount of time for the conference to run without any
+     * problems.
+     * @param timeUnit the time unit of the <tt>timeout</tt>.
+     */
+    public void await(long timeout, TimeUnit timeUnit)
+    {
+        try
+        {
+            waitSignal.await(timeout, timeUnit);
+
+            if (waitSignal.getCount() == 0)
+                fail("A problem with the conf occurred");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+
+            fail("An error occurred: " + e.getMessage());
+        }
     }
 }
