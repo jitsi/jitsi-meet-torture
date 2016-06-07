@@ -86,6 +86,9 @@ public class FollowMeTest
                 owner, followMeCheckboxXPath, 5);
 
         owner.findElement(By.id("followMeCheckBox")).click();
+
+        // give time for follow me to be enabled on all participants
+        TestUtils.waitMillis(10000);
     }
 
     private static void oneTimeTearDown() {
@@ -101,6 +104,9 @@ public class FollowMeTest
 
         MeetUIUtils.hideSettingsPanel(owner);
         MeetUIUtils.hideSettingsPanel(secondParticipant);
+
+        // give time for follow me to be disabled on all participants
+        TestUtils.waitMillis(10000);
     }
 
     /**
