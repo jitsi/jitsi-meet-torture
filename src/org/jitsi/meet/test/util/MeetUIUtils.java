@@ -151,6 +151,33 @@ public class MeetUIUtils
     }
 
     /**
+     * Displays film strip, if not displayed.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to open the settings panel.
+     * @throws TimeoutException if we fail to open the settings panel.
+     */
+    public static void displayFilmStripPanel(WebDriver participant)
+    {
+        String filmStripXPath = "//div[@id='remoteVideos' and @class='hidden']";
+        WebElement filmStrip;
+
+        try {
+            filmStrip = participant.findElement(By.xpath(filmStripXPath));
+        } catch (NoSuchElementException ex) {
+            filmStrip = null;
+        }
+
+        if (filmStrip != null)
+        {
+            clickOnToolbarButton(participant, "bottom_toolbar_film_strip");
+
+            TestUtils.waitForElementNotPresentByXPath(
+                    participant, filmStripXPath, 5);
+        }
+    }
+
+    /**
      * Opens the settings panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
@@ -167,6 +194,26 @@ public class MeetUIUtils
 
             TestUtils.waitForDisplayedElementByXPath(
                 participant, settingsXPath, 5);
+        }
+    }
+
+    /**
+     * Hides the settings panel, if not hidden.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to hide the settings panel.
+     * @throws TimeoutException if we fail to hide the settings panel.
+     */
+    public static void hideSettingsPanel(WebDriver participant)
+    {
+        String settingsXPath = "//div[@id='settingsmenu']";
+        WebElement settings = participant.findElement(By.xpath(settingsXPath));
+        if (settings.isDisplayed())
+        {
+            clickOnToolbarButton(participant, "toolbar_button_settings");
+
+            TestUtils.waitForNotDisplayedElementByXPath(
+                    participant, settingsXPath, 5);
         }
     }
 
@@ -586,5 +633,22 @@ public class MeetUIUtils
         ((JavascriptExecutor)driver).executeScript(
             "arguments[0][arguments[1]] = arguments[2];",
             element, attributeName, attributeValue);
+    }
+
+    /**
+     * Checks whether video with id is displayed on the large video.
+     * @param driver the driver
+     * @param videoID the video
+     */
+    public static boolean firefoxCheckVideoDisplayedOnLarge(
+            WebDriver driver, String videoID)
+    {
+        Object res = ((JavascriptExecutor) driver)
+                .executeScript(
+                        "return document.getElementById('" + videoID
+                                + "').mozSrcObject "
+                                + "== document.getElementById('largeVideo').mozSrcObject;");
+
+        return  res != null && res.equals(Boolean.TRUE);
     }
 }

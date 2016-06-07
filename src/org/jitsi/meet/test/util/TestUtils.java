@@ -244,6 +244,35 @@ public class TestUtils
     }
 
     /**
+     * Waits until an element has attribute equal to specified value.
+     * @param participant the {@code WebDriver}.
+     * @param xpath the xpath to search for the element
+     * @param attributeName name of the the element's attribute
+     * @param attributeValue expected value of the the element's attribute
+     * @param timeout the time to wait for the element in seconds.
+     */
+    public static void waitForElementAttributeValueByXPath(
+            WebDriver participant,
+            final String xpath,
+            final String attributeName,
+            final Object attributeValue,
+            long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+                .until(new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
+                        WebElement el = d.findElement(By.xpath(xpath));
+
+                        return el != null &&
+                                el.getAttribute(attributeName)
+                                        .equals(attributeValue);
+                    }
+                });
+    }
+
+    /**
      * Waits until an element is not displayed.
      * @param participant the {@code WebDriver}.
      * @param xpath the xpath to search for the element
