@@ -97,6 +97,8 @@ public class TestsRunner
             DEFAULT_TESTS_TO_RUN.add(PSNRTest.class.getSimpleName());
         }
 
+        // make sure LipSyncTest tests are the last to run as they will stop
+        // and start the browsers one more time and will change the video file
         DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
@@ -189,12 +191,10 @@ public class TestsRunner
 
         if (fakeStreamVideoFile != null
             && fakeStreamVideoFile.trim().length() > 0)
-            fakeStreamVideoFile = fakeStreamVideoFile.trim();
-        else
-            fakeStreamVideoFile
-                = new File("resources/fakeVideoStream.y4m").getAbsolutePath();
-
-        ConferenceFixture.setFakeStreamVideoFile(fakeStreamVideoFile);
+        {
+            ConferenceFixture.setFakeStreamVideoFile(
+                fakeStreamVideoFile.trim());
+        }
     }
 
     /**

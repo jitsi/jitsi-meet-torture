@@ -91,7 +91,13 @@ public class LipSyncTest
         // Close all participants, we need special config to be passed and audio
         // video streams reset, because the audio does not loop in Chrome and we
         // don't want to end up with silence being streamed
-        ConferenceFixture.closeAllParticipants();
+        //ConferenceFixture.closeAllParticipants();
+        // quits the participants in order to make sure the custom video file
+        // is used
+        new DisposeConference().testDispose();
+        // this file is required in order to run this test
+        ConferenceFixture.setFakeStreamVideoFile(
+            new File("resources/fakeVideoStream.y4m").getAbsolutePath());
 
         // Start owner with lip-sync enabled, audio packet delay and shorter
         // audio levels interval
