@@ -199,9 +199,22 @@ public class FollowMeTest
         WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
+        String secondParticipantResource
+            = MeetUtils.getResourceJid(secondParticipant);
+
+        // just a debug print to go in logs
+        ((JavascriptExecutor) owner)
+            .executeScript(
+                "console.log('Clicking on remote:"
+                    + secondParticipantResource + "');");
+        ((JavascriptExecutor) secondParticipant)
+            .executeScript(
+                "console.log('Moderator will click on us:"
+                    + secondParticipantResource + "');");
+
         // let's make video of second participant active
         MeetUIUtils.clickOnRemoteVideo(
-                owner, MeetUtils.getResourceJid(secondParticipant));
+                owner, secondParticipantResource);
 
         System.err.println("clicked on second participant's video thumb");
 
@@ -210,6 +223,11 @@ public class FollowMeTest
         // and now check that it's active for second participant too
         WebElement localVideoThumb =
                 MeetUIUtils.getLocalVideo(secondParticipant);
+
+        ((JavascriptExecutor) secondParticipant)
+            .executeScript(
+                "console.log('Checking whether:"
+                    + secondParticipantResource + " is on large');");
 
         if(ConferenceFixture.getBrowserType(secondParticipant).equals(
                 ConferenceFixture.BrowserType.firefox)) {
