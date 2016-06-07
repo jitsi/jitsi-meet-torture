@@ -162,27 +162,25 @@ public class FollowMeTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
 
-        TestUtils.waitMillis(5000);
+        System.err.println("hiding film strip");
 
-        assertEquals(owner
-                .findElement(By.xpath(filmStripXPath))
-                .getAttribute("class"), "hidden");
+        TestUtils.waitForElementAttributeValueByXPath(
+                owner, filmStripXPath, "class", "hidden", 10);
+        TestUtils.waitForElementAttributeValueByXPath(
+                secondParticipant, filmStripXPath, "class", "hidden", 10);
 
-        assertEquals(secondParticipant
-                .findElement(By.xpath(filmStripXPath))
-                .getAttribute("class"), "hidden");
+        System.err.println("film strip should be hidden now");
 
         MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
 
-        TestUtils.waitMillis(5000);
+        System.err.println("showing film strip");
 
-        assertEquals(owner
-                .findElement(By.xpath(filmStripXPath))
-                .getAttribute("class"), "");
+        TestUtils.waitForElementAttributeValueByXPath(
+                owner, filmStripXPath, "class", "", 10);
+        TestUtils.waitForElementAttributeValueByXPath(
+                secondParticipant, filmStripXPath, "class", "", 10);
 
-        assertEquals(secondParticipant
-                .findElement(By.xpath(filmStripXPath))
-                .getAttribute("class"), "");
+        System.err.println("film strip should be shown now");
     }
 
     /**
@@ -196,15 +194,16 @@ public class FollowMeTest
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
         // let's make video of second participant active
-        ((JavascriptExecutor)owner).executeScript(
-                "$(\"span[id^='participant_'][class='videocontainer']\")" +
-                        ".click()");
+        MeetUIUtils.clickOnRemoteVideo(
+                owner, MeetUtils.getResourceJid(secondParticipant));
 
-        TestUtils.waitMillis(5000);
+        System.err.println("clicked on second participant's video thumb");
 
-        // and now check that it's active for second particpant too
-        WebElement localVideoThumb = secondParticipant
-            .findElement(By.xpath("//span[@id='localVideoWrapper']/video"));
+        TestUtils.waitMillis(10000);
+
+        // and now check that it's active for second participant too
+        WebElement localVideoThumb =
+                MeetUIUtils.getLocalVideo(secondParticipant);
 
         if(ConferenceFixture.getBrowserType(secondParticipant).equals(
                 ConferenceFixture.BrowserType.firefox)) {
@@ -213,6 +212,9 @@ public class FollowMeTest
             assertTrue(MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
                     secondParticipant, localVideoId));
         } else {
+            System.err.println("now checking value of big video for second " +
+                    "participant");
+
             assertEquals(
                     localVideoThumb.getAttribute("src"),
                     MeetUIUtils.getLargeVideoSource(secondParticipant));
