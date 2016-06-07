@@ -101,6 +101,8 @@ public class TestsRunner
         // and start the browsers one more time and will change the video file
         DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
 
+        DEFAULT_TESTS_TO_RUN.add(FollowMeTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
 
