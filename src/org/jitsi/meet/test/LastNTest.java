@@ -143,6 +143,6 @@ public class LastNTest
      */
     public void restartParticipants()
     {
-        new StartMutedTest("restartParticipants").restartParticipants();
+        ConferenceFixture.restartParticipants();
     }
 }

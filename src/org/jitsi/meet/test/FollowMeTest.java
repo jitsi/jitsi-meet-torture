@@ -88,25 +88,16 @@ public class FollowMeTest
         owner.findElement(By.id("followMeCheckBox")).click();
 
         // give time for follow me to be enabled on all participants
-        TestUtils.waitMillis(10000);
+        TestUtils.waitMillis(5000);
     }
 
     private static void oneTimeTearDown() {
-        System.err.println("Disabling 'Follow Me' for moderator.");
+        System.err.println("Disabling 'Follow Me' and lose the state.");
 
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
-        WebElement checkbox = owner.findElement(By.id("followMeCheckBox"));
+        ConferenceFixture.restartParticipants();
 
-        if (checkbox.isSelected()) {
-            checkbox.click();
-        }
-
-        MeetUIUtils.hideSettingsPanel(owner);
-        MeetUIUtils.hideSettingsPanel(secondParticipant);
-
-        // give time for follow me to be disabled on all participants
-        TestUtils.waitMillis(10000);
+        // give some time
+        TestUtils.waitMillis(5000);
     }
 
     /**
@@ -199,7 +190,7 @@ public class FollowMeTest
             "$(\"span[id='participant_" + secondParticipantResource + "']" +
                     "[class='videocontainer']\").click()");
 
-        TestUtils.waitMillis(10000);
+        TestUtils.waitMillis(5000);
 
         // and now check that it's active for second participant too
         WebElement localVideoThumb =

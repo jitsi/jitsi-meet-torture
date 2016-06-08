@@ -936,4 +936,22 @@ public class ConferenceFixture
             return "unknownDriverInstance";
         }
     }
+
+    /**
+     * Restarts the two participants so we clear states of this test.
+     */
+    public static void restartParticipants()
+    {
+        System.err.println("Start restartParticipants.");
+
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(ConferenceFixture.getOwner());
+        TestUtils.waitMillis(1000);
+
+        WebDriver owner = ConferenceFixture.startOwner(null);
+
+        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
+        ConferenceFixture.waitForSecondParticipantToConnect();
+        MeetUtils.waitForIceConnected(owner);
+    }
 }
