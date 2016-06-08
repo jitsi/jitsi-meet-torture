@@ -18,11 +18,16 @@ package org.jitsi.meet.test.util;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.io.*;
+import java.nio.file.*;
 import java.util.*;
+
+import static org.junit.Assert.fail;
 
 /**
  * Utility class.
  * @author Damian Minkov
+ * @author Pawel Domas
  */
 public class TestUtils
 {
@@ -56,6 +61,35 @@ public class TestUtils
         {
             IS_LINUX = false;
             IS_MAC = false;
+        }
+    }
+
+    /**
+     * Injects JS script into given <tt>participant</tt> <tt>WebDriver</tt>.
+     * @param participant the <tt>WebDriver</tt> where the script will be
+     * injected.
+     * @param scriptPath the path of the JS script to be injected.
+     */
+    public static void injectScript(WebDriver participant, String scriptPath)
+    {
+        JavascriptExecutor js = ((JavascriptExecutor) participant);
+
+        // read and inject helper script
+        try
+        {
+            Path scriptAbsolutePath
+                = Paths.get(new File(scriptPath).getAbsolutePath());
+
+            String script = new String(Files.readAllBytes(scriptAbsolutePath));
+
+            js.executeScript(script);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+
+            fail("Failed to inject JS script: " + scriptPath + " into "
+                    + participant);
         }
     }
 
@@ -207,6 +241,35 @@ public class TestUtils
                     return el != null && el.isDisplayed();
                 }
             });
+    }
+
+    /**
+     * Waits until an element has attribute equal to specified value.
+     * @param participant the {@code WebDriver}.
+     * @param xpath the xpath to search for the element
+     * @param attributeName name of the the element's attribute
+     * @param attributeValue expected value of the the element's attribute
+     * @param timeout the time to wait for the element in seconds.
+     */
+    public static void waitForElementAttributeValueByXPath(
+            WebDriver participant,
+            final String xpath,
+            final String attributeName,
+            final Object attributeValue,
+            long timeout)
+    {
+        new WebDriverWait(participant, timeout)
+                .until(new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
+                        WebElement el = d.findElement(By.xpath(xpath));
+
+                        return el != null &&
+                                el.getAttribute(attributeName)
+                                        .equals(attributeValue);
+                    }
+                });
     }
 
     /**

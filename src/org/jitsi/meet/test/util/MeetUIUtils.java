@@ -94,6 +94,90 @@ public class MeetUIUtils
     }
 
     /**
+     * Returns <video> element for the local video.
+     * @param participant the <tt>WebDriver</tt> from which local video element
+     * will be obtained.
+     * @return <tt>WebElement</tt> of the local video.
+     */
+    public static WebElement getLocalVideo(WebDriver participant)
+    {
+        List<WebElement> peerThumbs = participant.findElements(
+                By.xpath("//video[starts-with(@id, 'localVideo_')]"));
+
+        return peerThumbs.get(0);
+    }
+
+    /**
+     * Get's the id of local video element.
+     * @param participant the <tt>WebDriver</tt> instance of the participant for
+     * whom we want to obtain local video element's ID
+     * @return a <tt>String</tt> with the ID of the local video element.
+     */
+    public static String getLocalVideoID(WebDriver participant)
+    {
+        return getLocalVideo(participant).getAttribute("id");
+    }
+
+    /**
+     * Returns all remote video elements for given <tt>WebDriver</tt> instance.
+     * @param participant the <tt>WebDriver</tt> instance which will be used to
+     * obtain remote video elements.
+     * @return a list of <tt>WebElement</tt> with the remote videos.
+     */
+    public static List<WebElement> getRemoteVideos(WebDriver participant)
+    {
+        return participant.findElements(
+                By.xpath("//video[starts-with(@id, 'remoteVideo_')]"));
+    }
+
+    /**
+     * Obtains the ids for all remote participants <video> elements.
+     * @param participant the <tt>WebDriver</tt> instance for which remote video
+     * ids will be fetched.
+     * @return a list of <tt>String</tt> with the ids of remote participants
+     * video elements.
+     */
+    public static List<String> getRemoteVideoIDs(WebDriver participant)
+    {
+        List<WebElement> remoteThumbs = getRemoteVideos(participant);
+
+        List<String> ids = new ArrayList<>();
+        for (WebElement thumb : remoteThumbs)
+        {
+            ids.add(thumb.getAttribute("id"));
+        }
+
+        return ids;
+    }
+
+    /**
+     * Displays film strip, if not displayed.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to open the settings panel.
+     * @throws TimeoutException if we fail to open the settings panel.
+     */
+    public static void displayFilmStripPanel(WebDriver participant)
+    {
+        String filmStripXPath = "//div[@id='remoteVideos' and @class='hidden']";
+        WebElement filmStrip;
+
+        try {
+            filmStrip = participant.findElement(By.xpath(filmStripXPath));
+        } catch (NoSuchElementException ex) {
+            filmStrip = null;
+        }
+
+        if (filmStrip != null)
+        {
+            clickOnToolbarButton(participant, "bottom_toolbar_film_strip");
+
+            TestUtils.waitForElementNotPresentByXPath(
+                    participant, filmStripXPath, 5);
+        }
+    }
+
+    /**
      * Opens the settings panel, if not open.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
@@ -110,6 +194,26 @@ public class MeetUIUtils
 
             TestUtils.waitForDisplayedElementByXPath(
                 participant, settingsXPath, 5);
+        }
+    }
+
+    /**
+     * Hides the settings panel, if not hidden.
+     *
+     * @param participant <tt>WebDriver</tt> instance of the participant for
+     * whom we'll try to hide the settings panel.
+     * @throws TimeoutException if we fail to hide the settings panel.
+     */
+    public static void hideSettingsPanel(WebDriver participant)
+    {
+        String settingsXPath = "//div[@id='settingsmenu']";
+        WebElement settings = participant.findElement(By.xpath(settingsXPath));
+        if (settings.isDisplayed())
+        {
+            clickOnToolbarButton(participant, "toolbar_button_settings");
+
+            TestUtils.waitForNotDisplayedElementByXPath(
+                    participant, settingsXPath, 5);
         }
     }
 
@@ -241,12 +345,30 @@ public class MeetUIUtils
                         // 'null' or 0, so we wait to timeout this condition
                         if (muted)
                         {
-                            return audioLevel != null && audioLevel > 0;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "muted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                         // When testing for unmuted we wait for first sound
                         else
                         {
-                            return audioLevel != null && audioLevel > 0.1;
+                            if (audioLevel != null && audioLevel > 0.1)
+                            {
+                                System.err.println(
+                                        "unmuted exiting on: " + audioLevel);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -511,5 +633,22 @@ public class MeetUIUtils
         ((JavascriptExecutor)driver).executeScript(
             "arguments[0][arguments[1]] = arguments[2];",
             element, attributeName, attributeValue);
+    }
+
+    /**
+     * Checks whether video with id is displayed on the large video.
+     * @param driver the driver
+     * @param videoID the video
+     */
+    public static boolean firefoxCheckVideoDisplayedOnLarge(
+            WebDriver driver, String videoID)
+    {
+        Object res = ((JavascriptExecutor) driver)
+                .executeScript(
+                        "return document.getElementById('" + videoID
+                                + "').mozSrcObject "
+                                + "== document.getElementById('largeVideo').mozSrcObject;");
+
+        return  res != null && res.equals(Boolean.TRUE);
     }
 }

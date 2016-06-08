@@ -153,6 +153,11 @@ public class ContactListTest
                     secondParticipantJid,
                     MeetUIUtils.getLargeVideoResource(owner));
         }
+        finally
+        {
+            // make sure we unpin the participant, as this may brake other tests
+            secondPartLi.click();
+        }
     }
 
     /**
