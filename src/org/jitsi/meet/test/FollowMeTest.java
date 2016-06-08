@@ -214,8 +214,8 @@ public class FollowMeTest
 
         // let's make video of second participant active
         ((JavascriptExecutor)owner).executeScript(
-            "$(\"span[id^='participant_'][class='videocontainer']\")" +
-                ".click()");
+            "$(\"span[id='participant_" + secondParticipantResource + "']" +
+                    "[class='videocontainer']\").click()");
 
         System.err.println("clicked on second participant's video thumb");
 
