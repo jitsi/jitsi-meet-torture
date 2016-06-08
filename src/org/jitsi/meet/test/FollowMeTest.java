@@ -168,25 +168,17 @@ public class FollowMeTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
 
-        System.err.println("hiding film strip");
-
         TestUtils.waitForElementAttributeValueByXPath(
                 owner, filmStripXPath, "class", "hidden", 10);
         TestUtils.waitForElementAttributeValueByXPath(
                 secondParticipant, filmStripXPath, "class", "hidden", 10);
 
-        System.err.println("film strip should be hidden now");
-
         MeetUIUtils.clickOnToolbarButton(owner, "bottom_toolbar_film_strip");
-
-        System.err.println("showing film strip");
 
         TestUtils.waitForElementAttributeValueByXPath(
                 owner, filmStripXPath, "class", "", 10);
         TestUtils.waitForElementAttributeValueByXPath(
                 secondParticipant, filmStripXPath, "class", "", 10);
-
-        System.err.println("film strip should be shown now");
     }
 
     /**
@@ -202,32 +194,16 @@ public class FollowMeTest
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);
 
-        // just a debug print to go in logs
-        ((JavascriptExecutor) owner)
-            .executeScript(
-                "console.log('Clicking on remote:"
-                    + secondParticipantResource + "');");
-        ((JavascriptExecutor) secondParticipant)
-            .executeScript(
-                "console.log('Moderator will click on us:"
-                    + secondParticipantResource + "');");
-
         // let's make video of second participant active
-        MeetUIUtils.clickOnRemoteVideo(
-                owner, secondParticipantResource);
-
-        System.err.println("clicked on second participant's video thumb");
+        ((JavascriptExecutor)owner).executeScript(
+            "$(\"span[id='participant_" + secondParticipantResource + "']" +
+                    "[class='videocontainer']\").click()");
 
         TestUtils.waitMillis(10000);
 
         // and now check that it's active for second participant too
         WebElement localVideoThumb =
                 MeetUIUtils.getLocalVideo(secondParticipant);
-
-        ((JavascriptExecutor) secondParticipant)
-            .executeScript(
-                "console.log('Checking whether:"
-                    + secondParticipantResource + " is on large');");
 
         if(ConferenceFixture.getBrowserType(secondParticipant).equals(
                 ConferenceFixture.BrowserType.firefox)) {
@@ -236,9 +212,6 @@ public class FollowMeTest
             assertTrue(MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
                     secondParticipant, localVideoId));
         } else {
-            System.err.println("now checking value of big video for second " +
-                    "participant");
-
             assertEquals(
                     localVideoThumb.getAttribute("src"),
                     MeetUIUtils.getLargeVideoSource(secondParticipant));
