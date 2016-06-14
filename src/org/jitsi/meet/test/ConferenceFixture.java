@@ -296,6 +296,7 @@ public class ConferenceFixture
         URL += "&config.disableAEC=true";
         URL += "&config.disableNS=true";
         URL += "&config.callStatsID=false";
+        URL += "&config.alwaysVisibleToolbar=true";
         if(fragment != null)
             URL += "&" + fragment;
 
@@ -311,9 +312,6 @@ public class ConferenceFixture
         // disables animations
         ((JavascriptExecutor) participant)
             .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
-        // Disables toolbar hiding
-        ((JavascriptExecutor) participant).executeScript(
-            "config.alwaysVisibleToolbar = true");
 
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
