@@ -85,9 +85,9 @@ public class ActiveSpeakerTest
         testActiveSpeaker(secondParticipant, owner, thirdParticipant);
 
         // check the displayed speakers, there should be only one speaker
-        checkDisplayNames(owner);
-        checkDisplayNames(secondParticipant);
-        checkDisplayNames(thirdParticipant);
+        assertOneDominantSpeaker(owner);
+        assertOneDominantSpeaker(secondParticipant);
+        assertOneDominantSpeaker(thirdParticipant);
 
         // Dispose 3rd
         ConferenceFixture.close(thirdParticipant);
@@ -97,24 +97,26 @@ public class ActiveSpeakerTest
     }
 
     /**
-     * Checks the number of Speakers shown, it should be only one.
+     * Asserts that the number of small videos with the dominant speaker
+     * indicator displayed equals 1.
      * @param driver the participant to check
      */
-    private void checkDisplayNames(WebDriver driver)
+    private void assertOneDominantSpeaker(WebDriver driver)
     {
-        List<WebElement> displayNamesElem =
+        List<WebElement> dominantSpeakerIndicators =
             driver.findElements(By.xpath(
-                "//span[contains(@class,'dominantspeakerindicator')]"
+                "//span[contains(@id,'dominantspeakerindicator')]"
                 ));
 
         int speakers = 0;
-        for (WebElement el : displayNamesElem)
+        for (WebElement el : dominantSpeakerIndicators)
         {
-            if(el.isDisplayed())
+            if (el.isDisplayed())
                 speakers++;
         }
 
-        assertEquals("Speakers should not be more then one", 1, speakers);
+        assertEquals(
+            "Wrong number of dominant speaker indicators.", 1, speakers);
     }
 
     private void muteAllParticipants()
