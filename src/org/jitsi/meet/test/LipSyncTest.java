@@ -69,7 +69,7 @@ public class LipSyncTest
      * that we make sure that delaying audio packets has been enabled on
      * the bridge. The test will fail if the value is lower than this.
      */
-    private static final int MIN_BEEP_DELAY = 6;
+    private static final int MIN_BEEP_DELAY = 4;
 
     /**
      * Minimal video to audio delay ratio we expect to see from the last few
