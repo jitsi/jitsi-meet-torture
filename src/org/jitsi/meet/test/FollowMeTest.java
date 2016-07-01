@@ -196,17 +196,8 @@ public class FollowMeTest
         WebElement localVideoThumb =
                 MeetUIUtils.getLocalVideo(secondParticipant);
 
-        if(ConferenceFixture.getBrowserType(secondParticipant).equals(
-                ConferenceFixture.BrowserType.firefox)) {
-            String localVideoId = localVideoThumb.getAttribute("id");
-
-            assertTrue(MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
-                    secondParticipant, localVideoId));
-        } else {
-            assertEquals(
-                    localVideoThumb.getAttribute("src"),
-                    MeetUIUtils.getLargeVideoSource(secondParticipant));
-        }
-
+        assertEquals(
+            MeetUIUtils.getVideoElementID(secondParticipant, localVideoThumb),
+            MeetUIUtils.getLargeVideoID(secondParticipant));
     }
 }

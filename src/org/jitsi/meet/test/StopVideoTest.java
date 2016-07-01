@@ -105,17 +105,15 @@ public class StopVideoTest
         stopVideoOnOwnerAndCheck();
 
         // now second participant should be on large video
-
-        String secondParticipantStreamURL
-            = MeetUIUtils.getLargeVideoSource(owner);
+        String secondParticipantVideoId = MeetUIUtils.getLargeVideoID(owner);
 
         // unmute owner
         startVideoOnOwnerAndCheck();
 
         // check if video stream from second participant is still on large video
         assertEquals("Large video stream id",
-                     secondParticipantStreamURL,
-                     MeetUIUtils.getLargeVideoSource(owner));
+            secondParticipantVideoId,
+            MeetUIUtils.getLargeVideoID(owner));
     }
 
     /**

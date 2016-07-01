@@ -523,16 +523,29 @@ public class MeetUIUtils
      * Returns the source of the large video currently shown.
      * @return the source of the large video currently shown.
      */
-    public static String getLargeVideoSource(WebDriver driver)
+    public static String getLargeVideoID(WebDriver driver)
+    {
+        WebElement videoElement = driver.findElement(By.id("largeVideo"));
+
+        return getVideoElementID(driver, videoElement);
+    }
+
+    /**
+     * Returns the identifier of the video element.
+     *
+     * @param driver the driver
+     * @param element the video element
+     * @return unique identifier.
+     */
+    public static String getVideoElementID(WebDriver driver, WebElement element)
     {
         Object res = ((JavascriptExecutor) driver)
             .executeScript(
-                "return JitsiMeetJS.util.RTCUIHelper.getVideoId(" +
-                    "document.getElementById('largeVideo'))");
-
+                "var el = arguments[0]; " +
+                    "var srcObject = el.srcObject || el.mozSrcObject;" +
+                    "return srcObject? srcObject.id : el.src;", element);
         return (String)res;
     }
-
 
     /**
      * Returns list of participant's thumbnails.
@@ -633,22 +646,5 @@ public class MeetUIUtils
         ((JavascriptExecutor)driver).executeScript(
             "arguments[0][arguments[1]] = arguments[2];",
             element, attributeName, attributeValue);
-    }
-
-    /**
-     * Checks whether video with id is displayed on the large video.
-     * @param driver the driver
-     * @param videoID the video
-     */
-    public static boolean firefoxCheckVideoDisplayedOnLarge(
-            WebDriver driver, String videoID)
-    {
-        Object res = ((JavascriptExecutor) driver)
-                .executeScript(
-                        "return document.getElementById('" + videoID
-                                + "').mozSrcObject "
-                                + "== document.getElementById('largeVideo').mozSrcObject;");
-
-        return  res != null && res.equals(Boolean.TRUE);
     }
 }
