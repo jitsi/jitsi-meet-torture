@@ -496,6 +496,11 @@ public class SharedVideoTest
         TestUtils.waitForDisplayedElementByID(owner,
             "toolbar_button_sharedvideo", 10);
 
+        // just wait a little after button is displayed
+        // sometimes the button is reported as
+        // Element is not clickable at point (566, -10)
+        TestUtils.waitMillis(1000);
+
         startSharingVideoByUrlAndTitle(V2_LINK, V2_TITLE, false);
         checkPlayerLoadedAndInState(owner, "YT.PlayerState.PLAYING");
 
