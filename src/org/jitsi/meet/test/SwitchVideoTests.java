@@ -81,28 +81,15 @@ public class SwitchVideoTests
         WebElement localVideoElem = driver.findElement(
             By.xpath("//span[@id='localVideoWrapper']/video"));
 
-        String localVideoSrc = localVideoElem.getAttribute("src");
-
         // click on local
         driver.findElement(By.className("focusindicator")).click();
 
         TestUtils.waitMillis(1000);
 
-        if(ConferenceFixture.getBrowserType(driver).equals(
-            ConferenceFixture.BrowserType.firefox))
-        {
-            String localVideoId = localVideoElem.getAttribute("id");
-
-            assertTrue("Video didn't change to local",
-                MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
-                        driver, localVideoId));
-        }
-        else
-        {
-            // test is this the video seen
-            assertEquals("Video didn't change to local",
-                localVideoSrc, MeetUIUtils.getLargeVideoSource(driver));
-        }
+        // test is this the video seen
+        assertEquals("Video didn't change to local",
+            MeetUIUtils.getVideoElementID(driver, localVideoElem),
+            MeetUIUtils.getLargeVideoID(driver));
     }
 
     /**
@@ -201,13 +188,7 @@ public class SwitchVideoTests
         // which is not displayed, it is used for rtcp
         String remoteThumbVideoXpath
             = remoteThumbXpath
-                + "/video[starts-with(@id, 'remoteVideo_')";
-
-        if(ConferenceFixture.getBrowserType(driver).equals(
-                ConferenceFixture.BrowserType.firefox))
-            remoteThumbVideoXpath += "]";
-        else
-            remoteThumbVideoXpath += " and @src]";
+                + "/video[starts-with(@id, 'remoteVideo_')]";
 
         TestUtils.waitForElementByXPath(
             driver,
@@ -226,26 +207,13 @@ public class SwitchVideoTests
 
         TestUtils.waitMillis(1000);
 
-        if(ConferenceFixture.getBrowserType(driver).equals(
-            ConferenceFixture.BrowserType.firefox))
-        {
-            String remoteVideoId = remoteThumb.getAttribute("id");
-
-            assertTrue("Video didn't change to remote one",
-                MeetUIUtils.firefoxCheckVideoDisplayedOnLarge(
-                        driver, remoteVideoId));
-        }
-        else
-        {
-            // Obtain the remote video src *after* we have clicked the thumbnail
-            // and have waited. With simulcast enabled, the remote stream may
-            // change.
-            String remoteVideoSrc = remoteThumb.getAttribute("src");
-
-            // test is this the video seen
-            assertEquals("Video didn't change to remote one",
-                remoteVideoSrc, MeetUIUtils.getLargeVideoSource(driver));
-        }
+        // Obtain the remote video src *after* we have clicked the thumbnail
+        // and have waited. With simulcast enabled, the remote stream may
+        // change.
+        // test is this the video seen
+        assertEquals("Video didn't change to remote one",
+            MeetUIUtils.getVideoElementID(driver, remoteThumb),
+            MeetUIUtils.getLargeVideoID(driver));
     }
 
     /**
