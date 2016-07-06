@@ -181,7 +181,7 @@ public class EtherpadTest
 
         System.err.println("Start ownerClickOnLocalVideoAndTest.");
 
-        new SwitchVideoTests("ownerClickOnLocalVideoAndTest")
+        new SwitchVideoTest("ownerClickOnLocalVideoAndTest")
             .ownerClickOnLocalVideoAndTest();
     }
 
@@ -198,7 +198,7 @@ public class EtherpadTest
 
         System.err.println("Start ownerClickOnRemoteVideoAndTest.");
 
-        new SwitchVideoTests("ownerClickOnRemoteVideoAndTest")
+        new SwitchVideoTest("ownerClickOnRemoteVideoAndTest")
             .ownerClickOnRemoteVideoAndTest();
     }
 }

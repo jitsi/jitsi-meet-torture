@@ -361,7 +361,7 @@ public class SharedVideoTest
     {
         System.err.println("Start clickOnRemoteVideoAndTest.");
 
-        new SwitchVideoTests("participantClickOnRemoteVideoAndTest")
+        new SwitchVideoTest("participantClickOnRemoteVideoAndTest")
             .participantClickOnRemoteVideoAndTest();
     }
 
