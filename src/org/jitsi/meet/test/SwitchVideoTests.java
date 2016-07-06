@@ -23,14 +23,14 @@ import org.openqa.selenium.*;
  * Tests switching video of participants.
  * @author Damian Minkov
  */
-public class SwitchVideoTests
+public class SwitchVideoTest
     extends TestCase
 {
     /**
      * Constructs test.
      * @param name the method name for the test.
      */
-    public SwitchVideoTests(String name)
+    public SwitchVideoTest(String name)
     {
         super(name);
     }
@@ -43,17 +43,17 @@ public class SwitchVideoTests
     {
         TestSuite suite = new TestSuite();
 
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "ownerClickOnRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "ownerUnpinRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "participantClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "participantClickOnRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTests(
+        suite.addTest(new SwitchVideoTest(
             "participantUnpinRemoteVideo"));
 
         return suite;
