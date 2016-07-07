@@ -198,7 +198,15 @@ public class EtherpadTest
 
         System.err.println("Start ownerClickOnRemoteVideoAndTest.");
 
-        new SwitchVideoTest("ownerClickOnRemoteVideoAndTest")
-            .ownerClickOnRemoteVideoAndTest();
+        try
+        {
+            new SwitchVideoTest("ownerClickOnRemoteVideoAndTest")
+                .ownerClickOnRemoteVideoAndTest();
+        }
+        finally
+        {
+            new SwitchVideoTest("ownerUnpinRemoteVideoAndTest")
+                .ownerUnpinRemoteVideoAndTest();
+        }
     }
 }
