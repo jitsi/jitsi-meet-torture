@@ -20,6 +20,8 @@ import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
 import java.util.concurrent.*;
@@ -106,7 +108,7 @@ public class DesktopSharingTest
             }
         }).start();
 
-        WebDriver owner = ConferenceFixture.getOwner();
+        final WebDriver owner = ConferenceFixture.getOwner();
 
         // now lets wait satarting or error on startup
         try
@@ -139,14 +141,33 @@ public class DesktopSharingTest
                 " and contains(@class,'videocontainer')]")).getAttribute("id");
         remoteParticipantID
             = remoteParticipantID.replaceAll("participant_", "");
-        String remoteVideoType =
-            (String)((JavascriptExecutor) owner)
-            .executeScript(
-                "return APP.UI.getRemoteVideoType('"
-                    + remoteParticipantID + "');");
 
-        assertEquals("Wrong video type, maybe desktop sharing didn't work",
-            "desktop", remoteVideoType);
+        final String expectedResult = "desktop";
+        // holds the last retrieved value for the remote type
+        final Object[] remoteVideoType = new Object[1];
+        try
+        {
+            final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
+                + remoteParticipantID + "');";
+            (new WebDriverWait(owner, 5))
+                .until(new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
+                        Object res =
+                            ((JavascriptExecutor) owner)
+                                .executeScript(scriptToExecute);
+                        remoteVideoType[0] = res;
+
+                        return res != null && res.equals(expectedResult);
+                    }
+                });
+        }
+        catch (TimeoutException e)
+        {
+            assertEquals("Wrong video type, maybe desktop sharing didn't work",
+                expectedResult, remoteVideoType[0]);
+        }
 
         // allow the participant to leave
         try
