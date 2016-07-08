@@ -306,7 +306,29 @@ public class ConferenceFixture
         String participantName = getParticipantName(participant);
         System.err.println(participantName + " is opening URL: " + URL);
 
-        participant.get(URL);
+        {
+            // with chrome v52 we start getting error:
+            // "Timed out receiving message from renderer" and
+            // "Navigate timeout: cannot determine loading status"
+            // seems its a bug or rare problem, maybe concerns async loading
+            // of resources ...
+            // https://bugs.chromium.org/p/chromedriver/issues/detail?id=402
+            // even there is a TimeoutException the page is loaded correctly
+            // and driver is operating, we just lower the page load timeout
+            // default is 3 minutes and we log and skip this exception
+            participant.manage().timeouts()
+                .pageLoadTimeout(30, TimeUnit.SECONDS);
+            try
+            {
+                participant.get(URL);
+            }
+            catch (org.openqa.selenium.TimeoutException ex)
+            {
+                ex.printStackTrace();
+                System.err.println("TimeoutException while loading page, "
+                    + "will skip it and continue:" + ex.getMessage());
+            }
+        }
         MeetUtils.waitForPageToLoad(participant);
 
         // disables animations
