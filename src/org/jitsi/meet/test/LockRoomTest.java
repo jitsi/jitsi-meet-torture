@@ -89,17 +89,17 @@ public class LockRoomTest
         TestUtils.waitForElementByXPath(owner, "//input[@name='lockKey']", 5);
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
         owner.findElement(
-                By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
+            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
 
         owner.findElement(
-                By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
+            By.name("jqi_state0_buttonspandatai18ndialogSaveSavespan")).click();
 
         TestUtils.waitMillis(1000);
 
         TestUtils.waitForElementByXPath(
-                owner,
-                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
-                5);
+            owner,
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            5);
     }
 
     /**
@@ -177,9 +177,12 @@ public class LockRoomTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
-        owner.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
-                .click();
+        WebElement cancelButton = TestUtils.waitForElementBy(
+            owner,
+            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"),
+            1);
+        assertNotNull("Missing cancel button", cancelButton);
+        cancelButton.click();
 
         elems = owner.findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button']/" +
@@ -191,9 +194,12 @@ public class LockRoomTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
-        owner.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
-                .click();
+        WebElement removeButton = TestUtils.waitForElementBy(
+            owner,
+            By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"),
+            1);
+        assertNotNull("Missing remove button", removeButton);
+        removeButton.click();
 
         // Wait for the lock icon to disappear
         try
