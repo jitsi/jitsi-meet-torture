@@ -479,4 +479,20 @@ public class TestUtils
 
         return (o instanceof String) ? (String) o : null;
     }
+    
+    /**
+     * Executes a specific (piece of) JavaScript script in the browser
+     * controlled by a specific {@code WebDriver} 
+     *
+     * @param webDriver the {@code WebDriver} which controls the browser in
+     * which the specified {@code script} is to be executed
+     * @param script the script to execute in the browser controlled by
+     * {@code webDriver}
+     */
+    public static void executeScript(
+        WebDriver webDriver,
+        String script)
+    {
+        ((JavascriptExecutor) webDriver).executeScript(script);
+    }
 }

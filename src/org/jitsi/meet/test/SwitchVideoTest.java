@@ -82,7 +82,7 @@ public class SwitchVideoTest
             By.xpath("//span[@id='localVideoWrapper']/video"));
 
         // click on local
-        driver.findElement(By.className("focusindicator")).click();
+        MeetUIUtils.clickOnLocalVideo(driver);
 
         TestUtils.waitMillis(1000);
 

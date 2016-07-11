@@ -481,10 +481,8 @@ public class MeetUIUtils
      */
     public static void clickOnLocalVideo(WebDriver participant)
     {
-        participant.findElement(
-            By.xpath("//span[@id='localVideoContainer']" +
-                      "/span[@class='focusindicator']")
-        ).click();
+        TestUtils.executeScript(participant,
+            "document.getElementById('localVideoContainer').click()");
     }
 
     /**
