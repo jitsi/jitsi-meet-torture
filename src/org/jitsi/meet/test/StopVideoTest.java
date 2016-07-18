@@ -68,6 +68,10 @@ public class StopVideoTest
             "toolbar_button_camera");
 
         TestUtils.waitForElementByXPath(
+            ConferenceFixture.getOwner(),
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+        
+        TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
@@ -86,6 +90,12 @@ public class StopVideoTest
         // side, otherwise if local is muted will fail
         TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
+            "//span[starts-with(@id, 'participant_')]"
+                + "/span[@class='videoMuted']"
+                + "/i[@class='icon-camera-disabled']", 10);
+        
+        TestUtils.waitForElementNotPresentByXPath(
+            ConferenceFixture.getOwner(),
             "//span[starts-with(@id, 'participant_')]"
                 + "/span[@class='videoMuted']"
                 + "/i[@class='icon-camera-disabled']", 10);
@@ -167,6 +177,10 @@ public class StopVideoTest
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getOwner(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+        
+        TestUtils.waitForElementByXPath(
+            ConferenceFixture.getSecondParticipant(),
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 
     /**
@@ -181,6 +195,10 @@ public class StopVideoTest
 
         TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getOwner(),
+            "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
+        
+        TestUtils.waitForElementNotPresentByXPath(
+            ConferenceFixture.getSecondParticipant(),
             "//span[@class='videoMuted']/i[@class='icon-camera-disabled']", 5);
     }
 

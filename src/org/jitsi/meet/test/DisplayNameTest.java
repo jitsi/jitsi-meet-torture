@@ -59,7 +59,7 @@ public class DisplayNameTest
      * Do the check, change display name and check locally and remotely.
      * @param newName the new name
      */
-    private void checkDisplayNameChange(String newName)
+    public void checkDisplayNameChange(String newName)
     {
         System.err.println("Start checkDisplayNameChange.");
 
@@ -138,7 +138,7 @@ public class DisplayNameTest
      * Check whether name has changed locally.
      * @param newName the name we changed
      */
-    private void doLocalDisplayNameCheck(String newName)
+    public void doLocalDisplayNameCheck(String newName)
     {
         System.err.println("Start doLocalDisplayNameCheck for " + newName + ".");
 
@@ -197,7 +197,7 @@ public class DisplayNameTest
      * Check whether name has changed remotely.
      * @param newName the name we changed
      */
-    private void doRemoteDisplayNameCheck(String newName)
+    public void doRemoteDisplayNameCheck(String newName)
     {
         System.err.println("Start doRemoteDisplayNameCheck for " + newName + ".");
 
