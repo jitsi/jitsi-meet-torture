@@ -96,7 +96,7 @@ public class StopVideoTest
         
         TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getOwner(),
-            "//span[starts-with(@id, 'participant_')]"
+            "//span[@id='localVideoContainer']"
                 + "/span[@class='videoMuted']"
                 + "/i[@class='icon-camera-disabled']", 10);
     }
