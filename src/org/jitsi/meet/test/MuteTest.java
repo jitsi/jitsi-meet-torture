@@ -268,5 +268,11 @@ public class MuteTest
                 muted,
                 false, //audio
                 testeeName);
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            testee,
+            testee,
+            muted,
+            false, //audio
+            testeeName);
     }
 }

@@ -261,14 +261,23 @@ public class MeetUIUtils
             boolean isVideo,
             String name)
     {
-        String resource = MeetUtils.getResourceJid(testee);
+        String id = "";
+        if(testee != observer) 
+        {
+            String resource = MeetUtils.getResourceJid(testee);
+            id = "participant_" + resource;
+        }
+        else {
+            id = "localVideoContainer";
+        }
+        
 
         String icon = isVideo
             ? "/span[@class='videoMuted']/i[@class='icon-camera-disabled']"
             : "/span[@class='audioMuted']/i[@class='icon-mic-disabled']";
 
         String mutedIconXPath
-            = "//span[@id='participant_" + resource +"']" + icon;
+            = "//span[@id='" + id +"']" + icon;
 
         try
         {
