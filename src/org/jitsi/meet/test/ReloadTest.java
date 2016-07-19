@@ -101,6 +101,7 @@ public class ReloadTest
     public void testProsodyRestart()
     {
         System.err.println("Start testProsodyRestart.");
+        setupListeners();
         startReloadScript(new String[]{"--restart-prosody"});
         waitForReloadAndTest();
         dismissBridgeNotAvailableDialog(ConferenceFixture.getOwner());
@@ -115,6 +116,7 @@ public class ReloadTest
     public void testJicofoRestart()
     {
         System.err.println("Start testJicofoRestart.");
+        setupListeners();
         startReloadScript(new String[]{"--restart-jicofo"});
         waitForReloadAndTest(true);
     }
@@ -204,13 +206,16 @@ public class ReloadTest
     private void dismissBridgeNotAvailableDialog(WebDriver participant)
     {
         System.err.println("Start dismissBridgeNotAvailableDialog.");
-        
-        TestUtils.waitForElementByXPath(participant, 
-            "//span[@data-i18n='dialog.bridgeUnavailable']", 5);
-        participant.findElement(
-            By.name("jqi_state0_buttonOk")).click();
-        TestUtils.waitForElementNotPresentByXPath(participant, 
-            "//span[@data-i18n='dialog.bridgeUnavailable']", 5);
+        WebElement element;
+
+        try {
+            element = participant.findElement(By.name("jqi_state0_buttonOk"));
+        } catch (org.openqa.selenium.NoSuchElementException ex) {
+            element = null;
+        }
+         
+        if(element != null)
+            element.click();
     }
     
     /**
@@ -292,15 +297,13 @@ public class ReloadTest
     {
         waitForReloadAndTest(false);
     }
-
+    
     /**
-     * Detects reload, waits for ice connected state event and verifies that 
-     * audio/video data is transmitted. 
-     * @param isOwnerMuted <tt>true</tt> if owner is muted, false otherwise.
+     * Adds JS listeners to Jitsi Meet that will detect CONFERENCE_LEFT event.
+     * That means that the reload has been triggered.
      */
-    private void waitForReloadAndTest(boolean isOwnerMuted)
+    private void setupListeners()
     {
-        System.err.println("Start waitForReloadAndTest.");
         WebDriver[] drivers = {ConferenceFixture.getOwner(), 
             ConferenceFixture.getSecondParticipant()};
         String script
@@ -314,6 +317,18 @@ public class ReloadTest
         {
             TestUtils.executeScript(drivers[i], script);
         }
+    }
+
+    /**
+     * Detects reload, waits for ice connected state event and verifies that 
+     * audio/video data is transmitted. 
+     * @param isOwnerMuted <tt>true</tt> if owner is muted, false otherwise.
+     */
+    private void waitForReloadAndTest(boolean isOwnerMuted)
+    {
+        System.err.println("Start waitForReloadAndTest.");
+        WebDriver[] drivers = {ConferenceFixture.getOwner(), 
+            ConferenceFixture.getSecondParticipant()};
         final String checkForConferenceLeftScript = "return "
             + "APP.conference._room.conference_left_event;";
         for(int i = 0; i < drivers.length; i++) 
