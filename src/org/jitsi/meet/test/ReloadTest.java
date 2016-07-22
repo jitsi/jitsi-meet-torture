@@ -80,6 +80,7 @@ public class ReloadTest
         if(hookScript == null || host == null)
             return suite;
         
+        suite.addTest(new ReloadTest("restartParticipants"));
         suite.addTest(new ReloadTest("testProsodyRestart"));
         suite.addTest(new ReloadTest("ownerVideoMuteAndCheck"));
         suite.addTest(new ReloadTest("ownerAudioMuteAndCheck"));
@@ -90,6 +91,19 @@ public class ReloadTest
         suite.addTest(new ReloadTest("ownerCheckDisplayName"));
 
         return suite;
+    }
+
+    /**
+     * Restarts the two participants so we clear states of previous tests.
+     */
+    public void restartParticipants()
+    {
+        ConferenceFixture.restartParticipants();
+
+        MeetUtils.waitForSendReceiveData(
+            ConferenceFixture.getOwner());
+        MeetUtils.waitForSendReceiveData(
+            ConferenceFixture.getSecondParticipant());
     }
 
     /**
