@@ -101,6 +101,8 @@ public class TestsRunner
         // make sure LipSyncTest tests are the last to run as they will stop
         // and start the browsers one more time and will change the video file
         DEFAULT_TESTS_TO_RUN.add(LipSyncTest.class.getSimpleName());
+        
+        DEFAULT_TESTS_TO_RUN.add(ReloadTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
     }
