@@ -88,10 +88,12 @@ public class ConnectionTimeTest
         ICE_CONNECTED("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.connected']", ICE_CHECKING, 500.0),
         
-        AUDIO_RENDER("return APP.connectionTimes['audio.render']", 
+        AUDIO_RENDER(
+            "return APP.conference._room.getConnectionTimes()['audio.render']",
             ICE_CONNECTED, 200.0),
         
-        VIDEO_RENDER("return APP.connectionTimes['video.render']", 
+        VIDEO_RENDER(
+            "return APP.conference._room.getConnectionTimes()['video.render']",
             ICE_CONNECTED, 200.0),
 
         // The data channel should open about 2 RTTs after DTLS completes, so
