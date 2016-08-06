@@ -99,11 +99,16 @@ public class StartMutedTest
 
         WebDriver owner
             = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
+                                           "config.debugAudioLevels=true&" +
                                            "config.startVideoMuted=1");
         MeetUtils.waitForParticipantToJoinMUC(owner, 10);
 
         final WebDriver secondParticipant
             = ConferenceFixture.startSecondParticipant();
+        ((JavascriptExecutor) owner)
+            .executeScript(
+                "console.log('Start configOptionsTest, second participant: "
+                    + MeetUtils.getResourceJid(secondParticipant) + "');");
         MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
 
         MeetUtils.waitForIceConnected(owner);
@@ -120,6 +125,9 @@ public class StartMutedTest
         // Unmute and see if the audio works
         MeetUIUtils.clickOnToolbarButton(
             secondParticipant, "toolbar_button_mute");
+        ((JavascriptExecutor) owner)
+            .executeScript(
+                "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(
             owner, secondParticipant, "second peer", false /* unmuted */);
     }
