@@ -59,6 +59,8 @@ public class LockRoomTest
         suite.addTest(new LockRoomTest("enterParticipantInLockedRoom"));
         suite.addTest(new LockRoomTest("unlockRoom"));// stops participant
         suite.addTest(new LockRoomTest("enterParticipantInUnlockedRoom"));
+        suite.addTest(new LockRoomTest(
+            "updateLockedStateWhileParticipantInRoom"));
 
         return suite;
     }
@@ -75,6 +77,14 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
+        ownerLockRoom();
+    }
+
+    /**
+     * Owner locks the room.
+     */
+    private void ownerLockRoom()
+    {
         WebDriver owner = ConferenceFixture.getOwner();
         List<WebElement> elems = owner.findElements(
             By.xpath("//span[@id='toolbar']/a[@class='button "
@@ -192,6 +202,16 @@ public class LockRoomTest
                 "for room",
             elems.isEmpty());
 
+        ownerUnlockRoom();
+    }
+
+    /**
+     * Owner unlocks the room.
+     */
+    private void ownerUnlockRoom()
+    {
+        WebDriver owner = ConferenceFixture.getOwner();
+
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_security");
 
         WebElement removeButton = TestUtils.waitForElementBy(
@@ -205,9 +225,9 @@ public class LockRoomTest
         try
         {
             TestUtils.waitForElementNotPresentByXPath(
-                    owner,
-                    "//span[@id='toolbar']/a[@class='button icon-security-locked']",
-                    10);
+                owner,
+                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+                10);
         }
         catch (TimeoutException exc)
         {
@@ -237,5 +257,26 @@ public class LockRoomTest
 
         assertTrue("Icon must be unlocked when starting the test",
             elems.isEmpty());
+    }
+
+    /**
+     * Both participants are in unlocked room, lock it and see whether the
+     * change is reflected on the second participant icon.
+     */
+    public void updateLockedStateWhileParticipantInRoom()
+    {
+        ownerLockRoom();
+
+        TestUtils.waitForElementByXPath(
+            ConferenceFixture.getSecondParticipant(),
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            5);
+
+        ownerUnlockRoom();
+
+        TestUtils.waitForElementNotPresentByXPath(
+            ConferenceFixture.getSecondParticipant(),
+            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            5);
     }
 }
