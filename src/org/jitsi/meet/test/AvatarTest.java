@@ -40,6 +40,14 @@ public class AvatarTest
     public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
 
     /**
+     * We store second participant avatar src when running
+     * test changeAvatarAndCheck, and in avatarWhenVideoMuted we restart the
+     * second participant and the value should be the same.
+     * Avatars should not change after a reload.
+     */
+    private static String secondParticipantAvatarSrc = null;
+
+    /**
      * Orders the tests.
      * @return the suite with order tests.
      */
@@ -138,6 +146,15 @@ public class AvatarTest
                 true,
                 true, //video
                 "secondParticipant");
+
+        // we check whether avatar of second participant is same on both sides
+        // and we check whether it had changed after reloading the page
+        String avatarSecondParticipantSrc
+            = getLocalThumbnailSrc(secondParticipant);
+        assertEquals(secondParticipantAvatarSrc,
+            avatarSecondParticipantSrc);
+        assertEquals(secondParticipantAvatarSrc,
+            getThumbnailSrc(owner, secondPeerResource));
 
         // Start the third participant
         ConferenceFixture.waitForThirdParticipantToConnect();
@@ -283,6 +300,14 @@ public class AvatarTest
             });
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
+
+        // we check whether avatar of second participant is same on both sides
+        // and we stored to check it after reload
+        secondParticipantAvatarSrc = getLocalThumbnailSrc(secondParticipant);
+        String secondParticipantResourceJid
+            = MeetUtils.getResourceJid(secondParticipant);
+        assertEquals(secondParticipantAvatarSrc,
+            getThumbnailSrc(owner, secondParticipantResourceJid));
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted
