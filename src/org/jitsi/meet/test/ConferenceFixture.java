@@ -657,8 +657,7 @@ public class ConferenceFixture
 
         try
         {
-            MeetUIUtils.clickOnToolbarButtonByClassIfDisplayed(
-                participant, "icon-hangup");
+            MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_hangup");
 
             TestUtils.waitMillis(500);
 
