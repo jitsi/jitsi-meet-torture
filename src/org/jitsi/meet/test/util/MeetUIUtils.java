@@ -35,12 +35,42 @@ public class MeetUIUtils
      * Shows the toolbar and clicks on a button identified by ID.
      * @param participant the {@code WebDriver}.
      * @param buttonID the id of the button to click.
+     * @param failOnMissing whether to fail if button is missing
+     */
+    public static void clickOnToolbarButton(
+            WebDriver participant, String buttonID, boolean failOnMissing)
+    {
+        try
+        {
+            WebElement button
+                = participant
+                .findElement(By.xpath("//a[@id='" + buttonID + "']"));
+            // if element missing and we do not want fail continue
+            if (!failOnMissing && (button == null || !button.isDisplayed()))
+                return;
+
+            button.click();
+        }
+        catch (NoSuchElementException e)
+        {
+            if(failOnMissing)
+                throw e;
+
+            // there is no element, so its not visible, just continue
+            // cause failOnMissing is false
+            System.err.println("Button is missing:" + buttonID);
+        }
+    }
+
+    /**
+     * Shows the toolbar and clicks on a button identified by ID.
+     * @param participant the {@code WebDriver}.
+     * @param buttonID the id of the button to click.
      */
     public static void clickOnToolbarButton(
             WebDriver participant, String buttonID)
     {
-        participant.findElement(
-            By.xpath("//a[@id='" + buttonID + "']")).click();
+        clickOnToolbarButton(participant, buttonID, true);
     }
 
     /**
@@ -54,29 +84,6 @@ public class MeetUIUtils
         participant.findElement(
             By.xpath("//a[@class='button " + buttonClass + "']"))
             .click();
-    }
-
-    /**
-     * Shows the toolbar and clicks on a button identified by class name.
-     * Does nothing if the element is not displayed
-     * @param participant the {@code WebDriver}.
-     * @param buttonClass the class of the button to click.
-     */
-    public static void clickOnToolbarButtonByClassIfDisplayed(
-        WebDriver participant, String buttonClass)
-    {
-        try
-        {
-            WebElement hangupButton = participant.findElement(
-                By.xpath("//a[@class='button " + buttonClass + "']"));
-            if (hangupButton != null && hangupButton.isDisplayed())
-                hangupButton.click();
-        }
-        catch (NoSuchElementException e)
-        {
-            // there is no element, so its not visible, just continue
-            System.err.println("Button is missing:" + buttonClass);
-        }
     }
 
     /**
