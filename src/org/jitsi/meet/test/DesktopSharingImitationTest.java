@@ -71,7 +71,7 @@ public class DesktopSharingImitationTest
         // hide thumbs
         MeetUIUtils.clickOnToolbarButton(
             ConferenceFixture.getSecondParticipant(),
-            "bottom_toolbar_film_strip");
+            "toolbar_film_strip");
 
         TestUtils.waitMillis(5000);
 

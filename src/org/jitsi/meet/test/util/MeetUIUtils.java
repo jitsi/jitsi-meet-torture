@@ -170,7 +170,7 @@ public class MeetUIUtils
 
         if (filmStrip != null)
         {
-            clickOnToolbarButton(participant, "bottom_toolbar_film_strip");
+            clickOnToolbarButton(participant, "toolbar_film_strip");
 
             TestUtils.waitForElementNotPresentByXPath(
                     participant, filmStripXPath, 5);
@@ -186,7 +186,7 @@ public class MeetUIUtils
      */
     public static void displaySettingsPanel(WebDriver participant)
     {
-        String settingsXPath = "//div[@id='settingsmenu']";
+        String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = participant.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
@@ -206,7 +206,7 @@ public class MeetUIUtils
      */
     public static void hideSettingsPanel(WebDriver participant)
     {
-        String settingsXPath = "//div[@id='settingsmenu']";
+        String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = participant.findElement(By.xpath(settingsXPath));
         if (settings.isDisplayed())
         {
@@ -226,13 +226,13 @@ public class MeetUIUtils
      */
     public static void displayContactListPanel(WebDriver participant)
     {
-        String contactListXPath = "//div[@id='contactlist']";
+        String contactListXPath = "//div[@id='contacts_container']";
         WebElement contactList
             = participant.findElement(By.xpath(contactListXPath));
 
         if (!contactList.isDisplayed())
         {
-            clickOnToolbarButton(participant, "bottom_toolbar_contact_list");
+            clickOnToolbarButton(participant, "toolbar_contact_list");
 
             TestUtils.waitForDisplayedElementByXPath(
                 participant, contactListXPath, 5);
