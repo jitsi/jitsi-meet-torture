@@ -17,6 +17,7 @@ package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -35,12 +36,42 @@ public class MeetUIUtils
      * Shows the toolbar and clicks on a button identified by ID.
      * @param participant the {@code WebDriver}.
      * @param buttonID the id of the button to click.
+     * @param failOnMissing whether to fail if button is missing
+     */
+    public static void clickOnToolbarButton(
+            WebDriver participant, String buttonID, boolean failOnMissing)
+    {
+        try
+        {
+            WebElement button
+                = participant
+                .findElement(By.xpath("//a[@id='" + buttonID + "']"));
+            // if element missing and we do not want fail continue
+            if (!failOnMissing && (button == null || !button.isDisplayed()))
+                return;
+
+            button.click();
+        }
+        catch (NoSuchElementException e)
+        {
+            if(failOnMissing)
+                throw e;
+
+            // there is no element, so its not visible, just continue
+            // cause failOnMissing is false
+            System.err.println("Button is missing:" + buttonID);
+        }
+    }
+
+    /**
+     * Shows the toolbar and clicks on a button identified by ID.
+     * @param participant the {@code WebDriver}.
+     * @param buttonID the id of the button to click.
      */
     public static void clickOnToolbarButton(
             WebDriver participant, String buttonID)
     {
-        participant.findElement(
-            By.xpath("//a[@id='" + buttonID + "']")).click();
+        clickOnToolbarButton(participant, buttonID, true);
     }
 
     /**
@@ -54,29 +85,6 @@ public class MeetUIUtils
         participant.findElement(
             By.xpath("//a[@class='button " + buttonClass + "']"))
             .click();
-    }
-
-    /**
-     * Shows the toolbar and clicks on a button identified by class name.
-     * Does nothing if the element is not displayed
-     * @param participant the {@code WebDriver}.
-     * @param buttonClass the class of the button to click.
-     */
-    public static void clickOnToolbarButtonByClassIfDisplayed(
-        WebDriver participant, String buttonClass)
-    {
-        try
-        {
-            WebElement hangupButton = participant.findElement(
-                By.xpath("//a[@class='button " + buttonClass + "']"));
-            if (hangupButton != null && hangupButton.isDisplayed())
-                hangupButton.click();
-        }
-        catch (NoSuchElementException e)
-        {
-            // there is no element, so its not visible, just continue
-            System.err.println("Button is missing:" + buttonClass);
-        }
     }
 
     /**
@@ -170,7 +178,7 @@ public class MeetUIUtils
 
         if (filmStrip != null)
         {
-            clickOnToolbarButton(participant, "bottom_toolbar_film_strip");
+            clickOnToolbarButton(participant, "toolbar_film_strip");
 
             TestUtils.waitForElementNotPresentByXPath(
                     participant, filmStripXPath, 5);
@@ -186,7 +194,7 @@ public class MeetUIUtils
      */
     public static void displaySettingsPanel(WebDriver participant)
     {
-        String settingsXPath = "//div[@id='settingsmenu']";
+        String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = participant.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
@@ -206,7 +214,7 @@ public class MeetUIUtils
      */
     public static void hideSettingsPanel(WebDriver participant)
     {
-        String settingsXPath = "//div[@id='settingsmenu']";
+        String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = participant.findElement(By.xpath(settingsXPath));
         if (settings.isDisplayed())
         {
@@ -226,17 +234,23 @@ public class MeetUIUtils
      */
     public static void displayContactListPanel(WebDriver participant)
     {
-        String contactListXPath = "//div[@id='contactlist']";
+        String contactListXPath = "//div[@id='contacts_container']";
         WebElement contactList
             = participant.findElement(By.xpath(contactListXPath));
 
         if (!contactList.isDisplayed())
         {
-            clickOnToolbarButton(participant, "bottom_toolbar_contact_list");
+            clickOnToolbarButton(participant, "toolbar_contact_list");
 
             TestUtils.waitForDisplayedElementByXPath(
                 participant, contactListXPath, 5);
         }
+
+        // move away from the button as user will do, to remove the tooltips
+        Actions action = new Actions(participant);
+        action.moveToElement(
+            participant.findElement(By.id("largeVideoWrapper")));
+        action.perform();
     }
 
     /**

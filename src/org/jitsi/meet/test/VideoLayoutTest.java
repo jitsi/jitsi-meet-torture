@@ -52,9 +52,9 @@ public class VideoLayoutTest
      */
     public void driverVideoLayoutTest(WebDriver webDriver)
     {
-        String chatXPath = "//div[@id='chatspace']";
-        String contactListXPath = "//div[@id='contactlist']";
-        String settingsXPath = "//div[@id='settingsmenu']";
+        String chatXPath = "//div[@id='chat_container']";
+        String contactListXPath = "//div[@id='contacts_container']";
+        String settingsXPath = "//div[@id='settings_container']";
 
         WebElement chatElem = webDriver.findElement(By.xpath(chatXPath));
         WebElement contactListElem

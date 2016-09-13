@@ -87,7 +87,7 @@ public class LockRoomTest
     {
         WebDriver owner = ConferenceFixture.getOwner();
         List<WebElement> elems = owner.findElements(
-            By.xpath("//span[@id='toolbar']/a[@class='button "
+            By.xpath("//div[@id='extendedToolbar']/a[@class='button "
                 + "icon-security-locked']"));
 
         assertTrue("Icon must be unlocked when starting the test",
@@ -108,7 +108,7 @@ public class LockRoomTest
 
         TestUtils.waitForElementByXPath(
             owner,
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
     }
 
@@ -124,7 +124,7 @@ public class LockRoomTest
 
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getOwner(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
 
         try
@@ -159,7 +159,7 @@ public class LockRoomTest
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
     }
 
@@ -179,7 +179,7 @@ public class LockRoomTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         List<WebElement> elems = owner.findElements(
-            By.xpath("//span[@id='toolbar']/a[@class='button']/" +
+            By.xpath("//div[@id='extendedToolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
         assertTrue("Icon must be locked when starting this test",
@@ -195,7 +195,7 @@ public class LockRoomTest
         cancelButton.click();
 
         elems = owner.findElements(
-            By.xpath("//span[@id='toolbar']/a[@class='button']/" +
+            By.xpath("//div[@id='extendedToolbar']/a[@class='button']/" +
                 "i[@class='icon-security']"));
 
         assertTrue("Icon must be locked after clicking cancel on remove key " +
@@ -226,7 +226,7 @@ public class LockRoomTest
         {
             TestUtils.waitForElementNotPresentByXPath(
                 owner,
-                "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+                "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
                 10);
         }
         catch (TimeoutException exc)
@@ -252,7 +252,7 @@ public class LockRoomTest
         MeetUtils.waitForSendReceiveData(secondParticipant);
 
         List<WebElement> elems = secondParticipant.findElements(
-                By.xpath("//span[@id='toolbar']/a[@class='button "
+                By.xpath("//div[@id='extendedToolbar']/a[@class='button "
                     + "icon-security-locked']"));
 
         assertTrue("Icon must be unlocked when starting the test",
@@ -269,14 +269,14 @@ public class LockRoomTest
 
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
 
         ownerUnlockRoom();
 
         TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
-            "//span[@id='toolbar']/a[@class='button icon-security-locked']",
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
     }
 }

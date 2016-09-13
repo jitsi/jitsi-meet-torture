@@ -242,7 +242,7 @@ public class AvatarTest
             getSrcByXPath(secondParticipant, ownerAvatarXPath);
 
         //change the email for the conference owner
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
             owner, "//input[@id='setEmail']", 5);
 
@@ -299,7 +299,7 @@ public class AvatarTest
                 }
             });
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_settings");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
 
         // we check whether avatar of second participant is same on both sides
         // and we stored to check it after reload
@@ -362,7 +362,7 @@ public class AvatarTest
     private String getContactSrc(WebDriver perspective, String resourceJid)
     {
         return getSrcByXPath(perspective,
-            "//div[@id='contactlist']/ul/li[@id='" + resourceJid + "']/img");
+            "//div[@id='contacts_container']/ul/li[@id='" + resourceJid + "']/img");
     }
 
     /**

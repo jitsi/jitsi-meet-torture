@@ -59,7 +59,7 @@ public class EndConferenceTest
         final String url = owner.getCurrentUrl();
 
         // hangup and wait for redirect
-        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-hangup");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_hangup");
         TestUtils.waitForCondition(owner, 5,
             new ExpectedCondition<Boolean>()
             {
