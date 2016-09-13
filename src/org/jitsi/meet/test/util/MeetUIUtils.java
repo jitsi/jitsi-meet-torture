@@ -17,6 +17,7 @@ package org.jitsi.meet.test.util;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -244,6 +245,12 @@ public class MeetUIUtils
             TestUtils.waitForDisplayedElementByXPath(
                 participant, contactListXPath, 5);
         }
+
+        // move away from the button as user will do, to remove the tooltips
+        Actions action = new Actions(participant);
+        action.moveToElement(
+            participant.findElement(By.id("largeVideoWrapper")));
+        action.perform();
     }
 
     /**
