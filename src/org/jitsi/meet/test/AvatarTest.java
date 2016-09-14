@@ -265,7 +265,7 @@ public class AvatarTest
         //check if the avatar in the local thumbnail has changed
         checkSrcIsCorrect(getLocalThumbnailSrc(owner));
         //check if the avatar in the contact list has changed
-        checkSrcIsCorrect(getContactSrc(owner, ownerResourceJid));
+        //checkSrcIsCorrect(getContactSrc(owner, ownerResourceJid));
 
         // waits till the src changes so we can continue with the check
         // sometimes the notification for the avatar change can be more
@@ -286,7 +286,7 @@ public class AvatarTest
         checkSrcIsCorrect(getThumbnailSrc(secondParticipant, ownerResourceJid));
         //check if the avatar in the contact list has changed for the other
         // participant
-        checkSrcIsCorrect(getContactSrc(secondParticipant, ownerResourceJid));
+        //checkSrcIsCorrect(getContactSrc(secondParticipant, ownerResourceJid));
         //check if the avatar displayed on large video has changed for the other
         // participant
         TestUtils.waitForCondition(secondParticipant, 5,
