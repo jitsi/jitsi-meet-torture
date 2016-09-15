@@ -238,7 +238,7 @@ public class DisplayNameTest
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/a[@class='displayname']"));
+                "//span[@id='localVideoContainer']/span[@class='displayname']"));
         elem.click();
 
         WebElement inputElem =
