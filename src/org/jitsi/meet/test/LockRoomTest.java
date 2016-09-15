@@ -61,6 +61,8 @@ public class LockRoomTest
         suite.addTest(new LockRoomTest("enterParticipantInUnlockedRoom"));
         suite.addTest(new LockRoomTest(
             "updateLockedStateWhileParticipantInRoom"));
+        suite.addTest(new LockRoomTest(
+            "unlockAfterParticipantEnterWrongPassword"));
 
         return suite;
     }
@@ -265,6 +267,8 @@ public class LockRoomTest
      */
     public void updateLockedStateWhileParticipantInRoom()
     {
+        System.err.println("Start updateLockedStateWhileParticipantInRoom.");
+
         ownerLockRoom();
 
         TestUtils.waitForElementByXPath(
@@ -276,6 +280,70 @@ public class LockRoomTest
 
         TestUtils.waitForElementNotPresentByXPath(
             ConferenceFixture.getSecondParticipant(),
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
+            5);
+    }
+
+    /**
+     * Owner locks the room. Participant tries to enter using wrong password.
+     * Owner unlocks the room and Participant cancels the password prompt and
+     * he should enter of unlocked room.
+     */
+    public void unlockAfterParticipantEnterWrongPassword()
+    {
+        System.err.println("Start unlockAfterParticipantEnterWrongPassword.");
+
+        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+
+        // just in case wait
+        TestUtils.waitMillis(1000);
+
+        ownerLockRoom();
+
+        WebDriver secondParticipant
+            = ConferenceFixture.startSecondParticipant();
+
+        TestUtils.waitForElementByXPath(
+            ConferenceFixture.getOwner(),
+            "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
+            5);
+
+        try
+        {
+            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+
+            fail("The second participant must not be able to join the room.");
+        }
+        catch(TimeoutException e)
+        {}
+
+        secondParticipant.findElement(
+            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
+        secondParticipant.findElement(
+            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+
+        try
+        {
+            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+
+            fail("The second participant must not be able to join the room.");
+        }
+        catch(TimeoutException e)
+        {}
+
+        ownerUnlockRoom();
+
+        // just in case wait
+        TestUtils.waitMillis(500);
+
+        secondParticipant.findElement(
+            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
+            .click();
+
+        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+
+        TestUtils.waitForElementNotPresentByXPath(
+            secondParticipant,
             "//div[@id='extendedToolbar']/a[@class='button icon-security-locked']",
             5);
     }
