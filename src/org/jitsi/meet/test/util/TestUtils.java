@@ -157,10 +157,8 @@ public class TestUtils
         long timeout)
     {
         new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
+            .until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver d) {
                     return !d.findElements(By.xpath(xpath)).isEmpty();
                 }
             });
@@ -292,10 +290,8 @@ public class TestUtils
             long timeout)
     {
         new WebDriverWait(participant, timeout)
-                .until(new ExpectedCondition<Boolean>()
-                {
-                    public Boolean apply(WebDriver d)
-                    {
+                .until(new ExpectedCondition<Boolean>() {
+                    public Boolean apply(WebDriver d) {
                         WebElement el = d.findElement(By.xpath(xpath));
 
                         return el != null &&
@@ -317,10 +313,8 @@ public class TestUtils
         long timeout)
     {
         new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
+            .until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver d) {
                     WebElement el = d.findElement(By.xpath(xpath));
                     return el == null || !el.isDisplayed();
                 }
@@ -494,5 +488,22 @@ public class TestUtils
         String script)
     {
         ((JavascriptExecutor) webDriver).executeScript(script);
+    }
+
+    /**
+     * Checks if the given className is contained in the class list of the given
+     * element.
+     *
+     * @param elementName the name of the element, e.g. span, div, etc. It can
+     *                    also start with '/' for direct children and '//' for
+     *                    any child element
+     * @param className the name of the class we're looking for
+     * @return the XPath String for the given element and class names
+     */
+    public static String getXPathStringForClassName(String elementName,
+                                                    String className) {
+        return elementName
+                + "[contains(concat(' ', normalize-space(@class), ' '), ' "
+                + className + " ')]";
     }
 }

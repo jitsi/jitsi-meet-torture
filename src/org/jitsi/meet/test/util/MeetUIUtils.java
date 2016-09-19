@@ -287,8 +287,10 @@ public class MeetUIUtils
         
 
         String icon = isVideo
-            ? "/span[@class='videoMuted']/i[@class='icon-camera-disabled']"
-            : "/span[@class='audioMuted']/i[@class='icon-mic-disabled']";
+            ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']"
+            : TestUtils.getXPathStringForClassName("//span", "audioMuted")
+                + "/i[@class='icon-mic-disabled']";
 
         String mutedIconXPath
             = "//span[@id='" + id +"']" + icon;
@@ -301,7 +303,7 @@ public class MeetUIUtils
             }
             else
             {
-                TestUtils.waitForElementNotPresentByXPath(
+                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
                     observer, mutedIconXPath, 5);
             }
         }
@@ -479,7 +481,7 @@ public class MeetUIUtils
         // Display name - visible
         TestUtils.waitForDisplayedElementByXPath(
             participant, "//span[@id='participant_" + resource + "']" +
-                "/span[@class='displayname']", 5);
+                "//span[@class='displayname']", 5);
     }
 
     /**

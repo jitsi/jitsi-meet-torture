@@ -238,12 +238,14 @@ public class DisplayNameTest
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/span[@class='displayname']"));
+                "//span[@id='localVideoContainer']"
+                + "//span[@class='displayname']"));
         elem.click();
 
         WebElement inputElem =
             secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/input[@class='displayname']"));
+                "//span[@id='localVideoContainer']"
+                + "//input[@class='editdisplayname']"));
         Actions action = new Actions(secondParticipant);
         action.moveToElement(inputElem);
         action.perform();
