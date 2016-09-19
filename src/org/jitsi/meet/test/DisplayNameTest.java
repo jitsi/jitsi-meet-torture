@@ -157,7 +157,8 @@ public class DisplayNameTest
         // now lets check whether display name is set locally
         WebElement displayNameElem
             = secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/span[@id='localDisplayName']"));
+                "//span[@id='localVideoContainer']"
+                + "//span[@id='localDisplayName']"));
 
         // hover over local display name
         WebElement localVideoContainerElem
