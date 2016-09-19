@@ -112,7 +112,7 @@ public class DisplayNameTest
         WebElement displayNameElem =
             local.findElement(By.xpath(
                 "//span[@id='participant_" + remoteParticipantResourceJid +
-                    "']/span[@id='participant_" +
+                    "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
 
         boolean isFF
