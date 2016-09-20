@@ -151,7 +151,8 @@ public class MuteTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         WebElement elem = owner.findElement(By.xpath(
-            "//div[@class='remotevideomenu']/i[@class='fa fa-angle-down']"));
+            TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
+            + "/i[@class='icon-menu-up']"));
 
         Actions action = new Actions(owner);
         action.moveToElement(elem);
@@ -169,7 +170,8 @@ public class MuteTest
         // and now check whether second participant is muted
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            "//span[@class='audioMuted']/i[@class='icon-mic-disabled']", 5);
+            TestUtils.getXPathStringForClassName("//span", "audioMuted")
+            + "/i[@class='icon-mic-disabled']", 5);
 
         action.release();
     }

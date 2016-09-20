@@ -79,9 +79,11 @@ public class AvatarTest
         TestUtils.waitForDisplayedElementByXPath(
                 owner, "//a[@id='toolbar_button_camera']", 10);
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
+
         TestUtils.waitForElementByXPath(
                 owner,
-                "//span[@class='videoMuted']/i[@class='icon-camera-disabled']",
+                TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                    + "/i[@class='icon-camera-disabled']",
                 5);
 
         // Check if avatar on large video is the same as on local thumbnail

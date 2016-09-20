@@ -147,13 +147,15 @@ public class StartMutedTest
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
-            "//span[@id='localVideoContainer']/span[@class='audioMuted']/"
-                + "i[@class='icon-mic-disabled']", 25);
+            "//span[@id='localVideoContainer']"
+                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
+                + "/i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
-            "//span[@id='localVideoContainer']/span[@class='videoMuted']/"
-                + "i[@class='icon-camera-disabled']", 25);
+            "//span[@id='localVideoContainer']"
+                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']", 25);
 
         MeetUIUtils.waitForAudioMuted(
             owner,
@@ -163,13 +165,15 @@ public class StartMutedTest
 
         TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']/"
-                + "span[@class='audioMuted']/i[@class='icon-mic-disabled']", 25);
+            "//span[@id='participant_" + ownerResourceJid + "']"
+                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
+                + "/i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']/"
-                + "span[@class='videoMuted']/i[@class='icon-camera-disabled']",
+            "//span[@id='participant_" + ownerResourceJid + "']"
+                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']",
             25);
     }
 

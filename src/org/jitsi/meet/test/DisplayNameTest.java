@@ -112,7 +112,7 @@ public class DisplayNameTest
         WebElement displayNameElem =
             local.findElement(By.xpath(
                 "//span[@id='participant_" + remoteParticipantResourceJid +
-                    "']/span[@id='participant_" +
+                    "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
 
         boolean isFF
@@ -157,7 +157,8 @@ public class DisplayNameTest
         // now lets check whether display name is set locally
         WebElement displayNameElem
             = secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/span[@id='localDisplayName']"));
+                "//span[@id='localVideoContainer']"
+                + "//span[@id='localDisplayName']"));
 
         // hover over local display name
         WebElement localVideoContainerElem
@@ -238,12 +239,14 @@ public class DisplayNameTest
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/span[@class='displayname']"));
+                "//span[@id='localVideoContainer']"
+                + "//span[@class='displayname']"));
         elem.click();
 
         WebElement inputElem =
             secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']/input[@class='displayname']"));
+                "//span[@id='localVideoContainer']"
+                + "//input[@class='editdisplayname']"));
         Actions action = new Actions(secondParticipant);
         action.moveToElement(inputElem);
         action.perform();
