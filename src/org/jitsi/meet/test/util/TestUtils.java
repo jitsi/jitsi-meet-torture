@@ -157,8 +157,10 @@ public class TestUtils
         long timeout)
     {
         new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>() {
-                public Boolean apply(WebDriver d) {
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
                     return !d.findElements(By.xpath(xpath)).isEmpty();
                 }
             });
@@ -290,8 +292,10 @@ public class TestUtils
             long timeout)
     {
         new WebDriverWait(participant, timeout)
-                .until(new ExpectedCondition<Boolean>() {
-                    public Boolean apply(WebDriver d) {
+                .until(new ExpectedCondition<Boolean>()
+                {
+                    public Boolean apply(WebDriver d)
+                    {
                         WebElement el = d.findElement(By.xpath(xpath));
 
                         return el != null &&
@@ -313,8 +317,10 @@ public class TestUtils
         long timeout)
     {
         new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>() {
-                public Boolean apply(WebDriver d) {
+            .until(new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
                     WebElement el = d.findElement(By.xpath(xpath));
                     return el == null || !el.isDisplayed();
                 }
@@ -501,7 +507,8 @@ public class TestUtils
      * @return the XPath String for the given element and class names
      */
     public static String getXPathStringForClassName(String elementName,
-                                                    String className) {
+                                                    String className)
+    {
         return elementName
                 + "[contains(concat(' ', normalize-space(@class), ' '), ' "
                 + className + " ')]";
