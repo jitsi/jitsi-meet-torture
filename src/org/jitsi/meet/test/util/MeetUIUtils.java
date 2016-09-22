@@ -289,8 +289,8 @@ public class MeetUIUtils
         String icon = isVideo
             ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']"
-            : TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']";
+            : TestUtils.getXPathStringForClassName("//*", "audioMuted")
+                + "//i[@class='icon-mic-disabled']";
 
         String mutedIconXPath
             = "//span[@id='" + id +"']" + icon;
