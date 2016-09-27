@@ -161,12 +161,12 @@ public class StartMutedTest
             "secondParticipant",
             true);
 
-        TestUtils.waitForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']"
                 + MeetUIUtils.getXPathForAudioMuteIndicator(), 25);
 
-        TestUtils.waitForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']"
                 + MeetUIUtils.getXPathForVideoMuteIndicator(), 25);
