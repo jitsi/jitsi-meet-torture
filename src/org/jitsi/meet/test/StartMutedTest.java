@@ -144,18 +144,18 @@ public class StartMutedTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
+        final String secondParticipantJid = 
+            MeetUtils.getResourceJid(secondParticipant);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
+                + MeetUIUtils.getXPathForAudioMuteIndicator(), 25);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 25);
+                + MeetUIUtils.getXPathForVideoMuteIndicator(), 25);
 
         MeetUIUtils.waitForAudioMuted(
             owner,
@@ -163,18 +163,15 @@ public class StartMutedTest
             "secondParticipant",
             true);
 
-        TestUtils.waitForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
+            "//span[@id='participant_" + secondParticipantJid + "']"
+                + MeetUIUtils.getXPathForAudioMuteIndicator(), 25);
 
-        TestUtils.waitForElementNotPresentByXPath(
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            25);
+            "//span[@id='participant_" + secondParticipantJid + "']"
+                + MeetUIUtils.getXPathForVideoMuteIndicator(), 25);
     }
 
     /**

@@ -287,10 +287,8 @@ public class MeetUIUtils
         
 
         String icon = isVideo
-            ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']"
-            : TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']";
+            ? MeetUIUtils.getXPathForVideoMuteIndicator()
+            : MeetUIUtils.getXPathForAudioMuteIndicator();
 
         String mutedIconXPath
             = "//span[@id='" + id +"']" + icon;
@@ -568,6 +566,24 @@ public class MeetUIUtils
                     "var srcObject = el.srcObject || el.mozSrcObject;" +
                     "return srcObject? srcObject.id : el.src;", element);
         return (String)res;
+    }
+
+    /**
+     * Returns the XPath pointer to the "video mute" indicator
+     */
+    public static String getXPathForVideoMuteIndicator()
+    {
+        return TestUtils.getXPathStringForClassName("//*", "videoMuted") +
+            TestUtils.getXPathStringForClassName("//*", "icon-camera-disabled");
+    }
+
+    /**
+     * Returns the XPath pointer to the "audio mute" indicator
+     */
+    public static String getXPathForAudioMuteIndicator()
+    {
+        return TestUtils.getXPathStringForClassName("//*", "audioMuted") +
+            TestUtils.getXPathStringForClassName("//*", "icon-mic-disabled");
     }
 
     /**
