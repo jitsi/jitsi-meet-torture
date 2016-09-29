@@ -57,6 +57,23 @@ public class MeetUtils
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
         "return config.etherpad_base !== undefined;";
 
+
+    /**
+     * Obtains the RTP bundle port used by the given <tt>participant</tt>.
+     *
+     * @param participant the <tt>WebDriver</tt> instance of the participant for
+     * whose bundle port is to be obtained.
+     *
+     * @return a <tt>String</tt> with the bundle port number.
+     */
+    public static String getBundlePort(WebDriver participant)
+    {
+        return TestUtils.executeScriptAndReturnString(
+            participant,
+            "return APP.conference._room.room.session." +
+                "localSDP.media[0].split('\\r\\n')[0].split(' ')[1]");
+    }
+
     /**
      * Returns resource JID which corresponds to XMPP MUC nickname of the given
      * <tt>participant</tt>.
@@ -361,6 +378,40 @@ public class MeetUtils
             "} catch (err) { return 'error: '+err; }");
 
         return (protocol == null) ? null : protocol.toString().toLowerCase();
+    }
+
+    /**
+     * Returns a JS script which checks if the remote participant's media
+     * connection is OK or not.
+     *
+     * @param peerId the ID(Colibri endpoint ID/MUC nickname) of the remote
+     * participant whose connection is to be checked with the script produced.
+     * @param isActive tells whether the script should check for connected or
+     * disconnected status.
+     *
+     * @return a <tt>String</tt> representing JS script.
+     */
+    public static String isConnectionActiveScript(String     peerId,
+                                                  boolean    isActive)
+    {
+        return
+            "return APP.conference.isParticipantConnectionActive('"
+                + peerId + "') " + ( isActive ? "!==" : "===" ) + "false;";
+    }
+
+    /**
+     * Returns a JS script which checks whether local media connection is OK.
+     *
+     * @param isActive tells whether the script should check for connected or
+     * disconnected status.
+     *
+     * @return a <tt>String</tt> representing JS script.
+     */
+    public static String isLocalConnectionActiveScript(boolean isActive)
+    {
+        return
+            "return APP.conference.isConnectionInterrupted() "
+                + ( isActive ? "===" : "!==" ) + "false";
     }
 
     /**

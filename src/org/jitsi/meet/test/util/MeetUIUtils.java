@@ -22,7 +22,7 @@ import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Class contains utility operations specific to jitsi-meet user interface.
@@ -32,6 +32,185 @@ import static org.junit.Assert.fail;
  */
 public class MeetUIUtils
 {
+    /**
+     * Check if on the large video there is "grey" avatar displayed and if not
+     * fails the current test. The check consists of 3 steps:
+     * 1. check if the "user is having networking issues" message is displayed
+     *    on the large video(with 2 seconds timeout).
+     * 2. Check if the avatar is displayed on the large video
+     *    (with 2 seconds timeout)
+     * 3. Verify that the large video HTML video element is hidden(with 2
+     *    seconds timeout).
+     * 4. Checks if the avatar has the grey filter class applied.
+     * @param where the <tt>WebDriver</tt> instance of the participant where
+     * the check will be performed.
+     */
+    public static void assertGreyAvatarOnLarge(WebDriver where)
+    {
+        String largeVideoXPath
+            = "//video[@id='largeVideo' and @class='remoteVideoProblemFilter']";
+
+        String largeAvatarXPath = "//div[@id='dominantSpeaker']";
+
+        String userDisconnectedMsgXPath
+            = "//div[@id='largeVideoContainer']"
+                + "/span[@id='remoteConnectionMessage']";
+
+        // Check if the message is displayed
+        TestUtils.waitForDisplayedElementByXPath(
+                where, userDisconnectedMsgXPath, 2);
+
+        // Avatar is displayed
+        TestUtils.waitForDisplayedElementByXPath(
+                where, largeAvatarXPath, 2);
+
+        // but video is not
+        TestUtils.waitForNotDisplayedElementByXPath(
+                where, largeVideoXPath, 2);
+
+        // Check if the avatar is "grey"
+        WebElement avatarElement
+            = where.findElement(By.xpath(largeAvatarXPath));
+        String avatarClass = avatarElement.getAttribute("class");
+        assertTrue(
+                "Avatar on large video is not \"grey\": " + avatarClass,
+                avatarClass.contains("remoteVideoProblemFilter"));
+
+    }
+
+    /**
+     * Checks whether the video thumbnail for given {@code peer} has "grey"
+     * avatar currently displayed(which means that the user is having
+     * connectivity issues and no video was rendered). If the verification fails
+     * the currently running test will fail.
+     *
+     * @param observer the <tt>WebDriver</tt> instance where the check will
+     * be performed.
+     * @param peer the <tt>WebDriver</tt> instance of the participant whose
+     * video thumbnail will be verified.
+     */
+    public static void assertGreyAvatarDisplayed(
+            WebDriver observer, WebDriver peer)
+    {
+        String resource = MeetUtils.getResourceJid(peer);
+        String avatarXPath
+            = "//span[@id='participant_" + resource
+                + "']/img[@class='userAvatar videoThumbnailProblemFilter']";
+
+        // Avatar image
+        TestUtils.waitForDisplayedElementByXPath(observer, avatarXPath, 5);
+
+        // User's video if available should be hidden
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+                observer,
+                "//span[@id='participant_" + resource + "']/video", 5);
+    }
+
+    /**
+     * Checks if the video thumbnail for given <tt>peer</tt> is currently
+     * displaying grey video. Which means that the user's media connection is
+     * interrupted, but at the time when it happened we had some image rendered
+     * and can apply grey filter on top. If the check does not succeed withing
+     * 3 seconds the currently running test will fail.
+     *
+     * @param observer the <tt>WebDriver</tt> where the check wil be performed.
+     * @param peer the <tt>WebDriver</tt> instance of the user who whose
+     * thumbnail is to be verified.
+     */
+    public static void assertGreyVideoThumbnailDisplayed(
+            WebDriver observer, WebDriver peer)
+    {
+        String peerId = MeetUtils.getResourceJid(peer);
+        assertNotNull(peerId);
+
+        String greyVideoXPath
+            = "//span[@id='participant_" + peerId
+                + "']/video[@class='videoThumbnailProblemFilter']";
+
+        TestUtils.waitForDisplayedElementByXPath(
+                observer, greyVideoXPath, 3);
+    }
+
+    /**
+     * Checks if the large video is displaying with the grey filter on top.
+     * Which means that the user currently displayed is having connectivity
+     * issues.
+     *
+     * @param where the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void assertLargeVideoIsGrey(WebDriver where)
+    {
+        String largeVideoXPath
+            = "//video[@id='largeVideo' and @class='remoteVideoProblemFilter']";
+
+        String largeAvatarXPath = "//div[@id='dominantSpeaker']";
+
+        String userDisconnectedMsgXPath
+            = "//div[@id='largeVideoContainer']"
+                + "/span[@id='remoteConnectionMessage']";
+
+        // 2 seconds timeout on each check
+        int timeout = 2;
+
+        // Large video
+        TestUtils.waitForDisplayedElementByXPath(
+                where, largeVideoXPath, timeout);
+
+        // Avatar should not be visible
+        TestUtils.waitForNotDisplayedElementByXPath(
+                where, largeAvatarXPath, timeout);
+
+        // Check if the message is displayed
+        TestUtils.waitForDisplayedElementByXPath(
+                where, userDisconnectedMsgXPath, timeout);
+    }
+
+    /**
+     * Checks if the large video is displayed without the grey scale filter
+     * applied on top.
+     *
+     * @param where the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void assertLargeVideoNotGrey(WebDriver where)
+    {
+        final String largeVideoXPath = "//video[@id='largeVideo']";
+
+        String largeAvatarXPath = "//div[@id='dominantSpeaker']";
+
+        String userDisconnectedMsgXPath
+            = "//div[@id='largeVideoContainer']"
+                + "/span[@id='remoteConnectionMessage']";
+
+        // For not displayed we have to wait for key frame sometimes,
+        // before the video resumes
+        int timeout = 2;
+
+        // Large video
+        TestUtils.waitForCondition(where, 5, new ExpectedCondition<Boolean>()
+        {
+            @Override
+            public Boolean apply(WebDriver webDriver)
+            {
+                WebElement el
+                    = webDriver.findElement(
+                            By.xpath(largeVideoXPath));
+
+                return !el.getAttribute("class")
+                          .contains("remoteVideoProblemFilter");
+            }
+        });
+
+        // Check if the message is displayed
+        TestUtils.waitForDisplayedOrNotByXPath(
+                where, userDisconnectedMsgXPath, timeout, false);
+
+        // Avatar should not be visible
+        TestUtils.waitForNotDisplayedElementByXPath(
+                where, largeAvatarXPath, timeout);
+    }
+
     /**
      * Shows the toolbar and clicks on a button identified by ID.
      * @param participant the {@code WebDriver}.
@@ -450,6 +629,23 @@ public class MeetUIUtils
     }
 
     /**
+     * A method overload for
+     * {@link #assertDisplayNameVisible(WebDriver, String)} which does
+     * automatically obtain the "resource JID" from the participant's
+     * <tt>WebDriver</tt> instance.
+     * @param where instance of <tt>WebDriver</tt> on which we'll perform
+     * the verification.
+     * @param whose the <tt>WebDriver</tt> instance of the participant to whom
+     * the video thumbnail being checked belongs to.
+     */
+    public static void assertDisplayNameVisible(WebDriver where,
+                                                WebDriver whose)
+    {
+        String resourceJid = MeetUtils.getResourceJid(whose);
+        assertDisplayNameVisible(where, resourceJid);
+    }
+
+    /**
      * Makes sure that a user's display name is displayed, and that
      * the user's thumbnail and avatar are not displayed. Allows for the these
      * conditions to not hold immediately, but within a time interval of 5
@@ -465,7 +661,7 @@ public class MeetUIUtils
         // Avatar image - hidden
         TestUtils.waitForNotDisplayedElementByXPath(
             participant, "//span[@id='participant_" + resource + "']" +
-                   "/img[@class='userAvatar']", 5);
+                   "/img[contains(@class, 'userAvatar')]", 5);
 
         // User's video - hidden, if it is available
         String videoElementXPath
@@ -777,5 +973,69 @@ public class MeetUIUtils
                             MeetUIUtils.getLargeVideoID(where));
                 }
             });
+    }
+
+    /**
+     * Verifies the UI indication of remote participant's media connection
+     * status. If the verification fails the currently running test will fail.
+     *
+     * @param observer the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param peer the <tt>WebDriver</tt> of the participant whose connection
+     * status will be checked.
+     * @param isConnected tells whether the check is for
+     * connected(<tt>true</tt>) or disconnected(<tt>false</tt>).
+     */
+    public static void verifyUserConnStatusIndication(
+            WebDriver observer, WebDriver peer, boolean isConnected)
+    {
+        String peerId = MeetUtils.getResourceJid(peer);
+        assertNotNull(peerId);
+
+        // may take time for the video to recover(key frame) than disrupt
+        int timeout = isConnected ? 20 : 7;
+
+        // Wait for the logic to tell that the user is disconnected
+        TestUtils.waitForBoolean(
+                observer,
+                MeetUtils.isConnectionActiveScript(peerId, isConnected),
+                timeout);
+
+        // Check connection status indicators
+        String connectionLostXpath
+            = "//span[@id='participant_" + peerId
+                + "']/div/span[@class='connection connection_lost']";
+
+        // Check "connection lost" icon
+        TestUtils.waitForDisplayedOrNotByXPath(
+                observer, connectionLostXpath, 2, !isConnected);
+    }
+
+    /**
+     * Verifies the UI indication of local media connection status. If
+     * the verification fails the currently running test will fail.
+     *
+     * @param where the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param isConnected tells whether the check is for
+     * connected(<tt>true</tt>) or disconnected(<tt>false</tt>).
+     */
+    public static void verifyLocalConnStatusIndication(
+            WebDriver where, boolean isConnected)
+    {
+        // Wait for the logic to reflect the status first
+        TestUtils.waitForBoolean(
+                where,
+                MeetUtils.isLocalConnectionActiveScript(isConnected),
+                15);
+
+        // Check connection status indicators
+        String connectionLostXpath
+            = "//span[@id='localVideoContainer']"
+                + "/div/span[@class='connection connection_lost']";
+
+        // Check "connection lost" icon
+        TestUtils.waitForDisplayedOrNotByXPath(
+                where, connectionLostXpath, 3, !isConnected);
     }
 }

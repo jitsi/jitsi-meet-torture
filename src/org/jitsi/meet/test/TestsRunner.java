@@ -80,6 +80,9 @@ public class TestsRunner
 
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
 
+        DEFAULT_TESTS_TO_RUN.add(
+            PeerConnectionStatusTest.class.getSimpleName());
+
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
 
