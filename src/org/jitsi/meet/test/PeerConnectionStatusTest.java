@@ -59,6 +59,7 @@ public class PeerConnectionStatusTest
      *    UDP and TCP (inbound+outbound) traffic on the given port number.
      *    If the script is called twice with different ports it is not important
      *    if the previously blocked port gets unblocked.
+     *    MUST always drop traffic from any to JVB's TCP port(4443 by default)
      *
      * 2. "--clear-rules" will remove the rules for the all previously blocked
      *    ports.
