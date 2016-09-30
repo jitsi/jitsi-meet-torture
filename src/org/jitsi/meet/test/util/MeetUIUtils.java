@@ -676,6 +676,68 @@ public class MeetUIUtils
     }
 
     /**
+     * Click on the local video thumbnail and waits until it's displayed on
+     * "the large video".
+     *
+     * @param where the <tt>WebDriver</tt> instance on which the action is to
+     * be performed.
+     */
+    static public void selectLocalVideo(WebDriver where)
+    {
+        // click on local
+        MeetUIUtils.clickOnLocalVideo(where);
+
+        WebElement localVideoElem
+            = where.findElement(
+                    By.xpath("//span[@id='localVideoWrapper']/video"));
+
+        final String largeVideoID
+            = MeetUIUtils.getVideoElementID(where, localVideoElem);
+
+        waitForLargeVideoSwitch(where, largeVideoID);
+    }
+
+    /**
+     * Selects the remote video to be displayed on "the large video" by clicking
+     * participant's video thumbnail and waits for the switch to take place
+     * using {@link #waitForLargeVideoSwitch(WebDriver, String)}.
+     *
+     * @param where the <tt>WebDriver</tt> instance on which the selection will
+     * be performed.
+     * @param toBeSelected the <tt>WebDriver</tt> instance which belongs to
+     * the participant that is to be displayed on "the large video". Is used to
+     * obtain user's identifier.
+     */
+    static public void selectRemoteVideo(WebDriver where,
+                                         WebDriver toBeSelected)
+    {
+        String resourceJid = MeetUtils.getResourceJid(toBeSelected);
+        String remoteThumbXpath
+            = "//span[starts-with(@id, 'participant_" + resourceJid + "') "
+                + " and contains(@class,'videocontainer')]";
+
+        String remoteThumbVideoXpath
+            = remoteThumbXpath + "/video[starts-with(@id, 'remoteVideo_')]";
+
+        WebElement remoteThumbnail
+            = TestUtils.waitForElementByXPath(
+                    where, remoteThumbXpath, 5,
+                    "Remote thumbnail not found: " + remoteThumbXpath);
+
+        // click on remote
+        remoteThumbnail.click();
+
+        WebElement remoteThumbnailVideo
+            = TestUtils.waitForElementByXPath(
+                    where, remoteThumbVideoXpath, 5,
+                    "Remote video not found: " + remoteThumbVideoXpath);
+
+        String videoSrc = getVideoElementID(where, remoteThumbnailVideo);
+
+        waitForLargeVideoSwitch(where, videoSrc);
+    }
+
+    /**
      * Sets an attribute on an element
      * @param element the element
      * @param attributeName the attribute name to set
@@ -688,5 +750,32 @@ public class MeetUIUtils
         ((JavascriptExecutor)driver).executeScript(
             "arguments[0][arguments[1]] = arguments[2];",
             element, attributeName, attributeValue);
+    }
+
+    /**
+     * Waits up to 3 seconds for the large video update to happen.
+     *
+     * @param where the <tt>WebDriver</tt> instance where the large video update
+     * will be performed.
+     * @param expectedVideoSrc a string which identifies the video stream
+     * (the source set on HTML5 video element to attach WebRTC media stream).
+     */
+    static private void waitForLargeVideoSwitch(WebDriver    where,
+                                                final String expectedVideoSrc)
+    {
+        new WebDriverWait(where, 3)
+            .withMessage(
+                    "Failed to switch the large video at: "
+                        + MeetUtils.getResourceJid(where)
+                        + " to : " + expectedVideoSrc)
+            .until(new ExpectedCondition<Boolean>()
+            {
+                @Override
+                public Boolean apply(WebDriver where)
+                {
+                    return expectedVideoSrc.equals(
+                            MeetUIUtils.getLargeVideoID(where));
+                }
+            });
     }
 }
