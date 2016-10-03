@@ -662,31 +662,22 @@ public class ConferenceFixture
             return;
         }
 
-        try
+        MeetUIUtils.clickOnToolbarButton(
+            participant, "toolbar_button_hangup", false);
+
+        TestUtils.waitMillis(500);
+
+        if (participant == owner)
         {
-            MeetUIUtils.clickOnToolbarButton(
-                participant, "toolbar_button_hangup", false);
-
-            TestUtils.waitMillis(500);
-
-            if (participant == owner)
-            {
-                ownerHungUp = true;
-            }
-            else if (participant == secondParticipant)
-            {
-                secondParticipantHungUp = true;
-            }
-            else if (participant == thirdParticipant)
-            {
-                thirdParticipantHungUp = true;
-            }
+            ownerHungUp = true;
         }
-        catch(Throwable t)
+        else if (participant == secondParticipant)
         {
-            t.printStackTrace();
-
-            quit(participant, false);
+            secondParticipantHungUp = true;
+        }
+        else if (participant == thirdParticipant)
+        {
+            thirdParticipantHungUp = true;
         }
 
         String instanceName = getParticipantName(participant);
