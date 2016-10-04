@@ -342,5 +342,7 @@ public class PeerConnectionStatusTest
                 owner, secondPeer, false);
         MeetUIUtils.verifyUserConnStatusIndication(
                 thirdPeer, secondPeer, false);
+
+        ConferenceFixture.closeThirdParticipant();
     }
 }
