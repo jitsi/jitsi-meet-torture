@@ -70,8 +70,11 @@ public class MeetUtils
     {
         return TestUtils.executeScriptAndReturnString(
             participant,
-            "return APP.conference._room.room.session." +
-                "localSDP.media[0].split('\\r\\n')[0].split(' ')[1]");
+            "return APP.conference._room.room.session.peerconnection."
+                + "localDescription.sdp.split('\\r\\n')."
+                + "filter(function(line){ "
+                + "return line.indexOf('a=candidate:') !== -1 "
+                + "&& line.indexOf(' udp ') !== -1; })[0].split(' ')[5];");
     }
 
     /**
