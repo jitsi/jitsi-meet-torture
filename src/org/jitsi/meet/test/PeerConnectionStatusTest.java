@@ -52,6 +52,12 @@ public class PeerConnectionStatusTest
     private static final String FIREWALL_SCRIPT_PROP_NAME = "firewall.script";
 
     /**
+     * Default firewall script which will work only on linux.
+     */
+    private static final String DEFAULT_FIREWALL_SCRIPT
+        = "scripts/firewall_script.sh";
+
+    /**
      * Stores the path to the firewall script. It is expected that the script
      * supports two commands:
      *
@@ -94,8 +100,20 @@ public class PeerConnectionStatusTest
 
         if(firewallScript == null)
         {
-            return suite;
+            if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
+	    {
+                firewallScript = DEFAULT_FIREWALL_SCRIPT;
+            }
+            else
+            {
+                System.err.println(
+                        "WARN no firewall script has been specfied and "
+                            + "the PeerConectionStatusTest will not be exectued !");
+                return suite;
+            }
         }
+
+        System.err.println("Firewall script location: " + firewallScript);
 
         suite.addTest(
             new PeerConnectionStatusTest("testInitialize"));
