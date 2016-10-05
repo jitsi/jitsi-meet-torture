@@ -127,6 +127,8 @@ public class PeerConnectionStatusTest
             new PeerConnectionStatusTest("testJoin3rdWhile2ndExpired"));
         suite.addTest(
             new PeerConnectionStatusTest("test2ndFailsICEOnJoin"));
+        suite.addTest(
+            new PeerConnectionStatusTest("testUnblockPorts"));
 
         return suite;
     }
@@ -362,5 +364,15 @@ public class PeerConnectionStatusTest
                 thirdPeer, secondPeer, false);
 
         ConferenceFixture.closeThirdParticipant();
+    }
+
+    /**
+     * The test is executed at the end of the suite to clear any blocked ports
+     * in case any of the tests fails.
+     */
+    public void testUnblockPorts()
+        throws Exception
+    {
+        clearFirewallRules();
     }
 }
