@@ -114,39 +114,43 @@ public class LockRoomTest
     */
     private void closeInviteDialog(WebDriver user)
     {
-      String closeXPath = "//div[contains(@class, 'jqiclose')]";
-      WebElement closeBtn = user.findElement(By.xpath(closeXPath));
-      closeBtn.click();
+        String closeXPath = "//div[contains(@class, 'jqiclose')]";
+        WebElement closeBtn = user.findElement(By.xpath(closeXPath));
+        closeBtn.click();
     }
 
     /**
     * Checks whether room is locked
     */
-    private void testRoomIsLocked(WebDriver user) {
-      MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
-      String lockedXPath = "//div[@data-jqi-name='locked']";
-
-      TestUtils.waitForDisplayedElementByXPath(user, lockedXPath, 5);
-      WebElement elem = user.findElement(By.xpath(lockedXPath));
-
-      assertTrue("Room must be locked", elem.isDisplayed());
-
-      closeInviteDialog(user);
+    private void testRoomIsLocked(WebDriver user)
+    {
+        testRoomLockState(user, "locked");
     }
 
     /**
     * Checks whether room is unlocked
     */
-    private void testRoomIsUnlocked(WebDriver user) {
-      MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
-      String unlockedXPath = "//div[@data-jqi-name='unlocked']";
+    private void testRoomIsUnlocked(WebDriver user)
+    {
+        testRoomLockState(user, "unlocked");
+    }
 
-      TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
-      WebElement elem = user.findElement(By.xpath(unlockedXPath));
+    /**
+     * Checks room for particular state.
+     * @param user the Driver.
+     * @param state the state to test locked/unlocked.
+     */
+    private void testRoomLockState(WebDriver user, String state)
+    {
+        MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
+        String unlockedXPath = "//div[@data-jqi-name='" + state + "']";
 
-      assertTrue("Room must be unlocked", elem.isDisplayed());
+        TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
+        WebElement elem = user.findElement(By.xpath(unlockedXPath));
 
-      closeInviteDialog(user);
+        assertTrue("Room must be " + state, elem.isDisplayed());
+
+        closeInviteDialog(user);
     }
 
     /**
