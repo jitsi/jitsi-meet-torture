@@ -138,7 +138,7 @@ public class SharedVideoTest
 
         WebDriverWait wait = new WebDriverWait(owner, 30);
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-            By.tagName("iframe")));
+            By.id("sharedVideoIFrame")));
         // make sure we are in meet, not in the frame
         owner.switchTo().defaultContent();
 
