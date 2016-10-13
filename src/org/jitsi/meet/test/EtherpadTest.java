@@ -119,7 +119,7 @@ public class EtherpadTest
 
             WebDriverWait wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.tagName("iframe")));
+                By.id("etherpadIFrame")));
 
             wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
