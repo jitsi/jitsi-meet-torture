@@ -79,12 +79,7 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(SharedVideoTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-        // doing the same test two more times to be sure it is
-        // not a problem, as there was reported an issue about that
-        // https://github.com/jitsi/jitsi-meet/issues/83
-        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-        DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
-        
+
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
 
