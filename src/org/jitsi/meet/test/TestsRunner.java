@@ -80,8 +80,11 @@ public class TestsRunner
 
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
 
-        DEFAULT_TESTS_TO_RUN.add(
-            PeerConnectionStatusTest.class.getSimpleName());
+        // Disabling this test by default, it will run only on linux currently
+        // it needs sudo for accessing iptables and if user run it, it will
+        // clear all iptable rules at the end of the run
+        //DEFAULT_TESTS_TO_RUN.add(
+        //    PeerConnectionStatusTest.class.getSimpleName());
 
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
