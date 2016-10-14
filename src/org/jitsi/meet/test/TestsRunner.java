@@ -40,6 +40,13 @@ public class TestsRunner
             = "jitsi-meet.tests.toExclude";
 
     /**
+     * The name of the property which controls the set of tests to be include
+     * to the default set of tests.
+     */
+    private static final String TESTS_TO_INCLUDE_PNAME
+        = "jitsi-meet.tests.toInclude";
+
+    /**
      * The default list of tests to run. This does not include SetupConference
      * and DisposeConference; they will be added separately.
      *
@@ -152,6 +159,20 @@ public class TestsRunner
             {
                 String test = tokens.nextToken();
                 while (testsToRun.remove(test));
+            }
+        }
+
+        // Include the tests which are to be force included to default set
+        String testsToInclude = System.getProperty(TESTS_TO_INCLUDE_PNAME);
+
+        if (testsToInclude != null)
+        {
+            StringTokenizer tokens = new StringTokenizer(testsToInclude, ",");
+
+            while (tokens.hasMoreTokens())
+            {
+                String test = tokens.nextToken();
+                while (testsToRun.add(test));
             }
         }
 
