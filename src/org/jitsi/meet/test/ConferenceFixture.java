@@ -436,6 +436,7 @@ public class ConferenceFixture
             ops.addArguments("use-fake-device-for-media-stream");
             ops.addArguments("disable-extensions");
             ops.addArguments("disable-plugins");
+            ops.addArguments("mute-audio");
 
             String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
             if(disProp == null && !Boolean.parseBoolean(disProp))
