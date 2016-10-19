@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Tests switching video of participants.
@@ -84,12 +85,19 @@ public class SwitchVideoTest
         // click on local
         MeetUIUtils.clickOnLocalVideo(driver);
 
-        TestUtils.waitMillis(1000);
+        final String expectedVideoID
+            = MeetUIUtils.getVideoElementID(driver, localVideoElem);
 
-        // test is this the video seen
-        assertEquals("Video didn't change to local",
-            MeetUIUtils.getVideoElementID(driver, localVideoElem),
-            MeetUIUtils.getLargeVideoID(driver));
+        // test is this the video seen, if failed video didn't change to local
+        TestUtils.waitForCondition(driver, 5,
+            new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    return expectedVideoID.equals(
+                        MeetUIUtils.getLargeVideoID(d));
+                }
+            });
     }
 
     /**
