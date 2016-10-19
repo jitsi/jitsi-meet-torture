@@ -88,7 +88,7 @@ public class AvatarTest
 
         // Check if avatar on large video is the same as on local thumbnail
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
-        String ownerLargeSrc = getLargeVideoSrc(owner);
+        final String ownerLargeSrc = getLargeVideoSrc(owner);
         assertTrue(
                 "invalid avatar on the large video: " + ownerLargeSrc +
                         ", should start with: " + ownerThumbSrc,
@@ -113,7 +113,15 @@ public class AvatarTest
         // remote video switching on large
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
-        assertEquals(ownerLargeSrc, getLargeVideoSrc(secondParticipant));
+        TestUtils.waitForCondition(secondParticipant, 5,
+            new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    String currentSrc = getLargeVideoSrc(d);
+                    return currentSrc.equals(ownerLargeSrc);
+                }
+            });
 
         // Owner pins second participant's video
         MeetUIUtils.clickOnRemoteVideo(owner, secondPeerResource);
@@ -179,16 +187,15 @@ public class AvatarTest
         MeetUIUtils.clickOnRemoteVideo(thirdParticipant, ownerResource);
         // His avatar should be on large video and
         // display name instead of an avatar, local video displayed
-        assertEquals(ownerResource,
-                     MeetUIUtils.getLargeVideoResource(thirdParticipant));
+        MeetUIUtils.waitsForLargeVideoSwitch(thirdParticipant, ownerResource);
         MeetUIUtils.assertDisplayNameVisible(thirdParticipant, ownerResource);
         MeetUIUtils.assertAvatarDisplayed(thirdParticipant, secondPeerResource);
         MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
         // Click on second participant's video
         MeetUIUtils.clickOnRemoteVideo(thirdParticipant, secondPeerResource);
-        assertEquals(secondPeerResource,
-                     MeetUIUtils.getLargeVideoResource(thirdParticipant));
+        MeetUIUtils.waitsForLargeVideoSwitch(
+            thirdParticipant, secondPeerResource);
         MeetUIUtils.assertDisplayNameVisible(thirdParticipant, secondPeerResource);
         MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
         MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);

@@ -554,6 +554,25 @@ public class MeetUIUtils
     }
 
     /**
+     * Checks whether the large video has changed to the desired resource.
+     * @param driver the driver to check
+     * @param resource the expected resource
+     */
+    public static void waitsForLargeVideoSwitch(
+        WebDriver driver, final String resource)
+    {
+        TestUtils.waitForCondition(driver, 5,
+            new ExpectedCondition<Boolean>()
+            {
+                public Boolean apply(WebDriver d)
+                {
+                    return resource.equals(
+                        getLargeVideoResource(d));
+                }
+            });
+    }
+
+    /**
      * Returns the identifier of the video element.
      *
      * @param driver the driver
