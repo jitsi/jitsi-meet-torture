@@ -240,13 +240,18 @@ public class DisplayNameTest
         WebElement elem =
             secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"
-                + "//span[@class='displayname']"));
+                + "//span[@id='localDisplayName']"));
+        // hover the element before clicking
+        Actions action0 = new Actions(secondParticipant);
+        action0.moveToElement(elem);
+        action0.perform();
+
         elem.click();
 
         WebElement inputElem =
             secondParticipant.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"
-                + "//input[@class='editdisplayname']"));
+                + "//input[@id='editDisplayName']"));
         Actions action = new Actions(secondParticipant);
         action.moveToElement(inputElem);
         action.perform();
