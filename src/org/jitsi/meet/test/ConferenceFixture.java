@@ -337,7 +337,9 @@ public class ConferenceFixture
         
         // disables mute participant dialog
         ((JavascriptExecutor) participant)
-            .executeScript("if(window.localStorage) window.localStorage.removeItem('dontShowMuteParticipantDialog');");
+            .executeScript("if(window.localStorage)"
+                + "window.localStorage.setItem("
+                + "'dontShowMuteParticipantDialog', 'true');");
 
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
