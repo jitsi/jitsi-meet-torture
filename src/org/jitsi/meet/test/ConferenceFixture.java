@@ -334,6 +334,10 @@ public class ConferenceFixture
         // disables animations
         ((JavascriptExecutor) participant)
             .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+        
+        // disables mute participant dialog
+        ((JavascriptExecutor) participant)
+            .executeScript("if(window.localStorage) window.localStorage.removeItem('dontShowMuteParticipantDialog');");
 
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
