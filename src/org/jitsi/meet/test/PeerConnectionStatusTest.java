@@ -67,8 +67,8 @@ public class PeerConnectionStatusTest
      *    if the previously blocked port gets unblocked.
      *    MUST always drop traffic from any to JVB's TCP port(4443 by default)
      *
-     * 2. "--clear-rules" will remove the rules for the all previously blocked
-     *    ports.
+     * 2. "--unblock-port {port number}" will remove the rules blocking given
+     *    port(should revert "--block-port {port number}").
      */
     private static String firewallScript;
 
@@ -165,11 +165,14 @@ public class PeerConnectionStatusTest
     }
 
     /**
-     * Unblocks all previously blocked ports.
+     * Unblocks the previously blocked port.
+     *
+     * @param portNumberStr a string which represents the port number to be
+     * unblocked.
      *
      * @throws Exception if anything goes wrong.
      */
-    private static void clearFirewallRules()
+    private static void unblockPort(String portNumberStr)
         throws Exception
     {
         CmdExecutor cmdExecutor = new CmdExecutor();
@@ -177,9 +180,10 @@ public class PeerConnectionStatusTest
         List<String> cmdArgs = new LinkedList<>();
 
         cmdArgs.add(firewallScript);
-        cmdArgs.add("--clear-rules");
+        cmdArgs.add("--unblock-port");
+        cmdArgs.add(portNumberStr);
 
-        System.err.println("Will unblock all previously blocked ports");
+        System.err.println("Will unblock port: " + portNumberStr);
 
         cmdExecutor.executeCmd(cmdArgs);
     }
@@ -260,7 +264,7 @@ public class PeerConnectionStatusTest
         WebDriver secondPeer = ConferenceFixture.getSecondParticipantInstance();
 
         // 1. Unlock the port and see if we recover
-        clearFirewallRules();
+        unblockPort(peer2bundlePort);
 
         // 2. Verify if connection has restored
         MeetUIUtils.verifyUserConnStatusIndication(owner, secondPeer, true);
@@ -330,7 +334,7 @@ public class PeerConnectionStatusTest
         MeetUIUtils.assertGreyAvatarOnLarge(thirdPeer);
 
         // Unblock the port
-        clearFirewallRules();
+        unblockPort(peer2bundlePort);
     }
 
     /**
@@ -373,6 +377,8 @@ public class PeerConnectionStatusTest
     public void testUnblockPorts()
         throws Exception
     {
-        clearFirewallRules();
+        if (peer2bundlePort != null) {
+            unblockPort(peer2bundlePort);
+        }
     }
 }
