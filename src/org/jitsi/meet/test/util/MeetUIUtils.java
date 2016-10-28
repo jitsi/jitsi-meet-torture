@@ -1004,7 +1004,7 @@ public class MeetUIUtils
         // Check connection status indicators
         String connectionLostXpath
             = "//span[@id='participant_" + peerId
-                + "']/div/span[@class='connection connection_lost']";
+                + "']//span[@class='connection_lost']";
 
         // Check "connection lost" icon
         TestUtils.waitForDisplayedOrNotByXPath(
@@ -1032,7 +1032,7 @@ public class MeetUIUtils
         // Check connection status indicators
         String connectionLostXpath
             = "//span[@id='localVideoContainer']"
-                + "/div/span[@class='connection connection_lost']";
+                + "//span[@class='connection_lost']";
 
         // Check "connection lost" icon
         TestUtils.waitForDisplayedOrNotByXPath(
