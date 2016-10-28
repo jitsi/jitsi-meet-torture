@@ -102,10 +102,21 @@ public class FollowMeTest
 
     /**
      * Checks that "Follow me" checkbox is only visible for moderator.
+     * If all moderators is enabled skip this check.
      */
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
         System.err.println("Start testFollowMeCheckboxVisibleOnlyForModerator");
+
+        Boolean allModeratorsEnabled = (Boolean)(
+            (JavascriptExecutor) ConferenceFixture.getSecondParticipant())
+            .executeScript(
+                "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;");
+        // if all are moderators skip this check
+        if (allModeratorsEnabled) {
+            System.err.println("All moderators enabled, skipping check!");
+            return;
+        }
 
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
