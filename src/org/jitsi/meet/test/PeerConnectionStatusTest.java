@@ -75,7 +75,7 @@ public class PeerConnectionStatusTest
     /**
      * Stores the RTP bundle port number of the 2nd participant.
      */
-    private static String peer2bundlePort;
+    private static int peer2bundlePort = -1;
 
     /**
      * Creates new instance of <tt>PeerConnectionStatusTest</tt> for the given
@@ -136,30 +136,22 @@ public class PeerConnectionStatusTest
     /**
      * Calls {@link #firewallScript} to block given port.
      *
-     * @param portNumberStr a string which represents the port number to be
-     * blocked.
+     * @param portNumber the port number to be blocked.
      *
      * @throws Exception if anything goes wrong.
      */
-    private static void blockPort(String portNumberStr)
+    private static void blockPort(int portNumber)
         throws Exception
     {
-        // Tr to parse just to see if it's a valid integer
-        int portNumber = Integer.parseInt(portNumberStr);
-        if (portNumber < 0 || portNumber > 65535)
-        {
-            throw new Exception("Invalid port number: " + portNumberStr);
-        }
-
         CmdExecutor cmdExecutor = new CmdExecutor();
 
         List<String> cmdArgs = new LinkedList<>();
 
         cmdArgs.add(firewallScript);
         cmdArgs.add("--block-port");
-        cmdArgs.add(portNumberStr);
+        cmdArgs.add(String.valueOf(portNumber));
 
-        System.err.println("Will block port: " + portNumberStr);
+        System.err.println("Will block port: " + portNumber);
 
         cmdExecutor.executeCmd(cmdArgs);
     }
@@ -167,12 +159,11 @@ public class PeerConnectionStatusTest
     /**
      * Unblocks the previously blocked port.
      *
-     * @param portNumberStr a string which represents the port number to be
-     * unblocked.
+     * @param portNumber the port number to unblock.
      *
      * @throws Exception if anything goes wrong.
      */
-    private static void unblockPort(String portNumberStr)
+    private static void unblockPort(int portNumber)
         throws Exception
     {
         CmdExecutor cmdExecutor = new CmdExecutor();
@@ -181,9 +172,9 @@ public class PeerConnectionStatusTest
 
         cmdArgs.add(firewallScript);
         cmdArgs.add("--unblock-port");
-        cmdArgs.add(portNumberStr);
+        cmdArgs.add(String.valueOf(portNumber));
 
-        System.err.println("Will unblock port: " + portNumberStr);
+        System.err.println("Will unblock port: " + portNumber);
 
         cmdExecutor.executeCmd(cmdArgs);
     }
@@ -377,7 +368,7 @@ public class PeerConnectionStatusTest
     public void testUnblockPorts()
         throws Exception
     {
-        if (peer2bundlePort != null) {
+        if (peer2bundlePort != -1) {
             unblockPort(peer2bundlePort);
         }
     }

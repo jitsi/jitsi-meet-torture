@@ -64,17 +64,39 @@ public class MeetUtils
      * @param participant the <tt>WebDriver</tt> instance of the participant for
      * whose bundle port is to be obtained.
      *
-     * @return a <tt>String</tt> with the bundle port number.
+     * @return an <tt>int</tt> with the bundle port number.
+     *
+     * @throws RuntimeException if the port is either invalid or the script has
+     * failed to obtain it(the intention of throwing runtime exception is
+     * to fail the test).
      */
-    public static String getBundlePort(WebDriver participant)
+    public static int getBundlePort(WebDriver participant)
     {
-        return TestUtils.executeScriptAndReturnString(
-            participant,
-            "return APP.conference._room.room.session.peerconnection."
-                + "localDescription.sdp.split('\\r\\n')."
-                + "filter(function(line){ "
-                + "return line.indexOf('a=candidate:') !== -1 "
-                + "&& line.indexOf(' udp ') !== -1; })[0].split(' ')[5];");
+        String portNumberStr
+            = TestUtils.executeScriptAndReturnString(
+                participant,
+                "return APP.conference._room.room.session.peerconnection."
+                    + "localDescription.sdp.split('\\r\\n')."
+                    + "filter(function(line){ "
+                    + "return line.indexOf('a=candidate:') !== -1 "
+                    + "&& line.indexOf(' udp ') !== -1; })[0].split(' ')[5];");
+
+        if (portNumberStr == null)
+        {
+            throw new RuntimeException(
+                "Failed to obtain the bundle port through"
+                    + " the JS script(might be broken)");
+        }
+
+        // Try to parse to see if it's a valid integer
+        int portNumber = Integer.parseInt(portNumberStr);
+        if (portNumber < 0 || portNumber > 65535)
+        {
+            throw new RuntimeException(
+                "Invalid port number: " + portNumberStr);
+        }
+
+        return portNumber;
     }
 
     /**
