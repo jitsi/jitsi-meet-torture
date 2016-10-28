@@ -160,11 +160,11 @@ public class MuteTest
 
         TestUtils.waitForDisplayedElementByXPath(
             owner,
-            "//ul[@class='popupmenu']/li/a[@class='mutelink']",
+            "//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]",
             5);
 
         owner.findElement(
-                By.xpath("//ul[@class='popupmenu']/li/a[@class='mutelink']"))
+                By.xpath("//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]"))
             .click();
 
         // and now check whether second participant is muted
