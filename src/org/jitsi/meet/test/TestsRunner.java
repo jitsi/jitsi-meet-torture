@@ -172,7 +172,7 @@ public class TestsRunner
             while (tokens.hasMoreTokens())
             {
                 String test = tokens.nextToken();
-                while (testsToRun.add(test));
+                testsToRun.add(test);
             }
         }
 
