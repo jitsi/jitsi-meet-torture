@@ -170,17 +170,17 @@ public class FollowMeTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_film_strip");
 
-        TestUtils.waitForElementAttributeValueByXPath(
-                owner, filmStripXPath, "class", "hidden", 10);
-        TestUtils.waitForElementAttributeValueByXPath(
-                secondParticipant, filmStripXPath, "class", "hidden", 10);
+        TestUtils.waitForElementContainsClassByXPath(
+                owner, filmStripXPath, "hidden", 10);
+        TestUtils.waitForElementContainsClassByXPath(
+                secondParticipant, filmStripXPath, "hidden", 10);
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_film_strip");
 
         TestUtils.waitForElementAttributeValueByXPath(
-                owner, filmStripXPath, "class", "", 10);
+                owner, filmStripXPath, "class", "filmstrip__videos", 10);
         TestUtils.waitForElementAttributeValueByXPath(
-                secondParticipant, filmStripXPath, "class", "", 10);
+                secondParticipant, filmStripXPath, "class", "filmstrip__videos", 10);
     }
 
     /**
