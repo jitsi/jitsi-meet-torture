@@ -40,6 +40,13 @@ public class TestsRunner
             = "jitsi-meet.tests.toExclude";
 
     /**
+     * The name of the property which controls the set of tests to be include
+     * to the default set of tests.
+     */
+    private static final String TESTS_TO_INCLUDE_PNAME
+        = "jitsi-meet.tests.toInclude";
+
+    /**
      * The default list of tests to run. This does not include SetupConference
      * and DisposeConference; they will be added separately.
      *
@@ -79,6 +86,12 @@ public class TestsRunner
         DEFAULT_TESTS_TO_RUN.add(SharedVideoTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(LockRoomTest.class.getSimpleName());
+
+        // Disabling this test by default, it will run only on linux currently
+        // it needs sudo for accessing iptables and if user run it, it will
+        // clear all iptable rules at the end of the run
+        //DEFAULT_TESTS_TO_RUN.add(
+        //    PeerConnectionStatusTest.class.getSimpleName());
 
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
@@ -146,6 +159,20 @@ public class TestsRunner
             {
                 String test = tokens.nextToken();
                 while (testsToRun.remove(test));
+            }
+        }
+
+        // Include the tests which are to be force included to default set
+        String testsToInclude = System.getProperty(TESTS_TO_INCLUDE_PNAME);
+
+        if (testsToInclude != null)
+        {
+            StringTokenizer tokens = new StringTokenizer(testsToInclude, ",");
+
+            while (tokens.hasMoreTokens())
+            {
+                String test = tokens.nextToken();
+                testsToRun.add(test);
             }
         }
 

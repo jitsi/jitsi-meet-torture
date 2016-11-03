@@ -20,9 +20,8 @@ import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
-import java.io.*;
+
 import java.util.*;
-import java.util.concurrent.*;
 
 import org.openqa.selenium.support.ui.*;
 
@@ -52,11 +51,6 @@ public class ReloadTest
      */
     private final static String DISPLAY_NAME = "testDisplayName";
 
-    /**
-     * Exception on starting the hook, null if script has started successfully.
-     */
-    private Exception hookException = null;
-    
     /**
      * Constructs test
      * @param name the method name for the test.
@@ -244,63 +238,22 @@ public class ReloadTest
         if(hookScript == null || host == null)
             return;
 
-        // Counter we wait for the process execution in the thread to finish
-        final CountDownLatch waitEndSignal = new CountDownLatch(1);
-
-        // counter we wait for indication that the process has started
-        // or that it ended up with an exception - hookException
-        final CountDownLatch waitStartSignal = new CountDownLatch(1);
-
-        // this will fire a hook script, which needs to launch a browser that
-        // will join our room
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    List<String> cmd = new ArrayList<String>();
-                    cmd.add(hookScript);
-                    cmd.add(host);
-                    for(int i = 0; i < params.length; i++)
-                    {
-                        cmd.add(params[i]);
-                    }
-
-                    ProcessBuilder pb = new ProcessBuilder(cmd);
-
-                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-                    Process p = pb.start();
-
-                    waitStartSignal.countDown();
-
-                    p.waitFor();
-                    System.err.println("Script ended execution.");
-                    waitEndSignal.countDown();
-                }
-                catch (IOException | InterruptedException e)
-                {
-                    hookException = e;
-                    waitStartSignal.countDown();
-                }
-            }
-        }).start();
-        // now lets wait satarting or error on startup
+        CmdExecutor exec = new CmdExecutor();
         try
         {
-            waitStartSignal.await(2, TimeUnit.SECONDS);
-            if(hookException != null)
-            {
-                hookException.printStackTrace();
-                assertFalse("Error executing hook script:"
-                    + hookException.getMessage(), true);
-            }
+            List<String> cmd = new ArrayList<>();
+            cmd.add(hookScript);
+            cmd.add(host);
+            Collections.addAll(cmd, params);
+
+            int result = exec.executeCmd(cmd);
+
+            assertEquals("Script returned non-zero value", 0, result);
         }
-        catch (InterruptedException e)
+        catch (Exception hookException)
         {
-            e.printStackTrace();
+            assertFalse("Error executing hook script:"
+                + hookException.getMessage(), true);
         }
     }
     
