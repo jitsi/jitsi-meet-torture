@@ -198,8 +198,7 @@ public class FollowMeTest
 
         // let's make video of second participant active
         ((JavascriptExecutor)owner).executeScript(
-            "$(\"span[id='participant_" + secondParticipantResource + "']" +
-                    "[class='videocontainer']\").click()");
+            "$(\"span[id='participant_" + secondParticipantResource + "']\").click()");
 
         TestUtils.waitMillis(5000);
 

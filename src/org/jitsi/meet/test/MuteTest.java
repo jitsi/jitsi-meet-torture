@@ -150,11 +150,15 @@ public class MuteTest
 
         WebDriver owner = ConferenceFixture.getOwner();
 
+        WebElement cntElem = owner.findElement(By.xpath(
+            TestUtils.getXPathStringForClassName("//span", "videocontainer_remote")));
+
         WebElement elem = owner.findElement(By.xpath(
             TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
             + "/i[@class='icon-menu-up']"));
 
         Actions action = new Actions(owner);
+        action.moveToElement(cntElem);
         action.moveToElement(elem);
         action.perform();
 
