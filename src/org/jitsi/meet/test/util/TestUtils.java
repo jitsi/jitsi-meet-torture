@@ -305,6 +305,14 @@ public class TestUtils
                 });
     }
 
+    /**
+     * Waits until element will contain class name
+     * passed with parameter
+     * @param participant the {@code WebDriver}.
+     * @param xpath the xpath to search for the element.
+     * @param className expected class value of the element.
+     * @param timeout the time to wait for the element in seconds.
+     */
     public static void waitForElementContainsClassByXPath(
             WebDriver participant,
             final String xpath,
