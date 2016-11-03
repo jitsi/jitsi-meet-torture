@@ -75,6 +75,17 @@
                value="${lib.native.path}/chromedriver.exe">
             <isset property="is.running.windows"/>
     </condition>
+    <condition property="webdriver.gecko.driver"
+               value="${lib.native.path}/geckodriver">
+        <or>
+            <isset property="is.running.macosx"/>
+            <isset property="is.running.linux"/>
+        </or>
+    </condition>
+    <condition property="webdriver.gecko.driver"
+               value="${lib.native.path}/geckodriver.exe">
+        <isset property="is.running.windows"/>
+    </condition>
     <condition property="webdriver.ie.driver"
                value="${lib.native.path}/IEDriverServer.exe">
             <isset property="is.running.windows"/>
