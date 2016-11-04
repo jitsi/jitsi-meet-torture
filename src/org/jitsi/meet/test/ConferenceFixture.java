@@ -796,7 +796,7 @@ public class ConferenceFixture
      */
     public static void waitForOwnerToJoinMUC()
     {
-        if (owner == null)
+        if (owner == null || ownerHungUp)
             startOwner(null);
 
         MeetUtils.waitForParticipantToJoinMUC(owner, 15);
