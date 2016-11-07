@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 block_port() {
-sudo iptables -A INPUT -p udp --dport $1 -j DROP
-sudo iptables -A OUTPUT -p udp --sport $1 -j DROP
-sudo iptables -A OUTPUT -p tcp --dport 4443 -j DROP
+sudo iptables -I INPUT 1 -p udp --dport $1 -j DROP
+sudo iptables -I OUTPUT 1 -p udp --sport $1 -j DROP
+sudo iptables -I OUTPUT 1 -p tcp --dport 4443 -j DROP
 sudo iptables -L
 }
 
