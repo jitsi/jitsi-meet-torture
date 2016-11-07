@@ -95,6 +95,7 @@ public class TestsRunner
 
 //        DEFAULT_TESTS_TO_RUN.add(MaxUsersTest.class.getSimpleName());
         DEFAULT_TESTS_TO_RUN.add(ConnectionTimeTest.class.getSimpleName());
+        DEFAULT_TESTS_TO_RUN.add(JibriTest.class.getSimpleName());
 
         File inputFrameDir = new File(PSNRTest.INPUT_FRAME_DIR);
         String fakeStreamVideoFileName

@@ -792,7 +792,7 @@ public class MeetUIUtils
      */
     public static List<WebElement> getThumbnails(WebDriver participant)
     {
-        return participant.findElements(By.xpath("//div[@id='remoteVideos']/span[@class='videocontainer']"));
+        return participant.findElements(By.xpath("//div[@id='remoteVideos']/span[contains(@class,'videocontainer')]"));
     }
 
     /**

@@ -171,7 +171,8 @@ public class ConferenceFixture
         ownerDriver,
         secondParticipantDriver,
         thirdParticipantDriver,
-        otherParticipantDriver
+        otherParticipantDriver,
+        otherDriver
     }
 
     /**
@@ -647,6 +648,32 @@ public class ConferenceFixture
             .executeScript("document.title='Participant'");
 
         return participant;
+    }
+    
+    /**
+     * Opens URL using new WebDriver.
+     * @param URL the URL to be opened 
+     * @return the {@code WebDriver} which was started.
+     * NOTE: Uses the browser type set for the owner.
+     */
+    public static WebDriver openURL(String URL)
+    {
+        System.err.println("Opening URL: " + URL);
+
+        BrowserType browser
+            = BrowserType.valueOfString(
+                System.getProperty(BROWSER_OWNER_NAME_PROP));
+        
+        WebDriver driver = 
+            startDriver(browser, Participant.otherDriver);
+
+        driver.get(URL);
+        MeetUtils.waitForPageToLoad(driver);
+
+        ((JavascriptExecutor) driver)
+            .executeScript("document.title='Other'");
+
+        return driver;
     }
 
     /**
