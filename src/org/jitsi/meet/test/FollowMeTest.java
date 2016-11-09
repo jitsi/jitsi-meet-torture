@@ -168,14 +168,14 @@ public class FollowMeTest
         MeetUIUtils.displayFilmStripPanel(owner);
         MeetUIUtils.displayFilmStripPanel(secondParticipant);
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_film_strip");
+        owner.findElement(By.id("hideVideoToolbar")).click();
 
         TestUtils.waitForElementContainsClassByXPath(
                 owner, filmStripXPath, "hidden", 10);
         TestUtils.waitForElementContainsClassByXPath(
                 secondParticipant, filmStripXPath, "hidden", 10);
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_film_strip");
+        owner.findElement(By.id("hideVideoToolbar")).click();
 
         TestUtils.waitForElementAttributeValueByXPath(
                 owner, filmStripXPath, "class", "filmstrip__videos", 10);
