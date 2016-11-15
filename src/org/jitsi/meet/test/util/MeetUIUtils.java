@@ -993,7 +993,7 @@ public class MeetUIUtils
         assertNotNull(peerId);
 
         // may take time for the video to recover(key frame) than disrupt
-        int timeout = isConnected ? 20 : 7;
+        int timeout = isConnected ? 60 : 15;
 
         // Wait for the logic to tell that the user is disconnected
         TestUtils.waitForBoolean(
