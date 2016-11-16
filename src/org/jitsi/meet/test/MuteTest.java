@@ -149,9 +149,13 @@ public class MuteTest
         System.err.println("Start ownerMutesParticipantAndCheck.");
 
         WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        WebElement cntElem = owner.findElement(By.xpath(
-            TestUtils.getXPathStringForClassName("//span", "videocontainer_remote")));
+        String secondParticipantResource
+            = MeetUtils.getResourceJid(secondParticipant);
+
+        WebElement cntElem = owner.findElement(By.id(
+            "participant_" + secondParticipantResource ));
 
         WebElement elem = owner.findElement(By.xpath(
             TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
