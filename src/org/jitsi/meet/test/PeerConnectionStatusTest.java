@@ -143,6 +143,9 @@ public class PeerConnectionStatusTest
     private static void blockPort(int portNumber)
         throws Exception
     {
+        if (portNumber == -1)
+            throw new IllegalArgumentException("Trying to block port -1");
+
         CmdExecutor cmdExecutor = new CmdExecutor();
 
         List<String> cmdArgs = new LinkedList<>();
@@ -166,6 +169,9 @@ public class PeerConnectionStatusTest
     private static void unblockPort(int portNumber)
         throws Exception
     {
+        if (portNumber == -1)
+            throw new IllegalArgumentException("Trying to unblock port -1");
+
         CmdExecutor cmdExecutor = new CmdExecutor();
 
         List<String> cmdArgs = new LinkedList<>();
