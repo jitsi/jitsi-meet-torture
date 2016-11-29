@@ -178,8 +178,7 @@ public class MuteTest
         // and now check whether second participant is muted
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "audioMuted")
-            + "/i[@class='icon-mic-disabled']", 5);
+            MeetUIUtils.getXPathForAudioMuteIndicator(), 5);
 
         action.release();
     }
