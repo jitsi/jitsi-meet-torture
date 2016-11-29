@@ -69,13 +69,11 @@ public class StopVideoTest
 
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getOwner(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
         
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
     }
 
     /**
@@ -93,14 +91,12 @@ public class StopVideoTest
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             ConferenceFixture.getSecondParticipant(),
             "//span[starts-with(@id, 'participant_')]"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 10);
+                + MeetUIUtils.getXPathForVideoMuteIndicator(), 10);
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             ConferenceFixture.getOwner(),
             "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 10);
+                + MeetUIUtils.getXPathForVideoMuteIndicator(), 10);
     }
 
     /**
@@ -178,13 +174,11 @@ public class StopVideoTest
 
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getOwner(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
         
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
     }
 
     /**
@@ -199,13 +193,11 @@ public class StopVideoTest
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             ConferenceFixture.getOwner(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted") +
-            "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
         
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted") +
-            "/i[@class='icon-camera-disabled']", 5);
+            MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
     }
 
     /**
@@ -235,10 +227,7 @@ public class StopVideoTest
         MeetUtils.waitForIceConnected(secondParticipant);
 
         TestUtils.waitForElementByXPath(
-            secondParticipant,
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']",
-            5);
+            secondParticipant, MeetUIUtils.getXPathForVideoMuteIndicator(), 5);
 
         // just debug messages
         /*{
