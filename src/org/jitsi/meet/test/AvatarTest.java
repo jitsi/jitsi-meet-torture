@@ -76,15 +76,7 @@ public class AvatarTest
         String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
-        TestUtils.waitForDisplayedElementByXPath(
-                owner, "//a[@id='toolbar_button_camera']", 10);
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_camera");
-
-        TestUtils.waitForElementByXPath(
-                owner,
-                TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                    + "/i[@class='icon-camera-disabled']",
-                5);
+        MeetUIUtils.muteVideoAndCheck(owner, null);
 
         // Check if avatar on large video is the same as on local thumbnail
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
@@ -342,7 +334,7 @@ public class AvatarTest
      * Return the participant avatar src that we will check
      * @return the participant avatar src that we will check
      */
-    private String getSrcByXPath(WebDriver participant, String xpath)
+    private static String getSrcByXPath(WebDriver participant, String xpath)
     {
         return participant.findElement(By.xpath(xpath)).getAttribute("src");
     }
@@ -390,7 +382,7 @@ public class AvatarTest
      * @param perspective where are we checking this ?
      * @return string value of avatar's 'src' attribute
      */
-    private String getLargeVideoSrc(WebDriver perspective)
+    public static String getLargeVideoSrc(WebDriver perspective)
     {
         return getSrcByXPath(perspective,
             "//div[@id='dominantSpeaker']/img[@id='dominantSpeakerAvatar']");

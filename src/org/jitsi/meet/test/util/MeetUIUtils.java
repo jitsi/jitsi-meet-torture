@@ -1038,4 +1038,34 @@ public class MeetUIUtils
         TestUtils.waitForDisplayedOrNotByXPath(
                 where, connectionLostXpath, 3, !isConnected);
     }
+
+    /**
+     * Mutes participant's video and checks local indication for that.
+     * @param participant the participant's video to be muted.
+     * @param participantCheck another participant in the room which we want to
+     * test whether he is seeing the muted participant as really muted. Can be
+     * null if we want to skip this check.
+     */
+    public static void muteVideoAndCheck(WebDriver participant,
+                                         WebDriver participantCheck)
+    {
+        // Mute owner video
+        TestUtils.waitForDisplayedElementByXPath(
+            participant, "//a[@id='toolbar_button_camera']", 10);
+        MeetUIUtils.clickOnToolbarButton(participant, "toolbar_button_camera");
+
+        TestUtils.waitForElementByXPath(
+            participant,
+            TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']",
+            5);
+
+        if (participantCheck != null)
+        {
+            TestUtils.waitForElementByXPath(
+                participantCheck,
+                TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                    + "/i[@class='icon-camera-disabled']", 5);
+        }
+    }
 }

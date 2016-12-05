@@ -64,18 +64,9 @@ public class StopVideoTest
     {
         System.err.println("Start stopVideoOnOwnerAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
-            "toolbar_button_camera");
-
-        TestUtils.waitForElementByXPath(
+        MeetUIUtils.muteVideoAndCheck(
             ConferenceFixture.getOwner(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
-        
-        TestUtils.waitForElementByXPath(
-            ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            ConferenceFixture.getSecondParticipant());
     }
 
     /**
@@ -173,18 +164,9 @@ public class StopVideoTest
     {
         System.err.println("Start stopVideoOnParticipantAndCheck.");
 
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
-
-        TestUtils.waitForElementByXPath(
-            ConferenceFixture.getOwner(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
-        
-        TestUtils.waitForElementByXPath(
+        MeetUIUtils.muteVideoAndCheck(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']", 5);
+            ConferenceFixture.getOwner());
     }
 
     /**
