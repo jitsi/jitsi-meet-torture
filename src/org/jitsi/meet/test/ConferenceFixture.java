@@ -254,21 +254,41 @@ public class ConferenceFixture
      */
     public static WebDriver startOwner(String fragment)
     {
+        return startOwner(fragment, null);
+    }
+
+    /**
+     * Initializes <tt>currentRoomName</tt> and starts the "owner".
+     * @param fragment fragment to be added the URL opened by the "owner".
+     * @param roomParameter an extra parameter to the url. The fragment adds
+     * parameters as # where roomParameter actually changes query parameters
+     * adding ?something=value.
+     * @return the {@code WebDriver} which was started.
+     */
+    public static WebDriver startOwner(String fragment, String roomParameter)
+    {
         System.err.println("Starting owner participant.");
 
         BrowserType browser
             = BrowserType.valueOfString(System.getProperty(
                     BROWSER_OWNER_NAME_PROP));
 
-        if(owner == null)
+        String roomName = currentRoomName;
+        if(owner == null || roomParameter!= null)
         {
-            currentRoomName = "torture"
+            roomName = currentRoomName = "torture"
                 + String.valueOf((int)(Math.random()*1000000));
 
-            owner = startDriver(browser, Participant.ownerDriver);
+            // we do not persist room params for now, in case of jwt
+            // we want them just for one of the participants
+            if (roomParameter != null)
+                roomName += roomParameter;
+
+            if (owner == null)
+                owner = startDriver(browser, Participant.ownerDriver);
         }
 
-        openRoom(owner, fragment, browser);
+        openRoom(owner, roomName, fragment, browser);
 
         ownerHungUp = false;
 
@@ -282,16 +302,17 @@ public class ConferenceFixture
      * Opens the room for the given participant.
      *
      * @param participant to open the current test room.
+     * @param roomName the room name to join
      * @param fragment adds the given string to the fragment part of the URL
      * @param browser the browser type.
      */
     public static void openRoom(
             WebDriver participant,
+            String roomName,
             String fragment,
             BrowserType browser)
     {
-        String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/"
-            + currentRoomName;
+        String URL = System.getProperty(JITSI_MEET_URL_PROP) + "/" + roomName;
         URL += "#config.requireDisplayName=false";
         URL += "&config.debug=true";
         URL += "&config.disableAEC=true";
@@ -573,7 +594,7 @@ public class ConferenceFixture
             secondParticipant
                 = startDriver(browser, Participant.secondParticipantDriver);
 
-        openRoom(secondParticipant, fragment, browser);
+        openRoom(secondParticipant, currentRoomName, fragment, browser);
 
         secondParticipantHungUp = false;
 
@@ -612,7 +633,7 @@ public class ConferenceFixture
             thirdParticipant
                 = startDriver(browser, Participant.thirdParticipantDriver);
 
-        openRoom(thirdParticipant, fragment, browser);
+        openRoom(thirdParticipant, currentRoomName, fragment, browser);
 
         thirdParticipantHungUp = false;
 
@@ -642,7 +663,7 @@ public class ConferenceFixture
         WebDriver participant = 
             startDriver(browser, Participant.otherParticipantDriver);
 
-        openRoom(participant, fragment, browser);
+        openRoom(participant, currentRoomName, fragment, browser);
 
         ((JavascriptExecutor) participant)
             .executeScript("document.title='Participant'");
