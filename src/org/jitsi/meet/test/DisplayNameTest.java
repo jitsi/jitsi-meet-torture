@@ -100,7 +100,7 @@ public class DisplayNameTest
      * @param remote teh remote one
      * @param nameToCheck the name to check.
      */
-    private void checkRemoteVideoForName(
+    public static void checkRemoteVideoForName(
         WebDriver local,
         WebDriver remote,
         String nameToCheck)
