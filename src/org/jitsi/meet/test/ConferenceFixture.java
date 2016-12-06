@@ -366,6 +366,15 @@ public class ConferenceFixture
         ((JavascriptExecutor) participant)
             .executeScript("APP.UI.dockToolbar(true);");
 
+        // disable keyframe animations (.fadeIn and .fadeOut classes)
+        ((JavascriptExecutor) participant)
+            .executeScript("$('<style>.notransition * { "
+                + "animation-duration: 0s !important; "
+                + "-webkit-animation-duration: 0s !important; } </style>')"
+                + ".appendTo(document.head);");
+        ((JavascriptExecutor) participant)
+            .executeScript("$('body').toggleClass('notransition');");
+
         // Hack-in disabling of callstats (old versions of jitsi-meet don't
         // handle URL parameters)
         ((JavascriptExecutor) participant)
