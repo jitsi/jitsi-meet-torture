@@ -105,6 +105,9 @@ public class RingOverlayTest
         // Test local user values that were set by the token string
         // these are display name, email and avatar
         String emailInput = "//input[@id='setEmail']";
+        // wait for the toolbar to be visible before clicking on it
+        TestUtils.waitForDisplayedElementByXPath(
+            owner, "//div[@id='extendedToolbarButtons']", 3);
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
             owner, emailInput, 5);
