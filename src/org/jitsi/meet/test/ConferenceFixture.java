@@ -894,7 +894,7 @@ public class ConferenceFixture
      * Waits until {@code secondParticipant} has joined the conference (its ICE
      * connection has completed and has it has sent and received data).
      */
-    public static void waitForSecondParticipantToConnect()
+    public static WebDriver waitForSecondParticipantToConnect()
     {
         WebDriver secondParticipant = getSecondParticipant();
         assertNotNull(secondParticipant);
@@ -903,6 +903,7 @@ public class ConferenceFixture
         MeetUtils.waitForSendReceiveData(secondParticipant);
 
         TestUtils.waitMillis(5000);
+        return secondParticipant;
     }
 
     /**
@@ -920,7 +921,7 @@ public class ConferenceFixture
      * Waits until {@code thirdParticipant} has joined the conference (its ICE
      * connection has completed and has it has sent and received data).
      */
-    public static void waitForThirdParticipantToConnect()
+    public static WebDriver waitForThirdParticipantToConnect()
     {
         WebDriver thirdParticipant = getThirdParticipant();
         assertNotNull(thirdParticipant);
@@ -930,6 +931,7 @@ public class ConferenceFixture
         MeetUtils.waitForRemoteStreams(thirdParticipant, 2);
 
         TestUtils.waitMillis(3000);
+        return thirdParticipant;
     }
 
     /**
