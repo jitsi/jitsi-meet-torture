@@ -98,17 +98,18 @@ public class PeerConnectionStatusTest
 
         firewallScript = System.getProperty(FIREWALL_SCRIPT_PROP_NAME);
 
-        if(firewallScript == null)
+        if (firewallScript == null)
         {
             if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
-	    {
+        {
                 firewallScript = DEFAULT_FIREWALL_SCRIPT;
             }
             else
             {
                 System.err.println(
-                        "WARN no firewall script has been specfied and "
-                            + "the PeerConectionStatusTest will not be exectued !");
+                        "WARN no firewall script has been specified and "
+                            + "the PeerConnectionStatusTest will not be "
+                            + "executed!");
                 return suite;
             }
         }
@@ -190,7 +191,15 @@ public class PeerConnectionStatusTest
      */
     public void testInitialize()
     {
-        ConferenceFixture.ensureTwoParticipants();
+        ConferenceFixture.waitForOwnerToJoinMUC();
+        ConferenceFixture.closeSecondParticipant();
+        ConferenceFixture.closeThirdParticipant();
+
+        // Start the second participant with TCP disabled, so that we can
+        // force it to disconnect just by blocking the UDP port.
+        ConferenceFixture.startSecondParticipant(
+            TCPTest.DISABLE_TCP_URL_FRAGMENT);
+        ConferenceFixture.waitForSecondParticipantToConnect();
     }
 
     /**
@@ -377,5 +386,10 @@ public class PeerConnectionStatusTest
         if (peer2bundlePort != -1) {
             unblockPort(peer2bundlePort);
         }
+
+        // Restart the second participant, because we specifically started it
+        // with TCP disabled.
+        ConferenceFixture.closeSecondParticipant();
+        ConferenceFixture.waitForSecondParticipantToConnect();
     }
 }

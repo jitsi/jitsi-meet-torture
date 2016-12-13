@@ -33,8 +33,15 @@ public class TCPTest
      * The URL fragment which when added to a Jitsi-Meet URL will effectively
      * disable the use of UDP for media.
      */
-    private static final String DISABLE_UDP_URL_FRAGMENT
+    public static final String DISABLE_UDP_URL_FRAGMENT
             = "config.webrtcIceUdpDisable=true";
+
+    /**
+     * The URL fragment which when added to a Jitsi-Meet URL will effectively
+     * disable the use of TCP for media.
+     */
+    public static final String DISABLE_TCP_URL_FRAGMENT
+        = "config.webrtcIceTcpDisable=true";
 
     /**
      * Constructs test.
