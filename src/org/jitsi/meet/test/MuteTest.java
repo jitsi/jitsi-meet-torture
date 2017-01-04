@@ -159,7 +159,7 @@ public class MuteTest
 
         WebElement elem = owner.findElement(By.xpath(
             TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
-            + "/i[@class='icon-menu']"));
+            + "/i[@class='icon-menu-up']"));
 
         Actions action = new Actions(owner);
         action.moveToElement(cntElem);
