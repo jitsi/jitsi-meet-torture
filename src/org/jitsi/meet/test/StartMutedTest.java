@@ -148,8 +148,8 @@ public class StartMutedTest
         TestUtils.waitForElementByXPath(
             secondParticipant,
             "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
+                + TestUtils.getXPathStringForClassName("//*", "audioMuted")
+                + "//i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitForElementByXPath(
             secondParticipant,
@@ -166,8 +166,8 @@ public class StartMutedTest
         TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
             "//span[@id='participant_" + ownerResourceJid + "']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
+                + TestUtils.getXPathStringForClassName("//*", "audioMuted")
+                + "//i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitForElementNotPresentByXPath(
             secondParticipant,
