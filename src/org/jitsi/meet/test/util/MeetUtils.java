@@ -35,21 +35,21 @@ public class MeetUtils
      * the muc.
      */
     public static final String IS_MUC_JOINED =
-        "return APP.conference.isJoined();";
+        "return APP.conference.isMucJoined();";
 
     /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'connected';";
+        "return APP.conference.getIceConnectionState() === 'connected';";
 
     /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'disconnected'.
      */
     public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'disconnected';";
+        "return APP.conference.getIceConnectionState() === 'disconnected';";
 
     /**
      * The javascript code which returns {@code true} if etherpad is enabled.
