@@ -153,9 +153,8 @@ public class SharedVideoTest
             // make sure we are in meet, not in the frame
             secondParticipant.switchTo().defaultContent();
 
-            assertEquals("Video not displayed:", true,
-                secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                    .isDisplayed());
+            TestUtils.waitForDisplayedElementByID(secondParticipant,
+                "sharedVideoIFrame", 10);
         }
     }
 
