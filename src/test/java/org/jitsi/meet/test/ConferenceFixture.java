@@ -24,6 +24,8 @@ import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 
+import io.github.bonigarcia.wdm.*;
+
 import java.io.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
@@ -418,6 +420,8 @@ public class ConferenceFixture
         // by default we load chrome, but we can load safari or firefox
         if (browser == BrowserType.firefox)
         {
+            FirefoxDriverManager.getInstance().setup();
+
             String browserBinary
                 = System.getProperty(BROWSER_FF_BINARY_NAME_PROP);
             if(browserBinary != null && browserBinary.trim().length() > 0)
@@ -450,6 +454,8 @@ public class ConferenceFixture
         }
         else if (browser == BrowserType.ie)
         {
+            InternetExplorerDriverManager.getInstance().setup();
+
             DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
             caps.setCapability("ignoreZoomSetting", true);
             System.setProperty("webdriver.ie.driver.silent", "true");
@@ -458,6 +464,8 @@ public class ConferenceFixture
         }
         else
         {
+            ChromeDriverManager.getInstance().setup();
+
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty("webdriver.chrome.logfile",
                 FailureListener.createLogsFolder() +
