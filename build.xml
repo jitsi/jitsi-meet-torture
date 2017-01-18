@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="test" name="jitsi-meet-torture">
+<project default="test"
+         name="jitsi-meet-torture"
+         xmlns:maven-artifact="antlib:org.apache.maven.artifact.ant">
 
+    <property name="src.test" value="src/test/java" />
     <property name="dest" value="classes"/>
     <property name="test.reports.dir" value="test-reports"/>
     <property name="test.html.reports.dir" value="${test.reports.dir}/html"/>
 
-    <path id="compile.class.path">
-        <path refid="project.class.path"/>
-        <fileset dir="lib">
-            <include name="ant.jar"/>
-        </fileset>
-    </path>
+    <path id="maven-ant-tasks.classpath"
+          path="resources/lib/maven-ant-tasks-2.1.3.jar" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="antlib:org.apache.maven.artifact.ant"
+             classpathref="maven-ant-tasks.classpath" />
+
+    <maven-artifact:dependencies pathId="compile.class.path" useScope="compile">
+        <pom file="pom.xml" />
+    </maven-artifact:dependencies>
+    <maven-artifact:dependencies filesetId="runtime.fileset"
+                                 pathId="runtime.classpath" useScope="runtime">
+        <pom file="pom.xml" />
+    </maven-artifact:dependencies>
 
     <path id="project.class.path">
+        <path refid="runtime.classpath" />
         <pathelement location="${dest}"/>
-
-        <fileset dir="lib">
-            <include name="**/*.jar"/>
-            <exclude name="ant.jar"/>
-        </fileset>
     </path>
 
     <!-- windows specific properties -->
@@ -101,8 +107,14 @@
         <property name="psnrFilePath" value="resources/psnr/psnr-input.y4m"/>
     </target>
 
+    <maven-artifact:dependencies pathId="dependency.ant.contrib.classpath">
+        <dependency groupId="ant-contrib"
+                    artifactId="ant-contrib"
+                    version="1.0b3"/>
+    </maven-artifact:dependencies>
+
     <taskdef resource="net/sf/antcontrib/antlib.xml"
-             classpath="lib/ant-contrib-1.0b3.jar"/>
+             classpathref="dependency.ant.contrib.classpath"/>
 
     <!--<property name="jitsi-meet.instance.url"-->
               <!--value="https://meet.example.com"/>-->
@@ -245,7 +257,7 @@ with the address of the instance to test (add to the command line
                includeantruntime="false"
                source="1.7" target="1.7"
                fork="true">
-            <src path="src"/>
+            <src path="${src.test}"/>
             <include name="**/*.java" />
         </javac>
     </target>
