@@ -41,8 +41,24 @@ public class MeetUtils
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
+    //FIXME completed
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'connected';";
+        "return APP.conference.getConnectionState() === 'connected' " +
+            "|| APP.conference.getConnectionState() === 'completed';";
+
+    public static final String START_P2P_SCRIPT =
+        "APP.conference.startP2P();";
+
+    public static final String STOP_P2P_SCRIPT =
+        "APP.conference.stopP2P();";
+
+    public static final String P2P_ICE_CONNECTED_CHECK_SCRIPT =
+        "return APP.conference.getP2PConnectionState() === 'connected'" +
+            "|| APP.conference.getP2PConnectionState() === 'completed';";
+
+    public static final String P2P_ICE_DISCONNECTED_CHECK_SCRIPT =
+        "return APP.conference.getP2PConnectionState() !== 'connected'" +
+            "&& APP.conference.getP2PConnectionState() !== 'completed';";
 
     /**
      * The javascript code which returns {@code true} if the ICE connection
@@ -333,6 +349,39 @@ public class MeetUtils
     {
         TestUtils.waitForBoolean(
             participant, ICE_CONNECTED_CHECK_SCRIPT, timeout);
+    }
+
+    public static boolean isP2PConnected(WebDriver participant)
+    {
+        Object result = ((JavascriptExecutor) participant)
+            .executeScript(
+                    P2P_ICE_CONNECTED_CHECK_SCRIPT);
+
+        return Boolean.valueOf(result.toString());
+    }
+
+    public static void startP2P(WebDriver participant)
+    {
+        ((JavascriptExecutor) participant).executeScript(START_P2P_SCRIPT);
+    }
+
+    public static void stopP2P(WebDriver participant)
+    {
+        ((JavascriptExecutor) participant).executeScript(STOP_P2P_SCRIPT);
+    }
+
+    public static void waitForP2PIceConnected(WebDriver participant)
+    {
+        // FIXME method with timeout
+        TestUtils.waitForBoolean(
+            participant, P2P_ICE_CONNECTED_CHECK_SCRIPT, 15);
+    }
+
+    public static void waitForP2PIceDisconnected(WebDriver participant)
+    {
+        // FIXME method with timeout
+        TestUtils.waitForBoolean(
+            participant, P2P_ICE_DISCONNECTED_CHECK_SCRIPT, 15);
     }
 
     /**
