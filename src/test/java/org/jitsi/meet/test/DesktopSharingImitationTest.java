@@ -18,16 +18,11 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.*;
 
 /**
  * A test which switches on/imitate desktop sharing to check whether it is
  * functioning ok.
- *
- * NOTE: This test is currently not relevant. Expanding the video after hiding
- * the filmstrip will try to fit the video in the window without cutting it,
- * but it can be that it will not expand at all, which is exactly the current
- * situation for the failures.
  *
  * @author Damian Minkov
  */
@@ -40,8 +35,7 @@ public class DesktopSharingImitationTest
     private boolean desktopImitated = false;
 
     /**
-     * Currently we imitate desktop sharing in order to check video stretch
-     * on the other side.
+     * Currently we imitate desktop sharing in order to check video stretch.
      */
     public void testDesktopSharing()
     {
@@ -63,42 +57,85 @@ public class DesktopSharingImitationTest
     }
 
     /**
-     * Checks the video layout on the other side, after we imitate
-     * desktop sharing.
+     * Checks the video layout, after we imitate desktop sharing.
      */
     private void checkExpandingDesktopSharingLargeVideo()
     {
+        // Remote video tests:
+        checkLargeVideoSize(ConferenceFixture.getSecondParticipant());
+
+        // Local video part:
+        MeetUIUtils.selectLocalVideo(ConferenceFixture.getOwner());
+        checkLargeVideoSize(ConferenceFixture.getOwner());
+
+    }
+
+    /**
+     * Checks the size of the large video for given participant.
+     * @param participant the {@code WebDriver}.
+     */
+    private void checkLargeVideoSize(WebDriver participant) {
+        // check layout
+        new VideoLayoutTest().doLargeVideoSizeCheck(participant, true);
+
         // hide thumbs
-        MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(),
-            "toolbar_film_strip");
+        MeetUIUtils.clickOnHideFilmstripButton(participant);
 
         TestUtils.waitMillis(5000);
 
         // check layout
-        new VideoLayoutTest()
-            .driverVideoLayoutTest(ConferenceFixture.getSecondParticipant());
+        new VideoLayoutTest().doLargeVideoSizeCheck(participant, true);
     }
 
     /**
      * Enable/Disable desktop sharing.
-     * For now we jus imitate desktop sharing so we can check it on the other
-     * side.
+     * For now we just imitate desktop sharing.
      */
     private void toggleDesktopSharing()
     {
-        String videoType;
-        if(desktopImitated)
-            videoType = "camera";
-        else
-            videoType = "screen";
+        String videoType = desktopImitated ? "camera" : "desktop";
 
         // change the type of video that we will report
-        ((JavascriptExecutor) ConferenceFixture.getOwner())
-            .executeScript(
-            "APP.xmpp.getConnection().emuc.presMap['videoType'] = '"
-                + videoType + "'");
+        setLocalVideoType(videoType);
+        sendVideoTypeToParticipants(videoType);
 
         desktopImitated = !desktopImitated;
+    }
+
+    /**
+     * Enable/Disable desktop sharing for the local participant. Sets all the
+     * variables for the local participant to imitate starting/stopping
+     * desktop sharing.
+     * @param videoType the new video type to be set for the local video.
+     */
+    private void setLocalVideoType(String videoType) {
+        String script =  "APP.conference._room.getLocalTracks().forEach("
+            + "function(stream) {"
+                + "if(stream.type === 'video') {"
+                    + "stream.videoType = '" + videoType + "';"
+                    + "APP.conference.isScreenSharing = true;"
+                    + "APP.UI.addLocalStream(stream);"
+                    + "APP.UI.updateDesktopSharingButtons();"
+                + "}"
+            + "});";
+        System.err.println(script);
+        ((JavascriptExecutor) ConferenceFixture.getOwner())
+            .executeScript(script);
+    }
+
+    /**
+     * Sends the passed video type to the remote participants in order to
+     * imitate starting/stopping desktop sharing.
+     * @param videoType the new video type to be sent
+     */
+    private void sendVideoTypeToParticipants(String videoType) {
+        ((JavascriptExecutor) ConferenceFixture.getOwner())
+            .executeScript("APP.conference._room.removeCommand('videoType');"
+                + "APP.conference._room.sendCommand('videoType', {"
+                    + "value: '" + videoType + "', "
+                    + "attributes: {"
+                        + "xmlns: 'http://jitsi.org/jitmeet/video'"
+                    + "}"
+                + "});");
     }
 }

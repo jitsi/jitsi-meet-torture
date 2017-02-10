@@ -23,9 +23,6 @@ import org.openqa.selenium.*;
  * window width and height. This is meant to prove that video is correctly
  * aligned and sized at the beginning of the call.
  *
- * TODO: We may add additional checks asserting video is the correct size,
- * when the chat is opened or after a desktop sharing session.
- *
  * @author Yana Stamcheva
  */
 public class VideoLayoutTest
@@ -34,9 +31,6 @@ public class VideoLayoutTest
     /**
      * Tests the video layout. This is meant to prove that video is correctly
      * aligned and sized at the beginning of the call.
-     *
-     * TODO: Add tests which turn on/off screen sharing and then check if
-     * the video would fit back to the screen.
      */
     public void testVideoLayout()
     {
@@ -52,22 +46,7 @@ public class VideoLayoutTest
      */
     public void driverVideoLayoutTest(WebDriver webDriver)
     {
-        String chatXPath = "//div[@id='chat_container']";
-        String contactListXPath = "//div[@id='contacts_container']";
-        String settingsXPath = "//div[@id='settings_container']";
-
-        WebElement chatElem = webDriver.findElement(By.xpath(chatXPath));
-        WebElement contactListElem
-            = webDriver.findElement(By.xpath(contactListXPath));
-        WebElement settingsElem
-            = webDriver.findElement(By.xpath(settingsXPath));
-
-        if (!chatElem.isDisplayed()
-                && !contactListElem.isDisplayed()
-                && !settingsElem.isDisplayed())
-        {
-            doLargeVideoSizeCheck(webDriver);
-        }
+        doLargeVideoSizeCheck(webDriver, false);
     }
 
     /**
@@ -75,28 +54,49 @@ public class VideoLayoutTest
      *
      * @param webDriver <tt>WebDriver</tt> instance of the participant for whom
      *                  we'll try to check the video size
+     * @param  isDesktopSharing Whether the large video is showing
+     *                          desktop stream(<tt>true</tt>) or
+     *                          camera stream (<tt>false</tt>)
      */
-    private void doLargeVideoSizeCheck(WebDriver webDriver)
+    public void doLargeVideoSizeCheck(WebDriver webDriver,
+                                      boolean isDesktopSharing)
     {
-        Long innerWidth = (Long)((JavascriptExecutor) webDriver)
-                .executeScript("return window.innerWidth;");
+        int innerWidth = ((Long)((JavascriptExecutor) webDriver)
+                .executeScript("return window.innerWidth;")).intValue();
 
-        Long innerHeight = (Long)((JavascriptExecutor) webDriver)
-                .executeScript("return window.innerHeight;");
+        int innerHeight = ((Long)((JavascriptExecutor) webDriver)
+                .executeScript("return window.innerHeight;")).intValue();
 
         WebElement largeVideo = webDriver.findElement(
-                By.xpath("//div[@id='largeVideoContainer']"));
+                By.xpath("//div[@id='largeVideoWrapper']"));
+        int largeVideoH = largeVideo.getSize().getHeight(),
+            largeVideoW = largeVideo.getSize().getWidth();
+        if(isDesktopSharing) {
+            int filmstripH = 0;
 
-        assertEquals(largeVideo.getSize().getWidth(), innerWidth.intValue());
-        assertEquals(largeVideo.getSize().getHeight(), innerHeight.intValue());
+            WebElement filmstrip = webDriver.findElement(
+                    By.xpath("//div[@class='filmstrip']"));
+            WebElement remoteVideos = webDriver.findElement(
+                By.xpath("//div[@id='remoteVideos']"));
+            boolean isFilmstripDisplayed = remoteVideos.isDisplayed();
+            if (isFilmstripDisplayed) {
+                filmstripH = filmstrip.getSize().getHeight();
+            }
 
-        // now let's check whether the video wrapper take all the height
-        // this should not be the case only for desktop sharing with thumbs
-        // visible
-        WebElement largeVideoWrapper = webDriver.findElement(
-            By.xpath("//div[@id='largeVideoWrapper']"));
-
-        assertEquals(largeVideoWrapper.getSize().getHeight(),
-            innerHeight.intValue());
+            int totalHeight = largeVideoH + filmstripH;
+            System.err.println("innerHeight=" + innerHeight
+                + "; innerWidth=" + innerWidth + "; largeVideoW="
+                + largeVideoW + "; largeVideoH=" + largeVideoH
+                + "; filmstripH=" + filmstripH);
+            assertTrue("The size of the large video is incorrect",
+                (totalHeight == innerHeight)
+                || (largeVideoW == innerWidth && totalHeight < innerHeight));
+        } else {
+            System.err.println("innerHeight=" + innerHeight
+                + "; innerWidth=" + innerWidth + "; largeVideoW="
+                + largeVideoW + "; largeVideoH=" + largeVideoH);
+            assertEquals(largeVideoH, innerHeight);
+            assertEquals(largeVideoW, innerWidth);
+        }
     }
 }

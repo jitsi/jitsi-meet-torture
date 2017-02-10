@@ -357,10 +357,28 @@ public class MeetUIUtils
 
         if (filmStrip != null)
         {
-            clickOnToolbarButton(participant, "toolbar_film_strip");
+            clickOnHideFilmstripButton(participant);
 
             TestUtils.waitForElementNotPresentByXPath(
                     participant, filmStripXPath, 5);
+        }
+    }
+
+    /**
+     * Clicks on a the hide filmstrip button.
+     * @param participant the {@code WebDriver}.
+     */
+    public static void clickOnHideFilmstripButton(WebDriver participant) {
+        try
+        {
+            WebElement button = participant
+                .findElement(By.xpath("//button[@id='hideVideoToolbar']"));
+
+            button.click();
+        }
+        catch (NoSuchElementException e)
+        {
+            throw e;
         }
     }
 
