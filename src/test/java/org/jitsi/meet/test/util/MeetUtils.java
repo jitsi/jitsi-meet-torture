@@ -75,7 +75,7 @@ public class MeetUtils
         String portNumberStr
             = TestUtils.executeScriptAndReturnString(
                 participant,
-                "return APP.conference._room.room.session.peerconnection."
+                "return APP.conference._room.jingleSession.peerconnection."
                     + "localDescription.sdp.split('\\r\\n')."
                     + "filter(function(line){ "
                     + "return line.indexOf('a=candidate:') !== -1 "
