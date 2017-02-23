@@ -41,10 +41,8 @@ public class MeetUtils
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
-    //FIXME completed
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getConnectionState() === 'connected' " +
-            "|| APP.conference.getConnectionState() === 'completed';";
+        "return APP.conference.getConnectionState() === 'connected';";
 
     public static final String START_P2P_SCRIPT =
         "APP.conference.startP2P();";
@@ -53,12 +51,10 @@ public class MeetUtils
         "APP.conference.stopP2P();";
 
     public static final String P2P_ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getP2PConnectionState() === 'connected'" +
-            "|| APP.conference.getP2PConnectionState() === 'completed';";
+        "return APP.conference.getP2PConnectionState() === 'connected';";
 
     public static final String P2P_ICE_DISCONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getP2PConnectionState() !== 'connected'" +
-            "&& APP.conference.getP2PConnectionState() !== 'completed';";
+        "return APP.conference.getP2PConnectionState() !== 'connected';";
 
     /**
      * The javascript code which returns {@code true} if the ICE connection
