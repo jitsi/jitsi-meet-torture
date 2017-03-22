@@ -1011,6 +1011,54 @@ public class MeetUIUtils
                 observer, connectionLostXpath, 2, !isConnected);
     }
 
+    public static void verifyUserConnStatusIndication2(
+        WebDriver observer, WebDriver peer, boolean isConnected)
+    {
+        long timeout = 5;
+
+        String peerId = MeetUtils.getResourceJid(peer);
+        assertNotNull(peerId);
+
+        // Wait for the logic to tell that the user is disconnected
+        try
+        {
+            TestUtils.waitForBoolean(
+                observer,
+                MeetUtils.isConnectionActiveScript(peerId, !isConnected),
+                timeout);
+
+            fail(
+                peerId
+                    + (isConnected ? " was " : "was not")
+                    + "having connectivity issues");
+
+        }
+        catch (TimeoutException e) {
+            // OK
+        }
+
+        // Check connection status indicators
+        String connectionLostXpath
+            = "//span[@id='participant_" + peerId
+            + "']//span[@class='connection_lost']";
+
+        // Check "connection lost" icon
+        try
+        {
+            TestUtils.waitForDisplayedOrNotByXPath(
+                observer, connectionLostXpath, 3, isConnected);
+
+            fail("the connection problems icons for "
+                    + peerId
+                    + (isConnected ? " did " : "did not")
+                    + "appear.");
+        }
+        catch (TimeoutException e)
+        {
+             // OK
+        }
+    }
+
     /**
      * Verifies the UI indication of local media connection status. If
      * the verification fails the currently running test will fail.
@@ -1054,18 +1102,56 @@ public class MeetUIUtils
             participant, "//a[@id='toolbar_button_camera']", 10);
         MeetUIUtils.clickOnToolbarButton(participant, "toolbar_button_camera");
 
-        TestUtils.waitForElementByXPath(
+        // Check if video muted appears on the toolbar
+        // FIXME
+        //TestUtils.waitForElementByXPath(
+          //  participant,
+            //"//div[@id='mainToolbarContainer']"
+              //  + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                //+ "/i[@class='icon-camera-disabled']",
+            //5);
+        // Check if local video muted icon appears on local thumbnail
+        TestUtils.waitForDisplayedElementByXPath(
             participant,
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            5);
+            "//span[@id='localVideoContainer']"
+                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']", 5);
 
         if (participantCheck != null)
         {
-            TestUtils.waitForElementByXPath(
+            MeetUIUtils.assertMuteIconIsDisplayed(
                 participantCheck,
-                TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                    + "/i[@class='icon-camera-disabled']", 5);
+                participant,
+                true,
+                true,
+                "");
+        }
+    }
+
+    public static void unmuteVideoAndCheck(WebDriver participant,
+                                           WebDriver participantCheck)
+    {
+        // Mute owner video
+        TestUtils.waitForDisplayedElementByXPath(
+            participant, "//a[@id='toolbar_button_camera']", 10);
+        MeetUIUtils.clickOnToolbarButton(participant, "toolbar_button_camera");
+
+
+        // Check if local video muted icon disappeared
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+            participant,
+            "//span[@id='localVideoContainer']"
+                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']", 5);
+
+        if (participantCheck != null)
+        {
+            MeetUIUtils.assertMuteIconIsDisplayed(
+                participantCheck,
+                participant,
+                false,
+                true,
+                "");
         }
     }
 }
