@@ -482,6 +482,7 @@ public class ConferenceFixture
             ops.addArguments("disable-extensions");
             ops.addArguments("disable-plugins");
             ops.addArguments("mute-audio");
+            ops.addArguments("disable-infobars");
 
             String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
             if(disProp == null && !Boolean.parseBoolean(disProp))
