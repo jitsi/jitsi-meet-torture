@@ -18,7 +18,6 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 
 /**
  * Tests switching between P2P and JVB connections.
@@ -148,20 +147,20 @@ public class Peer2PeerTest
         MeetUtils.waitForSendReceiveData(third);
 
         // During development I noticed that peers are disconnected
-        TestUtils.waitMillis(5000);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndication(second, owner, true);
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             second, owner , true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             third, owner , true);
 
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, second, true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             third, second, true);
 
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, third, true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             second, third, true);
 
     }
@@ -199,9 +198,9 @@ public class Peer2PeerTest
         MeetUtils.waitForSendReceiveData(participant);
 
         // FIXME verify if video is displayed on the thumbnails ?
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
 
         // Verify that the audio is coming through
@@ -218,33 +217,34 @@ public class Peer2PeerTest
         MeetUtils.waitForIceConnected(participant);
 
         // FIXME verify if video is displayed on the thumbnails ?
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
 
         // Verify video mute feature
         // Check owner mute
         MeetUIUtils.muteVideoAndCheck(owner, participant);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
         MeetUIUtils.unmuteVideoAndCheck(owner, participant);
         // Wait for connection to restore
-        TestUtils.waitMillis(3000);
+        MeetUIUtils.verifyUserConnStatusIndication(
+            participant, owner, true);
         // Participant conn status kind of tells if video is playing
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
         MeetUIUtils.muteVideoAndCheck(participant, owner);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, owner);
-        TestUtils.waitMillis(3000);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndication(owner, participant, true);
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
     }
 
@@ -272,7 +272,7 @@ public class Peer2PeerTest
         // Verify video mute feature
         // Check owner mute
         MeetUIUtils.muteVideoAndCheck(owner, participant);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
         // Start P2P
@@ -295,7 +295,7 @@ public class Peer2PeerTest
         MeetUIUtils.unmuteVideoAndCheck(owner, participant);
         // Wait for connection to restore b
         // Participant conn status kind of tells if video is playing
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
 
@@ -309,33 +309,33 @@ public class Peer2PeerTest
         MeetUtils.waitForIceConnected(participant);
 
         // FIXME verify if video is displayed on the thumbnails ?
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
 
         // Verify video mute feature
         // Check owner mute
         MeetUIUtils.muteVideoAndCheck(owner, participant);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
         MeetUIUtils.unmuteVideoAndCheck(owner, participant);
         // Wait for connection to restore
-        TestUtils.waitMillis(3000);
+        MeetUIUtils.verifyUserConnStatusIndication(participant, owner, true);
         // Participant conn status kind of tells if video is playing
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             participant, owner , true);
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
         MeetUIUtils.muteVideoAndCheck(participant, owner);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, owner);
-        TestUtils.waitMillis(3000);
-        MeetUIUtils.verifyUserConnStatusIndication2(
+        MeetUIUtils.verifyUserConnStatusIndication(owner, participant, true);
+        MeetUIUtils.verifyUserConnStatusIndicationLong(
             owner, participant, true);
     }
 }

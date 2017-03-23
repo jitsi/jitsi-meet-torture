@@ -1011,9 +1011,29 @@ public class MeetUIUtils
                 observer, connectionLostXpath, 2, !isConnected);
     }
 
-    public static void verifyUserConnStatusIndication2(
+    /**
+     * This method verifies whether or not given participant is having
+     * connectivity issues, but in a different way that it's done in
+     * {@link MeetUIUtils#verifyUserConnStatusIndication(WebDriver, WebDriver, boolean)}
+     * It will wait for 5 seconds and fail if the connection status will differ
+     * from the expected one.
+     *
+     * If we're looking to verify if the user is connected this method will make
+     * pass only if  that connection stayed "connected" for 5 seconds and was
+     * never interrupted during that period. In other words it's to make sure
+     * that the opposite state never kicks in at any point during
+     * the verification period (5 seconds).
+     *
+     * @param observer the participant where the other participant is checked
+     * @param peer the participant to be checked
+     * @param isConnected <tt>true</tt> if we're making sure that the connection
+     * remains connected. <tt>false</tt> to check if the connection stays
+     * disconnected.
+     */
+    public static void verifyUserConnStatusIndicationLong(
         WebDriver observer, WebDriver peer, boolean isConnected)
     {
+        // 5 seconds
         long timeout = 5;
 
         String peerId = MeetUtils.getResourceJid(peer);
@@ -1029,33 +1049,33 @@ public class MeetUIUtils
 
             fail(
                 peerId
-                    + (isConnected ? " was " : "was not")
-                    + "having connectivity issues");
+                    + (isConnected ? " was " : "was not ")
+                    + "having connectivity issues "
+                    + "(according to the 'isConnectionActiveScript')");
 
         }
-        catch (TimeoutException e) {
+        catch (TimeoutException e)
+        {
             // OK
         }
 
         // Check connection status indicators
         String connectionLostXpath
             = "//span[@id='participant_" + peerId
-            + "']//span[@class='connection_lost']";
+                + "']//span[@class='connection_lost']";
 
         // Check "connection lost" icon
         try
         {
             TestUtils.waitForDisplayedOrNotByXPath(
-                observer, connectionLostXpath, 3, isConnected);
-
-            fail("the connection problems icons for "
-                    + peerId
-                    + (isConnected ? " did " : "did not")
-                    + "appear.");
+                observer, connectionLostXpath, 1, !isConnected);
         }
         catch (TimeoutException e)
         {
-             // OK
+            fail("the connection problems status icon for "
+                + peerId
+                + (isConnected ? "did not" : " did ")
+                + "appear.");
         }
     }
 
@@ -1102,14 +1122,6 @@ public class MeetUIUtils
             participant, "//a[@id='toolbar_button_camera']", 10);
         MeetUIUtils.clickOnToolbarButton(participant, "toolbar_button_camera");
 
-        // Check if video muted appears on the toolbar
-        // FIXME
-        //TestUtils.waitForElementByXPath(
-          //  participant,
-            //"//div[@id='mainToolbarContainer']"
-              //  + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                //+ "/i[@class='icon-camera-disabled']",
-            //5);
         // Check if local video muted icon appears on local thumbnail
         TestUtils.waitForDisplayedElementByXPath(
             participant,
@@ -1128,12 +1140,21 @@ public class MeetUIUtils
         }
     }
 
+    /**
+     * Unmutes <tt>participant</tt>'s video, checks if the local UI has been
+     * updated accordingly and then does the verification from
+     * the <tt>participantCheck</tt> perspective.
+     * @param participant the peer to be "video unmuted"
+     * @param participantCheck the peer which observes the <tt>participant</tt>
+     * and checks if the video has been unmuted correctly
+     */
     public static void unmuteVideoAndCheck(WebDriver participant,
                                            WebDriver participantCheck)
     {
-        // Mute owner video
+        // Make sure that there is the video mute button
         TestUtils.waitForDisplayedElementByXPath(
             participant, "//a[@id='toolbar_button_camera']", 10);
+        // Mute participant's video
         MeetUIUtils.clickOnToolbarButton(participant, "toolbar_button_camera");
 
 
