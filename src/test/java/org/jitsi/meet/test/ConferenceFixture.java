@@ -321,6 +321,7 @@ public class ConferenceFixture
         URL += "&config.disableNS=true";
         URL += "&config.callStatsID=false";
         URL += "&config.alwaysVisibleToolbar=true";
+        URL += "&config.enableP2P=false";
         if(fragment != null)
             URL += "&" + fragment;
 
