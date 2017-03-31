@@ -107,7 +107,7 @@ public class RingOverlayTest
         String emailInput = "//input[@id='setEmail']";
         // wait for the toolbar to be visible before clicking on it
         TestUtils.waitForDisplayedElementByXPath(
-            owner, "//div[@id='extendedToolbarButtons']", 3);
+            owner, "//div[contains(@class, 'toolbar_secondary')]", 3);
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
             owner, emailInput, 5);
@@ -120,7 +120,7 @@ public class RingOverlayTest
 
         assertEquals(USER_AVATAR_URL,
             owner.findElement(By.xpath(
-                    "//div[@id='extendedToolbarButtons']//img[@id='avatar']"))
+                    "//div[contains(@class, 'toolbar_secondary')]//img[@id='avatar']"))
                 .getAttribute("src"));
 
         // now let's join a second participant and check that there is no
