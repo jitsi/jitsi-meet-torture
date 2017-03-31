@@ -122,6 +122,13 @@ public class ConferenceFixture
         = "browser.remote.address";
 
     /**
+     * The property to evaluate for parent path of the resources used when
+     * loading chrome remotely like audio/video files.
+     */
+    public static final String BROWSER_REMOTE_RESOURCE_PARENT_PATH_NAME_PROP
+        = "browser.remote.resource.path";
+
+    /**
      * The available browser type value.
      */
     public enum BrowserType
@@ -555,16 +562,29 @@ public class ConferenceFixture
                     ops.setBinary(binaryFile);
             }
 
+            String remoteResourcePath = System.getProperty(
+                BROWSER_REMOTE_RESOURCE_PARENT_PATH_NAME_PROP);
+
             if (fakeStreamAudioFName != null)
             {
+                String fileAbsolutePath = new File(
+                    isRemote && remoteResourcePath != null
+                        ? new File(remoteResourcePath) : null,
+                    fakeStreamAudioFName).getAbsolutePath();
+
                 ops.addArguments(
-                    "use-file-for-fake-audio-capture=" + fakeStreamAudioFName);
+                    "use-file-for-fake-audio-capture=" + fileAbsolutePath);
             }
 
             if (fakeStreamVideoFName != null)
             {
+                String fileAbsolutePath = new File(
+                    isRemote && remoteResourcePath != null
+                        ? new File(remoteResourcePath) : null,
+                    fakeStreamVideoFName).getAbsolutePath();
+
                 ops.addArguments(
-                    "use-file-for-fake-video-capture=" + fakeStreamVideoFName);
+                    "use-file-for-fake-video-capture=" + fileAbsolutePath);
             }
 
             //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
@@ -883,8 +903,9 @@ public class ConferenceFixture
 
     /**
      * Sets the name of wav audio file which will be streamed through fake audio
-     * device by participants. The file is not looped, so must be long enough
-     * for all tests to finish.
+     * device by participants. The file location is relative to working folder.
+     * For remote drivers a parent folder can be set and the file will be
+     * searched in there.
      *
      * @param fakeStreamAudioFile full name of wav file for the fake audio
      *                            device.
@@ -896,7 +917,9 @@ public class ConferenceFixture
 
     /**
      * Sets the name of y4m video file which will be streamed through fake video
-     * device by participants.
+     * device by participants. The file location is relative to working folder.
+     * For remote drivers a parent folder can be set and the file will be
+     * searched in there.
      *
      * @param fakeStreamVideoFile full name of y4m file for the fake video
      *                            device.

@@ -203,8 +203,7 @@ public class TestsRunner
 
         if (fakeStreamAudioFile == null)
         {
-            fakeStreamAudioFile
-                = new File("resources/fakeAudioStream.wav").getAbsolutePath();
+            fakeStreamAudioFile = "resources/fakeAudioStream.wav";
         }
 
         ConferenceFixture.setFakeStreamAudioFile(fakeStreamAudioFile);

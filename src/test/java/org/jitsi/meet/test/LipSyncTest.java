@@ -97,10 +97,9 @@ public class LipSyncTest
         new DisposeConference().testDispose();
         // this file is required in order to run this test
         ConferenceFixture.setFakeStreamVideoFile(
-            new File("resources/fakeVideoStream.y4m").getAbsolutePath());
+            "resources/fakeVideoStream.y4m");
         ConferenceFixture.setFakeStreamAudioFile(
-            new File("resources/fakeAudioStream-lipsync.wav")
-                .getAbsolutePath());
+            "resources/fakeAudioStream-lipsync.wav");
 
         // Start owner with lip-sync enabled, audio packet delay and shorter
         // audio levels interval
