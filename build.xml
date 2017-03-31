@@ -255,7 +255,7 @@ with the address of the instance to test (add to the command line
                deprecation="true" destdir="${dest}"
                nowarn="false"
                includeantruntime="false"
-               source="1.7" target="1.7"
+               source="1.8" target="1.8"
                fork="true">
             <src path="${src.test}"/>
             <include name="**/*.java" />
