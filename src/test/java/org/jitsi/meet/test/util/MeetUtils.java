@@ -465,8 +465,10 @@ public class MeetUtils
                                                   boolean    isActive)
     {
         return
-            "return APP.conference.isParticipantConnectionActive('"
-                + peerId + "') " + ( isActive ? "!==" : "===" ) + "false;";
+            "return APP.conference.getParticipantConnectionStatus('"
+                + peerId + "') "
+                + ( isActive ? "===" : "!==" )
+                + " JitsiMeetJS.constants.participantConnectionStatus.ACTIVE;";
     }
 
     /**
