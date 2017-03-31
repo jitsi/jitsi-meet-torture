@@ -27,6 +27,7 @@ import org.openqa.selenium.safari.*;
 import io.github.bonigarcia.wdm.*;
 
 import java.io.*;
+import java.net.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
@@ -56,6 +57,12 @@ public class ConferenceFixture
     public static final String BROWSER_OWNER_NAME_PROP = "browser.owner";
 
     /**
+     * The property to change tested browser for the owner to be a remote one.
+     */
+    public static final String BROWSER_OWNER_ISREMOTE_NAME_PROP
+        = "browser.owner.isRemote";
+
+    /**
      * The property to change tested chrome browser binary. To specify
      * different versions.
      */
@@ -83,16 +90,36 @@ public class ConferenceFixture
         = "browser.second.participant";
 
     /**
+     * The property to change tested browser for the owner to be a remote one.
+     */
+    public static final String BROWSER_SECONDP_ISREMOTE_NAME_PROP
+        = "browser.second.participant.isRemote";
+
+    /**
      * The property to change tested browser for the second participant.
      */
     public static final String BROWSER_THIRDP_NAME_PROP
-    = "browser.third.participant";
+        = "browser.third.participant";
+
+    /**
+     * The property to change tested browser for the owner to be a remote one.
+     */
+    public static final String BROWSER_THIRDP_ISREMOTE_NAME_PROP
+        = "browser.third.participant.isRemote";
 
     /**
      * The property to disable no-sandbox parameter for chrome.
      */
     public static final String DISABLE_NOSANBOX_PARAM
         = "chrome.disable.nosanbox";
+
+    /**
+     * The property to change remote selenium grid URL, defaults to
+     * http://localhost:4444/wd/hub if requiring remote browser and property
+     * is not set.
+     */
+    public static final String BROWSER_REMOTE_ADDRESS_NAME_PROP
+        = "browser.remote.address";
 
     /**
      * The available browser type value.
@@ -287,7 +314,9 @@ public class ConferenceFixture
                 roomName += roomParameter;
 
             if (owner == null)
-                owner = startDriver(browser, Participant.ownerDriver);
+                owner = startDriver(browser,
+                    Participant.ownerDriver,
+                    Boolean.getBoolean(BROWSER_OWNER_ISREMOTE_NAME_PROP));
         }
 
         openRoom(owner, roomName, fragment, browser);
@@ -393,12 +422,14 @@ public class ConferenceFixture
      * Starts a {@code WebDriver} instance using default settings.
      * @param browser the browser type.
      * @param participant the participant we are creating a driver for.
+     * @param isRemote <tt>true</tt> if the driver
+     *                 to create is a RemoteWebDriver.
      * @return the {@code WebDriver} instance.
      */
     private static WebDriver startDriver(BrowserType browser,
-        Participant participant)
+        Participant participant, boolean isRemote)
     {
-        WebDriver wd = startDriverInstance(browser, participant);
+        WebDriver wd = startDriverInstance(browser, participant, isRemote);
 
         //wd.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
@@ -413,10 +444,14 @@ public class ConferenceFixture
      * Starts a <tt>WebDriver</tt> instance using default settings.
      * @param browser the browser type.
      * @param participant the participant we are creating a driver for.
+     * @param isRemote <tt>true</tt> if the driver
+     *                 to create is a RemoteWebDriver.
      * @return the <tt>WebDriver</tt> instance.
      */
-    private static WebDriver startDriverInstance(BrowserType browser,
-        Participant participant)
+    private static WebDriver startDriverInstance(
+        BrowserType browser,
+        Participant participant,
+        boolean isRemote)
     {
         // by default we load chrome, but we can load safari or firefox
         if (browser == BrowserType.firefox)
@@ -446,6 +481,13 @@ public class ConferenceFixture
                 FailureListener.createLogsFolder() +
                     "/firefox-console-"
                     + getParticipantName(participant) + ".log");
+
+            if (isRemote)
+            {
+                DesiredCapabilities caps = DesiredCapabilities.firefox();
+                caps.setCapability(FirefoxDriver.PROFILE, profile);
+                return new RemoteWebDriver(getRemoteDriverAddress(), caps);
+            }
 
             return new FirefoxDriver(profile);
         }
@@ -531,6 +573,11 @@ public class ConferenceFixture
 
             caps.setCapability(ChromeOptions.CAPABILITY, ops);
 
+            if (isRemote)
+            {
+                return new RemoteWebDriver(getRemoteDriverAddress(), caps);
+            }
+
             try
             {
                 final ExecutorService pool = Executors.newFixedThreadPool(1);
@@ -587,6 +634,28 @@ public class ConferenceFixture
     }
 
     /**
+     * Returns the remote driver address or the default one.
+     * @return the remote driver address or the default one.
+     */
+    private static URL getRemoteDriverAddress()
+    {
+        try
+        {
+            String remoteAddress = System.getProperty(
+                BROWSER_REMOTE_ADDRESS_NAME_PROP,
+                "http://localhost:4444/wd/hub");
+
+            return new URL(remoteAddress);
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
      * Starts <tt>secondParticipant</tt> if needed.
      * @return the {@code WebDriver} which was started.
      */
@@ -610,8 +679,9 @@ public class ConferenceFixture
                 System.getProperty(BROWSER_SECONDP_NAME_PROP));
 
         if(secondParticipant == null)
-            secondParticipant
-                = startDriver(browser, Participant.secondParticipantDriver);
+            secondParticipant = startDriver(browser,
+                Participant.secondParticipantDriver,
+                Boolean.getBoolean(BROWSER_SECONDP_ISREMOTE_NAME_PROP));
 
         openRoom(secondParticipant, currentRoomName, fragment, browser);
 
@@ -650,7 +720,9 @@ public class ConferenceFixture
 
         if (thirdParticipant == null)
             thirdParticipant
-                = startDriver(browser, Participant.thirdParticipantDriver);
+                = startDriver(browser,
+                    Participant.thirdParticipantDriver,
+                Boolean.getBoolean(BROWSER_THIRDP_ISREMOTE_NAME_PROP));
 
         openRoom(thirdParticipant, currentRoomName, fragment, browser);
 
@@ -680,7 +752,9 @@ public class ConferenceFixture
                 System.getProperty(BROWSER_OWNER_NAME_PROP));
         
         WebDriver participant = 
-            startDriver(browser, Participant.otherParticipantDriver);
+            startDriver(browser,
+                Participant.otherParticipantDriver,
+                Boolean.getBoolean(BROWSER_OWNER_ISREMOTE_NAME_PROP));
 
         openRoom(participant, currentRoomName, fragment, browser);
 
@@ -704,8 +778,9 @@ public class ConferenceFixture
             = BrowserType.valueOfString(
                 System.getProperty(BROWSER_OWNER_NAME_PROP));
         
-        WebDriver driver = 
-            startDriver(browser, Participant.otherDriver);
+        WebDriver driver = startDriver(browser,
+            Participant.otherDriver,
+            Boolean.getBoolean(BROWSER_OWNER_ISREMOTE_NAME_PROP));
 
         driver.get(URL);
         MeetUtils.waitForPageToLoad(driver);
