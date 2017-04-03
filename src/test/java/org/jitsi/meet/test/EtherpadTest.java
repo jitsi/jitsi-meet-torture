@@ -116,6 +116,8 @@ public class EtherpadTest
         WebDriver owner = ConferenceFixture.getOwner();
         try
         {
+            // give time for the internal frame to load and attach to the page.
+            TestUtils.waitMillis(2000);
 
             WebDriverWait wait = new WebDriverWait(owner, 30);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(

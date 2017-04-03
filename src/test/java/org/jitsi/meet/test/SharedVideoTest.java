@@ -136,6 +136,9 @@ public class SharedVideoTest
             By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"))
             .click();
 
+        // give time for the internal frame to load and attach to the page.
+        TestUtils.waitMillis(2000);
+
         WebDriverWait wait = new WebDriverWait(owner, 30);
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
             By.id("sharedVideoIFrame")));
