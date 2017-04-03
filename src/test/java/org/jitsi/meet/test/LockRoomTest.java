@@ -177,7 +177,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
         secondParticipant.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+            By.id("modal-dialog-ok-button")).click();
 
         try
         {
@@ -191,7 +191,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
         secondParticipant.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+            By.id("modal-dialog-ok-button")).click();
 
         MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
 
@@ -272,8 +272,8 @@ public class LockRoomTest
 
     /**
      * Owner locks the room. Participant tries to enter using wrong password.
-     * Owner unlocks the room and Participant cancels the password prompt and
-     * he should enter of unlocked room.
+     * Owner unlocks the room and Participant submits the password prompt with
+     * no password entered and he should enter of unlocked room.
      */
     public void unlockAfterParticipantEnterWrongPassword()
     {
@@ -303,7 +303,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
         secondParticipant.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogOkOkspan")).click();
+            By.id("modal-dialog-ok-button")).click();
 
         try
         {
@@ -320,8 +320,7 @@ public class LockRoomTest
         TestUtils.waitMillis(500);
 
         secondParticipant.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
-            .click();
+            By.id("modal-dialog-ok-button")).click();
 
         MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
         testRoomIsUnlocked(secondParticipant);
