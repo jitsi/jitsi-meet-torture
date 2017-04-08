@@ -106,9 +106,10 @@ public class LipSyncTest
         WebDriver owner
             = ConferenceFixture.startOwner(
                     "config.enableLipSync=true&config.audioPacketDelay=15" +
-                        "&config.audioLevelsInterval=100" +
-                        "&config.disableSuspendVideo=true");
-        WebDriver participant = ConferenceFixture.getSecondParticipant();
+                        "&config.audioLevelsInterval=100");
+
+        WebDriver participant = ConferenceFixture
+            .startSecondParticipant("config.disableSuspendVideo=true");
 
         // Wait for the conference to start
         MeetUtils.waitForParticipantToJoinMUC(owner, 10);
