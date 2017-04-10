@@ -22,8 +22,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 /**
- * A test which tests "Follow Me" feature that allows moderators to enable 
- * a mode in the conference where all participants are seeing what the 
+ * A test which tests "Follow Me" feature that allows moderators to enable
+ * a mode in the conference where all participants are seeing what the
  * moderator is seeing.
  *
  * @author Kostiantyn Tsaregradskyi
@@ -31,7 +31,7 @@ import org.openqa.selenium.*;
 public class FollowMeTest
     extends TestCase
 {
-    private final static String filmStripXPath = "//div[@id='remoteVideos']";
+    private final static String filmstripXPath = "//div[@id='remoteVideos']";
     private final static String etherpadXPath = "//div[@id='etherpad']/iframe";
     private final static String followMeCheckboxXPath =
             "//input[@id='followMeCheckBox']";
@@ -156,7 +156,7 @@ public class FollowMeTest
     }
 
     /**
-     * Checks if hiding/showing film strip is executed for the second
+     * Checks if hiding/showing filmstrip is executed for the second
      * participant.
      */
     public void testFilmstripCommandsAreFollowed() {
@@ -165,22 +165,22 @@ public class FollowMeTest
         WebDriver owner = ConferenceFixture.getOwner();
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        MeetUIUtils.displayFilmStripPanel(owner);
-        MeetUIUtils.displayFilmStripPanel(secondParticipant);
+        MeetUIUtils.displayFilmstripPanel(owner);
+        MeetUIUtils.displayFilmstripPanel(secondParticipant);
 
-        owner.findElement(By.id("toggleFilmStripButton")).click();
+        owner.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementContainsClassByXPath(
-                owner, filmStripXPath, "hidden", 10);
+                owner, filmstripXPath, "hidden", 10);
         TestUtils.waitForElementContainsClassByXPath(
-                secondParticipant, filmStripXPath, "hidden", 10);
+                secondParticipant, filmstripXPath, "hidden", 10);
 
-        owner.findElement(By.id("toggleFilmStripButton")).click();
+        owner.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementAttributeValueByXPath(
-                owner, filmStripXPath, "class", "filmstrip__videos", 10);
+                owner, filmstripXPath, "class", "filmstrip__videos", 10);
         TestUtils.waitForElementAttributeValueByXPath(
-                secondParticipant, filmStripXPath, "class", "filmstrip__videos", 10);
+                secondParticipant, filmstripXPath, "class", "filmstrip__videos", 10);
     }
 
     /**

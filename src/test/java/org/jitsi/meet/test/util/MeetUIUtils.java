@@ -338,29 +338,29 @@ public class MeetUIUtils
     }
 
     /**
-     * Displays film strip, if not displayed.
+     * Displays the filmstrip, if not displayed.
      *
      * @param participant <tt>WebDriver</tt> instance of the participant for
      * whom we'll try to open the settings panel.
      * @throws TimeoutException if we fail to open the settings panel.
      */
-    public static void displayFilmStripPanel(WebDriver participant)
+    public static void displayFilmstripPanel(WebDriver participant)
     {
-        String filmStripXPath = "//div[@id='remoteVideos' and @class='hidden']";
-        WebElement filmStrip;
+        String filmstripXPath = "//div[@id='remoteVideos' and @class='hidden']";
+        WebElement filmstrip;
 
         try {
-            filmStrip = participant.findElement(By.xpath(filmStripXPath));
+            filmstrip = participant.findElement(By.xpath(filmstripXPath));
         } catch (NoSuchElementException ex) {
-            filmStrip = null;
+            filmstrip = null;
         }
 
-        if (filmStrip != null)
+        if (filmstrip != null)
         {
             clickOnToolbarButton(participant, "toolbar_film_strip");
 
             TestUtils.waitForElementNotPresentByXPath(
-                    participant, filmStripXPath, 5);
+                    participant, filmstripXPath, 5);
         }
     }
 
@@ -455,7 +455,7 @@ public class MeetUIUtils
             String name)
     {
         String id = "";
-        if(testee != observer) 
+        if(testee != observer)
         {
             String resource = MeetUtils.getResourceJid(testee);
             id = "participant_" + resource;
@@ -463,7 +463,7 @@ public class MeetUIUtils
         else {
             id = "localVideoContainer";
         }
-        
+
 
         String icon = isVideo
             ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
