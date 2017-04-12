@@ -93,6 +93,7 @@ public class LockRoomTest
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
 
         // fill in the dialog
+        togglePasswordEdit(owner);
 
         String inputXPath = "//input[@id='newPasswordInput']";
         TestUtils.waitForElementByXPath(owner, inputXPath, 5);
@@ -109,12 +110,18 @@ public class LockRoomTest
         testRoomIsLocked(owner);
     }
 
+    private void togglePasswordEdit(WebDriver user) {
+        By addPasswordXPath = By.xpath("//a[contains(@class, 'password-overview-toggle-edit')]");
+        TestUtils.waitForElementBy(user, addPasswordXPath, 5);
+        user.findElement(addPasswordXPath).click();
+    }
+
     /**
     * Closing invite dialog
     */
     private void closeInviteDialog(WebDriver user)
     {
-        String closeXPath = "//div[contains(@class, 'jqiclose')]";
+        String closeXPath = "//button[@id='modal-dialog-ok-button']";
         WebElement closeBtn = user.findElement(By.xpath(closeXPath));
         closeBtn.click();
     }
@@ -124,7 +131,7 @@ public class LockRoomTest
     */
     private void testRoomIsLocked(WebDriver user)
     {
-        testRoomLockState(user, "locked");
+        testRoomLockState(user, "is-locked");
     }
 
     /**
@@ -132,7 +139,7 @@ public class LockRoomTest
     */
     private void testRoomIsUnlocked(WebDriver user)
     {
-        testRoomLockState(user, "unlocked");
+        testRoomLockState(user, "is-unlocked");
     }
 
     /**
@@ -143,7 +150,7 @@ public class LockRoomTest
     private void testRoomLockState(WebDriver user, String state)
     {
         MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
-        String unlockedXPath = "//div[@data-jqi-name='" + state + "']";
+        String unlockedXPath = "//div[contains(@class, '" + state + "')]";
 
         TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
         WebElement elem = user.findElement(By.xpath(unlockedXPath));
@@ -222,6 +229,8 @@ public class LockRoomTest
         WebDriver owner = ConferenceFixture.getOwner();
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
+
+        togglePasswordEdit(owner);
 
         WebElement removeButton = TestUtils.waitForElementBy(
             owner,
