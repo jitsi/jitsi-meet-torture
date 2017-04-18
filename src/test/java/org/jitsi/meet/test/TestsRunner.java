@@ -115,6 +115,8 @@ public class TestsRunner
 
         DEFAULT_TESTS_TO_RUN.add(ReloadTest.class.getSimpleName());
 
+        DEFAULT_TESTS_TO_RUN.add(AudioOnlyTest.class.getSimpleName());
+
         DEFAULT_TESTS_TO_RUN.add(RingOverlayTest.class.getSimpleName());
 
         DEFAULT_TESTS_TO_RUN.add(EndConferenceTest.class.getSimpleName());
