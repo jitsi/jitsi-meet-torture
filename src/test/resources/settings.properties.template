@@ -1,0 +1,10 @@
+# driver to use
+#mobile.participant=android
+#mobile.participant=ios
+
+# caps that are supported
+#mobile.caps.deviceName=Android
+#mobile.caps.app=~/Desktop/jitsi-meet-react-latest.apk
+
+# custom screenshot folder
+#appium.screenshots.dir=test-reports/screenshots
