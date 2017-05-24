@@ -92,6 +92,11 @@ public class LockRoomTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
 
+        // Add a wait till the dialog loads
+        // when we have dial-in option it can change the ui a little
+        // when we load numbers
+        TestUtils.waitMillis(1500);
+
         // fill in the dialog
         togglePasswordEdit(owner);
 
