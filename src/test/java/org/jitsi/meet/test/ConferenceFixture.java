@@ -523,46 +523,7 @@ public class ConferenceFixture
                 FailureListener.createLogsFolder() +
                 "/chrome-console-" + getParticipantName(participant) + ".log");
 
-            DesiredCapabilities caps = DesiredCapabilities.chrome();
-            LoggingPreferences logPrefs = new LoggingPreferences();
-            logPrefs.enable(LogType.BROWSER, Level.ALL);
-            caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-
-            final ChromeOptions ops = new ChromeOptions();
-            ops.addArguments("use-fake-ui-for-media-stream");
-            ops.addArguments("use-fake-device-for-media-stream");
-            ops.addArguments("disable-extensions");
-            ops.addArguments("disable-plugins");
-            ops.addArguments("mute-audio");
-            ops.addArguments("disable-infobars");
-
-            String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
-            if(disProp == null && !Boolean.parseBoolean(disProp))
-            {
-                ops.addArguments("no-sandbox");
-                ops.addArguments("disable-setuid-sandbox");
-            }
-
-            // starting version 46 we see crashes of chrome GPU process when
-            // running in headless mode
-            // which leaves the browser opened and selenium hang forever.
-            // There are reports that in older version crashes like that will
-            // fallback to software graphics, we try to disable gpu for now
-            ops.addArguments("disable-gpu");
-
-            String browserProp;
-            if (participant == Participant.secondParticipantDriver)
-                browserProp = BROWSER_CHROME_BINARY_SECOND_NAME_PROP;
-            else
-                browserProp = BROWSER_CHROME_BINARY_OWNER_NAME_PROP;
-
-            String browserBinary = System.getProperty(browserProp);
-            if(browserBinary != null && browserBinary.trim().length() > 0)
-            {
-                File binaryFile = new File(browserBinary);
-                if(binaryFile.exists())
-                    ops.setBinary(binaryFile);
-            }
+            final ChromeOptions ops = makeChromeOptions();
 
             String remoteResourcePath = System.getProperty(
                 BROWSER_REMOTE_RESOURCE_PARENT_PATH_NAME_PROP);
@@ -589,11 +550,21 @@ public class ConferenceFixture
                     "use-file-for-fake-video-capture=" + fileAbsolutePath);
             }
 
-            //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
-            ops.addArguments("enable-logging");
-            ops.addArguments("vmodule=*=3");
+            String browserProp;
+            if (participant == Participant.secondParticipantDriver)
+                browserProp = BROWSER_CHROME_BINARY_SECOND_NAME_PROP;
+            else
+                browserProp = BROWSER_CHROME_BINARY_OWNER_NAME_PROP;
 
-            caps.setCapability(ChromeOptions.CAPABILITY, ops);
+            String browserBinary = System.getProperty(browserProp);
+            if(browserBinary != null && browserBinary.trim().length() > 0)
+            {
+                File binaryFile = new File(browserBinary);
+                if(binaryFile.exists())
+                    ops.setBinary(binaryFile);
+            }
+
+            DesiredCapabilities caps = makeChromeCaps(ops);
 
             if (isRemote)
             {
@@ -656,10 +627,66 @@ public class ConferenceFixture
     }
 
     /**
+     * Converts a {@code ChromeOptions} object into a {@code DesiredCapabilities}
+     * object.
+     *
+     * @param ops the {@code ChromeOptions} to convert.
+     * @return the {@code DesiredCapabilities} that correspond to the specified
+     * chrome options.
+     */
+    static DesiredCapabilities makeChromeCaps(ChromeOptions ops)
+    {
+        DesiredCapabilities caps = DesiredCapabilities.chrome();
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
+        caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+
+        caps.setCapability(ChromeOptions.CAPABILITY, ops);
+
+        return caps;
+    }
+
+    /**
+     * Makes common {@code ChromeOptions} for testing.
+     *
+     * @return common {@code ChromeOptions} for testing.
+     */
+    static ChromeOptions makeChromeOptions()
+    {
+        final ChromeOptions ops = new ChromeOptions();
+        ops.addArguments("use-fake-ui-for-media-stream");
+        ops.addArguments("use-fake-device-for-media-stream");
+        ops.addArguments("disable-extensions");
+        ops.addArguments("disable-plugins");
+        ops.addArguments("mute-audio");
+        ops.addArguments("disable-infobars");
+
+        String disProp = System.getProperty(DISABLE_NOSANBOX_PARAM);
+        if(disProp == null && !Boolean.parseBoolean(disProp))
+        {
+            ops.addArguments("no-sandbox");
+            ops.addArguments("disable-setuid-sandbox");
+        }
+
+        // starting version 46 we see crashes of chrome GPU process when
+        // running in headless mode
+        // which leaves the browser opened and selenium hang forever.
+        // There are reports that in older version crashes like that will
+        // fallback to software graphics, we try to disable gpu for now
+        ops.addArguments("disable-gpu");
+
+        //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
+        ops.addArguments("enable-logging");
+        ops.addArguments("vmodule=*=3");
+
+        return ops;
+    }
+
+    /**
      * Returns the remote driver address or the default one.
      * @return the remote driver address or the default one.
      */
-    private static URL getRemoteDriverAddress()
+    public static URL getRemoteDriverAddress()
     {
         try
         {
