@@ -69,6 +69,31 @@ public class MeetUtils
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
         "return config.etherpad_base !== undefined;";
 
+    /**
+     * The javascript code which returns {@code true} if the audio track has
+     * been created.
+     */
+    public static final String HAS_AUDIO_SCRIPT =
+        "return APP.conference && APP.conference._room " +
+            "&& APP.conference._room.getLocalAudioTrack() != null;";
+
+    /**
+     * The javascript code that mutes the local audio track.
+     */
+    public static final String MUTE_AUDIO_SCRIPT =
+        "APP.conference._room.getLocalAudioTrack().mute();";
+
+    /**
+     * The javascript code that unmutes the local audio track.
+     */
+    public static final String UNMUTE_AUDIO_SCRIPT =
+        "APP.conference._room.getLocalAudioTrack().unmute();";
+
+    /**
+     * The javascript code which returns the resolution of the large video.
+     */
+    public static final String ON_STAGE_HEIGHT =
+        "return $('#largeVideo')[0].videoHeight;";
 
     /**
      * Obtains the RTP bundle port used by the given <tt>participant</tt>.
