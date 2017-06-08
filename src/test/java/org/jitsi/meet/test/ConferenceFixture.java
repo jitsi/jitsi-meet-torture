@@ -114,6 +114,12 @@ public class ConferenceFixture
         = "chrome.disable.nosanbox";
 
     /**
+     * The property to enable headless parameter for chrome.
+     */
+    public static final String ENABLE_HEADLESS_PARAM
+        = "chrome.enable.headless";
+
+    /**
      * The property to change remote selenium grid URL, defaults to
      * http://localhost:4444/wd/hub if requiring remote browser and property
      * is not set.
@@ -541,6 +547,12 @@ public class ConferenceFixture
             {
                 ops.addArguments("no-sandbox");
                 ops.addArguments("disable-setuid-sandbox");
+            }
+
+            if(Boolean.getBoolean(ENABLE_HEADLESS_PARAM))
+            {
+                ops.addArguments("headless");
+                ops.addArguments("window-size=1200x600");
             }
 
             // starting version 46 we see crashes of chrome GPU process when
