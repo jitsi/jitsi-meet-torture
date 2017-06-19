@@ -302,9 +302,18 @@ public class TestUtils
 
                     WebElement el = elList.isEmpty() ? null : elList.get(0);
 
-                    return  isDisplayed
-                        ? el != null && el.isDisplayed()
-                        : el == null || !el.isDisplayed();
+                    boolean expectedConditionMet = false;
+
+                    try {
+                        expectedConditionMet = isDisplayed
+                            ? el != null && el.isDisplayed()
+                            : el == null || !el.isDisplayed();
+                    } catch(StaleElementReferenceException e) {
+                        // if the element is detached in a process of checking
+                        // its display status, means its not visible anymore
+                    }
+
+                    return expectedConditionMet;
                 }
             });
     }
