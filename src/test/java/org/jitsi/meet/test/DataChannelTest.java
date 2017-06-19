@@ -70,10 +70,7 @@ public class DataChannelTest
      */
     private Boolean isDataChannelOpen(WebDriver webDriver)
     {
-        String script
-            = "return APP.conference._room.rtc.dataChannels._some(function (dataChannel) {"
-                + "    return dataChannel.readyState == 'open';"
-                + "});";
+        String script = "return APP.conference._room.rtc._channel.isOpen()";
 
         return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
