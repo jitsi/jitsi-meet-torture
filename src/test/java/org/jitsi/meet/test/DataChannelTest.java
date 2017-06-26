@@ -70,10 +70,7 @@ public class DataChannelTest
      */
     private Boolean isDataChannelOpen(WebDriver webDriver)
     {
-        String script
-            = "return APP.conference._room.rtc.dataChannels._some(function (dataChannel) {"
-                + "    return dataChannel.readyState == 'open';"
-                + "});";
+        String script = "return APP.conference._room.rtc._channel.isOpen()";
 
         return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
@@ -92,7 +89,7 @@ public class DataChannelTest
      */
     private Boolean isServerHelloReceived(WebDriver webDriver)
     {
-        String script = "return APP.conference._room.rtc.dataChannels.receivedServerHello;";
+        String script = "return APP.conference._room.rtc._channel.receivedServerHello;";
 
         return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
@@ -113,19 +110,16 @@ public class DataChannelTest
             = "APP.conference._room.rtc.addListener("
                 + "        'rtc.datachannel.ServerHello',"
                 + "        function (o) {"
-                + "            APP.conference._room.rtc.dataChannels.receivedServerHello = true;"
+                + "            APP.conference._room.rtc._channel.receivedServerHello = true;"
                 + "        });"
-                + "return APP.conference._room.rtc.dataChannels._some(function (dataChannel) {"
-                + "    if (dataChannel.readyState == 'open') {"
-                + "        APP.conference._room.rtc.dataChannels.receivedServerHello = false;"
-                + "        dataChannel.send(JSON.stringify({"
-                + "            'colibriClass': 'ClientHello'"
-                + "        }));"
-                + "        return true;"
-                + "    } else {"
-                + "        return false;"
-                + "    }"
-                + "});";
+                + "if (!APP.conference._room.rtc._channel.isOpen()) {"
+                + "    return false;"
+                + "}"
+                + "APP.conference._room.rtc._channel.receivedServerHello = false;"
+                + "APP.conference._room.rtc._channel._channel.send(JSON.stringify({"
+                + "    'colibriClass': 'ClientHello'"
+                + "}));"
+                + "return true;";
 
         return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
