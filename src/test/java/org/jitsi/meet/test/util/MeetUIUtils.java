@@ -94,8 +94,8 @@ public class MeetUIUtils
     {
         String resource = MeetUtils.getResourceJid(peer);
         String avatarXPath
-            = "//span[@id='participant_" + resource
-                + "']/img[@class='userAvatar videoThumbnailProblemFilter']";
+            = "//span[@id='participant_" + resource + "']"
+               +  "/div[@class='avatar-container videoThumbnailProblemFilter']";
 
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(observer, avatarXPath, 5);
@@ -612,7 +612,7 @@ public class MeetUIUtils
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
             participant, "//span[@id='participant_" + resource + "']" +
-                    "/img[@class='userAvatar']",
+                    "//img[@class='userAvatar']",
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -661,7 +661,7 @@ public class MeetUIUtils
         // Avatar image - hidden
         TestUtils.waitForNotDisplayedElementByXPath(
             participant, "//span[@id='participant_" + resource + "']" +
-                   "/img[contains(@class, 'userAvatar')]", 5);
+                   "//img[contains(@class, 'userAvatar')]", 5);
 
         // User's video - hidden, if it is available
         String videoElementXPath
@@ -716,7 +716,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForNotDisplayedElementByXPath(
             participant,
-            "//span[@id='localVideoContainer']/img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
             5);
         TestUtils.waitForDisplayedElementByXPath(
             participant, "//span[@id='localVideoWrapper']/video", 5);
@@ -732,7 +732,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForDisplayedElementByXPath(
             participant,
-            "//span[@id='localVideoContainer']/img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             participant, "//span[@id='localVideoWrapper']/video", 5);
