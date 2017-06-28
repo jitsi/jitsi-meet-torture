@@ -233,7 +233,7 @@ public class AvatarTest
 
         String ownerAvatarXPath
             = "//span[@id='participant_" + ownerResourceJid
-                                         + "']/img[@class='userAvatar']";
+                                         + "']//img[@class='userAvatar']";
 
         // Wait for the avatar element to be created
         TestUtils.waitForElementByXPath(
@@ -350,7 +350,7 @@ public class AvatarTest
     {
         return getSrcByXPath(perspective,
             "//span[@id='participant_" + resourceJid
-                + "']/img[@class='userAvatar']");
+                + "']//img[@class='userAvatar']");
     }
 
     /**
@@ -374,7 +374,7 @@ public class AvatarTest
     private String getLocalThumbnailSrc(WebDriver perspective)
     {
         return getSrcByXPath(perspective,
-            "//span[@id='localVideoContainer']/img[@class='userAvatar']");
+            "//span[@id='localVideoContainer']//img[@class='userAvatar']");
     }
 
     /**
