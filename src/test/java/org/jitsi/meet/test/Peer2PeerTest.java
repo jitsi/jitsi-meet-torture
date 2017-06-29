@@ -84,8 +84,8 @@ public class Peer2PeerTest
      */
     public void testSwitchToP2P()
     {
-        ConferenceFixture.startOwner("config.enableP2P=true");
-        ConferenceFixture.startSecondParticipant("config.enableP2P=true");
+        ConferenceFixture.startOwner("config.p2p.enabled=true");
+        ConferenceFixture.startSecondParticipant("config.p2p.enabled=true");
 
         ConferenceFixture.waitForOwnerToJoinMUC();
         MeetUtils.waitForParticipantToJoinMUC(
@@ -167,8 +167,8 @@ public class Peer2PeerTest
 
     public void testManualP2PSwitch()
     {
-        ConferenceFixture.startOwner("config.enableP2P=false");
-        ConferenceFixture.startSecondParticipant("config.enableP2P=false");
+        ConferenceFixture.startOwner("config.p2p.enabled=false");
+        ConferenceFixture.startSecondParticipant("config.p2p.enabled=false");
 
         ConferenceFixture.waitForOwnerToJoinMUC();
         MeetUtils.waitForParticipantToJoinMUC(
@@ -250,8 +250,8 @@ public class Peer2PeerTest
 
     public void testP2PSwitchWhenMuted()
     {
-        ConferenceFixture.startOwner("config.enableP2P=false");
-        ConferenceFixture.startSecondParticipant("config.enableP2P=false");
+        ConferenceFixture.startOwner("config.p2p.enabled=false");
+        ConferenceFixture.startSecondParticipant("config.p2p.enabled=false");
 
         ConferenceFixture.waitForOwnerToJoinMUC();
         MeetUtils.waitForParticipantToJoinMUC(
