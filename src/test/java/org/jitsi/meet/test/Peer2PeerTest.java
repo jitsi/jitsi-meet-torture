@@ -28,6 +28,12 @@ public class Peer2PeerTest
     extends TestCase
 {
     /**
+     * The config fragment which enables P2P test mode.
+     */
+    private final static String MANUAL_P2P_MODE_FRAGMENT
+        = "config.testing.p2pTestMode=true";
+
+    /**
      * Constructs test
      * @param name the method name for the test.
      */
@@ -167,8 +173,8 @@ public class Peer2PeerTest
 
     public void testManualP2PSwitch()
     {
-        ConferenceFixture.startOwner("config.p2p.enabled=false");
-        ConferenceFixture.startSecondParticipant("config.p2p.enabled=false");
+        ConferenceFixture.startOwner(MANUAL_P2P_MODE_FRAGMENT);
+        ConferenceFixture.startSecondParticipant(MANUAL_P2P_MODE_FRAGMENT);
 
         ConferenceFixture.waitForOwnerToJoinMUC();
         MeetUtils.waitForParticipantToJoinMUC(
@@ -250,8 +256,8 @@ public class Peer2PeerTest
 
     public void testP2PSwitchWhenMuted()
     {
-        ConferenceFixture.startOwner("config.p2p.enabled=false");
-        ConferenceFixture.startSecondParticipant("config.p2p.enabled=false");
+        ConferenceFixture.startOwner(MANUAL_P2P_MODE_FRAGMENT);
+        ConferenceFixture.startSecondParticipant(MANUAL_P2P_MODE_FRAGMENT);
 
         ConferenceFixture.waitForOwnerToJoinMUC();
         MeetUtils.waitForParticipantToJoinMUC(
