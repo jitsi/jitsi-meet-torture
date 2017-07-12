@@ -103,7 +103,7 @@ public class MeetUIUtils
         // User's video if available should be hidden
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
                 observer,
-                "//span[@id='participant_" + resource + "']/video", 5);
+                "//span[@id='participant_" + resource + "']//video", 5);
     }
 
     /**
@@ -123,9 +123,18 @@ public class MeetUIUtils
         String peerId = MeetUtils.getResourceJid(peer);
         assertNotNull(peerId);
 
+        String thumbnailXPath = "span[@id='participant_" + peerId + "']";
+        String videoFilterXPath
+            = "video[@class='videoThumbnailProblemFilter']";
+        String videoContainerFilterXPath
+            = "div[contains(@class, 'videoThumbnailProblemFilter')"
+                + " and contains(@class, 'videocontainer__video_wrapper')]";
+
         String greyVideoXPath
-            = "//span[@id='participant_" + peerId
-                + "']/video[@class='videoThumbnailProblemFilter']";
+            = "//" + thumbnailXPath
+                + "//" + videoFilterXPath
+                + "|"
+                + "//" + videoContainerFilterXPath;
 
         TestUtils.waitForDisplayedElementByXPath(
                 observer, greyVideoXPath, 3);
@@ -618,7 +627,7 @@ public class MeetUIUtils
         // User's video if available should be hidden, the element is missing
         // if remote participant started muted when we joined
         String videoElementXPath
-            = "//span[@id='participant_" + resource + "']/video";
+            = "//span[@id='participant_" + resource + "']//video";
         List<WebElement> videoElems
             = participant.findElements(By.xpath(videoElementXPath));
         if(videoElems.size() > 0)
@@ -719,7 +728,7 @@ public class MeetUIUtils
             "//span[@id='localVideoContainer']//img[@class='userAvatar']",
             5);
         TestUtils.waitForDisplayedElementByXPath(
-            participant, "//span[@id='localVideoWrapper']/video", 5);
+            participant, "//span[@id='localVideoWrapper']//video", 5);
     }
 
     /**
@@ -735,7 +744,7 @@ public class MeetUIUtils
             "//span[@id='localVideoContainer']//img[@class='userAvatar']",
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            participant, "//span[@id='localVideoWrapper']/video", 5);
+            participant, "//span[@id='localVideoWrapper']//video", 5);
     }
 
     /**
@@ -885,7 +894,7 @@ public class MeetUIUtils
 
         WebElement localVideoElem
             = where.findElement(
-                    By.xpath("//span[@id='localVideoWrapper']/video"));
+                    By.xpath("//span[@id='localVideoWrapper']//video"));
 
         final String largeVideoID
             = MeetUIUtils.getVideoElementID(where, localVideoElem);
@@ -913,7 +922,7 @@ public class MeetUIUtils
                 + " and contains(@class,'videocontainer')]";
 
         String remoteThumbVideoXpath
-            = remoteThumbXpath + "/video[starts-with(@id, 'remoteVideo_')]";
+            = remoteThumbXpath + "//video[starts-with(@id, 'remoteVideo_')]";
 
         WebElement remoteThumbnail
             = TestUtils.waitForElementByXPath(
