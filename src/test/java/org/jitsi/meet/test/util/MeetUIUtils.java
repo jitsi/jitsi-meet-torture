@@ -125,16 +125,16 @@ public class MeetUIUtils
 
         String thumbnailXPath = "span[@id='participant_" + peerId + "']";
         String videoFilterXPath
-            = "[video[@class='videoThumbnailProblemFilter']";
+            = "video[@class='videoThumbnailProblemFilter']";
         String videoContainerFilterXPath
             = "div[contains(@class, 'videoThumbnailProblemFilter')"
-                + "and contains(@class, 'videocontainer__video_wrapper')]";
+                + " and contains(@class, 'videocontainer__video_wrapper')]";
 
         String greyVideoXPath
             = "//" + thumbnailXPath
                 + "//" + videoFilterXPath
-                + " or "
-                + videoContainerFilterXPath;
+                + "|"
+                + "//" + videoContainerFilterXPath;
 
         TestUtils.waitForDisplayedElementByXPath(
                 observer, greyVideoXPath, 3);
