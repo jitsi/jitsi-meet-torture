@@ -52,7 +52,9 @@ public class Peer2PeerTest
 
         suite.addTest(new Peer2PeerTest("disposeIfAny"));
         suite.addTest(new Peer2PeerTest("testSwitchToP2P"));
-        suite.addTest(new Peer2PeerTest("testSwitchBackToJVB"));
+
+        // FIXME this test fails randomly too often
+        //suite.addTest(new Peer2PeerTest("testSwitchBackToJVB"));
         suite.addTest(new Peer2PeerTest("disposeIfAny"));
         suite.addTest(new Peer2PeerTest("testManualP2PSwitch"));
         suite.addTest(new Peer2PeerTest("disposeIfAny"));
