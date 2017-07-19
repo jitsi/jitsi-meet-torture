@@ -149,35 +149,31 @@ public class MuteTest
         System.err.println("Start ownerMutesParticipantAndCheck.");
 
         WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        String secondParticipantResource
-            = MeetUtils.getResourceJid(secondParticipant);
-
-        WebElement cntElem = owner.findElement(By.id(
-            "participant_" + secondParticipantResource ));
-
-        WebElement elem = owner.findElement(By.xpath(
-            TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
-            + "//i[@class='icon-thumb-menu']"));
-
+        String remoteVideoMenuButtonXPath
+            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
+                + "//i[@class='icon-thumb-menu']";
+        WebElement elem = owner.findElement(
+            By.xpath(remoteVideoMenuButtonXPath));
         elem.click();
 
+        String muteParticipantLinkXPath
+            = "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]";
         TestUtils.waitForDisplayedElementByXPath(
             owner,
-            "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
+            muteParticipantLinkXPath,
             5);
-
-        owner.findElement(
-                By.xpath("//ul[@class='popupmenu']"
-                    + "//a[contains(@class, 'mutelink')]"))
+        owner.findElement(By.xpath(muteParticipantLinkXPath))
             .click();
 
         // and now check whether second participant is muted
+        String participantMutedIconXPath
+            = TestUtils.getXPathStringForClassName("//span", "audioMuted")
+                + "//i[@class='icon-mic-disabled']";
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "audioMuted")
-            + "//i[@class='icon-mic-disabled']", 5);
+            participantMutedIconXPath,
+            5);
     }
 
     /**
