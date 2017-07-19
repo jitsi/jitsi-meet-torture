@@ -159,29 +159,25 @@ public class MuteTest
 
         WebElement elem = owner.findElement(By.xpath(
             TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
-            + "/i[@class='icon-thumb-menu']"));
+            + "//i[@class='icon-thumb-menu']"));
 
-        Actions action = new Actions(owner);
-        action.moveToElement(cntElem);
-        action.moveToElement(elem);
-        action.perform();
+        elem.click();
 
         TestUtils.waitForDisplayedElementByXPath(
             owner,
-            "//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]",
+            "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
             5);
 
         owner.findElement(
-                By.xpath("//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]"))
+                By.xpath("//ul[@class='popupmenu']"
+                    + "//a[contains(@class, 'mutelink')]"))
             .click();
 
         // and now check whether second participant is muted
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
             TestUtils.getXPathStringForClassName("//span", "audioMuted")
-            + "/i[@class='icon-mic-disabled']", 5);
-
-        action.release();
+            + "//i[@class='icon-mic-disabled']", 5);
     }
 
     /**
