@@ -537,13 +537,17 @@ public class MeetUIUtils
         if (!MeetUtils.areRtpStatsSupported(observer))
             return;
 
+        // Extended timeout for 'unmuted' to make tests more resilient to
+        // unexpected glitches.
+        int timeout = muted ? 3 : 6;
+
         // Give it 3 seconds to not get any audio or to receive some
         // depending on "muted" argument
         try
         {
             TestUtils.waitForCondition(
                 observer,
-                3,
+                timeout,
                 new ExpectedCondition<Boolean>()
                 {
                     @Override
@@ -595,7 +599,7 @@ public class MeetUIUtils
             }
             // else we're good for unmuted peer
         }
-        catch (TimeoutException timeout)
+        catch (TimeoutException timeoutExc)
         {
             if (!muted)
             {
