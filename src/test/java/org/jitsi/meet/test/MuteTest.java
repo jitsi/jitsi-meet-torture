@@ -149,39 +149,31 @@ public class MuteTest
         System.err.println("Start ownerMutesParticipantAndCheck.");
 
         WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        String secondParticipantResource
-            = MeetUtils.getResourceJid(secondParticipant);
+        String remoteVideoMenuButtonXPath
+            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
+                + "//i[@class='icon-thumb-menu']";
+        WebElement elem = owner.findElement(
+            By.xpath(remoteVideoMenuButtonXPath));
+        elem.click();
 
-        WebElement cntElem = owner.findElement(By.id(
-            "participant_" + secondParticipantResource ));
-
-        WebElement elem = owner.findElement(By.xpath(
-            TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
-            + "/i[@class='icon-thumb-menu']"));
-
-        Actions action = new Actions(owner);
-        action.moveToElement(cntElem);
-        action.moveToElement(elem);
-        action.perform();
-
+        String muteParticipantLinkXPath
+            = "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]";
         TestUtils.waitForDisplayedElementByXPath(
             owner,
-            "//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]",
+            muteParticipantLinkXPath,
             5);
-
-        owner.findElement(
-                By.xpath("//ul[@class='popupmenu']/li/a[contains(@class, 'mutelink')]"))
+        owner.findElement(By.xpath(muteParticipantLinkXPath))
             .click();
 
         // and now check whether second participant is muted
+        String participantMutedIconXPath
+            = TestUtils.getXPathStringForClassName("//span", "audioMuted")
+                + "//i[@class='icon-mic-disabled']";
         TestUtils.waitForElementByXPath(
             ConferenceFixture.getSecondParticipant(),
-            TestUtils.getXPathStringForClassName("//span", "audioMuted")
-            + "/i[@class='icon-mic-disabled']", 5);
-
-        action.release();
+            participantMutedIconXPath,
+            5);
     }
 
     /**
