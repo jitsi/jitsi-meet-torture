@@ -233,7 +233,8 @@ public class MeetUIUtils
         {
             WebElement button
                 = participant
-                .findElement(By.xpath("//a[@id='" + buttonID + "']"));
+                .findElement(By.xpath(
+                    "//*[contains(@class, '" + buttonID + "-wrapper')]"));
             // if element missing and we do not want fail continue
             if (!failOnMissing && (button == null || !button.isDisplayed()))
                 return;
