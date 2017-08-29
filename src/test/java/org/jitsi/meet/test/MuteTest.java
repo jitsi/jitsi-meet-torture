@@ -149,13 +149,22 @@ public class MuteTest
         System.err.println("Start ownerMutesParticipantAndCheck.");
 
         WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
+        String secondParticipantResource
+            = MeetUtils.getResourceJid(secondParticipant);
+
+        WebElement cntElem = owner.findElement(By.id(
+            "participant_" + secondParticipantResource));
         String remoteVideoMenuButtonXPath
-            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu")
-                + "//i[@class='icon-thumb-menu']";
+            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu");
         WebElement elem = owner.findElement(
             By.xpath(remoteVideoMenuButtonXPath));
-        elem.click();
+
+        Actions action = new Actions(owner);
+        action.moveToElement(cntElem);
+        action.moveToElement(elem);
+        action.perform();
 
         String muteParticipantLinkXPath
             = "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]";
@@ -174,6 +183,8 @@ public class MuteTest
             ConferenceFixture.getSecondParticipant(),
             participantMutedIconXPath,
             5);
+
+        action.release();
     }
 
     /**
