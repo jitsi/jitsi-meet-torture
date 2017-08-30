@@ -18,7 +18,7 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.interactions.Actions;
 
 /**
  * Tests 1-on-1 remote video thumbnail display in the filmstrip.
@@ -28,9 +28,22 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 public class OneOnOneTest
     extends TestCase
 {
-    private final static String filmstripRemoteVideosXpath
-        = "//div[@id='filmstripRemoteVideosContainer']";
+    /**
+     * The duration to wait, in seconds, remote videos in filmstrip to display
+     * and complete animations.
+     */
     private final int filmstripVisibilityWait = 5;
+
+    /**
+     * Parameters to attach to the meeting url to enable One-On-One behavior
+     * and have toolbars dismiss faster, as remote video visibility is also
+     * tied to toolbar visibility.
+     */
+    private final String oneOnOneConfigOverrides
+        = "config.disable1On1Mode=false"
+        + "&interfaceConfig.TOOLBAR_TIMEOUT=500"
+        + "&interfaceConfig.INITIAL_TOOLBAR_TIMEOUT=500"
+        + "&config.alwaysVisibleToolbar=false";
 
     /**
      * Constructs test
@@ -54,7 +67,7 @@ public class OneOnOneTest
         suite.addTest(
             new OneOnOneTest("testFilmstripDisplayWhenReturningToOneOnOne"));
         suite.addTest(new OneOnOneTest("testFilmstripVisibleOnSelfViewFocus"));
-        suite.addTest(new OneOnOneTest("testShareVideoShowsRemoteVideos"));
+        suite.addTest(new OneOnOneTest("testFilmstripHoverShowsVideos"));
         suite.addTest(new OneOnOneTest("testStopOneOnOneTest"));
 
         return suite;
@@ -65,18 +78,24 @@ public class OneOnOneTest
      */
     public void testFilmstripHiddenInOneOnOne()
     {
+        WebDriver owner =  ConferenceFixture.getOwner();
+        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+
         // Close the browsers first and then load the meeting so hash changes to
         // the config are detected by the browser.
-        ConferenceFixture.close(ConferenceFixture.getOwner());
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        ConferenceFixture.close(owner);
+        ConferenceFixture.close(secondParticipant);
 
-        ConferenceFixture.startOwner("config.disable1On1Mode=false");
-        ConferenceFixture.startSecondParticipant(
-            "config.disable1On1Mode=false");
+        ConferenceFixture.startOwner(oneOnOneConfigOverrides);
+        ConferenceFixture.startSecondParticipant(oneOnOneConfigOverrides);
 
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), false);
-        verifyRemoteVideosDisplay(
-            ConferenceFixture.getSecondParticipant(), false);
+        // Prevent toolbar from being always displayed as filmstrip visibility
+        // is tied to toolbar visibility.
+        stopDockingToolbar(owner);
+        stopDockingToolbar(secondParticipant);
+
+        verifyRemoteVideosDisplay(owner, false);
+        verifyRemoteVideosDisplay(secondParticipant, false);
     }
 
     /**
@@ -86,15 +105,17 @@ public class OneOnOneTest
     public void testFilmstripVisibleWithMoreThanTwo() {
         // Close the third participant's browser and reopen so hash changes to
         // the config are detected by the browser.
+        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
+
         ConferenceFixture.waitForThirdParticipantToConnect();
-        ConferenceFixture.close(ConferenceFixture.getThirdParticipant());
-        ConferenceFixture.startThirdParticipant("config.disable1On1Mode=false");
+        ConferenceFixture.close(thirdParticipant);
+        ConferenceFixture.startThirdParticipant(oneOnOneConfigOverrides);
+        stopDockingToolbar(thirdParticipant);
 
         verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), true);
         verifyRemoteVideosDisplay(
             ConferenceFixture.getSecondParticipant(), true);
-        verifyRemoteVideosDisplay(
-            ConferenceFixture.getThirdParticipant(), true);
+        verifyRemoteVideosDisplay(thirdParticipant, true);
     }
 
     /**
@@ -125,27 +146,18 @@ public class OneOnOneTest
     }
 
     /**
-     * Tests remote videos in filmstrip become visible when sharing video, even
-     * when in a lonely call.
+     * Tests remote videos in filmstrip stay visible when hovering over when the
+     * filmstrip is hovered over.
      */
-    public void testShareVideoShowsRemoteVideos() {
-        SharedVideoTest sharedVideoTest = new SharedVideoTest("startSharingVideo");
-
-        sharedVideoTest.startSharingVideo();
-
-        ConferenceFixture.closeSecondParticipant();
-
+    public void testFilmstripHoverShowsVideos() {
         WebDriver owner = ConferenceFixture.getOwner();
-        TestUtils.waitForCondition(owner, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return MeetUIUtils.getRemoteVideos(d).size() == 0;
-                }
-            });
 
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), true);
+        WebElement toolbar = owner.findElement(By.id("remoteVideos"));
+        Actions hoverOnToolbar = new Actions(owner);
+        hoverOnToolbar.moveToElement(toolbar);
+        hoverOnToolbar.perform();
+
+        verifyRemoteVideosDisplay(owner, true);
     }
 
     /**
@@ -166,10 +178,45 @@ public class OneOnOneTest
     private void verifyRemoteVideosDisplay(
         WebDriver testee, boolean isDisplayed)
     {
+        waitForToolbarsHidden(testee);
+
+        String filmstripRemoteVideosXpath
+            = "//div[@id='filmstripRemoteVideosContainer']";
+
         TestUtils.waitForDisplayedOrNotByXPath(
             testee,
             filmstripRemoteVideosXpath,
             filmstripVisibilityWait,
             isDisplayed);
+    }
+
+    /**
+     * Disables permanent display (docking) of the toolbars.
+     *
+     * @param testee the <tt>WebDriver</tt> of the participant for whom we're
+     *               no longer want to dock toolbars.
+
+     */
+    private void stopDockingToolbar(WebDriver testee) {
+        ((JavascriptExecutor) testee)
+            .executeScript("APP.UI.dockToolbar(false);");
+    }
+
+    /**
+     * Waits until the toolbars are no longer displayed.
+     *
+     * @param testee the <tt>WebDriver</tt> of the participant for whom we're
+     *               waiting to no longer see toolbars.
+     */
+    private void waitForToolbarsHidden(WebDriver testee) {
+        // Wait for the visible filmstrip to no longer be displayed.
+        String visibleToolbarXpath
+            = "//*[contains(@class, 'toolbar_secondary')"
+            + "and contains(@class ,'slideInExtX')]";
+
+        TestUtils.waitForElementNotPresentByXPath(
+            testee,
+            visibleToolbarXpath,
+            filmstripVisibilityWait);
     }
 }
