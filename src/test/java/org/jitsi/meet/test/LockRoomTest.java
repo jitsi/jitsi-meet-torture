@@ -92,11 +92,6 @@ public class LockRoomTest
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
 
-        // Add a wait till the dialog loads
-        // when we have dial-in option it can change the ui a little
-        // when we load numbers
-        TestUtils.waitMillis(1500);
-
         // fill in the dialog
         togglePasswordEdit(owner);
 
@@ -155,6 +150,15 @@ public class LockRoomTest
     private void testRoomLockState(WebDriver user, String state)
     {
         MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
+
+        // Add a wait till the dialog loads
+        // when we have dial-in option it can change the ui a little
+        // when we load numbers
+        // loading is done only the first time we open the dialog
+        // but here in the tests we have a lot of closing/opening/join/leave
+        // of participants so we make it always wait a little
+        TestUtils.waitMillis(1200);
+
         String unlockedXPath = "//div[contains(@class, '" + state + "')]";
 
         TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
