@@ -41,8 +41,8 @@ public class OneOnOneTest
      */
     private final String oneOnOneConfigOverrides
         = "config.disable1On1Mode=false"
-        + "&interfaceConfig.TOOLBAR_TIMEOUT=500"
-        + "&interfaceConfig.INITIAL_TOOLBAR_TIMEOUT=500"
+        + "&interfaceConfig.TOOLBAR_TIMEOUT=250"
+        + "&interfaceConfig.INITIAL_TOOLBAR_TIMEOUT=250"
         + "&config.alwaysVisibleToolbar=false";
 
     /**
@@ -152,7 +152,7 @@ public class OneOnOneTest
     public void testFilmstripHoverShowsVideos() {
         WebDriver owner = ConferenceFixture.getOwner();
 
-        WebElement toolbar = owner.findElement(By.id("remoteVideos"));
+        WebElement toolbar = owner.findElement(By.id("localVideoContainer"));
         Actions hoverOnToolbar = new Actions(owner);
         hoverOnToolbar.moveToElement(toolbar);
         hoverOnToolbar.perform();
