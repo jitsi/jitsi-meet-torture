@@ -1022,7 +1022,7 @@ public class MeetUIUtils
 
         // Check "connection lost" icon
         TestUtils.waitForDisplayedOrNotByXPath(
-                observer, connectionLostXpath, 2, !isConnected);
+                observer, connectionLostXpath, 5, !isConnected);
     }
 
     /**
