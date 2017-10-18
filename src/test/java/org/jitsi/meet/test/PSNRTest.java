@@ -24,6 +24,7 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -59,6 +60,11 @@ public class PSNRTest
      */
     private static final String RESIZED_FRAME_DIR
         = "test-reports/psnr/resized-frames/";
+
+    /**
+     * How long we should sample frames for psnr calculations
+     */
+    private static final String PSNR_DURATION_MILLIS_PROP = "psnr.duration_millis";
 
     /**
      * The minimum PSNR value that we will accept before failing. PSNR above 20
@@ -108,23 +114,25 @@ public class PSNRTest
 
         ownerVideoOperator.recordAll(ids);
 
-        String timeToRunInMin = System.getProperty("psnr.duration");
+        String timeToRunInMillisVal = System.getProperty(PSNR_DURATION_MILLIS_PROP);
 
-        // default is 1 minute
-        if (timeToRunInMin == null || timeToRunInMin.length() == 0)
-            timeToRunInMin = "1";
-
-        final int minutesToRun = Integer.valueOf(timeToRunInMin);
+        // default is 10 seconds (originally this was 1 minute, but the
+        // longer duration seemed to affect stability, perhaps due to
+        // memory issues in the browser)
+        if (timeToRunInMillisVal == null || timeToRunInMillisVal.length() == 0)
+        {
+            timeToRunInMillisVal = "10000";
+        }
+        int timeToRunInMillis = Integer.valueOf(timeToRunInMillisVal);
 
         // execute every 1 sec. This heartbeat task isn't necessary for the
         // PSNR testing but it can provide hints as to why the PSNR has failed.
-        int millsToRun = minutesToRun * 60 * 1000;
 
-        HeartbeatTask heartbeatTask = new HeartbeatTask(millsToRun, false);
+        HeartbeatTask heartbeatTask = new HeartbeatTask(timeToRunInMillis, false);
 
         heartbeatTask.start(/* delay */ 1000, /* period */ 1000);
 
-        heartbeatTask.await(minutesToRun, TimeUnit.MINUTES);
+        heartbeatTask.await(timeToRunInMillis, TimeUnit.MILLISECONDS);
 
         ownerVideoOperator.stopRecording();
 
@@ -140,6 +148,7 @@ public class PSNRTest
             Long framesCount = ownerVideoOperator.getFramesCount(id);
             System.err.printf("frames count for %s: %s\n", id, framesCount);
 
+            float totalPsnr = 0f;
             for (int i = 0; i < framesCount; i += 1)
             {
                 byte[] data = ownerVideoOperator.getFrame(id, i);
@@ -174,8 +183,10 @@ public class PSNRTest
                     while ((s = stdInput.readLine()) != null)
                     {
                         System.err.println(s);
+                        float psnr = Float.parseFloat(s.split(" ")[1]);
                         assertTrue("Frame is bellow the PSNR threshold",
-                                Float.parseFloat(s.split(" ")[1]) > MIN_PSNR);
+                                psnr > MIN_PSNR);
+                        totalPsnr += psnr;
                     }
 
                     // read any errors from the attempted command
@@ -196,6 +207,16 @@ public class PSNRTest
                 File outputFrameFile = new File(outputFrame);
                 outputFrameFile.delete();
             }
+            float averagePsnr = totalPsnr / framesCount;
+            System.out.println("Average psnr: " + averagePsnr);
+            String psnrOutputDir =
+                System.getProperty(ConferenceFixture.PSNR_OUTPUT_DIR_PROP);
+            String psnrOutputFilename =
+                System.getProperty(ConferenceFixture.PSNR_OUTPUT_FILENAME_PROP);
+            PrintWriter writer = new PrintWriter(
+                Paths.get(psnrOutputDir, psnrOutputFilename).toString());
+            writer.print(Float.toString(averagePsnr));
+            writer.close();
         }
 
         ownerVideoOperator.dispose();
