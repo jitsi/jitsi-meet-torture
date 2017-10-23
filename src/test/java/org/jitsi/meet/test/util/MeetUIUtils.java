@@ -240,6 +240,12 @@ public class MeetUIUtils
                 return;
 
             button.click();
+
+            // Move the mouse off the button to dismiss any tooltip that might
+            // have displayed.
+            Actions mouseOut = new Actions(participant);
+            mouseOut.moveToElement(participant.findElement(By.tagName("head")));
+            mouseOut.perform();
         }
         catch (NoSuchElementException e)
         {
