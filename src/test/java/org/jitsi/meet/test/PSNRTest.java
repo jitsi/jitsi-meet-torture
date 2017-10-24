@@ -213,10 +213,14 @@ public class PSNRTest
                 System.getProperty(ConferenceFixture.PSNR_OUTPUT_DIR_PROP);
             String psnrOutputFilename =
                 System.getProperty(ConferenceFixture.PSNR_OUTPUT_FILENAME_PROP);
-            PrintWriter writer = new PrintWriter(
-                Paths.get(psnrOutputDir, psnrOutputFilename).toString());
-            writer.print(Float.toString(averagePsnr));
-            writer.close();
+            if (psnrOutputDir != null && !psnrOutputDir.isEmpty() &&
+                psnrOutputFilename != null && !psnrOutputFilename.isEmpty())
+            {
+                PrintWriter writer = new PrintWriter(
+                    Paths.get(psnrOutputDir, psnrOutputFilename).toString());
+                writer.print(Float.toString(averagePsnr));
+                writer.close();
+            }
         }
 
         ownerVideoOperator.dispose();
