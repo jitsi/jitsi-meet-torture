@@ -21,6 +21,7 @@ import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
 import org.jitsi.meet.test.util.*;
 
+import org.json.simple.*;
 import org.openqa.selenium.*;
 
 import java.io.*;
@@ -149,6 +150,9 @@ public class PSNRTest
             System.err.printf("frames count for %s: %s\n", id, framesCount);
 
             float totalPsnr = 0f;
+            int numFrozenFrames = 0;
+            int numSkippedFrames = 0;
+            int prevFrameNumber = -1;
             for (int i = 0; i < framesCount; i += 1)
             {
                 byte[] data = ownerVideoOperator.getFrame(id, i);
@@ -183,9 +187,41 @@ public class PSNRTest
                     while ((s = stdInput.readLine()) != null)
                     {
                         System.err.println(s);
+                        int frameNum = Integer.parseInt(s.split(" ")[0]);
                         float psnr = Float.parseFloat(s.split(" ")[1]);
+
                         assertTrue("Frame is bellow the PSNR threshold",
-                                psnr > MIN_PSNR);
+                            psnr > MIN_PSNR);
+
+                        if (prevFrameNumber != -1 &&
+                            frameNum == prevFrameNumber)
+                        {
+                            System.out.println("Current frame same as the last, incrementing frozen");
+                            numFrozenFrames++;
+                        }
+                        else if (prevFrameNumber != -1 &&
+                            frameNum != prevFrameNumber + 1)
+                        {
+                            if (frameNum < prevFrameNumber)
+                            {
+                                // roll-over case, frameNum should be '1', so
+                                // calculate anything more than that as skipped
+                                // frames
+                                System.out.println("roll over: previous frame was " + prevFrameNumber +
+                                    "current frame is " + frameNum + ", skipped " +
+                                    (frameNum - 1) + " frames");
+                            }
+                            else
+                            {
+                                System.out.println("previous frame was " + prevFrameNumber +
+                                    "current frame is " + frameNum + ", skipped " +
+                                    (frameNum - (prevFrameNumber + 1)) + " frames");
+                                numSkippedFrames += (frameNum - (prevFrameNumber + 1));
+                            }
+                        }
+                        prevFrameNumber = frameNum;
+
+                        System.out.println("frame number " + frameNum + " had psnr " + psnr);
                         totalPsnr += psnr;
                     }
 
@@ -209,6 +245,17 @@ public class PSNRTest
             }
             float averagePsnr = totalPsnr / framesCount;
             System.out.println("Average psnr: " + averagePsnr);
+            System.out.println("Num frozen frames: " + numFrozenFrames);
+            System.out.println("Frozen pct: " + numFrozenFrames / (float)framesCount);
+            System.out.println("Num skipped frames: " + numSkippedFrames);
+            System.out.println("Skipped pct: " + numSkippedFrames / (float)framesCount);
+
+            JSONObject json = new JSONObject();
+            json.put("totalFrames", framesCount);
+            json.put("psnr", averagePsnr);
+            json.put("numFrozenFrames", numFrozenFrames);
+            json.put("numSkippedFrames", numSkippedFrames);
+
             String psnrOutputDir =
                 System.getProperty(ConferenceFixture.PSNR_OUTPUT_DIR_PROP);
             String psnrOutputFilename =
@@ -218,7 +265,7 @@ public class PSNRTest
             {
                 PrintWriter writer = new PrintWriter(
                     Paths.get(psnrOutputDir, psnrOutputFilename).toString());
-                writer.print(Float.toString(averagePsnr));
+                writer.print(json.toString());
                 writer.close();
             }
         }
