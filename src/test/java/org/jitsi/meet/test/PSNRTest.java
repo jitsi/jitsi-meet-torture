@@ -210,6 +210,7 @@ public class PSNRTest
                                 System.out.println("roll over: previous frame was " + prevFrameNumber +
                                     "current frame is " + frameNum + ", skipped " +
                                     (frameNum - 1) + " frames");
+                                numSkippedFrames += (frameNum - 1);
                             }
                             else
                             {
