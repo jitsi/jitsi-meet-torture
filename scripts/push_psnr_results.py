@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This script takes in the path of a psnr output file (which should contain only
-# a float psnr value, and nothing else) as well as the url of a dashboard service
+# This script takes in the path of a psnr test output file (which should contain
+# json-encoded data) as well as the url of a dashboard service
 # to which the psnr, as well as some variables from a jenkins build environment,
 # will be pushed.  Note that this does assume it's being executed as part of a
 # jenkins build, so if run elsewhere the caller should make sure those variables
@@ -24,6 +24,8 @@
 # ./push_psnr_results.py ./psnr.out http://my.dashboard.service/psnrPushEndpoint
 
 import os
+import json
+import pprint
 import requests
 import sys
 
@@ -37,19 +39,15 @@ jenkins_build_number = os.environ["BUILD_NUMBER"]
 jenkins_build_url = os.environ["BUILD_URL"]
 
 with open(psnr_output_file_path, "r") as f:
-    line = f.readline()
+    json_data = json.load(f)
 
-psnr = float(line)
+json_data["buildNum"] = jenkins_build_number
+json_data["buildUrl"] = jenkins_build_number
 
-print("got psnr value %f for jenkins job %s, build number %s\n" % (psnr, jenkins_build_url, jenkins_build_number))
+print("got psnr result data jenkins job %s, build number %s:\n%s\n"
+        % (jenkins_build_url, jenkins_build_number, pprint.pformat(json_data, indent=2)))
 
-jsonData = {
-    "buildNum": jenkins_build_number,
-    "buildUrl": jenkins_build_url,
-    "psnrValue": psnr
-}
-
-r = requests.post(dashboard_service_url, json=jsonData)
+r = requests.post(dashboard_service_url, json=json_data)
 if r.status_code != requests.codes.ok:
     print("Error pushing psnr data to dashboard: %s" % r.status_code)
     sys.exit(1)
