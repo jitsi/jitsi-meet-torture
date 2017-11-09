@@ -154,6 +154,7 @@ public class MuteTest
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);
 
+        // Open the remote video menu
         WebElement cntElem = owner.findElement(By.id(
             "participant_" + secondParticipantResource));
         String remoteVideoMenuButtonXPath
@@ -166,6 +167,7 @@ public class MuteTest
         action.moveToElement(elem);
         action.perform();
 
+        // open the mute dialog
         String muteParticipantLinkXPath
             = "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]";
         TestUtils.waitForDisplayedElementByXPath(
@@ -173,6 +175,16 @@ public class MuteTest
             muteParticipantLinkXPath,
             5);
         owner.findElement(By.xpath(muteParticipantLinkXPath))
+            .click();
+
+        // confirm muting
+        String muteConfirmButton
+            = "//button[contains(@id, 'modal-dialog-ok-button')]";
+        TestUtils.waitForDisplayedElementByXPath(
+            owner,
+            muteConfirmButton,
+            5);
+        owner.findElement(By.xpath(muteConfirmButton))
             .click();
 
         // and now check whether second participant is muted
