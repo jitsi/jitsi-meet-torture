@@ -28,14 +28,14 @@ public class SharedVideoTest
     extends TestCase
 {
     /**
-     * Links to youtube videos and their titles, used for loading and testing.
+     * Links to youtube videos and their expected urls, used for loading and
+     * testing.
      */
+    private static String V1_VIDEO_ID = "xNXN7CZk8X0";
     private static String V1_LINK
-        = "https://www.youtube.com/watch?v=xNXN7CZk8X0";
-    private static String V1_TITLE
-        = "[FOSDEM 2014] Jitsi Videobridge and WebRTC";
-    private static String V2_LINK = "https://youtu.be/x-YGw3bgB_s";
-    private static String V2_TITLE = "Jitsi Videobridge and WebRTC";
+        = "https://www.youtube.com/watch?v=" + V1_VIDEO_ID;
+    private static String V2_VIDEO_ID = "x-YGw3bgB_s";
+    private static String V2_LINK = "https://youtu.be/" + V2_VIDEO_ID;
 
     /**
      * Assign to variable c the shared video container.
@@ -44,7 +44,7 @@ public class SharedVideoTest
     private static String JS_GET_SHARED_VIDEO_CONTAINER
         = "var c = APP.UI.getLargeVideo().containers['sharedvideo']; ";
 
-    private static String currentVideoTitle;
+    private static String currentVideoId;
 
     /**
      * Constructs test.
@@ -65,7 +65,7 @@ public class SharedVideoTest
 
         suite.addTest(new SharedVideoTest("startSharingVideo"));
         suite.addTest(new SharedVideoTest("checkRunning"));
-        suite.addTest(new SharedVideoTest("checkTitles"));
+        suite.addTest(new SharedVideoTest("checkUrls"));
         suite.addTest(new SharedVideoTest("pauseTest"));
         suite.addTest(new SharedVideoTest("playTest"));
         suite.addTest(new SharedVideoTest("seekTest"));
@@ -76,17 +76,17 @@ public class SharedVideoTest
         suite.addTest(new SharedVideoTest("stopSharingTest"));
         suite.addTest(new SharedVideoTest("startSharingDifferentVideo"));
         suite.addTest(new SharedVideoTest("checkRunning"));
-        suite.addTest(new SharedVideoTest("checkTitles"));
+        suite.addTest(new SharedVideoTest("checkUrls"));
         suite.addTest(new SharedVideoTest("stopSharingTest"));
         suite.addTest(new SharedVideoTest("startSharingDifferentVideo"));
         suite.addTest(new SharedVideoTest("checkRunning"));
-        suite.addTest(new SharedVideoTest("checkTitles"));
+        suite.addTest(new SharedVideoTest("checkUrls"));
         suite.addTest(new SharedVideoTest("videoOwnerLeavesTest"));
         suite.addTest(new SharedVideoTest("shareVideoBeforeOthersJoin"));
         suite.addTest(new SharedVideoTest("checkRunning"));
-        suite.addTest(new SharedVideoTest("checkTitles"));
+        suite.addTest(new SharedVideoTest("checkUrls"));
         suite.addTest(new SharedVideoTest("sharePausedVideoBeforeOthersJoin"));
-        suite.addTest(new SharedVideoTest("checkTitles"));
+        suite.addTest(new SharedVideoTest("checkUrls"));
         suite.addTest(new SharedVideoTest("stopSharingTest"));
 
         return suite;
@@ -99,17 +99,17 @@ public class SharedVideoTest
     {
         System.err.println("Start startSharingVideo.");
 
-        startSharingVideoByUrlAndTitle(V1_LINK, V1_TITLE, true);
+        startSharingVideoByUrl(V1_LINK, V1_VIDEO_ID, true);
     }
 
     /**
      * Start shared video.
      * @param url
-     * @param title
+     * @param expectedId
      * @param checkSecondParticipantState whether second participant state
      *                                    needs to be checked
      */
-    private void startSharingVideoByUrlAndTitle(String url, String title,
+    private void startSharingVideoByUrl(String url, String expectedId,
         boolean checkSecondParticipantState)
     {
         WebDriver owner = ConferenceFixture.getOwner();
@@ -130,7 +130,7 @@ public class SharedVideoTest
             "value",
             url);
 
-        currentVideoTitle = title;
+        currentVideoId = expectedId;
 
         owner.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"))
@@ -176,27 +176,27 @@ public class SharedVideoTest
     }
 
     /**
-     * Checks for title on both sides, compare with current video playing title.
+     * Checks for url on both sides, compare with current video playing url.
      */
-    public void checkTitles()
+    public void checkUrls()
     {
-        System.err.println("Start checkTitles.");
+        System.err.println("Start checkUrls.");
 
-        String ownerVideoTitle
+        String ownerVideoUrl
             = TestUtils.executeScriptAndReturnString(
                 ConferenceFixture.getOwner(),
                     JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getVideoData().title;");
-        assertEquals("Different title found on owner",
-            currentVideoTitle, ownerVideoTitle);
+                    + "return c.player.getVideoUrl();");
+        assertTrue("Different video url found on owner",
+            ownerVideoUrl.contains(currentVideoId));
 
-        String secondVideoTitle
+        String secondVideoUrl
             = TestUtils.executeScriptAndReturnString(
                 ConferenceFixture.getSecondParticipant(),
                     JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getVideoData().title;");
-        assertEquals("Different title found on second participant",
-            currentVideoTitle, secondVideoTitle);
+                    + "return c.player.getVideoUrl();");
+        assertTrue("Different video url found on second participant",
+            secondVideoUrl.contains(currentVideoId));
     }
 
     /**
@@ -454,7 +454,7 @@ public class SharedVideoTest
     {
         System.err.println("Start startSharingDifferentVideo.");
 
-        startSharingVideoByUrlAndTitle(V2_LINK, V2_TITLE, true);
+        startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, true);
     }
 
     /**
@@ -503,7 +503,7 @@ public class SharedVideoTest
         // Element is not clickable at point (566, -10)
         TestUtils.waitMillis(1000);
 
-        startSharingVideoByUrlAndTitle(V2_LINK, V2_TITLE, false);
+        startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, false);
         checkPlayerLoadedAndInState(owner, "YT.PlayerState.PLAYING");
 
         String stateToCheck = "YT.PlayerState.PLAYING";
