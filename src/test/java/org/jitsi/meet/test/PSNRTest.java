@@ -104,6 +104,16 @@ public class PSNRTest
         new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
         new StopVideoTest("stopVideoOnOwnerAndCheck").stopVideoOnOwnerAndCheck();
 
+        // Sleep 30 seconds to allow the clients to ramp up
+        int rampUpDurationSeconds = 30;
+        System.err.println("Waiting " + rampUpDurationSeconds +
+            " seconds for ramp up");
+        try
+        {
+            Thread.sleep(rampUpDurationSeconds * 1000);
+        } catch (InterruptedException e) {}
+        System.err.println("Wait for ramp up done");
+
         WebDriver owner = ConferenceFixture.getOwner();
 
         VideoOperator ownerVideoOperator = new VideoOperator(owner);
