@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import junit.framework.*;
 import org.apache.commons.io.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import org.openqa.selenium.logging.*;
@@ -194,24 +195,10 @@ public class FailureListener
      */
     private void takeScreenshot(WebDriver driver, String fileName)
     {
-        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-
-        if(takesScreenshot == null)
-        {
-            System.err.println("No driver to take screenshot from! FileName:"
-                + fileName);
-            return;
-        }
-
-        File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        File destFile = new File(outputScreenshotsParentFolder, fileName);
-        try
-        {
-            FileUtils.copyFile(scrFile, destFile);
-        } catch (IOException ioe)
-        {
-            throw new RuntimeException(ioe);
-        }
+        SeleniumUtil.takeScreenshot(
+                (TakesScreenshot) driver,
+                outputHtmlSourceParentFolder.getAbsolutePath(),
+                fileName);
     }
 
     /**

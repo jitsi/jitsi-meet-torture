@@ -3,6 +3,7 @@
          name="jitsi-meet-torture"
          xmlns:maven-artifact="antlib:org.apache.maven.artifact.ant">
 
+    <property name="src" value="src/main/java" />
     <property name="src.test" value="src/test/java" />
     <property name="dest" value="classes"/>
     <property name="test.reports.dir" value="test-reports"/>
@@ -257,6 +258,7 @@ with the address of the instance to test (add to the command line
                includeantruntime="false"
                source="1.8" target="1.8"
                fork="true">
+            <src path="${src}"/>
             <src path="${src.test}"/>
             <include name="**/*.java" />
         </javac>
