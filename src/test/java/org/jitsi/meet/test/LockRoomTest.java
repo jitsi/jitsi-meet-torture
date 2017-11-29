@@ -121,8 +121,8 @@ public class LockRoomTest
     */
     private void closeInviteDialog(WebDriver user)
     {
-        String closeXPath = "//button[@id='modal-dialog-ok-button']";
-        WebElement closeBtn = user.findElement(By.xpath(closeXPath));
+        WebElement closeBtn = user.findElement(
+            By.cssSelector("#modal-dialog-cancel-button"));
         closeBtn.click();
     }
 
