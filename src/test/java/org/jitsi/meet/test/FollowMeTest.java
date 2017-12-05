@@ -120,7 +120,7 @@ public class FollowMeTest
 
         WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
-        TestUtils.waitForNotDisplayedElementByXPath(
+        TestUtils.waitForElementNotPresentByXPath(
                 secondParticipant, followMeCheckboxXPath, 5);
     }
 
