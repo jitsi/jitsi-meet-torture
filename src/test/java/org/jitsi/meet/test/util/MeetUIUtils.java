@@ -227,19 +227,59 @@ public class MeetUIUtils
      * @param failOnMissing whether to fail if button is missing
      */
     public static void clickOnToolbarButton(
-            WebDriver participant, String buttonID, boolean failOnMissing)
+            final WebDriver participant,
+            final String buttonID,
+            final boolean failOnMissing)
+    {
+        clickOnToolbarButtonByXpath(
+            participant,
+            "//*[contains(@class, '" + buttonID + "-wrapper')]",
+            failOnMissing);
+    }
+
+    /**
+     * Shows the toolbar and clicks on a button identified by xpath.
+     * @param participant the {@code WebDriver}.
+     * @param xpath the xpath of the button to click.
+     * @param failOnMissing whether to fail if button is missing
+     */
+    public static void clickOnToolbarButtonByXpath(
+            final WebDriver participant,
+            final String xpath,
+            final boolean failOnMissing)
     {
         try
         {
-            WebElement button
-                = participant
-                .findElement(By.xpath(
-                    "//*[contains(@class, '" + buttonID + "-wrapper')]"));
-            // if element missing and we do not want fail continue
-            if (!failOnMissing && (button == null || !button.isDisplayed()))
-                return;
+            final String STATE_IGNORE = "ignore";
+            final String STATE_SUCCESS = "success";
 
-            button.click();
+            // tries to click for one second
+            // ignoring StaleElementReferenceException
+            String state = new WebDriverWait(participant, 1)
+                .ignoring(StaleElementReferenceException.class)
+                .until(
+                    new ExpectedCondition<String>()
+                    {
+                        public String apply(WebDriver d)
+                        {
+                            WebElement button
+                                = participant.findElement(By.xpath(xpath));
+
+                            // if element missing and we do not want
+                            // fail continue
+                            if (!failOnMissing
+                                && (button == null || !button.isDisplayed()))
+                                return STATE_IGNORE;
+
+                            button.click();
+
+                            return STATE_SUCCESS;
+                        }
+                    });
+            if (state.equals(STATE_IGNORE))
+            {
+                return;
+            }
 
             // Move the mouse off the button to dismiss any tooltip that might
             // have displayed.
@@ -247,14 +287,14 @@ public class MeetUIUtils
             mouseOut.moveToElement(participant.findElement(By.tagName("head")));
             mouseOut.perform();
         }
-        catch (NoSuchElementException e)
+        catch (NoSuchElementException | TimeoutException e)
         {
             if(failOnMissing)
                 throw e;
 
             // there is no element, so its not visible, just continue
             // cause failOnMissing is false
-            System.err.println("Button is missing:" + buttonID);
+            System.err.println("Button is missing:" + xpath);
         }
     }
 
@@ -277,9 +317,8 @@ public class MeetUIUtils
     public static void clickOnToolbarButtonByClass(WebDriver participant,
                                                    String buttonClass)
     {
-        participant.findElement(
-            By.xpath("//a[@class='button " + buttonClass + "']"))
-            .click();
+        clickOnToolbarButtonByXpath(participant,
+            "//a[@class='button " + buttonClass + "']", true);
     }
 
     /**
