@@ -372,6 +372,14 @@ public class FailureListener
     {
         try
         {
+            if (ConferenceFixture.getBrowserType(driver)
+                    == ConferenceFixture.BrowserType.firefox)
+            {
+                // not currently supported in FF
+                // https://github.com/SeleniumHQ/selenium/issues/2910
+                return;
+            }
+
             LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
 
             BufferedWriter out = new BufferedWriter(new FileWriter(
