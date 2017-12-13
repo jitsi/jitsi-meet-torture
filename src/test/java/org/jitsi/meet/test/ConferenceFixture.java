@@ -383,9 +383,6 @@ public class ConferenceFixture
         if(fragment != null)
             URL += "&" + fragment;
 
-        if (browser == BrowserType.firefox)
-            URL += "&config.firefox_fake_device=true";
-
         String participantName = getParticipantName(participant);
         System.err.println(participantName + " is opening URL: " + URL);
 
@@ -494,6 +491,7 @@ public class ConferenceFixture
             profile.setPreference("media.navigator.permission.disabled", true);
             // Enables tcp in firefox, disabled by default in 44
             profile.setPreference("media.peerconnection.ice.tcp", true);
+            profile.setPreference("media.navigator.streams.fake", true);
             profile.setAcceptUntrustedCertificates(true);
 
             profile.setPreference("webdriver.log.file", FailureListener.createLogsFolder() +
