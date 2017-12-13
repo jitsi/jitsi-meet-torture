@@ -490,13 +490,13 @@ public class ConferenceFixture
                     System.setProperty("webdriver.firefox.bin", browserBinary);
             }
 
-            FirefoxProfile profile = new FirefoxProfile();
-            profile.setPreference("media.navigator.permission.disabled", true);
+            FirefoxOptions profile = new FirefoxOptions();
+            profile.addPreference("media.navigator.permission.disabled", true);
             // Enables tcp in firefox, disabled by default in 44
-            profile.setPreference("media.peerconnection.ice.tcp", true);
-            profile.setAcceptUntrustedCertificates(true);
+            profile.addPreference("media.peerconnection.ice.tcp", true);
+            profile.setAcceptInsecureCerts(true);
 
-            profile.setPreference("webdriver.log.file", FailureListener.createLogsFolder() +
+            profile.addPreference("webdriver.log.file", FailureListener.createLogsFolder() +
                 "/firefox-js-console-"
                 + getParticipantName(participant) + ".log");
 
