@@ -86,7 +86,90 @@
 
     </dependencies>
 
+    <!-- Here we list all properties that we currently support in both
+        mobile and desktop. Having empty values we guarantee that we will use
+        the values supplied from command line and all missing will be empty.
+        We can add default values here -->
+    <properties>
+
+
+        <!-- mobile -->
+        <mobile.participant/>
+        <mobile.caps.deviceName/>
+        <mobile.caps.app/>
+        <appium.screenshots.dir>
+            target/surefire-reports/screenshots
+        </appium.screenshots.dir>
+    </properties>
+
+    <!-- Defines two profiles mobile and desktop.
+        Using the appropriate setting.properties and testng.xml files.
+        Enables filtering so we can fill up the settings.properties files
+        using the command line supplied values
+     -->
+    <profiles>
+        <profile>
+            <id>mobile</id>
+            <activation>
+                <property>
+                    <name>target</name>
+                    <value>mobile</value>
+                </property>
+            </activation>
+            <properties>
+                <suite.xml>src/test/resources/mobile/testng.xml</suite.xml>
+            </properties>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources/mobile</directory>
+                        <includes>
+                            <include>testng.xml</include>
+                            <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+        <profile>
+            <id>desktop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>target</name>
+                    <value>desktop</value>
+                </property>
+            </activation>
+            <properties>
+                <suite.xml>src/test/resources/desktop/testng.xml</suite.xml>
+            </properties>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources/desktop</directory>
+                        <includes>
+                            <include>testng.xml</include>
+                            <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
+        <!-- exclude everything, every profile will include the needed files -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -94,7 +177,7 @@
                 <version>2.20</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${suite.xml}</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

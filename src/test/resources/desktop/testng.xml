@@ -1,0 +1,10 @@
+<!--<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >-->
+<suite name="TortureSuite" verbose="1">
+    <test name="DesktopTesting">
+
+        <classes>
+
+        </classes>
+
+    </test>
+</suite>
