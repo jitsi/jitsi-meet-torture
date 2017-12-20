@@ -20,8 +20,6 @@ import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.mobile.base.*;
 
-import org.openqa.selenium.*;
-
 /**
  * Page object for the conference view on mobile.
  */
@@ -37,11 +35,11 @@ public class ConferenceView extends AbstractMobilePage
     /**
      * Creates new <tt>{@link ConferenceView}</tt>.
      *
-     * @param driver <tt>AppiumDriver</tt> instance.
+     * @param mobileParticipant <tt>MobileParticipant</tt> instance.
      */
-    public ConferenceView(AppiumDriver<WebElement> driver)
+    public ConferenceView(MobileParticipant mobileParticipant)
     {
-        super(driver);
+        super(mobileParticipant);
     }
 
     /**

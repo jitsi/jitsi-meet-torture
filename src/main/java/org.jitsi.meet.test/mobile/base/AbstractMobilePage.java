@@ -15,10 +15,8 @@
  */
 package org.jitsi.meet.test.mobile.base;
 
-import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
-import org.openqa.selenium.*;
 import org.openqa.selenium.support.*;
 
 import java.util.*;
@@ -32,15 +30,15 @@ public class AbstractMobilePage
     /**
      * Mobile driver instance.
      */
-    protected final AppiumDriver<WebElement> driver;
+    protected final MobileParticipant participant;
 
     /**
      * Initializes with the given mobile driver instance.
-     * @param driver <tt>AppiumDriver</tt> must not be <tt>null</tt>.
+     * @param participant <tt>MobileParticipant</tt> must not be <tt>null</tt>.
      */
-    public AbstractMobilePage(AppiumDriver<WebElement> driver)
+    public AbstractMobilePage(MobileParticipant participant)
     {
-        this.driver = Objects.requireNonNull(driver, "driver");
+        this.participant = Objects.requireNonNull(participant, "participant");
         this.initFields();
     }
 
@@ -51,6 +49,8 @@ public class AbstractMobilePage
     private void initFields()
     {
         PageFactory.initElements(
-                new AppiumFieldDecorator(driver, 10, TimeUnit.SECONDS), this);
+                new AppiumFieldDecorator(
+                        participant.getDriver(), 10, TimeUnit.SECONDS),
+                this);
     }
 }

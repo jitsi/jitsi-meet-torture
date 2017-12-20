@@ -253,7 +253,7 @@ public class ConferenceFixture
 
     /**
      * Returns the currently allocated second participant. If missing
-     * will create it.
+     * will createMobile it.
      * @return the currently allocated second participant.
      */
     public static WebDriver getSecondParticipant()
@@ -279,7 +279,7 @@ public class ConferenceFixture
 
     /**
      * Returns the currently allocated third participant. If missing
-     * will create it.
+     * will createMobile it.
      * @return the currently allocated third participant.
      */
     public static WebDriver getThirdParticipant()
@@ -446,7 +446,7 @@ public class ConferenceFixture
      * @param browser the browser type.
      * @param participant the participant we are creating a driver for.
      * @param isRemote <tt>true</tt> if the driver
-     *                 to create is a RemoteWebDriver.
+     *                 to createMobile is a RemoteWebDriver.
      * @return the {@code WebDriver} instance.
      */
     private static WebDriver startDriver(BrowserType browser,
@@ -468,7 +468,7 @@ public class ConferenceFixture
      * @param browser the browser type.
      * @param participant the participant we are creating a driver for.
      * @param isRemote <tt>true</tt> if the driver
-     *                 to create is a RemoteWebDriver.
+     *                 to createMobile is a RemoteWebDriver.
      * @return the <tt>WebDriver</tt> instance.
      */
     private static WebDriver startDriverInstance(
@@ -670,7 +670,7 @@ public class ConferenceFixture
             }
 
             // keep the old code
-            System.err.println("Just create ChromeDriver, may hang!");
+            System.err.println("Just createMobile ChromeDriver, may hang!");
             return new ChromeDriver(ops);
         }
     }
@@ -746,7 +746,7 @@ public class ConferenceFixture
 
     /**
      * Starts the third participant reusing the already generated room name.
-     * Checks if instance is created do not create it again, if its just not in
+     * Checks if instance is created do not createMobile it again, if its just not in
      * the room just join there.
      * @param fragment A string to be added to the URL as a parameter (i.e.
      * prefixed with a '&').
@@ -778,7 +778,7 @@ public class ConferenceFixture
     
     /**
      * Starts the participant reusing the already generated room name.
-     * Checks if instance is created do not create it again, if its just not in
+     * Checks if instance is created do not createMobile it again, if its just not in
      * the room just join there.
      * @param fragment A string to be added to the URL as a parameter (i.e.
      * prefixed with a '&').

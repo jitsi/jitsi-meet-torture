@@ -44,11 +44,11 @@ public class WelcomePageView extends AbstractMobilePage
     /**
      * Creates new <tt>WelcomePageView</tt>.
      *
-     * @param driver <tt>AppiumDriver</tt> instance.
+     * @param participant <tt>MobileParticipant</tt> instance.
      */
-    public WelcomePageView(AppiumDriver<WebElement> driver)
+    public WelcomePageView(MobileParticipant participant)
     {
-        super(driver);
+        super(participant);
     }
 
     /**

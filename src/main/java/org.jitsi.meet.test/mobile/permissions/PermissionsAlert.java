@@ -44,11 +44,11 @@ public class PermissionsAlert extends AbstractMobilePage
 
     /**
      * Creates new <tt>{@link PermissionsAlert}</tt>.
-     * @param driver <tt>{@link AppiumDriver}</tt>
+     * @param participant <tt>{@link MobileParticipant}</tt>
      */
-    public PermissionsAlert(AppiumDriver<WebElement> driver)
+    public PermissionsAlert(MobileParticipant participant)
     {
-        super(driver);
+        super(participant);
     }
 
     /**

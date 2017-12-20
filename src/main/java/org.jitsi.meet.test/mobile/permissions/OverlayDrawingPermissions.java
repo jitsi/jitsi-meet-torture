@@ -50,11 +50,11 @@ public class OverlayDrawingPermissions extends AbstractMobilePage
     /**
      * Create new <tt>OverlayDrawingPermissions</tt>.
      *
-     * @param driver <tt>AppiumDriver</tt> instance.
+     * @param participant <tt>MobileParticipant</tt> instance.
      */
-    public OverlayDrawingPermissions(AppiumDriver<WebElement> driver)
+    public OverlayDrawingPermissions(MobileParticipant participant)
     {
-        super(driver);
+        super(participant);
     }
 
     /**

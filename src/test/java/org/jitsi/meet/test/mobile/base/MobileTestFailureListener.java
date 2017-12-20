@@ -21,6 +21,7 @@ import org.openqa.selenium.*;
 
 import org.testng.*;
 
+import java.util.*;
 import java.util.logging.*;
 
 /**
@@ -39,14 +40,24 @@ public class MobileTestFailureListener extends TestListenerAdapter
 
         if (testInstance instanceof AbstractBaseTest)
         {
-            AppiumDriver<WebElement> driver = AbstractBaseTest.getDriver();
+            List<MobileParticipant> mobiles
+                = ((AbstractBaseTest) testInstance).getMobileParticipants();
 
-            MobileTestUtil.takeScreenshot(driver, "onTestFailure");
+            for (MobileParticipant mobile : mobiles)
+            {
+                AppiumDriver<WebElement> driver = mobile.getDriver();
 
-            // Print what's currently visible on the screen.
-            Logger.getGlobal().severe(
-                "onTestFailure: \n"
-                        + driver.getPageSource().replace(">", ">\n"));
+                if (driver != null)
+                {
+                    MobileTestUtil.takeScreenshot(
+                            driver, "onTestFailure(" + mobile + ")");
+
+                    // Print what's currently visible on the screen.
+                    Logger.getGlobal().severe(
+                        "onTestFailure (" + mobile + "): \n"
+                            + driver.getPageSource().replace(">", ">\n"));
+                }
+            }
         }
     }
 }

@@ -15,17 +15,10 @@
  */
 package org.jitsi.meet.test.mobile;
 
-import io.appium.java_client.*;
-import io.appium.java_client.android.*;
-
 import org.jitsi.meet.test.mobile.base.*;
 
-import org.jitsi.meet.test.mobile.permissions.*;
-import org.openqa.selenium.*;
-
+import org.testng.*;
 import org.testng.annotations.*;
-
-import java.util.logging.*;
 
 /**
  * Simple test case where we wait for room name field, fill it and clicks join.
@@ -36,115 +29,54 @@ import java.util.logging.*;
 public class WelcomePageTest
     extends AbstractBaseTest
 {
-    /**
-     * The logger.
-     */
-    private static Logger logger
-        = Logger.getLogger(WelcomePageTest.class.getName());
-
-    /**
-     * Accepts camera/microphone permissions dialog.
-     *
-     * @param driver a mobile driver instance.
-     */
-    private void acceptPermissionAlert(AppiumDriver<WebElement> driver)
-    {
-        PermissionsAlert alert = new PermissionsAlert(driver);
-
-        try
-        {
-            // XXX Maybe check if alert is displayed ?
-            alert.getAllowButton().click();
-        }
-        catch (NoSuchElementException exc)
-        {
-            logger.log(
-                Level.SEVERE,
-                "Allow button not found ! Page source: "
-                    + driver.getPageSource());
-        }
-    }
-
-    /**
-     * Will try to grant drawing overlay permissions on Android.
-     *
-     * @param driver mobile <tt>AppiumDriver</tt> instance.
-     */
-    private void maybeAcceptOverlayPermissions(AndroidDriver<WebElement> driver)
-    {
-        String currentActivity = driver.currentActivity();
-        if (!currentActivity.contains("Settings"))
-        {
-            logger.info("Settings not opened - will continue");
-            return;
-        }
-
-        logger.info("Will try to grant draw overlay permissions...");
-
-        OverlayDrawingPermissions permissionDialog
-            = new OverlayDrawingPermissions(driver);
-
-        // This will throw if not found
-        permissionDialog.getPermitDescription().getText();
-
-        WebElement toggleSwitch = permissionDialog.getAllowSwitch();
-
-        toggleSwitch.click();
-
-        driver.pressKeyCode(AndroidKeyCode.BACK);
-
-        logger.info("Overlay permissions granted !");
-    }
-
     @Test
-    public void joinConference()
+    public void joinConferenceAndroid()
     {
-        logger.log(Level.INFO, "Joining a conference.");
+        MobileParticipant androidParticipant = createMobile("mobile.android");
 
-        AppiumDriver<WebElement> driver = getDriver();
-
-        if (isAndroid())
+        if (androidParticipant != null)
         {
-            maybeAcceptOverlayPermissions((AndroidDriver<WebElement>) driver);
-        }
+            testJoinConference(androidParticipant);
 
-        // ALLOW to use camera
-        acceptPermissionAlert(driver);
-
-        WelcomePageView welcomePageView = new WelcomePageView(driver);
-
-        String conferenceRoomName = getRoomName();
-        MobileElement roomNameInput = welcomePageView.getRoomNameInput();
-
-        roomNameInput.sendKeys(conferenceRoomName);
-
-        if (isAndroid())
-        {
-            driver.hideKeyboard();
+            destroyMobile(androidParticipant);
         }
         else
         {
-            roomNameInput.sendKeys(Keys.ENTER);
+            throw new SkipException("No Android driver config.");
         }
+    }
 
-        takeScreenshot("RoomNameTextEntered");
+    @Test
+    public void joinConferenceIOS()
+    {
+        MobileParticipant iosParticipant = createMobile("mobile.ios");
 
-        welcomePageView.getJoinRoomButton().click();
+        if (iosParticipant != null)
+        {
+            testJoinConference(iosParticipant);
 
+            destroyMobile(iosParticipant);
+        }
+        else
+        {
+            throw new SkipException("No iOS driver config.");
+        }
+    }
 
-        // ALLOW to use mic
-        acceptPermissionAlert(driver);
+    private void testJoinConference(MobileParticipant participant)
+    {
+        participant.joinConference(getRoomName());
 
-        ConferenceView conference = new ConferenceView(driver);
+        ConferenceView conference = new ConferenceView(participant);
 
         conference.getRootView().click();
 
-        takeScreenshot("joinedConferenceToolbarToggled");
+        participant.takeScreenshot("joinedConferenceToolbarToggled");
 
-        ToolbarView toolbar = new ToolbarView(driver);
+        ToolbarView toolbar = new ToolbarView(participant);
 
         toolbar.getHangupButton().click();
 
-        takeScreenshot("JustBeforeLeaving");
+        participant.takeScreenshot("justBeforeLeaving");
     }
 }

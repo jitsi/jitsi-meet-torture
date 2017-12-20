@@ -37,11 +37,11 @@ public class ToolbarView extends AbstractMobilePage
     /**
      * Creates new <tt>ToolbarView</tt>.
      *
-     * @param driver mobile <tt>AppiumDriver</tt> driver instance.
+     * @param participant <tt>MobileParticipant</tt> instance.
      */
-    public ToolbarView(AppiumDriver<WebElement> driver)
+    public ToolbarView(MobileParticipant participant)
     {
-        super(driver);
+        super(participant);
     }
 
     /**

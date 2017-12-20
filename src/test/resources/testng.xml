@@ -1,10 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="TortureSuite" verbose="1">
-    <test name="MobileTesting">
-
+    <test name="MobileTesting" parallel="methods" thread-count="2">
         <classes>
             <class name="org.jitsi.meet.test.mobile.WelcomePageTest" />
         </classes>
-
     </test>
 </suite>

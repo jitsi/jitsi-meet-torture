@@ -390,7 +390,7 @@ public class FailureListener
         }
         catch (IOException e)
         {
-            // cannot create file or something
+            // cannot createMobile file or something
         }
     }
 }
