@@ -87,11 +87,13 @@
     </dependencies>
 
     <!-- Here we list all properties that we currently support in both
-        mobile and desktop. Having empty values we guarantee that we will use
-        the values supplied from command line and all missing will be empty.
-        We can add default values here -->
+        mobile and desktop settings file. Having empty values we guarantee that
+        we will use the values supplied from command line and all missing will
+        be empty.
+        We can add default values here. -->
     <properties>
-
+        <!-- desktop -->
+        <!-- not used at the moment -->
 
         <!-- mobile -->
         <mobile.participant/>
@@ -185,8 +187,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 

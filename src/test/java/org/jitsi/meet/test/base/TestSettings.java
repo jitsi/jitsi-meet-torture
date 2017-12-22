@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jitsi.meet.test.mobile.base;
+package org.jitsi.meet.test.base;
 
 import java.io.*;
 import java.util.*;
@@ -35,47 +35,34 @@ public class TestSettings
      * Initialize the settings by loading the properties file and use all
      * its values as system properties.
      */
-    static void initSettings()
+    public static void initSettings()
     {
         // will load properties from settings.properties files
-        InputStream is = TestSettings.class.getClassLoader()
-            .getResourceAsStream(SETTINGS_PROPERTIES_LOCATION);
-
-        // settings.properties file is missing
-        if (is == null)
+        try (
+            InputStream is
+                = TestSettings.class.getClassLoader()
+                    .getResourceAsStream(SETTINGS_PROPERTIES_LOCATION))
         {
-            throw new RuntimeException("Missing settings.properties file.");
-        }
+            // settings.properties file is missing
+            if (is == null)
+            {
+                throw new RuntimeException("Missing settings.properties file.");
+            }
 
-        // take current system properties as we will set merged props to system
-        Properties p = new Properties(System.getProperties());
-        try
-        {
+            // take current system properties as we will set merged props
+            // to system
+            Properties p = new Properties(System.getProperties());
             p.load(is);
+
+            // setting system properties
+            System.setProperties(p);
+
+            initFolders();
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        finally
-        {
-            if (is != null)
-            {
-                try
-                {
-                    is.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        // setting system properties
-        System.setProperties(p);
-
-        initFolders();
     }
 
     /**

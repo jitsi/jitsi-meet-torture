@@ -19,6 +19,7 @@ import io.appium.java_client.*;
 import io.appium.java_client.android.*;
 import io.appium.java_client.ios.*;
 
+import org.jitsi.meet.test.base.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.*;
 import org.testng.annotations.*;
