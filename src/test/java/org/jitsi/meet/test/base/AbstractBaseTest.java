@@ -25,6 +25,7 @@ import java.util.stream.*;
  * The base of all tests, checks whether the tests is supposed to be executed
  * or skipped by checking the properties which tests to run, exclude or include.
  */
+@Listeners(FailureListener.class)
 public abstract class AbstractBaseTest
     extends AbstractParticipantHelper
 {

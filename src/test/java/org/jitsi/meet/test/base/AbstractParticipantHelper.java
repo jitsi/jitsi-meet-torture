@@ -55,10 +55,22 @@ public abstract class AbstractParticipantHelper
     }
 
     /**
+     * Starts the owner, second participant and third participant if they aren't
+     * started.
+     */
+    public void ensureThreeParticipants()
+    {
+        waitForParticipant1ToJoinMUC();
+        waitForSecondParticipantToConnect();
+        waitForThirdParticipantToConnect();
+    }
+
+
+    /**
      * Waits until the owner joins the room, creating and starting the owner
      * if it hasn't been started.
      */
-    public void waitForParticipant1ToJoinMUC()
+    private void waitForParticipant1ToJoinMUC()
     {
         if (participant1 == null)
         {
