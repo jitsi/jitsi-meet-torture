@@ -23,7 +23,7 @@ public abstract class AbstractParticipantHelper
     /**
      * The current room name used.
      */
-    private String currentRoomName;
+    protected String currentRoomName;
 
     /**
      * The conference first participant(owner) in the tests.
@@ -41,14 +41,43 @@ public abstract class AbstractParticipantHelper
     protected Participant<WebDriver> participant3;
 
     /**
+     * Starts the owner, if it is not started.
+     */
+    public void ensureOneParticipant()
+    {
+        ensureOneParticipant(null);
+    }
+
+    /**
+     * Starts the owner, if it is not started.
+     * @param fragment adds the given string to the fragment part of the URL
+     */
+    public void ensureOneParticipant(String fragment)
+    {
+        this.ensureOneParticipant(null, fragment);
+    }
+
+    /**
+     * Starts the owner, if it is not started.
+     * @param roomParameter an extra parameter to the url. The fragment adds
+     * parameters as # where roomParameter actually changes query parameters
+     * adding ?something=value.
+     * @param fragment adds the given string to the fragment part of the URL
+     */
+    public void ensureOneParticipant(String roomParameter, String fragment)
+    {
+        waitForParticipant1ToJoinMUC(roomParameter, fragment);
+    }
+
+    /**
      * Starts the owner and the seconds participant, if they are not started,
      * and stops the third participant, if it is not stopped.
      * participants(owner and 'second participant').
      */
     public void ensureTwoParticipants()
     {
-        waitForParticipant1ToJoinMUC();
-        waitForSecondParticipantToConnect();
+        waitForParticipant1ToJoinMUC(null, null);
+        waitForSecondParticipantToConnect(null);
 
         // TODO do we need this???
         //closeThirdParticipant();
@@ -60,30 +89,54 @@ public abstract class AbstractParticipantHelper
      */
     public void ensureThreeParticipants()
     {
-        waitForParticipant1ToJoinMUC();
-        waitForSecondParticipantToConnect();
+        waitForParticipant1ToJoinMUC(null, null);
+        waitForSecondParticipantToConnect(null);
         waitForThirdParticipantToConnect();
     }
 
-
     /**
-     * Waits until the owner joins the room, creating and starting the owner
-     * if it hasn't been started.
+     * Creates the first participant (owner) if not already created and
+     * join him in the room.
+     * @param roomParameter an extra parameter to the url. The fragment adds
+     * parameters as # where roomParameter actually changes query parameters
+     * adding ?something=value.
+     * @param fragment adds the given string to the fragment part of the URL
      */
-    private void waitForParticipant1ToJoinMUC()
+    public void startParticipant1(String roomParameter, String fragment)
     {
         if (participant1 == null)
         {
             participant1
                 = ParticipantFactory.getInstance()
-                    .createParticipant("web.participant1");
+                .createParticipant("web.participant1");
         }
 
         if (participant1.isHungUp())
         {
+            String roomName = currentRoomName;
+
+            // we do not persist room params for now, in case of jwt
+            // we want them just for one of the participants
+            if (roomParameter != null)
+                roomName += roomParameter;
+
             // join room
-            participant1.joinConference(currentRoomName);
+            participant1.joinConference(roomName, fragment);
         }
+    }
+
+    /**
+     * Waits until the owner joins the room, creating and starting the owner
+     * if it hasn't been started.
+     * @param roomParameter an extra parameter to the url. The fragment adds
+     * parameters as # where roomParameter actually changes query parameters
+     * adding ?something=value.
+     * @param fragment adds the given string to the fragment part of the URL
+     */
+    private void waitForParticipant1ToJoinMUC(
+        String roomParameter, String fragment)
+    {
+        startParticipant1(roomParameter, fragment);
 
         MeetUtils.waitForParticipantToJoinMUC(participant1.getDriver(), 15);
     }
@@ -116,14 +169,29 @@ public abstract class AbstractParticipantHelper
         if (participant == null)
             return;
 
+        System.err.println("Quiting " + participant.getName());
         participant.quit();
     }
 
     /**
      * Waits until {@code secondParticipant} has joined the conference (its ICE
      * connection has completed and has it has sent and received data).
+     * @param fragment adds the given string to the fragment part of the URL
      */
-    public void waitForSecondParticipantToConnect()
+    public void waitForSecondParticipantToConnect(String fragment)
+    {
+        waitForSecondParticipantToJoin(fragment);
+        MeetUtils.waitForIceConnected(participant2.getDriver());
+        MeetUtils.waitForSendReceiveData(participant2.getDriver());
+
+        TestUtils.waitMillis(5000);
+    }
+
+    /**
+     * Waits until {@code secondParticipant} has joined the conference.
+     * @param fragment adds the given string to the fragment part of the URL
+     */
+    public void waitForSecondParticipantToJoin(String fragment)
     {
         if (participant2 == null)
         {
@@ -133,22 +201,39 @@ public abstract class AbstractParticipantHelper
 
         if (participant2.isHungUp())
         {
-            participant2.joinConference(currentRoomName);
+            participant2.joinConference(currentRoomName, fragment);
         }
 
         MeetUtils.waitForParticipantToJoinMUC(participant2.getDriver(), 10);
-        MeetUtils.waitForIceConnected(participant2.getDriver());
-        MeetUtils.waitForSendReceiveData(participant2.getDriver());
-
-        TestUtils.waitMillis(5000);
     }
 
     /**
      * Starts the owner, if it isn't started and hangups all other participants.
      */
-    public void closeAllParticipantsExceptTheOwner()
+    public void hangUpAllParticipantsExceptTheOwner()
     {
-        waitForParticipant1ToJoinMUC();
+        waitForParticipant1ToJoinMUC(null, null);
+
+        if (participant2 != null && !participant2.isHungUp())
+        {
+            participant2.hangUp();
+        }
+
+        if (participant3 != null && !participant3.isHungUp())
+        {
+            participant3.hangUp();
+        }
+    }
+
+    /**
+     * Hangups all participants.
+     */
+    public void hangUpAllParticipants()
+    {
+        if (participant1 != null && !participant1.isHungUp())
+        {
+            participant1.hangUp();
+        }
 
         if (participant2 != null && !participant2.isHungUp())
         {
@@ -167,6 +252,16 @@ public abstract class AbstractParticipantHelper
      */
     public void waitForThirdParticipantToConnect()
     {
+        waitForThirdParticipantToConnect(null);
+    }
+
+    /**
+     * Waits until {@code thirdParticipant} has joined the conference (its ICE
+     * connection has completed and has it has sent and received data).
+     * @param fragment adds the given string to the fragment part of the URL
+     */
+    public void waitForThirdParticipantToConnect(String fragment)
+    {
         if (participant3 == null)
         {
             participant3 = ParticipantFactory.getInstance()
@@ -175,7 +270,7 @@ public abstract class AbstractParticipantHelper
 
         if (participant3.isHungUp())
         {
-            participant3.joinConference(currentRoomName);
+            participant3.joinConference(currentRoomName, fragment);
         }
 
         MeetUtils.waitForParticipantToJoinMUC(participant3.getDriver(), 10);
