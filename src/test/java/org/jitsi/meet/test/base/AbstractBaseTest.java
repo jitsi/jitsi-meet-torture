@@ -18,6 +18,7 @@ package org.jitsi.meet.test.base;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -87,20 +88,22 @@ public abstract class AbstractBaseTest
             throw new SkipException("skips-" + thisClassName);
         }
 
-        // if test is explicitly in include, run it
-        if (testsToInclude.contains(thisClassName))
-        {
-            return;
-        }
-
+        // if test is not explicitly in include
         // if testsToRun is empty, then check if test implementation
         // prefers to not be run by default
         // or if testsToRun is not empty check whether it contains this test
-        if ((testsToRun.isEmpty() && skipTestByDefault())
-            || (!testsToRun.isEmpty() && !testsToRun.contains(thisClassName)))
+        if (!testsToInclude.contains(thisClassName)
+            && ((testsToRun.isEmpty() && skipTestByDefault())
+                    || (!testsToRun.isEmpty()
+                            && !testsToRun.contains(thisClassName))))
         {
             throw new SkipException("skips-" + thisClassName);
         }
+
+        setup();
+
+        System.err.println(
+            "---=== Testing " + getClass().getSimpleName() + " ===---");
     }
 
     /**
@@ -182,15 +185,58 @@ public abstract class AbstractBaseTest
         Assert.assertFalse(value, message);
     }
 
-    @BeforeClass
-    public void setup()
+    /**
+     * Wraps assertFalse.
+     * @param value the value to check.
+     */
+    public void assertFalse(boolean value)
     {
-        super.setup();
+        Assert.assertFalse(value);
+    }
+
+    /**
+     * Wraps assertNotNull.
+     * @param message the message to show.
+     * @param value the value to check.
+     */
+    public void assertNotNull(String message, Object value)
+    {
+        Assert.assertNotNull(value, message);
+    }
+
+    /**
+     * Wraps assertNotNull.
+     * @param value the value to check.
+     */
+    public void assertNotNull(Object value)
+    {
+        Assert.assertNotNull(value);
+    }
+
+    /**
+     * Wraps fail.
+     * @param message the message to show.
+     */
+    public void fail(String message)
+    {
+        Assert.fail(message);
     }
 
     @AfterClass
-    public void cleanup()
+    public void cleanupClass()
     {
         super.cleanup();
+    }
+
+    @BeforeMethod
+    public void beforeMethod(Method m)
+    {
+        System.err.println("Start " + m.getName() + ".");
+    }
+
+    @AfterMethod
+    public void afterMethod(Method m)
+    {
+        System.err.println("End " + m.getName() + ".");
     }
 }
