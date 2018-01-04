@@ -70,6 +70,23 @@ public abstract class AbstractBaseTest
     @BeforeClass
     public void check()
     {
+        checkForSkip();
+
+        System.err.println(
+            "---=== Testing " + getClass().getSimpleName() + " ===---");
+
+        setup();
+    }
+
+    /**
+     * Checks whether the current test need to be skiped and throw SkipException
+     * if this is true.
+     *
+     * @throws SkipException thrown when test execution needs to be skipped
+     */
+    protected void checkForSkip()
+        throws SkipException
+    {
         if (testsToRun == null)
         {
             testsToRun
@@ -94,16 +111,11 @@ public abstract class AbstractBaseTest
         // or if testsToRun is not empty check whether it contains this test
         if (!testsToInclude.contains(thisClassName)
             && ((testsToRun.isEmpty() && skipTestByDefault())
-                    || (!testsToRun.isEmpty()
-                            && !testsToRun.contains(thisClassName))))
+            || (!testsToRun.isEmpty()
+            && !testsToRun.contains(thisClassName))))
         {
             throw new SkipException("skips-" + thisClassName);
         }
-
-        setup();
-
-        System.err.println(
-            "---=== Testing " + getClass().getSimpleName() + " ===---");
     }
 
     /**

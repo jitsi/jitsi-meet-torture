@@ -15,27 +15,19 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 /**
  * Tests for users' avatars.
  */
 public class AvatarTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public AvatarTest(String name)
-    {
-        super(name);
-    }
-
     public static String EMAIL = "example@jitsi.org";
     public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
 
@@ -47,32 +39,25 @@ public class AvatarTest
      */
     private static String secondParticipantAvatarSrc = null;
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
+    @Override
+    public void setup()
     {
-        TestSuite suite = new TestSuite();
+        super.setup();
 
-        suite.addTest(new AvatarTest("changeAvatarAndCheck"));
-        suite.addTest(new AvatarTest("avatarWhenVideoMuted"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Scenario tests few cases for the avatar to be displayed when user mutes
      * his video.
      */
+    @Test(dependsOnMethods = { "changeAvatarAndCheck" })
     public void avatarWhenVideoMuted()
     {
-        System.err.println("Start avatarWhenVideoMuted.");
-
-        ConferenceFixture.closeAllParticipantsExceptTheOwner();
+        hangUpAllParticipantsExceptTheOwner();
 
         // Start owner
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
         String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
@@ -87,9 +72,8 @@ public class AvatarTest
                 ownerLargeSrc.startsWith(ownerThumbSrc));
 
         // Join with second participant
-        ConferenceFixture.waitForSecondParticipantToConnect();
-        WebDriver secondParticipant
-                = ConferenceFixture.getSecondParticipant();
+        ensureTwoParticipants();
+        WebDriver secondParticipant = participant2.getDriver();
         String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
 
         // Verify that the owner is muted from 2nd peer perspective
@@ -120,8 +104,9 @@ public class AvatarTest
         // Check if avatar is displayed on owner's local video thumbnail
         MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
-        new StopVideoTest("startVideoOnOwnerAndCheck")
-            .startVideoOnOwnerAndCheck();
+        StopVideoTest stopVideoTest
+            = new StopVideoTest(this.participant1, this.participant2);
+        stopVideoTest.startVideoOnOwnerAndCheck();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
@@ -132,16 +117,14 @@ public class AvatarTest
         MeetUIUtils.assertLocalThumbnailShowsVideo(owner);
 
         // Now both owner and 2nd have video muted
-        new StopVideoTest("stopVideoOnOwnerAndCheck")
-            .stopVideoOnOwnerAndCheck();
+        stopVideoTest.stopVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
                 true,
                 true, //video
                 "owner");
-        new StopVideoTest("stopVideoOnParticipantAndCheck")
-            .stopVideoOnParticipantAndCheck();
+        stopVideoTest.stopVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 owner,
                 secondParticipant,
@@ -159,8 +142,8 @@ public class AvatarTest
             getThumbnailSrc(owner, secondPeerResource));
 
         // Start the third participant
-        ConferenceFixture.waitForThirdParticipantToConnect();
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
+        waitForThirdParticipantToConnect();
+        WebDriver thirdParticipant = participant3.getDriver();
 
         String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
 
@@ -192,21 +175,19 @@ public class AvatarTest
         MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
         MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
-        ConferenceFixture.close(thirdParticipant);
+        participant3.hangUp();
 
         TestUtils.waitMillis(1500);
 
         // Unmute owner and 2nd videos
-        new StopVideoTest("startVideoOnOwnerAndCheck")
-            .startVideoOnOwnerAndCheck();
+        stopVideoTest.startVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
                 false,
                 true, //video
                 "owner");
-        new StopVideoTest("startVideoOnParticipantAndCheck")
-            .startVideoOnParticipantAndCheck();
+        stopVideoTest.startVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
@@ -219,15 +200,11 @@ public class AvatarTest
      *  Changes the avatar for one participant and checks if it has changed
      *  properly everywhere
      */
+    @Test
     public void changeAvatarAndCheck()
     {
-        System.err.println("Start changeAvatarAndCheck.");
-
-        ConferenceFixture.ensureTwoParticipants();
-
-        final WebDriver owner = ConferenceFixture.getOwner();
-        final WebDriver secondParticipant
-            = ConferenceFixture.getSecondParticipant();
+        final WebDriver owner = participant1.getDriver();
+        final WebDriver secondParticipant = participant2.getDriver();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 

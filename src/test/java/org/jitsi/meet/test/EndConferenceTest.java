@@ -15,66 +15,40 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
-import org.jitsi.meet.test.util.*;
+import org.testng.annotations.*;
 
 /**
  * Test if we can hangup the call.
  */
 public class EndConferenceTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public EndConferenceTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new EndConferenceTest("hangupCallAndCheck"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Hang up the call and check if we're redirected to the main page.
      */
+    @Test
     public void hangupCallAndCheck()
     {
-        System.err.println("Start hangupCallAndCheck.");
-
-        final WebDriver owner = ConferenceFixture.getOwner();
+        final WebDriver owner = participant1.getDriver();
         final String url = owner.getCurrentUrl();
 
         // hangup and wait for redirect
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_hangup");
         TestUtils.waitForCondition(owner, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return !url.equals(owner.getCurrentUrl());
-                }
-            });
-
-        // Close the owner, as the welcome page is not a state recognized
-        // by the ConferenceFixture and it will fail to figure out that
-        // the owner must be restarted in case any tests are to follow
-        // the EndConferenceTest.
-        // It simpler to close it than implement extra state which would not
-        // be of much use.
-        ConferenceFixture.close(owner);
+            (ExpectedCondition<Boolean>) d
+                -> !url.equals(owner.getCurrentUrl()));
     }
 }

@@ -15,11 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 
-import java.util.*;
+import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * 1. Lock the room (make sure the image changes to locked)
@@ -34,48 +34,24 @@ import java.util.*;
  * @author Damian Minkov
  */
 public class LockRoomTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     public static String ROOM_KEY = null;
 
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public LockRoomTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new LockRoomTest("lockRoom"));
-        suite.addTest(new LockRoomTest("enterParticipantInLockedRoom"));
-        suite.addTest(new LockRoomTest("unlockRoom"));// stops participant
-        suite.addTest(new LockRoomTest("enterParticipantInUnlockedRoom"));
-        suite.addTest(new LockRoomTest(
-            "updateLockedStateWhileParticipantInRoom"));
-        suite.addTest(new LockRoomTest(
-            "unlockAfterParticipantEnterWrongPassword"));
-
-        return suite;
+        ensureOneParticipant();
     }
 
     /**
      * Stops the participant. And locks the room from the owner.
      */
+    @Test
     public void lockRoom()
     {
-        System.err.println("Start lockRoom.");
-
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-
         // just in case wait
         TestUtils.waitMillis(1000);
 
@@ -87,7 +63,7 @@ public class LockRoomTest
      */
     private void ownerLockRoom()
     {
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
         testRoomIsUnlocked(owner);
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
@@ -172,23 +148,21 @@ public class LockRoomTest
     /**
      * first wrong pin then correct one
      */
+    @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        System.err.println("Start enterParticipantInLockedRoom.");
-
-        testRoomIsLocked(ConferenceFixture.getOwner());
-
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
+        testRoomIsLocked(participant1.getDriver());
 
         try
         {
-            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+            ensureTwoParticipants();
 
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
         {}
+
+        WebDriver secondParticipant = participant2.getDriver();
 
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
@@ -218,11 +192,10 @@ public class LockRoomTest
      * Unlock room. Check wheter room is still
      * locked. Click remove and check whether it is unlocked.
      */
+    @Test(dependsOnMethods = { "enterParticipantInLockedRoom" })
     public void unlockRoom()
     {
-        System.err.println("Start unlockRoom.");
-
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        participant2.hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
@@ -235,7 +208,7 @@ public class LockRoomTest
      */
     private void ownerUnlockRoom()
     {
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
 
@@ -256,12 +229,11 @@ public class LockRoomTest
     /**
      * Just enter the room and check that is not locked.
      */
+    @Test(dependsOnMethods = { "unlockRoom" })
     public void enterParticipantInUnlockedRoom()
     {
-        System.err.println("Start enterParticipantInUnlockedRoom.");
-
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
+        ensureTwoParticipants();
+        WebDriver secondParticipant = participant2.getDriver();
 
         // if we fail to unlock the room this one will detect it
         // as participant will fail joining
@@ -276,13 +248,12 @@ public class LockRoomTest
      * Both participants are in unlocked room, lock it and see whether the
      * change is reflected on the second participant icon.
      */
+    @Test(dependsOnMethods = { "enterParticipantInUnlockedRoom" })
     public void updateLockedStateWhileParticipantInRoom()
     {
-        System.err.println("Start updateLockedStateWhileParticipantInRoom.");
-
         ownerLockRoom();
 
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver secondParticipant = participant2.getDriver();
         testRoomIsLocked(secondParticipant);
         ownerUnlockRoom();
         testRoomIsUnlocked(secondParticipant);
@@ -293,30 +264,28 @@ public class LockRoomTest
      * Owner unlocks the room and Participant submits the password prompt with
      * no password entered and he should enter of unlocked room.
      */
+    @Test(dependsOnMethods = { "updateLockedStateWhileParticipantInRoom" })
     public void unlockAfterParticipantEnterWrongPassword()
     {
-        System.err.println("Start unlockAfterParticipantEnterWrongPassword.");
-
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        participant2.hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
         ownerLockRoom();
 
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
-
-        testRoomIsLocked(ConferenceFixture.getOwner());
+        testRoomIsLocked(participant1.getDriver());
 
         try
         {
-            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+            ensureTwoParticipants();
 
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
         {}
+
+        WebDriver secondParticipant = participant2.getDriver();
 
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");

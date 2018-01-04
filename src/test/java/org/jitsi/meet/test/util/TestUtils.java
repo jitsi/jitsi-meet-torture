@@ -22,7 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-import static org.junit.Assert.fail;
+import static org.testng.Assert.fail;
 
 /**
  * Utility class.

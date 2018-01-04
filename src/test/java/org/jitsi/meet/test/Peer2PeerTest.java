@@ -15,9 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * Tests switching between P2P and JVB connections.
@@ -25,7 +27,7 @@ import org.openqa.selenium.*;
  * @author Pawel Domas
  */
 public class Peer2PeerTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * The config fragment which enables P2P test mode.
@@ -34,73 +36,16 @@ public class Peer2PeerTest
         = "config.testing.p2pTestMode=true";
 
     /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public Peer2PeerTest(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new Peer2PeerTest("disposeIfAny"));
-        suite.addTest(new Peer2PeerTest("testSwitchToP2P"));
-
-        // FIXME this test fails randomly too often
-        //suite.addTest(new Peer2PeerTest("testSwitchBackToJVB"));
-        suite.addTest(new Peer2PeerTest("disposeIfAny"));
-        suite.addTest(new Peer2PeerTest("testManualP2PSwitch"));
-        suite.addTest(new Peer2PeerTest("disposeIfAny"));
-        suite.addTest(new Peer2PeerTest("testP2PSwitchWhenMuted"));
-        suite.addTest(new DisposeConference("testDispose"));
-
-        return suite;
-    }
-
-    /**
      * Mutes the owner and checks at other participant is this is visible.
      */
-    public void disposeIfAny()
-    {
-        // secondParticipant
-        WebDriver participant
-            = ConferenceFixture.getSecondParticipantInstance();
-
-        if(participant != null)
-            ConferenceFixture.quit(participant);
-
-        // thirdParticipant
-        participant = ConferenceFixture.getThirdParticipantInstance();
-        if(participant != null)
-            ConferenceFixture.quit(participant);
-
-        // owner
-        participant = ConferenceFixture.getOwnerInstance();
-        if (participant != null)
-            ConferenceFixture.quit(participant);
-    }
-
-    /**
-     * Mutes the owner and checks at other participant is this is visible.
-     */
+    @Test
     public void testSwitchToP2P()
     {
-        ConferenceFixture.startOwner("config.p2p.enabled=true");
-        ConferenceFixture.startSecondParticipant("config.p2p.enabled=true");
+        ensureOneParticipant("config.p2p.enabled=true");
+        waitForSecondParticipantToConnect("config.p2p.enabled=true");
 
-        ConferenceFixture.waitForOwnerToJoinMUC();
-        MeetUtils.waitForParticipantToJoinMUC(
-            ConferenceFixture.getSecondParticipant());
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver participant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = participant1.getDriver();
+        WebDriver participant = participant2.getDriver();
 
         MeetUtils.waitForP2PIceConnected(owner);
         MeetUtils.waitForP2PIceConnected(participant);
@@ -134,13 +79,18 @@ public class Peer2PeerTest
             owner, participant, true);
     }
 
+    /**
+     * FIXME this test fails randomly too often
+     */
+    //@Test(dependsOnMethods = { "testSwitchToP2P" })
     public void testSwitchBackToJVB()
     {
-        ConferenceFixture.waitForThirdParticipantToConnect();
+        hangUpAllParticipants();
+        ensureThreeParticipants();
 
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver second = ConferenceFixture.getSecondParticipantInstance();
-        WebDriver third = ConferenceFixture.getThirdParticipantInstance();
+        WebDriver owner = participant1.getDriver();
+        WebDriver second = participant2.getDriver();
+        WebDriver third = participant3.getDriver();
 
         MeetUtils.waitForP2PIceDisconnected(owner);
         MeetUtils.waitForP2PIceDisconnected(second);
@@ -173,17 +123,15 @@ public class Peer2PeerTest
 
     }
 
+    @Test(dependsOnMethods = { "testSwitchToP2P" })
     public void testManualP2PSwitch()
     {
-        ConferenceFixture.startOwner(MANUAL_P2P_MODE_FRAGMENT);
-        ConferenceFixture.startSecondParticipant(MANUAL_P2P_MODE_FRAGMENT);
+        hangUpAllParticipants();
+        ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
+        waitForSecondParticipantToConnect(MANUAL_P2P_MODE_FRAGMENT);
 
-        ConferenceFixture.waitForOwnerToJoinMUC();
-        MeetUtils.waitForParticipantToJoinMUC(
-            ConferenceFixture.getSecondParticipant());
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver participant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = participant1.getDriver();
+        WebDriver participant = participant2.getDriver();
 
         // Start P2P once JVB connection is established
         MeetUtils.waitForIceConnected(owner);
@@ -256,17 +204,15 @@ public class Peer2PeerTest
             owner, participant, true);
     }
 
+    @Test(dependsOnMethods = { "testManualP2PSwitch" })
     public void testP2PSwitchWhenMuted()
     {
-        ConferenceFixture.startOwner(MANUAL_P2P_MODE_FRAGMENT);
-        ConferenceFixture.startSecondParticipant(MANUAL_P2P_MODE_FRAGMENT);
+        hangUpAllParticipants();
+        ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
+        waitForSecondParticipantToConnect(MANUAL_P2P_MODE_FRAGMENT);
 
-        ConferenceFixture.waitForOwnerToJoinMUC();
-        MeetUtils.waitForParticipantToJoinMUC(
-            ConferenceFixture.getSecondParticipant());
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver participant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = participant1.getDriver();
+        WebDriver participant = participant2.getDriver();
 
         MeetUtils.waitForIceConnected(owner);
         MeetUtils.waitForIceConnected(participant);

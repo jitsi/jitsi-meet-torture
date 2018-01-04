@@ -15,11 +15,12 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.testng.annotations.*;
 
 /**
  * A test which changes display name and checks the reflect of the change
@@ -28,12 +29,39 @@ import org.openqa.selenium.interactions.*;
  * @author Damian Minkov
  */
 public class DisplayNameTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * The default display name.
      */
     private final static String DEFAULT_DISPLAY_NAME = "me";
+
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        ensureTwoParticipants();
+    }
+
+    /**
+     * Default constructor.
+     */
+    public DisplayNameTest()
+    {}
+
+    /**
+     * Constructs DisplayNameTest with already allocated participants.
+     * @param participant1
+     * @param participant2
+     */
+    public DisplayNameTest(
+        Participant participant1,
+        Participant participant2)
+    {
+        this.participant1 = participant1;
+        this.participant2 = participant2;
+    }
 
     /**
      * Tests changing display name.
@@ -41,10 +69,9 @@ public class DisplayNameTest
      * persistent, then check on the remote side.
      * Do the same tests for removing the display name.
      */
+    @Test
     public void testChangingDisplayName()
     {
-        System.err.println("Start testChangingDisplayName.");
-
         String randomName = "Name"
             + String.valueOf((int)(Math.random()*1000000));
 
@@ -61,8 +88,6 @@ public class DisplayNameTest
      */
     public void checkDisplayNameChange(String newName)
     {
-        System.err.println("Start checkDisplayNameChange.");
-
         checkForDefaultDisplayNames();
 
         changeDisplayName(newName);
@@ -79,34 +104,35 @@ public class DisplayNameTest
     private void checkForDefaultDisplayNames()
     {
         // default remote displayname
+        WebDriver owner = participant1.getDriver();
         String defaultDisplayName =
-            (String)((JavascriptExecutor) ConferenceFixture.getOwner())
+            (String)((JavascriptExecutor) owner)
                 .executeScript(
                     "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");
 
         // check on first browser
-        checkRemoteVideoForName(ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant(),
+        checkRemoteVideoForName(owner,
+            participant2,
             defaultDisplayName);
         // check on second browser
-        checkRemoteVideoForName(ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
+        checkRemoteVideoForName(participant2.getDriver(),
+            participant1,
             defaultDisplayName);
     }
 
     /**
      * Checks a remote video for a display name.
      * @param local the local participant
-     * @param remote teh remote one
+     * @param remoteParticipant teh remote one
      * @param nameToCheck the name to check.
      */
-    public static void checkRemoteVideoForName(
+    public void checkRemoteVideoForName(
         WebDriver local,
-        WebDriver remote,
+        Participant remoteParticipant,
         String nameToCheck)
     {
         String remoteParticipantResourceJid
-            = MeetUtils.getResourceJid(remote);
+            = MeetUtils.getResourceJid(remoteParticipant.getDriver());
 
         // check on local participant remote video
         WebElement displayNameElem =
@@ -116,8 +142,8 @@ public class DisplayNameTest
                     remoteParticipantResourceJid + "_name']"));
 
         boolean isFF
-            = ConferenceFixture.getBrowserType(remote)
-                    == ConferenceFixture.BrowserType.firefox;
+            = remoteParticipant.getType()
+                    == ParticipantFactory.ParticipantType.firefox;
         if (!isFF)
         {
             assertTrue("Display name not visible",
@@ -140,16 +166,14 @@ public class DisplayNameTest
      */
     public void doLocalDisplayNameCheck(String newName)
     {
-        System.err.println("Start doLocalDisplayNameCheck for " + newName + ".");
-
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver secondParticipant = participant2.getDriver();
 
         // make sure we hover over other element first, cause when hovering
         // local element we may not out of it when editing
         WebElement remoteVideoElem =
             secondParticipant.findElement(By.xpath(
                 "//span[@id='participant_" + MeetUtils
-                    .getResourceJid(ConferenceFixture.getOwner()) + "']"));
+                    .getResourceJid(participant1.getDriver()) + "']"));
         Actions action0 = new Actions(secondParticipant);
         action0.moveToElement(remoteVideoElem);
         action0.perform();
@@ -169,8 +193,8 @@ public class DisplayNameTest
         action.build().perform();
 
         boolean isFF
-            = ConferenceFixture.getBrowserType(secondParticipant) ==
-                    ConferenceFixture.BrowserType.firefox;
+            = participant2.getType()
+                    == ParticipantFactory.ParticipantType.firefox;
         if (!isFF)
         {
             assertTrue("Display name not visible",
@@ -200,10 +224,8 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        System.err.println("Start doRemoteDisplayNameCheck for " + newName + ".");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
@@ -220,7 +242,7 @@ public class DisplayNameTest
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
-        checkRemoteVideoForName(owner, secondParticipant, newName);
+        checkRemoteVideoForName(owner, participant2, newName);
 
         MeetUIUtils.clickOnRemoteVideo(
             owner, MeetUtils.getResourceJid(secondParticipant));
@@ -232,10 +254,7 @@ public class DisplayNameTest
      */
     private void changeDisplayName(String newName)
     {
-        System.err.println("Start changeDisplayName for " + newName + ".");
-
-        WebDriver secondParticipant
-            = ConferenceFixture.getSecondParticipant();
+        WebDriver secondParticipant = participant2.getDriver();
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(
@@ -264,7 +283,7 @@ public class DisplayNameTest
         inputElem.sendKeys(Keys.RETURN);
         // just click somewhere to lose focus, to make sure editing has ended
         String ownerResource
-            = MeetUtils.getResourceJid(ConferenceFixture.getOwner());
+            = MeetUtils.getResourceJid(participant1.getDriver());
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
     }

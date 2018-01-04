@@ -15,10 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.tasks.*;
 
-import java.util.*;
+import org.testng.annotations.*;
+
 import java.util.concurrent.*;
 
 /**
@@ -27,8 +28,22 @@ import java.util.concurrent.*;
  * @author Damian Minkov
  */
 public class LongLivedTest
-    extends TestCase
+    extends AbstractBaseTest
 {
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        ensureTwoParticipants();
+    }
+
     /**
      * A test where we read some configurations or fallback to default values
      * and we expect a conference to be already established (by SetupConference)
@@ -36,6 +51,7 @@ public class LongLivedTest
      * is not working we fail. This one is supposed to run for a long period
      * of time.
      */
+    @Test
     public void testLongLive()
     {
         String timeToRunInMin = System.getProperty("longlived.duration");
@@ -52,7 +68,12 @@ public class LongLivedTest
         // the two participants and ~9 secs before finishing successful
         // it fails.
         int millsToRun = (minutesToRun - 1) * 60 * 1000;
-        HeartbeatTask heartbeatTask = new HeartbeatTask(millsToRun, true);
+        HeartbeatTask heartbeatTask
+            = new HeartbeatTask(
+                participant1.getDriver(),
+                participant2.getDriver(),
+                millsToRun,
+                true);
 
         heartbeatTask.start(10 * 1000, 10 * 1000);
 

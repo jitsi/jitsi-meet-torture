@@ -15,10 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 import java.util.*;
 
@@ -27,48 +28,21 @@ import java.util.*;
  *
  */
 public class LastNTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public LastNTest(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * Orders the tests.
-     * @return the suite with ordered tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new LastNTest("testLastN"));
-        suite.addTest(new LastNTest("restartParticipants"));
-
-        return suite;
-    }
-
     /**
      * Last N test scenario.
      */
+    @Test
     public void testLastN()
     {
-        System.err.println("Start testLastN.");
+        ensureOneParticipant("config.startAudioMuted=0&config.channelLastN=1");
+        WebDriver owner = participant1.getDriver();
 
-        // close everything first
-        ConferenceFixture.closeAllParticipants();
+        ensureThreeParticipants();
 
-        WebDriver owner = ConferenceFixture.startOwner(
-            "config.startAudioMuted=0&config.channelLastN=1");
-        ConferenceFixture.waitForSecondParticipantToConnect();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
-
-        ConferenceFixture.waitForThirdParticipantToConnect();
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
+        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver thirdParticipant = participant3.getDriver();
 
         assertEquals("number of thumbnails", 3,
                      MeetUIUtils.getThumbnails(owner).size());
@@ -80,7 +54,9 @@ public class LastNTest
         MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "participant3");
 
         // unmute second participant
-        new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
+        MuteTest muteTest
+            = new MuteTest(participant1, participant2, participant3);
+        muteTest.unMuteParticipantAndCheck();
 
         // so now he should be active speaker
         assertTrue(
@@ -92,11 +68,10 @@ public class LastNTest
             MeetUIUtils.isActiveSpeaker(thirdParticipant, secondParticipant));
         assertActiveSpeakerThumbIsVisible(thirdParticipant, secondParticipant);
 
-        new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
+        muteTest.muteParticipantAndCheck();
 
         // unmute third participant
-        new MuteTest("unMuteThirdParticipantAndCheck")
-            .unMuteThirdParticipantAndCheck();
+        muteTest.unMuteThirdParticipantAndCheck();
 
         // so now he should be active speaker
         assertTrue(
@@ -138,11 +113,9 @@ public class LastNTest
                      "participant_" + testeeJid, testeeThumb.getAttribute("id"));
     }
 
-    /**
-     * Retart participants.
-     */
-    public void restartParticipants()
+    @Override
+    public boolean skipTestByDefault()
     {
-        ConferenceFixture.restartParticipants();
+        return true;
     }
 }

@@ -1,9 +1,54 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="TortureSuite" verbose="1">
-    <test name="DesktopTesting">
+    <test name="DesktopTesting" parallel="instances" thread-count="1">
 
         <classes>
+            <class name="org.jitsi.meet.test.ActiveSpeakerTest" />
+            <class name="org.jitsi.meet.test.AudioOnlyTest" />
+            <class name="org.jitsi.meet.test.AvatarTest" />
+            <class name="org.jitsi.meet.test.ConnectionTimeTest" />
+            <class name="org.jitsi.meet.test.ContactListTest" />
+            <class name="org.jitsi.meet.test.DataChannelTest" />
+            <class name="org.jitsi.meet.test.DisplayNameTest" />
+            <class name="org.jitsi.meet.test.EndConferenceTest" />
+            <class name="org.jitsi.meet.test.EtherpadTest" />
+            <class name="org.jitsi.meet.test.FilmstripOnlyTest" />
+            <class name="org.jitsi.meet.test.FollowMeTest" />
+            <!-- JibriTest needs configuration or it is ignored by default -->
+            <class name="org.jitsi.meet.test.JibriTest" />
+            <class name="org.jitsi.meet.test.LipSyncTest" />
+            <class name="org.jitsi.meet.test.LockRoomTest" />
+            <class name="org.jitsi.meet.test.MuteTest" />
+            <class name="org.jitsi.meet.test.OneOnOneTest" />
+            <class name="org.jitsi.meet.test.Peer2PeerTest" />
+            <class name="org.jitsi.meet.test.ReloadTest" />
+            <class name="org.jitsi.meet.test.RingOverlayTest" />
+            <class name="org.jitsi.meet.test.SharedVideoTest" />
+            <class name="org.jitsi.meet.test.SinglePortTest" />
+            <class name="org.jitsi.meet.test.StartMutedTest" />
+            <class name="org.jitsi.meet.test.StopVideoTest" />
+            <class name="org.jitsi.meet.test.SwitchVideoTest" />
+            <class name="org.jitsi.meet.test.TCPTest" />
+            <class name="org.jitsi.meet.test.UDPTest" />
+            <class name="org.jitsi.meet.test.VideoLayoutTest" />
 
+            <!-- Ignored by default from the default tests to execute,
+                needs to be explicitly enabled using:
+                -Djitsi-meet.tests.toInclude=....
+                or
+                -Djitsi-meet.tests.toRun=...
+                -->
+            <class name="org.jitsi.meet.test.AuthSetupConference" />
+            <class name="org.jitsi.meet.test.ConferenceMigrationTest" />
+            <class name="org.jitsi.meet.test.DesktopSharingImitationTest" />
+            <class name="org.jitsi.meet.test.DesktopSharingTest" />
+            <class name="org.jitsi.meet.test.JVBConferencesCheck" />
+            <class name="org.jitsi.meet.test.LastNTest" />
+            <class name="org.jitsi.meet.test.LongLivedTest" />
+            <class name="org.jitsi.meet.test.MaxUsersTest" />
+            <class name="org.jitsi.meet.test.PeerConnectionStatusTest" />
+            <class name="org.jitsi.meet.test.PSNRTest" />
+            <class name="org.jitsi.meet.test.RestTests" />
         </classes>
 
     </test>

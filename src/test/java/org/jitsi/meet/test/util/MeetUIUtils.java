@@ -22,7 +22,7 @@ import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.*;
 
 /**
  * Class contains utility operations specific to jitsi-meet user interface.
@@ -73,8 +73,8 @@ public class MeetUIUtils
             = where.findElement(By.xpath(largeAvatarXPath));
         String avatarClass = avatarElement.getAttribute("class");
         assertTrue(
-                "Avatar on large video is not \"grey\": " + avatarClass,
-                avatarClass.contains("remoteVideoProblemFilter"));
+            avatarClass.contains("remoteVideoProblemFilter"),
+            "Avatar on large video is not \"grey\": " + avatarClass);
 
     }
 

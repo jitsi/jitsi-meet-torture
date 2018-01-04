@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 package org.jitsi.meet.test;
-import junit.framework.*;
+
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.*;
 
 /**
  * A test making sure that the contact list panel can be open, that it contains
@@ -29,21 +31,26 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Yana Stamcheva
  */
 public class ContactListTest
-        extends TestCase
+    extends AbstractBaseTest
 {
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        // We make sure that we have a conference with at least 2 participants.
+        ensureTwoParticipants();
+    }
+
     /**
      * Tests if the contact list contains the right number of participants, but
      * also if the list contains every participant in the call. Tests if a click
      * pins a participant.
      */
+    @Test
     public void testContactList()
     {
-        System.err.println("Start testContactList.");
-
-        // We make sure that we have a conference with at least 2 participants.
-        ConferenceFixture.ensureTwoParticipants();
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         // Make sure that the contact list panel is open.
         MeetUIUtils.displayContactListPanel(owner);
@@ -53,7 +60,7 @@ public class ContactListTest
         doContactCountCheck(owner, 2);
 
         // Add a third participant to the call.
-        ConferenceFixture.waitForThirdParticipantToConnect();
+        waitForThirdParticipantToConnect();
 
         // Make sure we have a line in the contact list for every participant on
         // the call.
@@ -61,9 +68,6 @@ public class ContactListTest
 
         // Pins a participant clicking on a contact list entry.
         doPinSecondParticipantCheck(owner);
-
-        // Dispose the third participant.
-        ConferenceFixture.closeThirdParticipant();
     }
 
     /**
@@ -95,9 +99,9 @@ public class ContactListTest
     {
         String ownerJid = MeetUtils.getResourceJid(owner);
         String secondParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+            = MeetUtils.getResourceJid(participant2.getDriver());
         String thirdParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getThirdParticipant());
+            = MeetUtils.getResourceJid(participant3.getDriver());
 
         String ownerLiXPath = getContactListParticipantXPath(ownerJid);
         String secondParticipantLiXPath
@@ -120,7 +124,7 @@ public class ContactListTest
     private void doPinSecondParticipantCheck(WebDriver owner)
     {
         final String secondParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+            = MeetUtils.getResourceJid(participant2.getDriver());
         WebElement secondPartLi
             = owner.findElement(By.xpath(getContactListParticipantXPath(
                 secondParticipantJid)));

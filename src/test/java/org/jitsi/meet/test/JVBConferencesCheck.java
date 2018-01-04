@@ -15,13 +15,15 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
 import org.apache.http.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.protocol.*;
 import org.apache.http.util.*;
 import com.google.gson.*;
+
+import org.jitsi.meet.test.base.*;
+import org.testng.annotations.*;
 
 import java.net.*;
 import java.util.*;
@@ -36,7 +38,7 @@ import java.util.*;
  * @author Damian Minkov
  */
 public class JVBConferencesCheck
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * List used to save the list of available conferences on the first run
@@ -44,13 +46,22 @@ public class JVBConferencesCheck
      */
     private static List<String> firstRunConferences = null;
 
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * Just gets the url to connect to the jvb instance and saves
      * the current allocated conferences on first run. On second compare current
      * with first run list.
      */
+    @Test
     public void testJVBConferences()
     {
+        ensureTwoParticipants();
+
         String jvbAddress = System.getProperty("jitsi-meet.jvb.address");
 
         HttpHost targetHost = null;
@@ -58,7 +69,7 @@ public class JVBConferencesCheck
         if(jvbAddress == null)
         {
             String meetAddress =
-                System.getProperty(ConferenceFixture.JITSI_MEET_URL_PROP);
+                System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP);
             try
             {
                 String host = new URL(meetAddress).getHost();
@@ -129,6 +140,9 @@ public class JVBConferencesCheck
         if(firstRunConferences == null)
         {
             firstRunConferences = conferencesList;
+            hangUpAllParticipants();
+            ensureTwoParticipants();
+            testJVBConferences();
         }
         else
         {

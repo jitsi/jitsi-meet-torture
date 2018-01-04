@@ -15,10 +15,12 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 /**
  * A test that tests ring overlay. Uses a dummy jwt token to activate ring
@@ -27,7 +29,7 @@ import org.openqa.selenium.support.ui.*;
  * @author Damian Minkov
  */
 public class RingOverlayTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * A test token to use. This is the encoded values:
@@ -77,12 +79,12 @@ public class RingOverlayTest
     /**
      * Runs the test.
      */
+    @Test
     public void testRingOverlay()
     {
-        ConferenceFixture.closeAllParticipants();
+        ensureOneParticipant(JWT_TOKEN, null);
 
-        WebDriver owner = ConferenceFixture.startOwner(null, JWT_TOKEN);
-        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
+        WebDriver owner = participant1.getDriver();
 
         // test the values show on ring overlay about the user we are calling to
         String ringOverlayDivXpath = "div[@id='ringOverlay']";
@@ -128,16 +130,16 @@ public class RingOverlayTest
         // and avatar
 
         // Join with second participant
-        ConferenceFixture.waitForSecondParticipantToConnect();
-        WebDriver secondParticipant
-            = ConferenceFixture.getSecondParticipant();
+        ensureTwoParticipants();
+        WebDriver secondParticipant = participant2.getDriver();
 
         // overlay absent or hidden
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             owner, "//" + ringOverlayDivXpath, 2);
 
-        DisplayNameTest.checkRemoteVideoForName(
-            secondParticipant, owner, USER_NAME);
+        new DisplayNameTest(participant1, participant2)
+            .checkRemoteVideoForName(
+                secondParticipant, participant1, USER_NAME);
 
         // let's check the avatar now
 
@@ -148,13 +150,9 @@ public class RingOverlayTest
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
         TestUtils.waitForCondition(secondParticipant, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc = AvatarTest.getLargeVideoSrc(d);
-                    return currentSrc.equals(USER_AVATAR_URL);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc = AvatarTest.getLargeVideoSrc(d);
+                return currentSrc.equals(USER_AVATAR_URL);
             });
 
     }

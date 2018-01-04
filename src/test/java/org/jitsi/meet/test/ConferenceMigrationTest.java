@@ -15,17 +15,13 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
-import org.junit.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
-
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 import java.io.*;
-
-import static org.junit.Assert.fail;
 
 /**
  * Test for migrating conference from broken bridge to a new one.
@@ -39,8 +35,8 @@ import static org.junit.Assert.fail;
  *
  * @author Pawel Domas
  */
-@RunWith(JUnit4.class)
 public class ConferenceMigrationTest
+    extends AbstractBaseTest
 {
     /**
      * The name of system property that specifies the JID of the bridge that
@@ -62,6 +58,12 @@ public class ConferenceMigrationTest
     public static final String DEFAULT_BRIDGE_REST_ENDPOINT
         = "http://localhost:8080";
 
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * Test conference migration from one bridge to another.
      * First we make sure that Jicofo allocates the conference on the to be
@@ -72,7 +74,7 @@ public class ConferenceMigrationTest
      * @throws IOException
      * @throws InterruptedException
      */
-    @org.junit.Test
+    @Test
     public void testConferenceMigration()
         throws IOException,
                InterruptedException
@@ -94,17 +96,11 @@ public class ConferenceMigrationTest
             "Migrated bridge: " + migratedBridge +
             ", REST endpoint: " + jvbRESTEndpoint);
 
-        // Close all participants
-        ConferenceFixture.closeAllParticipants();
+        ensureOneParticipant("config.enforcedBridge=\"" + migratedBridge +"\"");
+        WebDriver owner = participant1.getDriver();
 
-        WebDriver owner
-            = ConferenceFixture.startOwner(
-                "config.enforcedBridge=\"" + migratedBridge +"\"");
-
-        WebDriver secondParticipant = ConferenceFixture.startSecondParticipant();
-
-        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
+        ensureTwoParticipants();
+        WebDriver secondParticipant = participant2.getDriver();
 
         MeetUtils.waitForIceConnected(owner);
         MeetUtils.waitForIceConnected(secondParticipant);
@@ -118,25 +114,19 @@ public class ConferenceMigrationTest
 
         // Migrated bridge
         final String jvbEndpoint = jvbRESTEndpoint;
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
+        new Thread(() -> {
+            try
             {
-                try
-                {
-                    JvbUtil.shutdownBridge(jvbEndpoint, true);
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
+                JvbUtil.shutdownBridge(jvbEndpoint, true);
             }
-
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }).start();
 
         System.err.println("Wait for disconnected...");
@@ -152,11 +142,5 @@ public class ConferenceMigrationTest
         MeetUtils.waitForIceConnected(secondParticipant, 60);
         System.err.println("Second peer - ICE reconnected!");
 
-    }
-
-    @AfterClass
-    static public void tearDown()
-    {
-        ConferenceFixture.closeAllParticipants();
     }
 }

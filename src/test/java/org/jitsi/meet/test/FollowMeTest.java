@@ -15,11 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.extensions.TestSetup;
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * A test which tests "Follow Me" feature that allows moderators to enable
@@ -29,55 +29,26 @@ import org.openqa.selenium.*;
  * @author Kostiantyn Tsaregradskyi
  */
 public class FollowMeTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     private final static String filmstripXPath = "//div[@id='remoteVideos']";
     private final static String etherpadXPath = "//div[@id='etherpad']/iframe";
     private final static String followMeCheckboxXPath =
             "//input[@id='followMeCheckBox']";
 
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public FollowMeTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
+        super.setup();
+
+        ensureTwoParticipants();
+
+        oneTimeSetUp();
     }
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new FollowMeTest(
-                "testFollowMeCheckboxVisibleOnlyForModerator"));
-        suite.addTest(new FollowMeTest(
-                "testShareDocumentCommandsAreFollowed"));
-        suite.addTest(new FollowMeTest(
-                "testFilmstripCommandsAreFollowed"));
-        suite.addTest(new FollowMeTest(
-                "testNextOnStageCommandsAreFollowed"));
-
-        return new TestSetup(suite) {
-            protected void setUp() {
-                oneTimeSetUp();
-            }
-
-            protected void tearDown() {
-                oneTimeTearDown();
-            }
-        };
-    }
-
-    private static void oneTimeSetUp() {
-        System.err.println("Enabling 'Follow Me' for moderator.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+    private void oneTimeSetUp() {
+        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         MeetUIUtils.displaySettingsPanel(owner);
         MeetUIUtils.displaySettingsPanel(secondParticipant);
@@ -91,25 +62,17 @@ public class FollowMeTest
         TestUtils.waitMillis(5000);
     }
 
-    private static void oneTimeTearDown() {
-        System.err.println("Disabling 'Follow Me' and lose the state.");
-
-        ConferenceFixture.restartParticipants();
-
-        // give some time
-        TestUtils.waitMillis(5000);
-    }
-
     /**
      * Checks that "Follow me" checkbox is only visible for moderator.
      * If all moderators is enabled skip this check.
      */
+    @Test
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
-        System.err.println("Start testFollowMeCheckboxVisibleOnlyForModerator");
+        WebDriver secondParticipant = participant2.getDriver();
 
         Boolean allModeratorsEnabled = (Boolean)(
-            (JavascriptExecutor) ConferenceFixture.getSecondParticipant())
+            (JavascriptExecutor) secondParticipant)
             .executeScript(
                 "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;");
         // if all are moderators skip this check
@@ -117,8 +80,6 @@ public class FollowMeTest
             System.err.println("All moderators enabled, skipping check!");
             return;
         }
-
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
 
         TestUtils.waitForElementNotPresentByXPath(
                 secondParticipant, followMeCheckboxXPath, 5);
@@ -128,11 +89,11 @@ public class FollowMeTest
      * Checks if launching and then exiting Etherpad is executed for the second
      * participant.
      */
-    public void testShareDocumentCommandsAreFollowed() {
-        System.err.println("Start testShareDocumentCommandsAreFollowed");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+    @Test(dependsOnMethods = { "testFollowMeCheckboxVisibleOnlyForModerator" })
+    public void testShareDocumentCommandsAreFollowed()
+    {
+        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
@@ -159,11 +120,11 @@ public class FollowMeTest
      * Checks if hiding/showing filmstrip is executed for the second
      * participant.
      */
-    public void testFilmstripCommandsAreFollowed() {
-        System.err.println("Start testFilmstripCommandsAreFollowed");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+    @Test(dependsOnMethods = { "testShareDocumentCommandsAreFollowed" })
+    public void testFilmstripCommandsAreFollowed()
+    {
+        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         MeetUIUtils.displayFilmstripPanel(owner);
         MeetUIUtils.displayFilmstripPanel(secondParticipant);
@@ -187,11 +148,11 @@ public class FollowMeTest
      * Checks if selecting a video for moderator selects large video for the
      * second participant.
      */
-    public void testNextOnStageCommandsAreFollowed() {
-        System.err.println("Start testNextOnStageCommandsAreFollowed");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+    @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
+    public void testNextOnStageCommandsAreFollowed()
+    {
+        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);

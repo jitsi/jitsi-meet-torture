@@ -15,17 +15,22 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 /**
  * Adds various tests with the etherpad functionality.
+ * Checks after closing etherpad we are able to click on videos.
+ * Directly click on videos without closing etherpad.
  * @author Damian Minkov
  */
 public class EtherpadTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Whether the test is enabled. The test will be dynamically disabled,
@@ -34,42 +39,19 @@ public class EtherpadTest
      */
     private static boolean enabled = true;
 
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public EtherpadTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new EtherpadTest("enterEtherpad"));
-        suite.addTest(new EtherpadTest("writeTextAndCheck"));
-        suite.addTest(new EtherpadTest("closeEtherpadCheck"));
-        // lets check after closing etherpad we are able to click on videos
-        suite.addTest(new EtherpadTest("ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new EtherpadTest("ownerClickOnRemoteVideoAndTest"));
-        suite.addTest(new EtherpadTest("enterEtherpad"));
-        //suite.addTest(new EtherpadTest("writeTextAndCheck"));
-        //lets not directly click on videos without closing etherpad
-        suite.addTest(new EtherpadTest("ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new EtherpadTest("ownerClickOnRemoteVideoAndTest"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Clicks on share document button and check whether etherpad is loaded
      * and video is hidden.
      */
+    @Test
     public void enterEtherpad()
     {
         if (!enabled)
@@ -77,16 +59,13 @@ public class EtherpadTest
             return;
         }
 
-        System.err.println("Start enterEtherpad.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
             EtherpadTest.enabled = false;
-            System.err.println(
-                    "No etherpad configuration detected. Disabling test.");
-            return;
+            throw new SkipException(
+                "No etherpad configuration detected. Disabling test.");
         }
 
         // waits for etherpad button to be displayed in the toolbar
@@ -104,6 +83,7 @@ public class EtherpadTest
      * Write some text and check on the other side, whether the text
      * is visible.
      */
+    @Test(dependsOnMethods = { "enterEtherpad" })
     public void writeTextAndCheck()
     {
         if (!enabled)
@@ -111,9 +91,7 @@ public class EtherpadTest
             return;
         }
 
-        System.err.println("Start writeTextAndCheck.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
         try
         {
             // give time for the internal frame to load and attach to the page.
@@ -152,6 +130,7 @@ public class EtherpadTest
     /**
      * Close the etherpad and checks whether video is still visible.
      */
+    @Test(dependsOnMethods = { "writeTextAndCheck" })
     public void closeEtherpadCheck()
     {
         if (!enabled)
@@ -159,21 +138,21 @@ public class EtherpadTest
             return;
         }
 
-        System.err.println("Start closeEtherpadCheck.");
-
-        MeetUIUtils.clickOnToolbarButtonByClass(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButtonByClass(
+            participant1.getDriver(),
             "icon-share-doc");
 
         TestUtils.waitMillis(5000);
 
         TestUtils.waitForDisplayedElementByID(
-            ConferenceFixture.getOwner(), "largeVideo", 10);
+            participant1.getDriver(), "largeVideo", 10);
     }
 
     /**
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
+    @Test(dependsOnMethods = { "closeEtherpadCheck" })
     public void ownerClickOnLocalVideoAndTest()
     {
         if (!enabled)
@@ -181,9 +160,7 @@ public class EtherpadTest
             return;
         }
 
-        System.err.println("Start ownerClickOnLocalVideoAndTest.");
-
-        new SwitchVideoTest("ownerClickOnLocalVideoAndTest")
+        new SwitchVideoTest(participant1, participant2)
             .ownerClickOnLocalVideoAndTest();
     }
 
@@ -191,6 +168,7 @@ public class EtherpadTest
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
+    @Test(dependsOnMethods = { "ownerClickOnLocalVideoAndTest" })
     public void ownerClickOnRemoteVideoAndTest()
     {
         if (!enabled)
@@ -198,17 +176,34 @@ public class EtherpadTest
             return;
         }
 
-        System.err.println("Start ownerClickOnRemoteVideoAndTest.");
-
+        SwitchVideoTest switchVideoTest
+            = new SwitchVideoTest(participant1, participant2);
         try
         {
-            new SwitchVideoTest("ownerClickOnRemoteVideoAndTest")
-                .ownerClickOnRemoteVideoAndTest();
+            switchVideoTest.ownerClickOnRemoteVideoAndTest();
         }
         finally
         {
-            new SwitchVideoTest("ownerUnpinRemoteVideoAndTest")
-                .ownerUnpinRemoteVideoAndTest();
+            switchVideoTest.ownerUnpinRemoteVideoAndTest();
         }
+    }
+
+    @Test(dependsOnMethods = { "ownerClickOnRemoteVideoAndTest" })
+    public void enterEtherpadClickOnVideosWithoutWriteFocus()
+    {
+        enterEtherpad();
+        ownerClickOnLocalVideoAndTest();
+        ownerClickOnRemoteVideoAndTest();
+    }
+
+    /**
+     * Skips tests if etherpad is not enabled.
+     */
+    @BeforeMethod
+    public void isEnabled()
+    {
+        if (!enabled)
+            throw new SkipException(
+                "No etherpad configuration detected. Disabling test.");
     }
 }

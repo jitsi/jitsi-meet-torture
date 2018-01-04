@@ -17,11 +17,13 @@ package org.jitsi.meet.test;
 
 import java.util.*;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
-
-import junit.framework.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 /**
  * This test is going to get the connection times measurements from Jitsi Meet
@@ -31,13 +33,13 @@ import junit.framework.*;
  * @author Hristo Terezov
  */
 public class ConnectionTimeTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Number of conferences that are going to be started and closed to 
      * gather the data.
      */
-    private static int NUMBER_OF_CONFERENCES = 10;
+    private int NUMBER_OF_CONFERENCES = 10;
     
     /**
      * Script that checks if the mandatory objects that are going to be used to
@@ -169,23 +171,23 @@ public class ConnectionTimeTest
          * @param w participant
          * @return time in ms for the measurement.
          */
-        public Double execute(WebDriver w) 
+        public Double execute(WebDriver w)
         {
             Object res = ((JavascriptExecutor) w).executeScript(script);
-            
+
             if(res instanceof Number)
                 return ((Number)res).doubleValue();
             else if(res == null)
                 return null;
-            else 
-                fail("Wrong type returned from selenium!");
+            else
+                Assert.fail("Wrong type returned from selenium!");
             return null;
         }
         
         /**
-         * Executes CHECK_OBJECTS_CREATED_SCRIPT for passed WebDriver and 
-         * returns the result. That way we can check if all objects that are 
-         * used to get the time measurements are created or not. 
+         * Executes CHECK_OBJECTS_CREATED_SCRIPT for passed WebDriver and
+         * returns the result. That way we can check if all objects that are
+         * used to get the time measurements are created or not.
          * @param w participant
          * @return true if ready and false if not.
          */
@@ -193,192 +195,183 @@ public class ConnectionTimeTest
         {
             Object res = ((JavascriptExecutor) w).executeScript(
                 CHECK_OBJECTS_CREATED_SCRIPT);
-            
+
             if(res instanceof Boolean)
                 return (Boolean)res;
-            else 
-                fail("Wrong type returned from selenium!");
+            else
+                Assert.fail("Wrong type returned from selenium!");
             return null;
         }
         
         
     }
 
-    /**
-     * If jiconop is enabled the value will be 
-     * TimeMeasurements.CONNECTION_ATTACHING otherwise the value will be
-     * TimeMeasurements.CONNECTION_CONNECTING.
-     */
-    private static TimeMeasurements connectingTime;
-
-    /**
-     * If jiconop is enabled the value will be 
-     * TimeMeasurements.CONNECTION_ATTACHED otherwise the value will be
-     * TimeMeasurements.CONNECTION_CONNECTED.
-     */
-    private static TimeMeasurements connectedTime;
-    
-    /**
-     * The time measurement type that is currently evaluated.  
-     */
-    private TimeMeasurements timeMeasurementToProcess = null;
-    
-    /**
-     * Property used to store the gathered data.
-     */
-    private static Double[][] data 
-        = new Double[TimeMeasurements.length][NUMBER_OF_CONFERENCES];
-    
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     * @param t time measurement that will be tested
-     */
-    public ConnectionTimeTest(String name, TimeMeasurements t)
+    @Override
+    public void setup()
     {
-        super(name);
-        this.timeMeasurementToProcess = t;
-    }
-    
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-        suite.addTest(
-            new ConnectionTimeTest("collectData", null));
-        suite.addTest(
-            new ConnectionTimeTest("checkConnectMethodAndValidateData", null));
-        suite.addTest(
-            new ConnectionTimeTest("checkIndexLoaded", TimeMeasurements.INDEX_LOADED));
-        suite.addTest(
-            new ConnectionTimeTest("checkDocumentReady", TimeMeasurements.DOCUMENT_READY));
-        suite.addTest(
-            new ConnectionTimeTest("checkConnecting", null));
-        suite.addTest(
-            new ConnectionTimeTest("checkConnected", null));
-        suite.addTest(
-            new ConnectionTimeTest("checkMUCJoined", TimeMeasurements.MUC_JOINED));
-        suite.addTest(
-            new ConnectionTimeTest("checkSessionInitiate", TimeMeasurements.SESSION_INITIATE));
-        suite.addTest(
-            new ConnectionTimeTest("checkIceChecking", TimeMeasurements.ICE_CHECKING));
-        suite.addTest(
-            new ConnectionTimeTest("checkIceConnected", TimeMeasurements.ICE_CONNECTED));
-        suite.addTest(
-            new ConnectionTimeTest("checkAudioRender", TimeMeasurements.AUDIO_RENDER));
-        suite.addTest(
-            new ConnectionTimeTest("checkVideoRender", TimeMeasurements.VIDEO_RENDER));
-        suite.addTest(
-                new ConnectionTimeTest(
-                        "checkDataChannelOpen", TimeMeasurements.DATA_CHANNEL_OPENED));
+        super.setup();
 
-        return suite;
+        ensureTwoParticipants();
     }
-    
-    /**
-     * Defines how a test is going to be executed
-     */
-    public void runTest() {
-        switch(getName())
+
+    @DataProvider(name = "dp")
+    public Object[][] createData()
+    {
+        // a workaround where if the tests is no in the list of tests
+        // to be executed, to skip executing the DataProvider
+        try
         {
-        case "collectData":
-            collectData();
-            break;
-        case "checkConnectMethodAndValidateData":
-            checkConnectMethodAndValidateData();
-            break;
-        case "checkConnecting":
-            checkTime(ConnectionTimeTest.connectingTime);
-            break;
-        case "checkConnected":
-            checkTime(ConnectionTimeTest.connectedTime);
-            break;
-        default:
-            checkTime(this.timeMeasurementToProcess);
+            super.checkForSkip();
         }
-    }
-    
-    /**
-     * Checks which connect method is used - attach or connect. Validates 
-     */
-    private void checkConnectMethodAndValidateData()
-    {
-        Boolean isUsingAttach = (Boolean)(
-            (JavascriptExecutor) ConferenceFixture.getSecondParticipant())
-                .executeScript(
-                    "return !!config.externalConnectUrl;");
-
-        if (isUsingAttach)
+        catch (SkipException e)
         {
-            connectingTime = TimeMeasurements.CONNECTION_ATTACHING;
-            connectedTime = TimeMeasurements.CONNECTION_ATTACHED;
+            return new Object[0][0];
+        }
+
+        Double[][] data = collectData();
+
+        boolean isUsingAttach = isUsingAttach();
+
+        return new Object[][]
+        {
+            new Object[] { data, TimeMeasurements.INDEX_LOADED, null },
+            new Object[] { data, TimeMeasurements.DOCUMENT_READY, null },
+
+            // If jiconop is enabled the value will be
+            // TimeMeasurements.CONNECTION_ATTACHING otherwise the value will be
+            // TimeMeasurements.CONNECTION_CONNECTING.
+            new Object[]
+            {
+                data,
+                isUsingAttach
+                ? TimeMeasurements.CONNECTION_ATTACHING
+                :  TimeMeasurements.CONNECTION_CONNECTING,
+                null
+            },
+
+            // If jiconop is enabled the value will be
+            // TimeMeasurements.CONNECTION_ATTACHED otherwise the value will be
+            // TimeMeasurements.CONNECTION_CONNECTED.
+            new Object[]
+            {
+                data,
+                isUsingAttach
+                ? TimeMeasurements.CONNECTION_ATTACHED
+                :  TimeMeasurements.CONNECTION_CONNECTED,
+                null
+            },
+
+            new Object[] { data,
+                TimeMeasurements.MUC_JOINED,
+                isUsingAttach
+                    ? TimeMeasurements.CONNECTION_ATTACHED
+                    :  TimeMeasurements.CONNECTION_CONNECTED
+            },
+            new Object[] { data, TimeMeasurements.SESSION_INITIATE, null },
+            new Object[] { data, TimeMeasurements.ICE_CHECKING, null },
+            new Object[] { data, TimeMeasurements.ICE_CONNECTED, null },
+            new Object[] { data, TimeMeasurements.AUDIO_RENDER, null },
+            new Object[] { data, TimeMeasurements.VIDEO_RENDER, null },
+            new Object[] { data, TimeMeasurements.DATA_CHANNEL_OPENED, null }
+        };
+    }
+
+    /**
+     * Evaluates passed time measurement value. Fails if the difference between
+     * the previous measurement and the current one is bigger than the
+     * threshold for the current measurement.
+     * @param data the data to check
+     * @param s the time measurement that will be evaluated.
+     * @param connectedTime the connected time, optional, needed only for
+     * TimeMeasurements.MUC_JOINED.
+     */
+    @Test(dataProvider = "dp")
+    public void check(
+        Double[][] data,
+        TimeMeasurements s,
+        TimeMeasurements connectedTime)
+    {
+        if(s == TimeMeasurements.MUC_JOINED)
+        {
+            checkThreshold(data, data[connectedTime.ordinal()], s);
         }
         else
         {
-            connectingTime = TimeMeasurements.CONNECTION_CONNECTING;
-            connectedTime = TimeMeasurements.CONNECTION_CONNECTED;
+            Double[] prevStepData
+                = s.getPrevStep() == null
+                ? null : data[s.getPrevStep().ordinal()];
+            checkThreshold(data, prevStepData, s);
         }
-        
-        checkForNullInArray(data[connectingTime.ordinal()]);
-        checkForNullInArray(data[connectedTime.ordinal()]);
-    }
-    
-    /**
-     * Fails if the array has null elements.
-     * @param arr the array to be checked
-     * @returns true if there aren't any null elements and false otherwise.
-     */
-    private boolean checkForNullInArray(Double[] arr)
-    {
-        for (int i = 0; i < arr.length; i++)
-        {
-            if(arr[i] == null)
-            {
-                fail("Null value measured");
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
-     * Gets the time measurements for NUMBER_OF_CONFERENCES different 
-     * conferences and stores them in data array. Initializes
-     * connectingTime and connectedTime that are going to be used later. 
+     * Checks which connect method is used - attach or connect.
      */
-    public static void collectData() 
+    private boolean isUsingAttach()
     {
+        return (Boolean) ((JavascriptExecutor) participant2.getDriver())
+            .executeScript("return !!config.externalConnectUrl;");
+    }
+
+    /**
+     * Fails if the array has null elements.
+     * @param array the array to be checked
+     */
+    private void failIfContainsNull(Double[] array)
+    {
+        if (array == null)
+            fail("Array is null");
+
+        if (Arrays.asList(array).contains(null))
+        {
+            fail("Array contains null");
+        }
+    }
+
+    /**
+     * Gets the time measurements for NUMBER_OF_CONFERENCES different
+     * conferences and stores them in data array. Initializes
+     * connectingTime and connectedTime that are going to be used later.
+     */
+    public Double[][] collectData()
+    {
+        Double[][] data
+            = new Double[TimeMeasurements.length][NUMBER_OF_CONFERENCES];
+
         for(int i = 0; i < NUMBER_OF_CONFERENCES; i++)
         {
             refreshSecondParticipant();
-            
+
             waitForMeasurements();
-            
+
             for(TimeMeasurements s : TimeMeasurements.values())
             {
-                data[s.ordinal()][i] 
-                    = s.execute(ConferenceFixture.getSecondParticipant());
+                data[s.ordinal()][i]
+                    = s.execute(participant2.getDriver());
                 System.err.println(s + ": " + data[s.ordinal()][i] );
             }
-            
         }
-        
+
         for(TimeMeasurements s : TimeMeasurements.values())
         {
             System.err.println(s + ": " + Arrays.toString(data[s.ordinal()]) );
         }
+
+        return data;
     }
     
     /**
      * Refreshes the second participant.
      */
-    private static void refreshSecondParticipant()
+    private void refreshSecondParticipant()
     {
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.startSecondParticipant();
+        // initially the second participant is not connected
+        if (participant2 != null)
+        {
+            participant2.hangUp();
+        }
+
+        waitForSecondParticipantToJoin(null);
     }
     
     /**
@@ -386,57 +379,35 @@ public class ConnectionTimeTest
      * AUDIO_RENDER and DATA_CHANNEL_OPEN, assuming all the rest would have
      * completed before these three.
      */
-    private static void waitForMeasurements()
+    private void waitForMeasurements()
     {
-        TestUtils.waitForCondition(ConferenceFixture.getSecondParticipant(), 10,
-            new ExpectedCondition<Boolean>()
-            {
+        TestUtils.waitForCondition(
+            participant2.getDriver(),
+            10,
+            (ExpectedCondition<Boolean>) w
+                -> TimeMeasurements.isReadyToStart(w)
+                    && TimeMeasurements.AUDIO_RENDER.execute(w) != null
+                    && TimeMeasurements.VIDEO_RENDER.execute(w) != null
+                    && TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null);
+    }
 
-                @Override
-                public Boolean apply(WebDriver w)
-                {
-                    return
-                        TimeMeasurements.isReadyToStart(w)
-                        && TimeMeasurements.AUDIO_RENDER.execute(w) != null
-                        && TimeMeasurements.VIDEO_RENDER.execute(w) != null
-                        && TimeMeasurements.DATA_CHANNEL_OPENED.execute(w) != null;
-                }
-            });
-    }
-    
     /**
-     * Evaluates passed time measurement value. Fails if the difference between
-     * the previous measurement and the current one is bigger than the 
-     * threshold for the current measurement. 
-     * @param s the time measurement that will be evaluated.
-     */
-    private void checkTime(TimeMeasurements s)
-    {
-        if(s == TimeMeasurements.MUC_JOINED)
-        {
-            checkThreshold(data[connectedTime.ordinal()], s);
-        }
-        else
-        {
-            Double[] prevStepData = s.getPrevStep() == null ? null : 
-                data[s.getPrevStep().ordinal()];
-            checkThreshold(prevStepData, s);
-        }
-    }
-    
-    /**
-     * Compares the threshold for the passed time measurement with the 
-     * median of the subtracted values of the data from the passed time 
-     * measurement and the passed array. 
+     * Compares the threshold for the passed time measurement with the
+     * median of the subtracted values of the data from the passed time
+     * measurement and the passed array.
      * @param previousStepTimes array with times that will be subtract
      * @param s the time measurement
      */
-    private void checkThreshold(Double[] previousStepTimes, TimeMeasurements s)
+    private void checkThreshold(
+        Double[][] data, Double[] previousStepTimes, TimeMeasurements s)
     {
-        Double[] difference = (previousStepTimes == null)?  data[s.ordinal()] :
-            subtractArrays(previousStepTimes, data[s.ordinal()]);
-        if(difference == null || checkForNullInArray(difference))
-            return;
+        Double[] difference
+            = (previousStepTimes == null)
+                ? data[s.ordinal()] :
+                    subtractArrays(previousStepTimes, data[s.ordinal()]);
+
+        failIfContainsNull(difference);
+
         Double medianValue = getMedian(difference);
         System.err.println(s + ":" + medianValue);
         assertTrue(
@@ -455,26 +426,24 @@ public class ConnectionTimeTest
     }
     
     /**
-     * Retuns array with elements constructed by subtracting element from a 
+     * Returns array with elements constructed by subtracting element from a
      * from element from b with the same index.
      * @param a
-     * @param b 
+     * @param b
      * @return new array
      */
     private static Double[] subtractArrays(Double[] a, Double[] b)
     {
         Double[] res = b.clone();
-        for(int i = 0; i < res.length; i++) 
+        for(int i = 0; i < res.length; i++)
         {
-            if(res[i] != null && a[i] != null)
+            if(res[i] == null && a[i] == null)
             {
-                res[i] -= a[i];
+                Assert.fail("Null value is measured");
+
             }
-            else
-            {
-                fail("Null value is measured");
-                return null;
-            }
+
+            res[i] -= a[i];
         }
         return res;
     }

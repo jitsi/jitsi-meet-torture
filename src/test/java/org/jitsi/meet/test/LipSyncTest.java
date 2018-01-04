@@ -15,13 +15,13 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.text.*;
@@ -62,7 +62,7 @@ import java.util.concurrent.*;
  * @author Pawel Domas
  */
 public class LipSyncTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Minimum delay required to be reported for the audio beeps. By verifying
@@ -79,47 +79,59 @@ public class LipSyncTest
 
     private boolean debug;
 
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        // We need special config to be passed and audio
+        // video streams reset, because the audio does not loop in Chrome and we
+        // don't want to end up with silence being streamed
+
+        // this file is required in order to run this test
+        ParticipantFactory.getInstance().setFakeStreamVideoFile(
+            "resources/fakeVideoStream.y4m");
+        ParticipantFactory.getInstance().setFakeStreamAudioFile(
+            "resources/fakeAudioStream-lipsync.wav");
+    }
+
+    @Override
+    public void cleanup()
+    {
+        super.cleanup();
+
+        ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
+        ParticipantFactory.getInstance().setFakeStreamAudioFile(
+            "resources/fakeAudioStream.wav");
+    }
+
     /**
      * Runs the lip-sync test. See {@link LipSyncTest} class description for
      * more info on how the test works.
      */
+    @Test
     public void testLipSync()
         throws IOException
     {
         debug = System.getProperty("lipsync.debug") != null;
 
-        // Close all participants, we need special config to be passed and audio
-        // video streams reset, because the audio does not loop in Chrome and we
-        // don't want to end up with silence being streamed
-        //ConferenceFixture.closeAllParticipants();
-        // quits the participants in order to make sure the custom video file
-        // is used
-        new DisposeConference().testDispose();
-        // this file is required in order to run this test
-        ConferenceFixture.setFakeStreamVideoFile(
-            "resources/fakeVideoStream.y4m");
-        ConferenceFixture.setFakeStreamAudioFile(
-            "resources/fakeAudioStream-lipsync.wav");
-
         // Start owner with lip-sync enabled, audio packet delay and shorter
         // audio levels interval
-        WebDriver owner
-            = ConferenceFixture.startOwner(
-                    "config.enableLipSync=true&config.audioPacketDelay=15" +
-                        "&config.audioLevelsInterval=100");
+        ensureOneParticipant(
+            "config.enableLipSync=true&config.audioPacketDelay=15" +
+                "&config.audioLevelsInterval=100");
+        WebDriver owner = participant1.getDriver();
 
-        WebDriver participant = ConferenceFixture
-            .startSecondParticipant("config.disableSuspendVideo=true");
+        waitForSecondParticipantToConnect("config.disableSuspendVideo=true");
+
+        WebDriver participant = participant2.getDriver();
 
         // Wait for the conference to start
-        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
-        MeetUtils.waitForParticipantToJoinMUC(participant, 10);
         MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(participant);
 
         // Stops audio and video on the owner to improve performance
-        new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
-        new StopVideoTest("stopVideoOnOwnerAndCheck")
+        new MuteTest(participant1, participant2, null).muteOwnerAndCheck();
+        new StopVideoTest(participant1, participant2)
             .stopVideoOnOwnerAndCheck();
 
         // Read and inject helper script
@@ -134,9 +146,7 @@ public class LipSyncTest
         // Record remote video and audio levels from owner's perspective
         List<String> ownerIDs = MeetUIUtils.getRemoteVideoIDs(owner);
         List<String> ownerResources = new ArrayList<>();
-        ownerResources.add(
-            MeetUtils.getResourceJid(
-                ConferenceFixture.getSecondParticipant()));
+        ownerResources.add(MeetUtils.getResourceJid(participant));
 
         ownerOperator.recordAll(ownerIDs, fps, ownerResources);
 
@@ -155,7 +165,12 @@ public class LipSyncTest
         final int seconds = Integer.valueOf(timeToRunInSeconds);
         int millsToRun = seconds * 1000;
 
-        HeartbeatTask heartbeatTask = new HeartbeatTask(millsToRun, false);
+        HeartbeatTask heartbeatTask
+            = new HeartbeatTask(
+                participant1.getDriver(),
+                participant2.getDriver(),
+                millsToRun,
+                false);
 
         heartbeatTask.start(/* delay */ 1000, /* period */ 1000);
 
@@ -407,26 +422,14 @@ public class LipSyncTest
 
         int findBeep(int startIdx)
         {
-            return findSignalIdx(frames, new Comparator<CapturedFrame>()
-            {
-                @Override
-                public int compare(CapturedFrame o1, CapturedFrame o2)
-                {
-                    return (!o1.beep && o2.beep) ? 1 : 0;
-                }
-            }, startIdx);
+            return findSignalIdx(frames,
+                (o1, o2) -> (!o1.beep && o2.beep) ? 1 : 0, startIdx);
         }
 
         int findGreen(int startIdx)
         {
-            return findSignalIdx(frames, new Comparator<CapturedFrame>()
-            {
-                @Override
-                public int compare(CapturedFrame e0, CapturedFrame e1)
-                {
-                    return (!e0.isGreen() && e1.isGreen()) ? 1 : 0;
-                }
-            }, startIdx);
+            return findSignalIdx(frames,
+                (e0, e1) -> (!e0.isGreen() && e1.isGreen()) ? 1 : 0, startIdx);
         }
 
         String getVideoId()

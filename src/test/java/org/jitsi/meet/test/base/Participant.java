@@ -76,6 +76,16 @@ public class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName)
     {
+        this.joinConference(roomName, null);
+    }
+
+    /**
+     * Joins a conference.
+     * @param roomName the room name to join.
+     * @param fragment adds the given string to the fragment part of the URL.
+     */
+    public void joinConference(String roomName, String fragment)
+    {
         String URL = this.meetURL + "/" + roomName;
         URL += "#config.requireDisplayName=false";
         URL += "&config.debug=true";
@@ -86,9 +96,8 @@ public class Participant<T extends WebDriver>
         URL += "&config.p2p.enabled=false";
         URL += "&config.disable1On1Mode=true";
 
-        // FIXME
-        //if(fragment != null)
-        //    URL += "&" + fragment;
+        if(fragment != null)
+            URL += "&" + fragment;
 
         System.err.println(name + " is opening URL: " + URL);
 
@@ -210,5 +219,23 @@ public class Participant<T extends WebDriver>
     public String toString()
     {
         return super.toString();
+    }
+
+    /**
+     * Returns the participant type.
+     * @return the participant type.
+     */
+    public ParticipantFactory.ParticipantType getType()
+    {
+        return type;
+    }
+
+    /**
+     * Returns participant's name.
+     * @return
+     */
+    public String getName()
+    {
+        return name;
     }
 }

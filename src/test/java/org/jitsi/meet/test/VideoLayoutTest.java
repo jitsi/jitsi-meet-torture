@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 package org.jitsi.meet.test;
-import junit.framework.*;
+
+import org.jitsi.meet.test.base.*;
 
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * Tests the video layout by checking its width and height compared to the
@@ -29,8 +31,16 @@ import org.openqa.selenium.*;
  * @author Yana Stamcheva
  */
 public class VideoLayoutTest
-    extends TestCase
+    extends AbstractBaseTest
 {
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        ensureOneParticipant();
+    }
+
     /**
      * Tests the video layout. This is meant to prove that video is correctly
      * aligned and sized at the beginning of the call.
@@ -38,11 +48,10 @@ public class VideoLayoutTest
      * TODO: Add tests which turn on/off screen sharing and then check if
      * the video would fit back to the screen.
      */
+    @Test
     public void testVideoLayout()
     {
-        System.err.println("Start testVideoLayout.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
         driverVideoLayoutTest(owner);
     }
 

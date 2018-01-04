@@ -15,10 +15,12 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.testng.annotations.*;
 
 /**
  * Tests 1-on-1 remote video thumbnail display in the filmstrip.
@@ -26,7 +28,7 @@ import org.openqa.selenium.interactions.Actions;
  * @author Leonard Kim
  */
 public class OneOnOneTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * The duration to wait, in seconds, remote videos in filmstrip to display
@@ -46,48 +48,16 @@ public class OneOnOneTest
         + "&config.alwaysVisibleToolbar=false";
 
     /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public OneOnOneTest(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new OneOnOneTest("testFilmstripHiddenInOneOnOne"));
-        suite.addTest(new OneOnOneTest("testFilmstripVisibleWithMoreThanTwo"));
-        suite.addTest(
-            new OneOnOneTest("testFilmstripDisplayWhenReturningToOneOnOne"));
-        suite.addTest(new OneOnOneTest("testFilmstripVisibleOnSelfViewFocus"));
-        suite.addTest(new OneOnOneTest("testFilmstripHoverShowsVideos"));
-        suite.addTest(new OneOnOneTest("testStopOneOnOneTest"));
-
-        return suite;
-    }
-
-    /**
      * Tests remote videos in filmstrip do not display in a 1-on-1 call.
      */
+    @Test
     public void testFilmstripHiddenInOneOnOne()
     {
-        WebDriver owner =  ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        ensureOneParticipant(oneOnOneConfigOverrides);
+        waitForSecondParticipantToConnect(oneOnOneConfigOverrides);
 
-        // Close the browsers first and then load the meeting so hash changes to
-        // the config are detected by the browser.
-        ConferenceFixture.close(owner);
-        ConferenceFixture.close(secondParticipant);
-
-        ConferenceFixture.startOwner(oneOnOneConfigOverrides);
-        ConferenceFixture.startSecondParticipant(oneOnOneConfigOverrides);
+        WebDriver owner =  participant1.getDriver();
+        WebDriver secondParticipant = participant2.getDriver();
 
         // Prevent toolbar from being always displayed as filmstrip visibility
         // is tied to toolbar visibility.
@@ -102,19 +72,15 @@ public class OneOnOneTest
      * Tests remote videos in filmstrip do display when in a call with more than
      * two total participants.
      */
+    @Test(dependsOnMethods = { "testFilmstripHiddenInOneOnOne" })
     public void testFilmstripVisibleWithMoreThanTwo() {
-        // Close the third participant's browser and reopen so hash changes to
-        // the config are detected by the browser.
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
+        waitForThirdParticipantToConnect(oneOnOneConfigOverrides);
 
-        ConferenceFixture.waitForThirdParticipantToConnect();
-        ConferenceFixture.close(thirdParticipant);
-        ConferenceFixture.startThirdParticipant(oneOnOneConfigOverrides);
+        WebDriver thirdParticipant = participant3.getDriver();
         stopDockingToolbar(thirdParticipant);
 
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), true);
-        verifyRemoteVideosDisplay(
-            ConferenceFixture.getSecondParticipant(), true);
+        verifyRemoteVideosDisplay(participant1.getDriver(), true);
+        verifyRemoteVideosDisplay(participant2.getDriver(), true);
         verifyRemoteVideosDisplay(thirdParticipant, true);
     }
 
@@ -123,34 +89,36 @@ public class OneOnOneTest
      * 1-on-1 mode. Also tests remote videos in filmstrip do display when
      * focused on self and transitioning back to 1-on-1 mode.
      */
+    @Test(dependsOnMethods = { "testFilmstripVisibleWithMoreThanTwo" })
     public void testFilmstripDisplayWhenReturningToOneOnOne() {
-        MeetUIUtils.clickOnLocalVideo(ConferenceFixture.getSecondParticipant());
+        MeetUIUtils.clickOnLocalVideo(participant2.getDriver());
 
-        ConferenceFixture.closeThirdParticipant();
+        participant3.hangUp();
 
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), false);
-        verifyRemoteVideosDisplay(
-            ConferenceFixture.getSecondParticipant(), true);
+        verifyRemoteVideosDisplay(participant1.getDriver(), false);
+        verifyRemoteVideosDisplay(participant2.getDriver(), true);
     }
 
     /**
      * Tests remote videos in filmstrip become visible when focused on self view
      * while in a 1-on-1 call.
      */
+    @Test(dependsOnMethods = { "testFilmstripDisplayWhenReturningToOneOnOne" })
     public void testFilmstripVisibleOnSelfViewFocus() {
-        MeetUIUtils.clickOnLocalVideo(ConferenceFixture.getOwner());
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), true);
+        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
+        verifyRemoteVideosDisplay(participant1.getDriver(), true);
 
-        MeetUIUtils.clickOnLocalVideo(ConferenceFixture.getOwner());
-        verifyRemoteVideosDisplay(ConferenceFixture.getOwner(), false);
+        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
+        verifyRemoteVideosDisplay(participant1.getDriver(), false);
     }
 
     /**
      * Tests remote videos in filmstrip stay visible when hovering over when the
      * filmstrip is hovered over.
      */
+    @Test(dependsOnMethods = { "testFilmstripVisibleOnSelfViewFocus" })
     public void testFilmstripHoverShowsVideos() {
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         WebElement toolbar = owner.findElement(By.id("localVideoContainer"));
         Actions hoverOnToolbar = new Actions(owner);
@@ -158,13 +126,6 @@ public class OneOnOneTest
         hoverOnToolbar.perform();
 
         verifyRemoteVideosDisplay(owner, true);
-    }
-
-    /**
-     * Ensures participants reopen their browsers without 1-on-1 mode enabled.
-     */
-    public void testStopOneOnOneTest() {
-        ConferenceFixture.restartParticipants();
     }
 
     /**

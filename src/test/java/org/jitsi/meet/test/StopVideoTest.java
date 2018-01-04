@@ -15,80 +15,75 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * To stop the video on owner and participant side.
  * @author Damian Minkov
  */
 public class StopVideoTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
-     * Constructs test.
-     * @param name the method name for the test.
+     * Default constructor.
      */
-    public StopVideoTest(String name)
-    {
-        super(name);
-    }
+    public StopVideoTest()
+    {}
 
     /**
-     * Orders the tests.
-     * @return the suite with order tests.
+     * Constructs StopVideoTest with already allocated participants.
+     * @param participant1
+     * @param participant2
      */
-    public static junit.framework.Test suite()
+    public StopVideoTest(
+        Participant participant1, Participant participant2)
     {
-        TestSuite suite = new TestSuite();
+        this.participant1 = participant1;
+        this.participant2 = participant2;
+    }
 
-        suite.addTest(new StopVideoTest("stopVideoOnOwnerAndCheck"));
-        suite.addTest(new StopVideoTest("startVideoOnOwnerAndCheck"));
-        suite.addTest(
-            new StopVideoTest("stopAndStartVideoOnOwnerAndCheckStream"));
-        suite.addTest(
-            new StopVideoTest("stopAndStartVideoOnOwnerAndCheckEvents"));
-        suite.addTest(new StopVideoTest("stopVideoOnParticipantAndCheck"));
-        suite.addTest(new StopVideoTest("startVideoOnParticipantAndCheck"));
-        suite.addTest(new StopVideoTest(
-            "stopOwnerVideoBeforeSecondParticipantJoins"));
+    @Override
+    public void setup()
+    {
+        super.setup();
 
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Stops the video on the conference owner.
      */
+    @Test
     public void stopVideoOnOwnerAndCheck()
     {
-        System.err.println("Start stopVideoOnOwnerAndCheck.");
-
         MeetUIUtils.muteVideoAndCheck(
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant());
+            participant1.getDriver(),
+            participant2.getDriver());
     }
 
     /**
      * Starts the video on owner.
      */
+    @Test(dependsOnMethods = { "stopVideoOnOwnerAndCheck" })
     public void startVideoOnOwnerAndCheck()
     {
-        System.err.println("Start startVideoOnOwnerAndCheck.");
-
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButton(participant1.getDriver(),
             "toolbar_button_camera");
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            ConferenceFixture.getSecondParticipant(),
+            participant2.getDriver(),
             "//span[starts-with(@id, 'participant_')]"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 10);
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            ConferenceFixture.getOwner(),
+            participant1.getDriver(),
             "//span[@id='localVideoContainer']"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 10);
@@ -98,11 +93,10 @@ public class StopVideoTest
      * Checks if muting/unmuting of the local video stream affects
      * large video of other participant.
      */
+    @Test(dependsOnMethods = { "startVideoOnOwnerAndCheck" })
     public void stopAndStartVideoOnOwnerAndCheckStream()
     {
-        System.err.println("Start stopAndStartVideoOnOwnerAndCheckStream.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         // mute owner
         stopVideoOnOwnerAndCheck();
@@ -123,11 +117,10 @@ public class StopVideoTest
      * Checks if muting/unmuting remote video triggers TRACK_ADDED or
      * TRACK_REMOVED events for the local participant.
      */
+    @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckStream" })
     public void stopAndStartVideoOnOwnerAndCheckEvents()
     {
-        System.err.println("Start stopAndStartVideoOnOwnerAndCheckEvents.");
-
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver secondParticipant = participant2.getDriver();
         JavascriptExecutor executor = (JavascriptExecutor) secondParticipant;
 
         String listenForTrackRemoved = "APP.conference._room.addEventListener("
@@ -160,32 +153,30 @@ public class StopVideoTest
     /**
      * Stops the video on participant.
      */
+    @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckEvents" })
     public void stopVideoOnParticipantAndCheck()
     {
-        System.err.println("Start stopVideoOnParticipantAndCheck.");
-
         MeetUIUtils.muteVideoAndCheck(
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner());
+            participant2.getDriver(),
+            participant1.getDriver());
     }
 
     /**
      * Starts the video on participant.
      */
+    @Test(dependsOnMethods = { "stopVideoOnParticipantAndCheck" })
     public void startVideoOnParticipantAndCheck()
     {
-        System.err.println("Start startVideoOnParticipantAndCheck.");
-
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_camera");
+            participant2.getDriver(), "toolbar_button_camera");
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            ConferenceFixture.getOwner(),
+            participant1.getDriver(),
             TestUtils.getXPathStringForClassName("//span", "videoMuted") +
             "/i[@class='icon-camera-disabled']", 5);
         
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            ConferenceFixture.getSecondParticipant(),
+            participant2.getDriver(),
             TestUtils.getXPathStringForClassName("//span", "videoMuted") +
             "/i[@class='icon-camera-disabled']", 5);
     }
@@ -196,22 +187,22 @@ public class StopVideoTest
      * checks the status of the stopped video icon.
      * At the end starts the video to clear the state.
      */
+    @Test(dependsOnMethods = { "startVideoOnParticipantAndCheck" })
     public void stopOwnerVideoBeforeSecondParticipantJoins()
     {
-        System.err.println("Start stopOwnerVideoBeforeSecondParticipantJoins.");
-
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        participant2.hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButton(
+            participant1.getDriver(),
             "toolbar_button_camera");
 
         TestUtils.waitMillis(500);
 
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
+        ensureTwoParticipants();
+        WebDriver secondParticipant = participant2.getDriver();
 
         MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
         MeetUtils.waitForIceConnected(secondParticipant);

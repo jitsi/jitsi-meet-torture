@@ -16,10 +16,11 @@
 package org.jitsi.meet.test;
 
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 
-import junit.framework.*;
+import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * Test for max users prosody module.
@@ -29,7 +30,7 @@ import junit.framework.*;
  * @author Hristo Terezov
  */
 public class MaxUsersTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Number of participants in the call.
@@ -41,35 +42,25 @@ public class MaxUsersTest
      */
     public static String MAX_USERS_PROP = "max_users_tests.max_users";
 
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public MaxUsersTest(String name)
+    @Override
+    public boolean skipTestByDefault()
     {
-        super(name);
+        return true;
     }
 
-
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
+    @Override
+    public void setup()
     {
-        TestSuite suite = new TestSuite();
+        super.setup();
 
-        suite.addTest(
-            new MaxUsersTest("enterWithMaxParticipantsAndCheckDialog"));
-
-        return suite;
+        ensureTwoParticipants();
     }
-    
-    
+
     /**
      * Scenario tests wether an error dialog is displayed when MAX_USERSth
      * participant join the conference.
      */
+    @Test
     public void enterWithMaxParticipantsAndCheckDialog() 
     {
         String maxUsersString = System.getProperty(MAX_USERS_PROP);
@@ -84,17 +75,20 @@ public class MaxUsersTest
             // Assuming we have 2 participants already started we have to
             // start MAX_USERS - 2 participants more to have MAX_USERS
             // participants in the call in order to exceed the limit.
-            WebDriver[] participants = new WebDriver[MAX_USERS - 2];
+            Participant[] participants = new Participant[MAX_USERS - 2];
             try
             {
                 for(int i = 0; i < participants.length; i++)
                 {
-                    participants[i] = ConferenceFixture.startParticipant(null);
+                    participants[i] =
+                        ParticipantFactory.getInstance()
+                            .createParticipant("web.participant" + (i + 4));
+                    participants[i].joinConference(currentRoomName);
                 }
                 // Check if the error dialog is displayed for
                 // the last participant.
                 int lastParticipantIdx = participants.length - 1;
-                checkDialog(participants[lastParticipantIdx]);
+                checkDialog(participants[lastParticipantIdx].getDriver());
             } 
             catch(TimeoutException timeout)
             {
@@ -114,7 +108,7 @@ public class MaxUsersTest
         }
         else
         {
-            checkDialog(ConferenceFixture.getSecondParticipant());
+            checkDialog(participant2.getDriver());
         }
     }
 
@@ -122,12 +116,12 @@ public class MaxUsersTest
      * Quits the browsers of the passed participants.
      * @param participants array with participants that are going to quited.
      */
-    private void quitParticipants(WebDriver[] participants)
+    private void quitParticipants(Participant[] participants)
     {
         // Clean up the participants in participants array
         for(int i = 0; i < participants.length; i++) 
         {
-            ConferenceFixture.quit(participants[i], false);
+            participants[i].quit();
         }
     }
 

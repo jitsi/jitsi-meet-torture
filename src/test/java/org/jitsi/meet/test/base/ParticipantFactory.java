@@ -181,7 +181,7 @@ public class ParticipantFactory
 
     /**
      * Starts a <tt>WebDriver</tt> instance using default settings.
-     * @param name the partycipant name.
+     * @param name the participant name.
      * @param configPrefix the configuration property to retrieve settings.
      * @param participantType the participant type we are creating a driver for.
      * @return the <tt>WebDriver</tt> instance.
@@ -231,7 +231,7 @@ public class ParticipantFactory
                 return new RemoteWebDriver(getRemoteDriverAddress(), caps);
             }
 
-            return new FirefoxDriver(profile);
+            return new FirefoxDriver(new FirefoxOptions().setProfile(profile));
         }
         else if (participantType == ParticipantType.safari)
         {
@@ -256,10 +256,8 @@ public class ParticipantFactory
                 FailureListener.createLogsFolder() +
                     "/chrome-console-" + name + ".log");
 
-            DesiredCapabilities caps = DesiredCapabilities.chrome();
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);
-            caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
             final ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
@@ -268,6 +266,8 @@ public class ParticipantFactory
             ops.addArguments("disable-plugins");
             ops.addArguments("mute-audio");
             ops.addArguments("disable-infobars");
+
+            ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
             if(!Boolean.getBoolean(DISABLE_NOSANBOX_PARAM))
             {
@@ -324,11 +324,9 @@ public class ParticipantFactory
             ops.addArguments("enable-logging");
             ops.addArguments("vmodule=*=3");
 
-            caps.setCapability(ChromeOptions.CAPABILITY, ops);
-
             if (isRemote)
             {
-                return new RemoteWebDriver(getRemoteDriverAddress(), caps);
+                return new RemoteWebDriver(getRemoteDriverAddress(), ops);
             }
 
             try

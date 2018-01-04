@@ -15,9 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * Tests conference state after entering and exiting audio only mode.
@@ -25,17 +27,8 @@ import org.openqa.selenium.*;
  * @author Leonard Kim
  */
 public class AudioOnlyTest
-        extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public AudioOnlyTest(String name)
-    {
-        super(name);
-    }
-
     private String AUDIO_ONLY_ENABLED_ICON_XPATH
         = "//div[@id='videoResolutionLabel']" +
         "//i[contains(@class, 'icon-visibility-off')]";
@@ -45,58 +38,49 @@ public class AudioOnlyTest
         = "toolbar_button_videoquality";
     private String VIDEO_QUALITY_SLIDER_CLASS = "video-quality-dialog-slider";
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
+    @Override
+    public void setup()
     {
-        TestSuite suite = new TestSuite();
+        super.setup();
 
-        suite.addTest(
-            new AudioOnlyTest("enableAudioOnlyAndCheck"));
-        suite.addTest(
-            new AudioOnlyTest("videoUnmuteDisabledInAudioOnly"));
-        suite.addTest(
-            new AudioOnlyTest("avatarsDisplayForParticipants"));
-        suite.addTest(
-            new AudioOnlyTest("disableAudioOnlyAndCheck"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Enables audio only mode for the owner and verifies the other participant
      * sees the owner as video muted.
      */
+    @Test
     public void enableAudioOnlyAndCheck()
     {
         setAudioOnlyAndCheck(
-            ConferenceFixture.getOwner(),
+            participant1.getDriver(),
             "owner",
-            ConferenceFixture.getSecondParticipant(),
+            participant2.getDriver(),
             true);
     }
 
     /**
      * Verifies the owner cannot video unmute while in audio only mode.
      */
+    @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
     public void videoUnmuteDisabledInAudioOnly() {
-        MeetUIUtils.clickOnToolbarButton(ConferenceFixture.getOwner(),
+        MeetUIUtils.clickOnToolbarButton(participant1.getDriver(),
             MUTE_BUTTON_ID);
 
         verifyVideoMute(
-            ConferenceFixture.getOwner(),
+            participant1.getDriver(),
             "owner",
-            ConferenceFixture.getSecondParticipant(),
+            participant2.getDriver(),
             true);
     }
 
     /**
      * Verifies the owner sees avatars for itself and other participants.
      */
+    @Test(dependsOnMethods = { "videoUnmuteDisabledInAudioOnly" })
     public void avatarsDisplayForParticipants() {
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = participant1.getDriver();
 
         TestUtils.waitForDisplayedElementByXPath(owner, LARGE_AVATAR_XPATH, 2);
 
@@ -107,11 +91,12 @@ public class AudioOnlyTest
      * Disables audio only mode and verifies both the owner and the other
      * participant see the owner as not video muted.
      */
+    @Test(dependsOnMethods = { "avatarsDisplayForParticipants" })
     public void disableAudioOnlyAndCheck() {
         setAudioOnlyAndCheck(
-            ConferenceFixture.getOwner(),
+            participant1.getDriver(),
             "owner",
-            ConferenceFixture.getSecondParticipant(),
+            participant2.getDriver(),
             false);
     }
 
