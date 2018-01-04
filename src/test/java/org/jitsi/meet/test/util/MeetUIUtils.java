@@ -294,7 +294,7 @@ public class MeetUIUtils
 
             // there is no element, so its not visible, just continue
             // cause failOnMissing is false
-            System.err.println("Button is missing:" + xpath);
+            TestUtils.print("Button is missing:" + xpath);
         }
     }
 
@@ -610,7 +610,7 @@ public class MeetUIUtils
                         {
                             if (audioLevel != null && audioLevel > 0.1)
                             {
-                                System.err.println(
+                                TestUtils.print(
                                         "muted exiting on: " + audioLevel);
                                 return true;
                             }
@@ -624,7 +624,7 @@ public class MeetUIUtils
                         {
                             if (audioLevel != null && audioLevel > 0.1)
                             {
-                                System.err.println(
+                                TestUtils.print(
                                         "unmuted exiting on: " + audioLevel);
                                 return true;
                             }

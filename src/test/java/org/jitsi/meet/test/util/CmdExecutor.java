@@ -96,7 +96,7 @@ public class CmdExecutor
         if (!waitEndSignal.await(5, TimeUnit.SECONDS)
                 && process != null && result == null)
         {
-            System.err.println("Killing the process: " + cmd);
+            TestUtils.print("Killing the process: " + cmd);
 
             process.destroy();
 

@@ -220,18 +220,18 @@ public class StopVideoTest
                 .executeScript("return APP.xmpp.myJid();");
 
             String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
-            System.err.println("Owner jid: " + ownerJid);
+            print("Owner jid: " + ownerJid);
 
             Object streamExist = ((JavascriptExecutor)secondParticipant)
                 .executeScript("return " + streamByJid + " != undefined;");
-            System.err.println("Stream : " + streamExist);
+            print("Stream : " + streamExist);
 
             if (streamExist != null && streamExist.equals(Boolean.TRUE))
             {
                 Object videoStreamExist
                     = ((JavascriptExecutor)secondParticipant).executeScript(
                         "return " + streamByJid + "['Video'] != undefined;");
-                System.err.println("Stream exist : " + videoStreamExist);
+                print("Stream exist : " + videoStreamExist);
 
                 if (videoStreamExist != null && videoStreamExist
                     .equals(Boolean.TRUE))
@@ -240,7 +240,7 @@ public class StopVideoTest
                         = ((JavascriptExecutor) secondParticipant)
                             .executeScript(
                                 "return " + streamByJid + "['Video'].muted;");
-                    System.err.println("Stream muted : " + videoStreamMuted);
+                    print("Stream muted : " + videoStreamMuted);
                 }
             }
         }*/

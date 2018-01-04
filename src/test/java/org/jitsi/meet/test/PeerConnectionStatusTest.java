@@ -98,7 +98,7 @@ public class PeerConnectionStatusTest
             }
             else
             {
-                System.err.println(
+                print(
                     "WARN no firewall script has been specified and "
                         + "the PeerConnectionStatusTest will not be "
                         + "executed!");
@@ -130,7 +130,7 @@ public class PeerConnectionStatusTest
         cmdArgs.add("--block-port");
         cmdArgs.add(String.valueOf(portNumber));
 
-        System.err.println("Will block port: " + portNumber);
+        print("Will block port: " + portNumber);
 
         cmdExecutor.executeCmd(cmdArgs);
     }
@@ -155,7 +155,7 @@ public class PeerConnectionStatusTest
         cmdArgs.add("--unblock-port");
         cmdArgs.add(String.valueOf(portNumber));
 
-        System.err.println("Will unblock port: " + portNumber);
+        print("Will unblock port: " + portNumber);
 
         cmdExecutor.executeCmd(cmdArgs);
     }
@@ -188,7 +188,7 @@ public class PeerConnectionStatusTest
 
         // 1. Block media flow on 2nd and check if is indicated as disconnected
         peer2bundlePort = MeetUtils.getBundlePort(secondPeer);
-        System.err.println(
+        print(
             "Local bundle port for 2: " + peer2bundlePort);
         blockPort(peer2bundlePort);
 

@@ -17,6 +17,7 @@ package org.jitsi.meet.test.base;
 
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 import java.util.concurrent.*;
 
@@ -99,7 +100,7 @@ public class Participant<T extends WebDriver>
         if(fragment != null)
             URL += "&" + fragment;
 
-        System.err.println(name + " is opening URL: " + URL);
+        TestUtils.print(name + " is opening URL: " + URL);
 
         {
             // with chrome v52 we start getting error:
@@ -120,7 +121,7 @@ public class Participant<T extends WebDriver>
             catch (org.openqa.selenium.TimeoutException ex)
             {
                 ex.printStackTrace();
-                System.err.println("TimeoutException while loading page, "
+                TestUtils.print("TimeoutException while loading page, "
                     + "will skip it and continue:" + ex.getMessage());
             }
         }
@@ -150,7 +151,7 @@ public class Participant<T extends WebDriver>
         String version
             = TestUtils.executeScriptAndReturnString(driver,
                 "return JitsiMeetJS.version;");
-        System.err.println(name + " lib-jitsi-meet version: " + version);
+        TestUtils.print(name + " lib-jitsi-meet version: " + version);
 
         ((JavascriptExecutor) driver)
             .executeScript("document.title='" + name + "'");
@@ -188,7 +189,7 @@ public class Participant<T extends WebDriver>
 
         this.hungUp = true;
 
-        System.err.println("Hung up in " + name + ".");
+        TestUtils.print("Hung up in " + name + ".");
 
         // open a blank page after hanging up, to make sure
         // we will successfully navigate to the new link containing the

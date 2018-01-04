@@ -169,7 +169,7 @@ public abstract class AbstractParticipantHelper
         if (participant == null)
             return;
 
-        System.err.println("Quiting " + participant.getName());
+        TestUtils.print("Quiting " + participant.getName());
         participant.quit();
     }
 

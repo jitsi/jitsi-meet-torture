@@ -585,4 +585,13 @@ public class TestUtils
                 + "[contains(concat(' ', normalize-space(@class), ' '), ' "
                 + className + " ')]";
     }
+
+    /**
+     * Prints a text with a prefix of the thread id.
+     * @param txt the text to print.
+     */
+    public static void print(String txt)
+    {
+        System.err.println("[" + Thread.currentThread().getId() + "] " + txt);
+    }
 }

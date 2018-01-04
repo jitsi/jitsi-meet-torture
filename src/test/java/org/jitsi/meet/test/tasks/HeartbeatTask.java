@@ -78,7 +78,7 @@ public class HeartbeatTask
     {
         try
         {
-            System.err.println("Checking at " + new Date()
+            TestUtils.print("Checking at " + new Date()
                 + " / to finish: " + millsToRun + " ms.");
 
             if (!MeetUtils.isIceConnected(participant1))
@@ -113,7 +113,7 @@ public class HeartbeatTask
 
             if (downloadOwner <= 0)
             {
-                System.err.println("Owner no download bitrate");
+                TestUtils.print("Owner no download bitrate");
                 ownerDownloadSignal.countDown();
             }
             else
@@ -127,7 +127,7 @@ public class HeartbeatTask
 
             if (enableBitrateCheck && downloadParticipant <= 0)
             {
-                System.err.println(
+                TestUtils.print(
                    "Second participant no download bitrate");
                secondPDownloadSignal.countDown();
             }
@@ -178,7 +178,7 @@ public class HeartbeatTask
      */
     private void assertAndQuit(String msg)
     {
-        System.err.println(msg);
+        TestUtils.print(msg);
         waitSignal.countDown();
         timer.cancel();
     }

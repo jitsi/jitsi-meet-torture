@@ -23,6 +23,7 @@ import org.apache.http.util.*;
 import com.google.gson.*;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.util.*;
 import org.testng.annotations.*;
 
 import java.net.*;
@@ -148,7 +149,7 @@ public class JVBConferencesCheck
         {
             conferencesList.removeAll(firstRunConferences);
 
-            System.err.println("NEW_CONFERENCES=" + conferencesList);
+            print("NEW_CONFERENCES=" + conferencesList);
 
             assertFalse("The list of conferences must not be empty",
                 conferencesList.isEmpty());

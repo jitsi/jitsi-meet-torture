@@ -92,7 +92,7 @@ public class ConferenceMigrationTest
             jvbRESTEndpoint = DEFAULT_BRIDGE_REST_ENDPOINT;
         }
 
-        System.err.println("Start conference migration test. " +
+        print("Start conference migration test. " +
             "Migrated bridge: " + migratedBridge +
             ", REST endpoint: " + jvbRESTEndpoint);
 
@@ -129,18 +129,18 @@ public class ConferenceMigrationTest
             }
         }).start();
 
-        System.err.println("Wait for disconnected...");
+        print("Wait for disconnected...");
         MeetUtils.waitForIceDisconnected(owner, 15);
-        System.err.println("Owner - ICE disconnected!");
+        print("Owner - ICE disconnected!");
         MeetUtils.waitForIceDisconnected(secondParticipant, 15);
-        System.err.println("Second peer - ICE disconnected!");
+        print("Second peer - ICE disconnected!");
 
         // Wait for conference restart
-        System.err.println("Wait for ICE reconnected...");
+        print("Wait for ICE reconnected...");
         MeetUtils.waitForIceConnected(owner, 60);
-        System.err.println("Owner - ICE reconnected!");
+        print("Owner - ICE reconnected!");
         MeetUtils.waitForIceConnected(secondParticipant, 60);
-        System.err.println("Second peer - ICE reconnected!");
+        print("Second peer - ICE reconnected!");
 
     }
 }

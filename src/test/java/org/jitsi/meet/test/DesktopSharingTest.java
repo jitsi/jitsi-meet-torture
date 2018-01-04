@@ -64,7 +64,7 @@ public class DesktopSharingTest
         if(hookScript == null)
             return;
 
-        System.err.println("Start testDesktopSharingInPresence.");
+        print("Start testDesktopSharingInPresence.");
 
         ensureOneParticipant();
 
@@ -90,7 +90,7 @@ public class DesktopSharingTest
                 String[] cmd =
                     { hookScript, URL};
 
-                System.err.println("Start the script with param:"+ URL);
+                print("Start the script with param:"+ URL);
                 ProcessBuilder pb = new ProcessBuilder(cmd);
 
                 pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
@@ -100,7 +100,7 @@ public class DesktopSharingTest
                 waitStartSignal.countDown();
 
                 p.waitFor();
-                System.err.println("Script ended execution.");
+                print("Script ended execution.");
                 waitEndSignal.countDown();
             }
             catch (IOException | InterruptedException e)
@@ -171,7 +171,7 @@ public class DesktopSharingTest
         try
         {
             waitEndSignal.await(10, TimeUnit.SECONDS);
-            System.err.println("End DesktopSharingTest.");
+            print("End DesktopSharingTest.");
         }
         catch (InterruptedException e)
         {

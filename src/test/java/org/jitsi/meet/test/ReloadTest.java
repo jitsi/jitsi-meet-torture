@@ -287,7 +287,7 @@ public class ReloadTest
                 });
         }
         
-        System.err.println("Reload detected");
+        print("Reload detected");
 
         for (WebDriver driver : drivers)
         {
@@ -295,18 +295,18 @@ public class ReloadTest
                 "APP.conference._room.conference_left_event = false;");
         }
         
-        System.err.println("Wait for ice connected.");
+        print("Wait for ice connected.");
         for (WebDriver driver : drivers)
         {
             MeetUtils.waitForIceConnected(driver, 60);
         }
         
-        System.err.println("Wait for send receive data on the owner side.");
+        print("Wait for send receive data on the owner side.");
         MeetUtils.waitForSendReceiveData(participant1.getDriver());
         
         if(isOwnerMuted)
         {
-            System.err.println("Wait for send data on the second "
+            print("Wait for send data on the second "
                 + "participant side.");
             WebDriver participant = participant2.getDriver();
             new WebDriverWait(participant, 15)
@@ -328,11 +328,11 @@ public class ReloadTest
         }
         else 
         {
-            System.err.println("Wait for send receive data on the second "
+            print("Wait for send receive data on the second "
                 + "participant side.");
             MeetUtils.waitForSendReceiveData(participant2.getDriver());
         }
         
-        System.err.println("Reload finished.");
+        print("Reload finished.");
     }
 }

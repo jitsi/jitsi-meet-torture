@@ -128,7 +128,7 @@ public class ActiveSpeakerTest
             throw new SkipException("skip as it is not chrome");
         }
 
-        System.err.println("Start testActiveSpeaker for participant: "
+        print("Start testActiveSpeaker for participant: "
             + activeSpeakerParticipant.getName());
 
         WebDriver activeSpeaker = activeSpeakerParticipant.getDriver();

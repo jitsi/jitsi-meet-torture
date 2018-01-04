@@ -348,13 +348,13 @@ public class ConnectionTimeTest
             {
                 data[s.ordinal()][i]
                     = s.execute(participant2.getDriver());
-                System.err.println(s + ": " + data[s.ordinal()][i] );
+                print(s + ": " + data[s.ordinal()][i] );
             }
         }
 
         for(TimeMeasurements s : TimeMeasurements.values())
         {
-            System.err.println(s + ": " + Arrays.toString(data[s.ordinal()]) );
+            print(s + ": " + Arrays.toString(data[s.ordinal()]) );
         }
 
         return data;
@@ -409,7 +409,7 @@ public class ConnectionTimeTest
         failIfContainsNull(difference);
 
         Double medianValue = getMedian(difference);
-        System.err.println(s + ":" + medianValue);
+        print(s + ":" + medianValue);
         assertTrue(
             "Expected:" + s.getThreshold() + ", was:" + medianValue,
             medianValue < s.getThreshold());

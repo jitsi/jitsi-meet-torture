@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.io.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.logging.*;
 import org.testng.*;
@@ -81,7 +82,7 @@ public class FailureListener
     {
         if(testResult.getThrowable() != null)
         {
-            System.err.println("TestFailure:");
+            TestUtils.print("TestFailure:");
             testResult.getThrowable().printStackTrace();
         }
 
@@ -140,7 +141,7 @@ public class FailureListener
 
         if(takesScreenshot == null)
         {
-            System.err.println("No driver to take screenshot from! FileName:"
+            TestUtils.print("No driver to take screenshot from! FileName:"
                 + fileName);
             return;
         }

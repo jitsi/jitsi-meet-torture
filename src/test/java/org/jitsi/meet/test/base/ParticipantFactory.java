@@ -17,6 +17,7 @@ package org.jitsi.meet.test.base;
 
 import io.github.bonigarcia.wdm.*;
 import org.jitsi.meet.test.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
@@ -344,7 +345,7 @@ public class ParticipantFactory
                             () -> {
                                 long start = System.currentTimeMillis();
                                 ChromeDriver resDr = new ChromeDriver(ops);
-                                System.err.println(
+                                TestUtils.print(
                                     "ChromeDriver created for:"
                                         + (System.currentTimeMillis() - start)
                                         + " ms.");
@@ -360,7 +361,7 @@ public class ParticipantFactory
                         // cancel current task
                         future.cancel(true);
 
-                        System.err.println("Timeout waiting for "
+                        TestUtils.print("Timeout waiting for "
                             + "chrome instance! We will retry now, this was our"
                             + "attempt " + i);
                     }
@@ -373,7 +374,7 @@ public class ParticipantFactory
             }
 
             // keep the old code
-            System.err.println("Just create ChromeDriver, may hang!");
+            TestUtils.print("Just create ChromeDriver, may hang!");
             return new ChromeDriver(ops);
         }
     }

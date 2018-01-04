@@ -196,15 +196,15 @@ public class LipSyncTest
         // Debug dump to files
         if (System.getProperty("lipsync.debug") != null)
         {
-            System.err.println("Printing from owner perspective:");
+            print("Printing from owner perspective:");
             dumpLipSyncInfo("owner.log", ownerSeries);
 
-            System.err.println("Printing from peer perspective:");
+            print("Printing from peer perspective:");
             dumpLipSyncInfo("peer.log", participantSeries);
         }
 
-        System.err.println("BEEP diffs: " + comparison.beepDifferences);
-        System.err.println("GREEN diffs: " + comparison.greenDifferences);
+        print("BEEP diffs: " + comparison.beepDifferences);
+        print("GREEN diffs: " + comparison.greenDifferences);
 
         double beepAvg = comparison.getBeepDiffAvg();
 
@@ -214,11 +214,11 @@ public class LipSyncTest
 
         double lastGreenAvg = comparison.getLastFewGreenAvg(5);
 
-        System.err.println(
+        print(
             "Beep delay avg: " + beepAvg + " last green avg: " + lastGreenAvg);
 
         double syncRatio = lastGreenAvg / beepAvg;
-        System.err.println("A/V sync ratio: " + syncRatio);
+        print("A/V sync ratio: " + syncRatio);
 
         ownerOperator.dispose();
         participantOperator.dispose();
@@ -497,7 +497,7 @@ public class LipSyncTest
                     // Remove first element
                     Integer removed = receiverTimes.remove(0);
                     if (debug)
-                        System.err.println("ADJUSTING! removed: " + removed);
+                        print("ADJUSTING! removed: " + removed);
                 }
             }
 

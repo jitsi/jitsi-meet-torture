@@ -77,7 +77,7 @@ public class FollowMeTest
                 "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;");
         // if all are moderators skip this check
         if (allModeratorsEnabled) {
-            System.err.println("All moderators enabled, skipping check!");
+            print("All moderators enabled, skipping check!");
             return;
         }
 
@@ -97,7 +97,7 @@ public class FollowMeTest
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
-            System.err.println(
+            print(
                 "No etherpad configuration detected. Disabling test.");
             return;
         }

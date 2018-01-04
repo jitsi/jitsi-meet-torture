@@ -15,6 +15,8 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.jitsi.meet.test.util.*;
+
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -72,7 +74,7 @@ public abstract class AbstractBaseTest
     {
         checkForSkip();
 
-        System.err.println(
+        print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
         setup();
@@ -243,12 +245,21 @@ public abstract class AbstractBaseTest
     @BeforeMethod
     public void beforeMethod(Method m)
     {
-        System.err.println("Start " + m.getName() + ".");
+        print("Start " + m.getName() + ".");
     }
 
     @AfterMethod
     public void afterMethod(Method m)
     {
-        System.err.println("End " + m.getName() + ".");
+        print("End " + m.getName() + ".");
+    }
+
+    /**
+     * Prints text.
+     * @param txt the text to print.
+     */
+    protected static void print(String txt)
+    {
+        TestUtils.print(txt);
     }
 }

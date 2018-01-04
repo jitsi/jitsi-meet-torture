@@ -271,13 +271,13 @@ public class JibriTest
     {
         Participant p = openURL(publicURL);
         WebDriver driver = p.getDriver();
-        System.err.println("testYTStatus wait for the status");
+        print("testYTStatus wait for the status");
         TestUtils.waitForCondition(driver, 300,
             (ExpectedCondition<Boolean>) w ->
                 getYTStatus(driver) == expectedStatus);
-        System.err.println("testYTStatus quit");
+        print("testYTStatus quit");
         p.quit();
-        System.err.println("testYTStatus done");
+        print("testYTStatus done");
     }
 
     /**
@@ -287,7 +287,7 @@ public class JibriTest
      */
     private static Participant openURL(String URL)
     {
-        System.err.println("Opening URL: " + URL);
+        print("Opening URL: " + URL);
 
         Participant pageParticipant
             = ParticipantFactory.getInstance()

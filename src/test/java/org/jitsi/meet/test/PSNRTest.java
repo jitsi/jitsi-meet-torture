@@ -138,13 +138,13 @@ public class PSNRTest
 
         // Sleep 30 seconds to allow the clients to ramp up
         int rampUpDurationSeconds = 30;
-        System.err.println("Waiting " + rampUpDurationSeconds +
+        print("Waiting " + rampUpDurationSeconds +
             " seconds for ramp up");
         try
         {
             Thread.sleep(rampUpDurationSeconds * 1000);
         } catch (InterruptedException e) {}
-        System.err.println("Wait for ramp up done");
+        print("Wait for ramp up done");
 
         WebDriver owner = participant1.getDriver();
 
@@ -184,8 +184,8 @@ public class PSNRTest
 
         ownerVideoOperator.stopRecording();
 
-        System.err.println("REAL FPS: " + ownerVideoOperator.getRealFPS());
-        System.err.println(
+        print("REAL FPS: " + ownerVideoOperator.getRealFPS());
+        print(
                 "RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
@@ -233,7 +233,7 @@ public class PSNRTest
                 {
                     while ((s = stdInput.readLine()) != null)
                     {
-                        System.err.println(s);
+                        print(s);
                         int frameNum = Integer.parseInt(s.split(" ")[0]);
                         float psnr = Float.parseFloat(s.split(" ")[1]);
 
@@ -276,7 +276,7 @@ public class PSNRTest
                     // read any errors from the attempted command
                     while ((s = stdError.readLine()) != null)
                     {
-                        System.err.println(s);
+                        print(s);
                     }
                 }
                 catch (IOException e)
