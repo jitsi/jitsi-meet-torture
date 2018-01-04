@@ -17,7 +17,6 @@ package org.jitsi.meet.test.base;
 
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.testng.annotations.*;
 
 import java.util.concurrent.*;
 

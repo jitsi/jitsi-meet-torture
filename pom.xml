@@ -175,7 +175,7 @@
                         </property>
                         <property>
                             <name>parallel</name>
-                            <value>instances</value>
+                            <value>tests</value>
                         </property>
                         <property>
                             <name>threadcount</name>
