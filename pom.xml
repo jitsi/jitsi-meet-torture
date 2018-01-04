@@ -79,6 +79,7 @@
         We can add default values here. -->
     <properties>
         <!-- desktop -->
+        <threadcount>1</threadcount>
         <!-- not used at the moment -->
 
         <!-- mobile -->
@@ -171,6 +172,14 @@
                         <property>
                             <name>configfailurepolicy</name>
                             <value>continue</value>
+                        </property>
+                        <property>
+                            <name>parallel</name>
+                            <value>instances</value>
+                        </property>
+                        <property>
+                            <name>threadcount</name>
+                            <value>${threadcount}</value>
                         </property>
                     </properties>
                 </configuration>

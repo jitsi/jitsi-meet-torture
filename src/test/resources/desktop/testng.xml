@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="TortureSuite" verbose="1">
-    <test name="DesktopTesting" parallel="instances" thread-count="1">
+    <test name="DesktopTesting">
 
         <classes>
             <class name="org.jitsi.meet.test.ActiveSpeakerTest" />
