@@ -63,7 +63,7 @@ public class DesktopSharingTest
     {
         final String hookScript = System.getProperty(HOOK_SCRIPT);
 
-        if(hookScript == null)
+        if (hookScript == null)
             return;
 
         print("Start testDesktopSharingInPresence.");
@@ -118,7 +118,7 @@ public class DesktopSharingTest
         try
         {
             waitStartSignal.await(2, TimeUnit.SECONDS);
-            if(hookException != null)
+            if (hookException != null)
             {
                 hookException.printStackTrace();
                 fail("Error executing hook script:"

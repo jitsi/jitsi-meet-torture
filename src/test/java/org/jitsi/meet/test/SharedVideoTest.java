@@ -118,7 +118,7 @@ public class SharedVideoTest
             true, owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
-        if(checkSecondParticipantState)
+        if (checkSecondParticipantState)
         {
             // Now let's check the second participant state
             WebDriver secondParticipant = participant2.getDriver();
@@ -491,7 +491,7 @@ public class SharedVideoTest
         checkPlayerLoadedAndInState(owner, "YT.PlayerState.PLAYING");
 
         String stateToCheck = "YT.PlayerState.PLAYING";
-        if(pause)
+        if (pause)
         {
             stateToCheck = "YT.PlayerState.PAUSED";
             ((JavascriptExecutor) owner).executeScript(

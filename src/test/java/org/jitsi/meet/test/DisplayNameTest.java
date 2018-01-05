@@ -214,7 +214,7 @@ public class DisplayNameTest
             displayNameText = displayNameElem.getAttribute("innerHTML");
         }
 
-        if(newName != null && newName.length() > 0)
+        if (newName != null && newName.length() > 0)
         {
             assertTrue(
                 displayNameText.contains(newName),
@@ -286,7 +286,7 @@ public class DisplayNameTest
         action.moveToElement(inputElem);
         action.perform();
 
-        if(newName != null && newName.length() > 0)
+        if (newName != null && newName.length() > 0)
             inputElem.sendKeys(newName);
         else
             inputElem.sendKeys(Keys.BACK_SPACE);

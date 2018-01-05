@@ -97,7 +97,7 @@ public class DesktopSharingImitationTest
     private void toggleDesktopSharing()
     {
         String videoType;
-        if(desktopImitated)
+        if (desktopImitated)
             videoType = "camera";
         else
             videoType = "screen";

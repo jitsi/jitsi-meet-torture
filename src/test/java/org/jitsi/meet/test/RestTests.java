@@ -91,7 +91,7 @@ public class RestTests
             = runRestClient(serverAddress, 8080, "/colibri/conferences");
 
         JsonArray confs = new Gson().fromJson(conferences, JsonArray.class);
-        if(confs == null || confs.size() == 0)
+        if (confs == null || confs.size() == 0)
         {
             fail("Expected at least one conference");
         }

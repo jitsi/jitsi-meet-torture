@@ -96,7 +96,7 @@ public class Participant<T extends WebDriver>
         URL += "&config.p2p.enabled=false";
         URL += "&config.disable1On1Mode=true";
 
-        if(fragment != null)
+        if (fragment != null)
             URL += "&" + fragment;
 
         TestUtils.print(name + " is opening URL: " + URL);

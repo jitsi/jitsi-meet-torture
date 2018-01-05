@@ -68,7 +68,7 @@ public class JVBConferencesCheck
 
         HttpHost targetHost = null;
 
-        if(jvbAddress == null)
+        if (jvbAddress == null)
         {
             String meetAddress =
                 System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP);
@@ -113,7 +113,7 @@ public class JVBConferencesCheck
             String value = EntityUtils.toString(entity);
 
             JsonElement jsonElem = new JsonParser().parse(value);
-            if(jsonElem.isJsonArray())
+            if (jsonElem.isJsonArray())
             {
                 JsonArray jsonArray = jsonElem.getAsJsonArray();
                 for(int i = 0; i < jsonArray.size(); i++)
@@ -129,7 +129,7 @@ public class JVBConferencesCheck
         }
         finally
         {
-            if(response != null)
+            if (response != null)
             {
                 try
                 {
@@ -139,7 +139,7 @@ public class JVBConferencesCheck
             }
         }
 
-        if(firstRunConferences == null)
+        if (firstRunConferences == null)
         {
             firstRunConferences = conferencesList;
             hangUpAllParticipants();

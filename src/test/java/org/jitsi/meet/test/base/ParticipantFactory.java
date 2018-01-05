@@ -102,7 +102,7 @@ public class ParticipantFactory
          */
         public static ParticipantType valueOfString(String type)
         {
-            if(type == null)
+            if (type == null)
                 return chrome;
             else
                 return ParticipantType.valueOf(type);
@@ -157,7 +157,7 @@ public class ParticipantFactory
      */
     public Participant createParticipant(String configPrefix)
     {
-        if(configPrefix.startsWith("web"))
+        if (configPrefix.startsWith("web"))
         {
             ParticipantType participantType
                 =  ParticipantType.valueOfString(
@@ -172,7 +172,7 @@ public class ParticipantFactory
                 participantType,
                 System.getProperty(JITSI_MEET_URL_PROP));
         }
-        else if(configPrefix.startsWith("mobile"))
+        else if (configPrefix.startsWith("mobile"))
         {
             // TODO
         }
@@ -201,10 +201,10 @@ public class ParticipantFactory
         {
             FirefoxDriverManager.getInstance().setup();
 
-            if(browserBinary != null && browserBinary.trim().length() > 0)
+            if (browserBinary != null && browserBinary.trim().length() > 0)
             {
                 File binaryFile = new File(browserBinary);
-                if(binaryFile.exists())
+                if (binaryFile.exists())
                     System.setProperty("webdriver.firefox.bin", browserBinary);
             }
 
@@ -270,13 +270,13 @@ public class ParticipantFactory
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-            if(!Boolean.getBoolean(DISABLE_NOSANBOX_PARAM))
+            if (!Boolean.getBoolean(DISABLE_NOSANBOX_PARAM))
             {
                 ops.addArguments("no-sandbox");
                 ops.addArguments("disable-setuid-sandbox");
             }
 
-            if(Boolean.getBoolean(ENABLE_HEADLESS_PARAM))
+            if (Boolean.getBoolean(ENABLE_HEADLESS_PARAM))
             {
                 ops.addArguments("headless");
                 ops.addArguments("window-size=1200x600");
@@ -289,10 +289,10 @@ public class ParticipantFactory
             // fallback to software graphics, we try to disable gpu for now
             ops.addArguments("disable-gpu");
 
-            if(browserBinary != null && browserBinary.trim().length() > 0)
+            if (browserBinary != null && browserBinary.trim().length() > 0)
             {
                 File binaryFile = new File(browserBinary);
-                if(binaryFile.exists())
+                if (binaryFile.exists())
                     ops.setBinary(binaryFile);
             }
 
@@ -353,7 +353,7 @@ public class ParticipantFactory
                             });
 
                         ChromeDriver res = future.get(2, TimeUnit.MINUTES);
-                        if(res != null)
+                        if (res != null)
                             return res;
                     }
                     catch (TimeoutException te)

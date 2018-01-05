@@ -66,12 +66,12 @@ public class MaxUsersTest
     public void enterWithMaxParticipantsAndCheckDialog() 
     {
         String maxUsersString = System.getProperty(MAX_USERS_PROP);
-        if(maxUsersString != null)
+        if (maxUsersString != null)
         {
             MAX_USERS = Integer.parseInt(maxUsersString);
         }
             
-        if(MAX_USERS > 2)
+        if (MAX_USERS > 2)
         {
             boolean failed = false;
             // Assuming we have 2 participants already started we have to

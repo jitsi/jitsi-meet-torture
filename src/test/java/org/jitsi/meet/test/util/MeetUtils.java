@@ -222,7 +222,7 @@ public class MeetUtils
         {
             wait.until(expectation);
         }
-        catch(Throwable error)
+        catch(TimeoutException error)
         {
             assertFalse(
                 true,
@@ -275,7 +275,7 @@ public class MeetUtils
         Map<String,Long> bitrate =
             (Map<String,Long>)stats.get("bitrate");
 
-        if(bitrate != null)
+        if (bitrate != null)
         {
             long download =  bitrate.get("download");
             return download;

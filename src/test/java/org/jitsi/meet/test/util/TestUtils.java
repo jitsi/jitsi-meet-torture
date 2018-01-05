@@ -210,7 +210,7 @@ public class TestUtils
                 {
                     List<WebElement> elements = d.findElements(by);
 
-                    if(!elements.isEmpty())
+                    if (!elements.isEmpty())
                     {
                         foundElement[0] = elements.get(0);
                         return true;
@@ -499,12 +499,12 @@ public class TestUtils
      */
     public static String getResourceFromJid(String jid)
     {
-        if(jid == null)
+        if (jid == null)
             return null;
 
         int ix = jid.lastIndexOf("/");
 
-        if(ix == -1)
+        if (ix == -1)
             return null;
 
         return jid.substring(ix + 1, jid.length());

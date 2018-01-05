@@ -57,7 +57,7 @@ public class LongLivedTest
         String timeToRunInMin = System.getProperty("longlived.duration");
 
         // default is 6 hours
-        if(timeToRunInMin == null || timeToRunInMin.length() == 0)
+        if (timeToRunInMin == null || timeToRunInMin.length() == 0)
             timeToRunInMin = "360";
 
         final int minutesToRun = Integer.valueOf(timeToRunInMin);

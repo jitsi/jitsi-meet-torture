@@ -61,7 +61,7 @@ public class ReloadTest
         final String hookScript = System.getProperty(HOOK_SCRIPT);
         final String host = System.getProperty(HOST);
 
-        if(hookScript == null || host == null)
+        if (hookScript == null || host == null)
         {
             throw new SkipException(
                 "no hook script or host has been specified");
@@ -197,7 +197,7 @@ public class ReloadTest
             element = null;
         }
          
-        if(element != null)
+        if (element != null)
             element.click();
     }
     
@@ -210,7 +210,7 @@ public class ReloadTest
         final String hookScript = System.getProperty(HOOK_SCRIPT);
         final String host = System.getProperty(HOST);
 
-        if(hookScript == null || host == null)
+        if (hookScript == null || host == null)
             return;
 
         CmdExecutor exec = new CmdExecutor();
@@ -305,7 +305,7 @@ public class ReloadTest
         print("Wait for send receive data on the owner side.");
         MeetUtils.waitForSendReceiveData(participant1.getDriver());
         
-        if(isOwnerMuted)
+        if (isOwnerMuted)
         {
             print("Wait for send data on the second "
                 + "participant side.");

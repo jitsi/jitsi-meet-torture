@@ -177,9 +177,9 @@ public class ConnectionTimeTest
         {
             Object res = ((JavascriptExecutor) w).executeScript(script);
 
-            if(res instanceof Number)
+            if (res instanceof Number)
                 return ((Number)res).doubleValue();
-            else if(res == null)
+            else if (res == null)
                 return null;
             else
                 fail("Wrong type returned from selenium!");
@@ -198,7 +198,7 @@ public class ConnectionTimeTest
             Object res = ((JavascriptExecutor) w).executeScript(
                 CHECK_OBJECTS_CREATED_SCRIPT);
 
-            if(res instanceof Boolean)
+            if (res instanceof Boolean)
                 return (Boolean)res;
             else
                 fail("Wrong type returned from selenium!");
@@ -293,7 +293,7 @@ public class ConnectionTimeTest
         TimeMeasurements s,
         TimeMeasurements connectedTime)
     {
-        if(s == TimeMeasurements.MUC_JOINED)
+        if (s == TimeMeasurements.MUC_JOINED)
         {
             checkThreshold(data, data[connectedTime.ordinal()], s);
         }
@@ -441,7 +441,7 @@ public class ConnectionTimeTest
         Double[] res = b.clone();
         for(int i = 0; i < res.length; i++)
         {
-            if(res[i] == null && a[i] == null)
+            if (res[i] == null && a[i] == null)
             {
                 fail("Null value is measured");
             }

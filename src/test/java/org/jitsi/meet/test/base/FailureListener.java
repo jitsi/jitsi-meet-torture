@@ -80,7 +80,7 @@ public class FailureListener
     @Override
     public void onTestFailure(ITestResult testResult)
     {
-        if(testResult.getThrowable() != null)
+        if (testResult.getThrowable() != null)
         {
             TestUtils.print("TestFailure:");
             testResult.getThrowable().printStackTrace();
@@ -121,13 +121,17 @@ public class FailureListener
         takeScreenshot(testInstance.participant1.getDriver(),
             fileName + "-owner.png");
 
-        if(testInstance.participant2 != null)
+        if (testInstance.participant2 != null)
+        {
             takeScreenshot(testInstance.participant2.getDriver(),
                 fileName + "-participant.png");
+        }
 
-        if(testInstance.participant3 != null)
+        if (testInstance.participant3 != null)
+        {
             takeScreenshot(testInstance.participant3.getDriver(),
                 fileName + "-third.png");
+        }
     }
 
     /**
@@ -139,7 +143,7 @@ public class FailureListener
     {
         TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
 
-        if(takesScreenshot == null)
+        if (takesScreenshot == null)
         {
             TestUtils.print("No driver to take screenshot from! FileName:"
                 + fileName);
@@ -151,7 +155,8 @@ public class FailureListener
         try
         {
             FileUtils.copyFile(scrFile, destFile);
-        } catch (IOException ioe)
+        }
+        catch (IOException ioe)
         {
             throw new RuntimeException(ioe);
         }
@@ -167,13 +172,17 @@ public class FailureListener
         saveHtmlSource(testInstance.participant1.getDriver(),
             fileName + "-owner.html");
 
-        if(testInstance.participant2 != null)
+        if (testInstance.participant2 != null)
+        {
             saveHtmlSource(testInstance.participant2.getDriver(),
                 fileName + "-participant.html");
+        }
 
-        if(testInstance.participant3 != null)
+        if (testInstance.participant3 != null)
+        {
             saveHtmlSource(testInstance.participant3.getDriver(),
                 fileName + "-third.html");
+        }
     }
 
     /**
@@ -205,13 +214,13 @@ public class FailureListener
         saveMeetDebugLog(testInstance.participant1.getDriver(),
             fileNamePrefix + "-meetlog-owner.json");
 
-        if(testInstance.participant2 != null)
+        if (testInstance.participant2 != null)
         {
             saveMeetDebugLog(testInstance.participant2.getDriver(),
                 fileNamePrefix + "-meetlog-participant.json");
         }
 
-        if(testInstance.participant3 != null)
+        if (testInstance.participant3 != null)
         {
             saveMeetDebugLog(testInstance.participant3.getDriver(),
                 fileNamePrefix + "-meetlog-third.json");
@@ -232,7 +241,7 @@ public class FailureListener
                         + "return JSON.stringify(APP.conference.getLogs(), null, '    ');"
                         + "}catch (e) {}");
 
-            if(log == null)
+            if (log == null)
                 return;
 
             FileUtils.write(
@@ -256,17 +265,21 @@ public class FailureListener
             fileNamePrefix, "-console-owner", ".log",
             testInstance.participant1.getType());
 
-        if(testInstance.participant2 != null)
+        if (testInstance.participant2 != null)
+        {
             saveBrowserLogs(
                 testInstance.participant2.getDriver(),
                 fileNamePrefix, "-console-secondParticipant", ".log",
                 testInstance.participant2.getType());
+        }
 
-        if(testInstance.participant3 != null)
+        if (testInstance.participant3 != null)
+        {
             saveBrowserLogs(
                 testInstance.participant3.getDriver(),
                 fileNamePrefix, "-console-thirdParticipant", ".log",
                 testInstance.participant3.getType());
+        }
     }
 
     /**
@@ -293,7 +306,10 @@ public class FailureListener
             out.flush();
             out.close();
         }
-        catch (IOException e){}
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -342,7 +358,7 @@ public class FailureListener
         }
         catch (IOException e)
         {
-            // cannot create file or something
+            e.printStackTrace();
         }
     }
 
@@ -352,7 +368,7 @@ public class FailureListener
      */
     public static String createLogsFolder()
     {
-        if(outputLogsParentFolder == null)
+        if (outputLogsParentFolder == null)
         {
             outputLogsParentFolder = new File("target/surefire-reports/logs");
             outputLogsParentFolder.mkdirs();

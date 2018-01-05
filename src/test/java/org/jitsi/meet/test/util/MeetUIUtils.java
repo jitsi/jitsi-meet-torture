@@ -289,7 +289,7 @@ public class MeetUIUtils
         }
         catch (NoSuchElementException | TimeoutException e)
         {
-            if(failOnMissing)
+            if (failOnMissing)
                 throw e;
 
             // there is no element, so its not visible, just continue
@@ -510,7 +510,7 @@ public class MeetUIUtils
             String name)
     {
         String id = "";
-        if(testee != observer)
+        if (testee != observer)
         {
             String resource = MeetUtils.getResourceJid(testee);
             id = "participant_" + resource;
@@ -680,7 +680,7 @@ public class MeetUIUtils
             = "//span[@id='participant_" + resource + "']//video";
         List<WebElement> videoElems
             = participant.findElements(By.xpath(videoElementXPath));
-        if(videoElems.size() > 0)
+        if (videoElems.size() > 0)
         {
             TestUtils.waitForNotDisplayedElementByXPath(
                 participant, videoElementXPath, 5);
@@ -727,7 +727,7 @@ public class MeetUIUtils
             = "//span[@id='participant_" + resource + "']/video";
         List<WebElement> videoElems
             = participant.findElements(By.xpath(videoElementXPath));
-        if(videoElems.size() > 0)
+        if (videoElems.size() > 0)
         {
             TestUtils.waitForNotDisplayedElementByXPath(
                 participant, videoElementXPath, 5);
