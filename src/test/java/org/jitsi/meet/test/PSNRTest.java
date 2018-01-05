@@ -23,6 +23,7 @@ import org.jitsi.meet.test.util.*;
 import org.json.simple.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
+import static org.testng.Assert.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -237,8 +238,9 @@ public class PSNRTest
                         int frameNum = Integer.parseInt(s.split(" ")[0]);
                         float psnr = Float.parseFloat(s.split(" ")[1]);
 
-                        assertTrue("Frame is bellow the PSNR threshold",
-                            psnr > MIN_PSNR);
+                        assertTrue(
+                            psnr > MIN_PSNR,
+                            "Frame is bellow the PSNR threshold");
 
                         if (prevFrameNumber != -1 &&
                             frameNum == prevFrameNumber)
@@ -284,7 +286,9 @@ public class PSNRTest
                     e.printStackTrace();
                 }
 
-                assertTrue("The psnr-test.sh failed.", proc.waitFor() == 0);
+                assertTrue(
+                    proc.waitFor() == 0,
+                    "The psnr-test.sh failed.");
 
                 // If the test has passed for a specific frame, delete
                 // it to optimize disk space usage.

@@ -23,6 +23,8 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Adds various tests with the etherpad functionality.
  * Checks after closing etherpad we are able to click on videos.
@@ -119,7 +121,7 @@ public class EtherpadTest
             String txt = owner.findElement(
                 By.xpath("//span[contains(@class, 'author')]")).getText();
 
-            assertEquals("Texts do not match", textToEnter, txt);
+            assertEquals(textToEnter, txt, "Texts do not match");
         }
         finally
         {

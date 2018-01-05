@@ -22,6 +22,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests shared video functionality.
  * @author Damian Minkov
@@ -71,8 +73,8 @@ public class SharedVideoTest
 
     /**
      * Start shared video.
-     * @param url
-     * @param expectedId
+     * @param url the video to share
+     * @param expectedId the expected video id
      * @param checkSecondParticipantState whether second participant state
      *                                    needs to be checked
      */
@@ -112,8 +114,9 @@ public class SharedVideoTest
         // make sure we are in meet, not in the frame
         owner.switchTo().defaultContent();
 
-        assertEquals("Video not displayed:", true,
-            owner.findElement(By.id("sharedVideoIFrame")).isDisplayed());
+        assertEquals(
+            true, owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            "Video not displayed:");
 
         if(checkSecondParticipantState)
         {
@@ -129,8 +132,8 @@ public class SharedVideoTest
 
     /**
      * Waits for player to be defined and checks its state.
-     * @param participant
-     * @param state
+     * @param participant the driver to operate on.
+     * @param state the state to check
      */
     private void checkPlayerLoadedAndInState(
         WebDriver participant, String state)
@@ -151,16 +154,18 @@ public class SharedVideoTest
                 participant1.getDriver(),
                     JS_GET_SHARED_VIDEO_CONTAINER
                     + "return c.player.getVideoUrl();");
-        assertTrue("Different video url found on owner",
-            ownerVideoUrl.contains(currentVideoId));
+        assertTrue(
+            ownerVideoUrl.contains(currentVideoId),
+            "Different video url found on owner");
 
         String secondVideoUrl
             = TestUtils.executeScriptAndReturnString(
                 participant2.getDriver(),
                     JS_GET_SHARED_VIDEO_CONTAINER
                     + "return c.player.getVideoUrl();");
-        assertTrue("Different video url found on second participant",
-            secondVideoUrl.contains(currentVideoId));
+        assertTrue(
+            secondVideoUrl.contains(currentVideoId),
+            "Different video url found on second participant");
     }
 
     /**
@@ -261,9 +266,9 @@ public class SharedVideoTest
             secondTime = (Long)secondTimeObj;
 
         // let's check that time difference is less than 10 seconds
-        assertTrue("Players time differ owner:" + ownerTime
-            + " second:" + secondTime,
-                (Math.abs(ownerTime - secondTime) < 10));
+        assertTrue(
+            (Math.abs(ownerTime - secondTime) < 10),
+            "Players time differ owner:" + ownerTime + " second:" + secondTime);
     }
 
     /**
@@ -339,10 +344,12 @@ public class SharedVideoTest
             .click();
         TestUtils.waitMillis(1000);
 
-        assertEquals("Video not displayed:", true,
+        assertEquals(
+            true,
             participant2.getDriver()
                 .findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed());
+                .isDisplayed(),
+            "Video not displayed:");
     }
 
     /**
@@ -367,12 +374,13 @@ public class SharedVideoTest
 
         // video should be visible on both sides
         WebDriver secondParticipant = participant2.getDriver();
-        assertEquals("Video not displayed:", true,
-            owner.findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed());
-        assertEquals("Video not displayed:", true,
-            secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed());
+        assertEquals(
+            true, owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            "Video not displayed:");
+        assertEquals(
+            true, secondParticipant.findElement(By.id("sharedVideoIFrame"))
+                        .isDisplayed(),
+            "Video not displayed:");
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_sharedvideo");
 
@@ -503,9 +511,10 @@ public class SharedVideoTest
 
         checkPlayerLoadedAndInState(secondParticipant, stateToCheck);
 
-        assertEquals("Video not displayed:", true,
-            secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed());
+        assertEquals(
+            true, secondParticipant.findElement(By.id("sharedVideoIFrame"))
+                    .isDisplayed(),
+            "Video not displayed:");
     }
 
     @Test(dependsOnMethods = { "shareVideoBeforeOthersJoin" })
@@ -546,9 +555,9 @@ public class SharedVideoTest
             secondTime = (Long)secondTimeObj;
 
         // let's check that time difference is less than 10 seconds
-        assertTrue("Players time differ owner:" + ownerTime
-                + " second:" + secondTime,
-            (Math.abs(ownerTime - secondTime) < 10));
+        assertTrue(
+            (Math.abs(ownerTime - secondTime) < 10),
+            "Players time differ owner:" + ownerTime + " second:" + secondTime);
 
         checkUrls();
 

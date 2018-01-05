@@ -28,6 +28,8 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.testng.Assert.*;
+
 /**
  * A test for WebRTC audio and video synchronisation feature. Works with Chrome
  * only.
@@ -209,8 +211,9 @@ public class LipSyncTest
         double beepAvg = comparison.getBeepDiffAvg();
 
         assertTrue(
-            "The audio does not seem to be delayed enough, beepAvg: " + beepAvg,
-            beepAvg > MIN_BEEP_DELAY);
+            beepAvg > MIN_BEEP_DELAY,
+            "The audio does not seem to be delayed enough, beepAvg: "
+                + beepAvg);
 
         double lastGreenAvg = comparison.getLastFewGreenAvg(5);
 
@@ -224,8 +227,8 @@ public class LipSyncTest
         participantOperator.dispose();
 
         assertTrue(
-                "A/V sync ratio is too low: " + syncRatio,
-                syncRatio > MIN_SYNC_RATIO);
+            syncRatio > MIN_SYNC_RATIO,
+            "A/V sync ratio is too low: " + syncRatio);
     }
 
     private static void dumpLipSyncInfo(String fileName, Series series)

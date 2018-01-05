@@ -23,11 +23,12 @@ import org.apache.http.util.*;
 import com.google.gson.*;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.testng.annotations.*;
 
 import java.net.*;
 import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Test that connects to JVB instance and saves a list of conferences on the
@@ -102,7 +103,7 @@ public class JVBConferencesCheck
 
         CloseableHttpResponse response = null;
 
-        ArrayList<String> conferencesList = new ArrayList<String>();
+        ArrayList<String> conferencesList = new ArrayList<>();
         try
         {
             response = httpClient.execute(
@@ -151,8 +152,9 @@ public class JVBConferencesCheck
 
             print("NEW_CONFERENCES=" + conferencesList);
 
-            assertFalse("The list of conferences must not be empty",
-                conferencesList.isEmpty());
+            assertFalse(
+                conferencesList.isEmpty(),
+                "The list of conferences must not be empty");
         }
     }
 }

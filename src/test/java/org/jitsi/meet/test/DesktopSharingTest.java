@@ -26,6 +26,8 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.util.concurrent.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Launches a hook script that will launch a participant that will join
  * the conference and that participant will be sharing its screen.
@@ -119,8 +121,8 @@ public class DesktopSharingTest
             if(hookException != null)
             {
                 hookException.printStackTrace();
-                assertFalse("Error executing hook script:"
-                    + hookException.getMessage(), true);
+                fail("Error executing hook script:"
+                    + hookException.getMessage());
             }
         }
         catch (InterruptedException e)
@@ -163,8 +165,9 @@ public class DesktopSharingTest
         }
         catch (TimeoutException e)
         {
-            assertEquals("Wrong video type, maybe desktop sharing didn't work",
-                expectedResult, remoteVideoType[0]);
+            assertEquals(
+                expectedResult, remoteVideoType[0],
+                "Wrong video type, maybe desktop sharing didn't work");
         }
 
         // allow the participant to leave

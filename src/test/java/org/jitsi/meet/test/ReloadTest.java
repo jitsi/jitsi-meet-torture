@@ -25,6 +25,8 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Launches a hook script that will restart prosody and jicofo and checks
  * if the client reloads the conference and if the conference is working after
@@ -221,12 +223,11 @@ public class ReloadTest
 
             int result = exec.executeCmd(cmd);
 
-            assertEquals("Script returned non-zero value", 0, result);
+            assertEquals(0, result, "Script returned non-zero value");
         }
         catch (Exception hookException)
         {
-            assertFalse("Error executing hook script:"
-                + hookException.getMessage(), true);
+            fail("Error executing hook script:" + hookException.getMessage());
         }
     }
     

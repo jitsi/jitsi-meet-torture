@@ -25,6 +25,8 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
+import static org.testng.Assert.*;
+
 /**
  * The tests for active speaker detection feature.
  *
@@ -92,7 +94,8 @@ public class ActiveSpeakerTest
         }
 
         assertEquals(
-            "Wrong number of dominant speaker indicators.", 1, speakers);
+            1, speakers,
+            "Wrong number of dominant speaker indicators.");
     }
 
     private void muteAllParticipants()
@@ -170,8 +173,8 @@ public class ActiveSpeakerTest
         catch (TimeoutException exc)
         {
             assertEquals(
-                "Active speaker not displayed on large video " + new Date(),
-                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2));
+                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2),
+                "Active speaker not displayed on large video " + new Date());
         }
 
         // just a debug print to go in logs

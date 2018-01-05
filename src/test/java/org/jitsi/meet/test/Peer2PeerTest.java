@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests switching between P2P and JVB connections.
  *

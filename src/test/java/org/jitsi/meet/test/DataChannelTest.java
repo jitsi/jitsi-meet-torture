@@ -23,6 +23,8 @@ import org.openqa.selenium.support.ui.*;
 
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests the WebRTC data channels in a Meet conference (i.e.
  * {@code SctpConnection} in Videobridge speak).
@@ -118,9 +120,9 @@ public class DataChannelTest
     {
         waitForDataChannelToOpen(webDriver);
         assertTrue(
-                "Failed to send a ClientHello to Videobridge over a WebRTC data"
-                    + " channel!",
-                sendClientHello(webDriver));
+            sendClientHello(webDriver),
+            "Failed to send a ClientHello to Videobridge over a WebRTC data"
+                + " channel!");
         waitToReceiveServerHello(webDriver);
     }
 
@@ -155,8 +157,7 @@ public class DataChannelTest
     private void waitForDataChannelToOpen(WebDriver webDriver)
     {
         new WebDriverWait(webDriver, 15).until(
-            (ExpectedCondition<Boolean>) webDriver1 -> isDataChannelOpen(
-                webDriver1));
+            (ExpectedCondition<Boolean>) this::isDataChannelOpen);
     }
 
     /**
@@ -171,7 +172,6 @@ public class DataChannelTest
     private void waitToReceiveServerHello(WebDriver webDriver)
     {
         new WebDriverWait(webDriver, 15).until(
-            (ExpectedCondition<Boolean>) webDriver1 -> isServerHelloReceived(
-                webDriver1));
+            (ExpectedCondition<Boolean>) this::isServerHelloReceived);
     }
 }

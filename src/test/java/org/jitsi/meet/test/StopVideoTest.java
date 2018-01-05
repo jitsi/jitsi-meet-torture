@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * To stop the video on owner and participant side.
  * @author Damian Minkov
@@ -36,8 +38,8 @@ public class StopVideoTest
 
     /**
      * Constructs StopVideoTest with already allocated participants.
-     * @param participant1
-     * @param participant2
+     * @param participant1 the first participant
+     * @param participant2 the second participant
      */
     public StopVideoTest(
         Participant participant1, Participant participant2)
@@ -108,9 +110,10 @@ public class StopVideoTest
         startVideoOnOwnerAndCheck();
 
         // check if video stream from second participant is still on large video
-        assertEquals("Large video stream id",
+        assertEquals(
             secondParticipantVideoId,
-            MeetUIUtils.getLargeVideoID(owner));
+            MeetUIUtils.getLargeVideoID(owner),
+            "Large video stream id");
     }
 
     /**
@@ -140,14 +143,16 @@ public class StopVideoTest
 
         TestUtils.waitMillis(1000);
 
-        assertFalse("Remote stream was removed",
-                    TestUtils.executeScriptAndReturnBoolean(
-                                secondParticipant,
-                                "return APP._remoteRemoved;"));
-        assertFalse("Remote stream was added",
-                    TestUtils.executeScriptAndReturnBoolean(
-                                secondParticipant,
-                                "return APP._remoteAdded;"));
+        assertFalse(
+            TestUtils.executeScriptAndReturnBoolean(
+                        secondParticipant,
+                        "return APP._remoteRemoved;"),
+            "Remote stream was removed");
+        assertFalse(
+            TestUtils.executeScriptAndReturnBoolean(
+                        secondParticipant,
+                        "return APP._remoteAdded;"),
+            "Remote stream was added");
     }
 
     /**

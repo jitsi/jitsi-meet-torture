@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * 1. Lock the room (make sure the image changes to locked)
  * 2. Join with a second browser/tab
@@ -140,7 +142,7 @@ public class LockRoomTest
         TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
         WebElement elem = user.findElement(By.xpath(unlockedXPath));
 
-        assertTrue("Room must be " + state, elem.isDisplayed());
+        assertTrue(elem.isDisplayed(), "Room must be " + state);
 
         closeInviteDialog(user);
     }
@@ -218,7 +220,7 @@ public class LockRoomTest
             owner,
             By.id("inviteDialogRemovePassword"),
             1);
-        assertNotNull("Missing remove button", removeButton);
+        assertNotNull(removeButton, "Missing remove button");
         removeButton.click();
         closeInviteDialog(owner);
 

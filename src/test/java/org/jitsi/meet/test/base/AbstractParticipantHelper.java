@@ -79,8 +79,10 @@ public abstract class AbstractParticipantHelper
         waitForParticipant1ToJoinMUC(null, null);
         waitForSecondParticipantToConnect(null);
 
-        // TODO do we need this???
-        //closeThirdParticipant();
+        if (participant3 != null && !participant3.isHungUp())
+        {
+            participant3.hangUp();
+        }
     }
 
     /**
@@ -108,7 +110,7 @@ public abstract class AbstractParticipantHelper
         {
             participant1
                 = ParticipantFactory.getInstance()
-                .createParticipant("web.participant1");
+                    .createParticipant("web.participant1");
         }
 
         if (participant1.isHungUp())
@@ -195,8 +197,9 @@ public abstract class AbstractParticipantHelper
     {
         if (participant2 == null)
         {
-            participant2 = ParticipantFactory.getInstance()
-                .createParticipant("web.participant2");
+            participant2
+                = ParticipantFactory.getInstance()
+                    .createParticipant("web.participant2");
         }
 
         if (participant2.isHungUp())
@@ -264,8 +267,9 @@ public abstract class AbstractParticipantHelper
     {
         if (participant3 == null)
         {
-            participant3 = ParticipantFactory.getInstance()
-                .createParticipant("web.participant3");
+            participant3
+                = ParticipantFactory.getInstance()
+                    .createParticipant("web.participant3");
         }
 
         if (participant3.isHungUp())

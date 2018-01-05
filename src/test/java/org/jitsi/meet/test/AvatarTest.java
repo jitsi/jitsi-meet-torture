@@ -22,6 +22,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests for users' avatars.
  */
@@ -67,9 +69,9 @@ public class AvatarTest
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
         final String ownerLargeSrc = getLargeVideoSrc(owner);
         assertTrue(
-                "invalid avatar on the large video: " + ownerLargeSrc +
-                        ", should start with: " + ownerThumbSrc,
-                ownerLargeSrc.startsWith(ownerThumbSrc));
+            ownerLargeSrc.startsWith(ownerThumbSrc),
+            "invalid avatar on the large video: " + ownerLargeSrc +
+                    ", should start with: " + ownerThumbSrc);
 
         // Join with second participant
         ensureTwoParticipants();
@@ -90,13 +92,9 @@ public class AvatarTest
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
         TestUtils.waitForCondition(secondParticipant, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc = getLargeVideoSrc(d);
-                    return currentSrc.equals(ownerLargeSrc);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc = getLargeVideoSrc(d);
+                return currentSrc.equals(ownerLargeSrc);
             });
 
         // Owner pins second participant's video
@@ -231,14 +229,8 @@ public class AvatarTest
 
         //check if the local avatar in the settings menu has changed
         TestUtils.waitForCondition(owner, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return getSrcByXPath(owner, "//img[@id='avatar']")
-                        .contains(HASH);
-                }
-            });
+            (ExpectedCondition<Boolean>) d
+                -> getSrcByXPath(owner, "//img[@id='avatar']").contains(HASH));
 
         //check if the avatar in the local thumbnail has changed
         checkSrcIsCorrect(getLocalThumbnailSrc(owner));
@@ -249,14 +241,10 @@ public class AvatarTest
         // sometimes the notification for the avatar change can be more
         // than 5 seconds
         TestUtils.waitForCondition(secondParticipant, 15,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc =
-                        getThumbnailSrc(secondParticipant, ownerResourceJid);
-                    return !currentSrc.equals(srcOneSecondParticipant);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc =
+                    getThumbnailSrc(secondParticipant, ownerResourceJid);
+                return !currentSrc.equals(srcOneSecondParticipant);
             });
 
         //check if the avatar in the thumbnail for the other participant has
@@ -268,13 +256,9 @@ public class AvatarTest
         //check if the avatar displayed on large video has changed for the other
         // participant
         TestUtils.waitForCondition(secondParticipant, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc = getLargeVideoSrc(secondParticipant);
-                    return currentSrc.contains(HASH);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc = getLargeVideoSrc(secondParticipant);
+                return currentSrc.contains(HASH);
             });
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
@@ -303,8 +287,8 @@ public class AvatarTest
     private void checkSrcIsCorrect(String src)
     {
         assertTrue(
-            "The avatar invalid src: " + src +" hash: " + HASH,
-            src.contains(HASH));
+            src.contains(HASH),
+            "The avatar invalid src: " + src +" hash: " + HASH);
     }
 
     /**

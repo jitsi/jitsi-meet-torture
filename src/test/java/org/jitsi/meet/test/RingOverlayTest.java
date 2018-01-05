@@ -22,6 +22,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * A test that tests ring overlay. Uses a dummy jwt token to activate ring
  * overlay tests for expected values, enters a second participant and checks
@@ -94,9 +96,9 @@ public class RingOverlayTest
                 + "//div[@class='ringing__caller-info']"
                 + "/p"));
         String calleeNameText = calleeNameElem.getText();
-        assertTrue("Callee name is not correct! ("
-                + CALLEE_NAME + ")",
-            calleeNameText.equals(CALLEE_NAME));
+        assertTrue(
+            calleeNameText.equals(CALLEE_NAME),
+            "Callee name is not correct! (" + CALLEE_NAME + ")");
 
         WebElement calleeAvatarElem =
             owner.findElement(By.xpath(

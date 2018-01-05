@@ -35,6 +35,9 @@ Note that `SetupConference` will always be run as the first test, and `DisposeCo
 - start tests
 ``mvn test -Dmobile.participant=android -Dmobile.caps.deviceName=Android -Dmobile.caps.app=../path-to-apk-file.apk``
 
+### Package mobile tests
+``mvn package -Dmobile.participant=android ... -Pmobile`` 
+
 ## Writing mobile tests
 To be able to use the tests with services like AWS Device Farm which has 
 limitations how they run the tests there are some general rules.

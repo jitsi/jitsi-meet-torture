@@ -25,6 +25,8 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Test for Jibri recorder.
  *
@@ -60,7 +62,7 @@ public class JibriTest
     enum YT_STATUS
     {
         ONLINE, OFFLINE
-    };
+    }
 
     @Override
     public void setup()
@@ -88,7 +90,7 @@ public class JibriTest
         List<WebElement> elems = owner.findElements(
             By.xpath("//a[@class='button fa " + "fa-play-circle']"));
 
-        assertFalse("Jibri button is missing", elems.isEmpty());
+        assertFalse(elems.isEmpty(), "Jibri button is missing");
     }
 
     /**
@@ -204,11 +206,13 @@ public class JibriTest
     public void checkForJibriParticipant()
     {
         WebDriver owner = participant1.getDriver();
-        assertEquals("number of visible thumbnails for owner", 2,
-            MeetUIUtils.getVisibleThumbnails(owner).size());
+        assertEquals(
+            2, MeetUIUtils.getVisibleThumbnails(owner).size(),
+            "number of visible thumbnails for owner");
         WebDriver sencondParticipant = participant2.getDriver();
-        assertEquals("number of visible thumbnails for second participant", 2,
-            MeetUIUtils.getVisibleThumbnails(sencondParticipant).size());
+        assertEquals(
+            2, MeetUIUtils.getVisibleThumbnails(sencondParticipant).size(),
+            "number of visible thumbnails for second participant");
     }
 
     /**

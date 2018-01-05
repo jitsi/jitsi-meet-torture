@@ -19,9 +19,10 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * A test making sure that the contact list panel can be open, that it contains
@@ -141,21 +142,15 @@ public class ContactListTest
         try
         {
             new WebDriverWait(owner, 10).until(
-                    new ExpectedCondition<Boolean>()
-                    {
-                        public Boolean apply(WebDriver d)
-                        {
-                            return secondParticipantJid.equals(
-                                    MeetUIUtils.getLargeVideoResource(d));
-                        }
-                    });
+                (ExpectedCondition<Boolean>) d -> secondParticipantJid.equals(
+                        MeetUIUtils.getLargeVideoResource(d)));
         }
         catch (TimeoutException exc)
         {
             assertEquals(
-                    "Pinned participant not displayed on large video",
-                    secondParticipantJid,
-                    MeetUIUtils.getLargeVideoResource(owner));
+                secondParticipantJid,
+                MeetUIUtils.getLargeVideoResource(owner),
+                "Pinned participant not displayed on large video");
         }
         finally
         {

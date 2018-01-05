@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests whether the Jitsi-Videobridge single-port mode works. Note that this
  * mode may need to be enabled on the bridge (depending on the version).
@@ -78,9 +80,9 @@ public class SinglePortTest
         }
 
         assertEquals(
-                "The two participants must be connected to the same port.",
-                ownerPort,
-                secondParticipantPort);
+            ownerPort,
+            secondParticipantPort,
+            "The two participants must be connected to the same port.");
     }
 
     /**

@@ -28,6 +28,8 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.net.*;
 
+import static org.testng.Assert.*;
+
 /**
  * This test will assume for now jicofo and videobridge are on the same machine
  * will query both for health. And as the tests had allocated one conference
@@ -90,7 +92,9 @@ public class RestTests
 
         JsonArray confs = new Gson().fromJson(conferences, JsonArray.class);
         if(confs == null || confs.size() == 0)
-            assertFalse("Expected at least one conference", true);
+        {
+            fail("Expected at least one conference");
+        }
     }
 
     /**
@@ -120,16 +124,16 @@ public class RestTests
                 targetHost, httpget))
             {
                 if (response.getStatusLine().getStatusCode() != 200)
-                    assertFalse("REST returned error:"
-                        + response.getStatusLine(), true);
+                {
+                    fail("REST returned error:" + response.getStatusLine());
+                }
 
                 return EntityUtils.toString(response.getEntity());
             }
         }
         catch (IOException e)
         {
-            assertFalse("REST no enabled or not reachable:" + e.getMessage(),
-                true);
+            fail("REST no enabled or not reachable:" + e.getMessage());
         }
 
         return null;

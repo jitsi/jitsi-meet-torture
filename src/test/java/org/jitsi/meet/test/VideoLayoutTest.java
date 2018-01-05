@@ -20,6 +20,8 @@ import org.jitsi.meet.test.base.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests the video layout by checking its width and height compared to the
  * window width and height. This is meant to prove that video is correctly

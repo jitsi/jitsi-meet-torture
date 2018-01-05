@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * A test which tests "Follow Me" feature that allows moderators to enable
  * a mode in the conference where all participants are seeing what the

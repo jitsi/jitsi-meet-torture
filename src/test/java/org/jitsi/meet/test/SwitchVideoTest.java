@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests switching video of participants.
  * @author Damian Minkov
@@ -37,8 +39,8 @@ public class SwitchVideoTest
 
     /**
      * Constructs SwitchVideoTest with already allocated participants.
-     * @param participant1
-     * @param participant2
+     * @param participant1 the first participant
+     * @param participant2 the second participant
      */
     public SwitchVideoTest(Participant participant1, Participant participant2)
     {
@@ -130,7 +132,8 @@ public class SwitchVideoTest
         WebElement pinnedThumb = host.findElement(By.xpath(pinnedThumbXpath));
 
         assertNotNull(
-            "Pinned remote video not found for " + peerEndpointId, pinnedThumb);
+            pinnedThumb,
+            "Pinned remote video not found for " + peerEndpointId);
 
         // click on remote
         host.findElement(By.xpath(pinnedThumbXpath))
@@ -152,7 +155,7 @@ public class SwitchVideoTest
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      *
-     * @param where
+     * @param where the driver to operate over.
      */
     public static void clickOnRemoteVideoAndTest(WebDriver where, WebDriver who)
     {

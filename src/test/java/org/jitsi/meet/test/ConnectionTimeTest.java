@@ -25,6 +25,8 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * This test is going to get the connection times measurements from Jitsi Meet
  * and fail if they are too slow.
@@ -180,7 +182,7 @@ public class ConnectionTimeTest
             else if(res == null)
                 return null;
             else
-                Assert.fail("Wrong type returned from selenium!");
+                fail("Wrong type returned from selenium!");
             return null;
         }
         
@@ -199,7 +201,7 @@ public class ConnectionTimeTest
             if(res instanceof Boolean)
                 return (Boolean)res;
             else
-                Assert.fail("Wrong type returned from selenium!");
+                fail("Wrong type returned from selenium!");
             return null;
         }
         
@@ -320,7 +322,9 @@ public class ConnectionTimeTest
     private void failIfContainsNull(Double[] array)
     {
         if (array == null)
+        {
             fail("Array is null");
+        }
 
         if (Arrays.asList(array).contains(null))
         {
@@ -411,8 +415,8 @@ public class ConnectionTimeTest
         Double medianValue = getMedian(difference);
         print(s + ":" + medianValue);
         assertTrue(
-            "Expected:" + s.getThreshold() + ", was:" + medianValue,
-            medianValue < s.getThreshold());
+            medianValue < s.getThreshold(),
+            "Expected:" + s.getThreshold() + ", was:" + medianValue);
     }
     
     /**
@@ -428,8 +432,8 @@ public class ConnectionTimeTest
     /**
      * Returns array with elements constructed by subtracting element from a
      * from element from b with the same index.
-     * @param a
-     * @param b
+     * @param a the array which elements will checked.
+     * @param b the resulting array without the elements from a
      * @return new array
      */
     private static Double[] subtractArrays(Double[] a, Double[] b)
@@ -439,8 +443,7 @@ public class ConnectionTimeTest
         {
             if(res[i] == null && a[i] == null)
             {
-                Assert.fail("Null value is measured");
-
+                fail("Null value is measured");
             }
 
             res[i] -= a[i];

@@ -19,6 +19,8 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Checks that 'owner' and 'secondParticipant' are connected via UDP.
  * @author Boris Grozev
@@ -41,12 +43,12 @@ public class UDPTest
     public void udpTest()
     {
         assertEquals(
-                 "The owner must be connected through UDP",
-                 "udp",
-                 MeetUtils.getProtocol(participant1.getDriver()));
+             "udp",
+             MeetUtils.getProtocol(participant1.getDriver()),
+            "The owner must be connected through UDP");
         assertEquals(
-                "The second participant must be connected through UDP",
-                "udp",
-                MeetUtils.getProtocol(participant2.getDriver()));
+            "udp",
+            MeetUtils.getProtocol(participant2.getDriver()),
+            "The second participant must be connected through UDP");
     }
 }

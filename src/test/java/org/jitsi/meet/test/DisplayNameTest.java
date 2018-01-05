@@ -22,6 +22,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * A test which changes display name and checks the reflect of the change
  * locally and remotely.
@@ -52,8 +54,8 @@ public class DisplayNameTest
 
     /**
      * Constructs DisplayNameTest with already allocated participants.
-     * @param participant1
-     * @param participant2
+     * @param participant1 the first participant
+     * @param participant2 the second participant
      */
     public DisplayNameTest(
         Participant participant1,
@@ -146,8 +148,9 @@ public class DisplayNameTest
                     == ParticipantFactory.ParticipantType.firefox;
         if (!isFF)
         {
-            assertTrue("Display name not visible",
-                displayNameElem.isDisplayed());
+            assertTrue(
+                displayNameElem.isDisplayed(),
+                "Display name not visible");
         }
 
         String displayNameText = displayNameElem.getText();
@@ -156,8 +159,9 @@ public class DisplayNameTest
             displayNameText = displayNameElem.getAttribute("innerHTML");
         }
 
-        assertTrue("Wrong display name! Content of elem is:"
-            + displayNameText, displayNameText.contains(nameToCheck));
+        assertTrue(
+            displayNameText.contains(nameToCheck),
+            "Wrong display name! Content of elem is:" + displayNameText);
     }
 
     /**
@@ -197,8 +201,9 @@ public class DisplayNameTest
                     == ParticipantFactory.ParticipantType.firefox;
         if (!isFF)
         {
-            assertTrue("Display name not visible",
-                displayNameElem.isDisplayed());
+            assertTrue(
+                displayNameElem.isDisplayed(),
+                "Display name not visible");
         }
 
         String displayNameText = displayNameElem.getText();
@@ -210,12 +215,18 @@ public class DisplayNameTest
         }
 
         if(newName != null && newName.length() > 0)
-            assertTrue("Display name not changed! Content of elem is: "
-                + displayNameText, displayNameText.contains(newName));
+        {
+            assertTrue(
+                displayNameText.contains(newName),
+                "Display name not changed! Content of elem is: "
+                    + displayNameText);
+        }
         else
-            assertTrue("Display name is not removed! ("
-                    + displayNameText + ")",
-                displayNameText.equals(DEFAULT_DISPLAY_NAME));
+        {
+            assertTrue(
+                displayNameText.equals(DEFAULT_DISPLAY_NAME),
+                "Display name is not removed! (" + displayNameText + ")");
+        }
     }
 
     /**

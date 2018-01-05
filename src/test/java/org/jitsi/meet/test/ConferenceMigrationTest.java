@@ -23,6 +23,8 @@ import org.testng.annotations.*;
 
 import java.io.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Test for migrating conference from broken bridge to a new one.
  *
@@ -70,14 +72,9 @@ public class ConferenceMigrationTest
      * migrated bridge. Then we force shutdown that bridge and wait for Jicofo
      * to detect bridge failure. It then should move participants to the
      * secondary bridge.
-     *
-     * @throws IOException
-     * @throws InterruptedException
      */
     @Test
     public void testConferenceMigration()
-        throws IOException,
-               InterruptedException
     {
         String migratedBridge = System.getProperty(MIGRATED_BRIDGE_PNAME);
         if (migratedBridge == null || migratedBridge.isEmpty())

@@ -21,6 +21,8 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Tests whether the Jitsi-Meet client can connect to jitsi-videobridge using
  * TCP.
@@ -62,17 +64,19 @@ public class TCPTest
     public void tcpTest()
     {
         // Initially we should be connected over UDP
-        assertEquals("We must be connected through UDP",
-                     "udp",
-                     MeetUtils.getProtocol(participant2.getDriver()));
+        assertEquals(
+            "udp",
+            MeetUtils.getProtocol(participant2.getDriver()),
+            "We must be connected through UDP");
 
         participant2.hangUp();
 
         waitForSecondParticipantToConnect(DISABLE_UDP_URL_FRAGMENT);
         WebDriver secondParticipant = participant2.getDriver();
 
-        assertEquals("We must be connected through TCP",
-                     "tcp",
-                     MeetUtils.getProtocol(secondParticipant));
+        assertEquals(
+            "tcp",
+            MeetUtils.getProtocol(secondParticipant),
+            "We must be connected through TCP");
     }
 }

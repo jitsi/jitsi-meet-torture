@@ -24,6 +24,8 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
+import static org.testng.Assert.*;
+
 /**
  * The test checks the UI for displaying notifications about participants media
  * connectivity status(connection between the peer and the JVB).
