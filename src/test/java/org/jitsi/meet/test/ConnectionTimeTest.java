@@ -346,6 +346,9 @@ public class ConnectionTimeTest
         {
             refreshSecondParticipant();
 
+            // just ping the first participant, to avoid timeout of the session
+            MeetUtils.isInMuc(participant1.getDriver());
+
             waitForMeasurements();
 
             for(TimeMeasurements s : TimeMeasurements.values())

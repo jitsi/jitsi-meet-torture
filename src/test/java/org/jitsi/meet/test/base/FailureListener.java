@@ -348,9 +348,13 @@ public class FailureListener
 
             if (type == ParticipantFactory.ParticipantType.chrome)
             {
+                File srcFile = new File(outputLogsParentFolder,
+                    "chrome" + suffix + ".log");
+                // in case of remote driver the file does not exist
+                if (!srcFile.exists())
+                    return;
                 FileUtils.copyFile(
-                    new File(outputLogsParentFolder,
-                        "chrome" + suffix + ".log"),
+                    srcFile,
                     new File(outputLogsParentFolder,
                         fileNamePrefix + suffix + "-chrome" + extension)
                 );
