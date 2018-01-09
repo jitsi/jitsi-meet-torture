@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.tasks;
 
 import org.jitsi.meet.test.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.*;
@@ -38,12 +39,12 @@ public class HeartbeatTask
     private final Timer timer = new Timer();
     private final CountDownLatch waitSignal = new CountDownLatch(1);
     private final boolean enableBitrateCheck;
-    private final WebDriver participant1;
-    private final WebDriver participant2;
+    private final Participant participant1;
+    private final Participant participant2;
 
     public HeartbeatTask(
-        WebDriver participant1,
-        WebDriver participant2,
+        Participant participant1,
+        Participant participant2,
         int millsToRun, boolean enableBitrateCheck)
     {
         this.participant1 = participant1;
@@ -81,35 +82,36 @@ public class HeartbeatTask
             TestUtils.print("Checking at " + new Date()
                 + " / to finish: " + millsToRun + " ms.");
 
-            if (!MeetUtils.isIceConnected(participant1))
+            if (!MeetUtils.isIceConnected(participant1.getDriver()))
             {
                 assertAndQuit("Owner ice is not connected.");
                 return;
             }
 
-            if (!MeetUtils.isInMuc(participant1))
+            if (!participant1.isInMuc())
             {
                 assertAndQuit("Owner is not in the muc.");
                 return;
             }
 
-            if (!MeetUtils.isIceConnected(participant2))
+            if (!MeetUtils.isIceConnected(participant2.getDriver()))
             {
                 assertAndQuit(
                     "Second participant ice is not connected.");
                 return;
             }
 
-            if (!MeetUtils.isInMuc(participant2))
+            if (!participant2.isInMuc())
             {
                 assertAndQuit(
                     "The second participant is not in the muc.");
                 return;
             }
 
-            long downloadOwner = MeetUtils.getDownloadBitrate(participant1);
+            long downloadOwner
+                = MeetUtils.getDownloadBitrate(participant1.getDriver());
             long downloadParticipant =
-                MeetUtils.getDownloadBitrate(participant2);
+                MeetUtils.getDownloadBitrate(participant2.getDriver());
 
             if (downloadOwner <= 0)
             {
@@ -141,13 +143,13 @@ public class HeartbeatTask
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(participant1))
+            if (!MeetUtils.isXmppConnected(participant1.getDriver()))
             {
                 assertAndQuit("Owner xmpp connection is not connected");
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(participant2))
+            if (!MeetUtils.isXmppConnected(participant2.getDriver()))
             {
                 assertAndQuit("The second participant xmpp "
                     + "connection is not connected");

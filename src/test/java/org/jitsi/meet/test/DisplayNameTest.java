@@ -61,8 +61,7 @@ public class DisplayNameTest
         Participant participant1,
         Participant participant2)
     {
-        this.participant1 = participant1;
-        this.participant2 = participant2;
+        this.addParticipants(participant1, participant2);
     }
 
     /**
@@ -106,7 +105,7 @@ public class DisplayNameTest
     private void checkForDefaultDisplayNames()
     {
         // default remote displayname
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         String defaultDisplayName =
             (String)((JavascriptExecutor) owner)
                 .executeScript(
@@ -114,11 +113,11 @@ public class DisplayNameTest
 
         // check on first browser
         checkRemoteVideoForName(owner,
-            participant2,
+            getParticipant2(),
             defaultDisplayName);
         // check on second browser
-        checkRemoteVideoForName(participant2.getDriver(),
-            participant1,
+        checkRemoteVideoForName(getParticipant2().getDriver(),
+            getParticipant1(),
             defaultDisplayName);
     }
 
@@ -170,14 +169,14 @@ public class DisplayNameTest
      */
     public void doLocalDisplayNameCheck(String newName)
     {
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // make sure we hover over other element first, cause when hovering
         // local element we may not out of it when editing
         WebElement remoteVideoElem =
             secondParticipant.findElement(By.xpath(
                 "//span[@id='participant_" + MeetUtils
-                    .getResourceJid(participant1.getDriver()) + "']"));
+                    .getResourceJid(getParticipant1().getDriver()) + "']"));
         Actions action0 = new Actions(secondParticipant);
         action0.moveToElement(remoteVideoElem);
         action0.perform();
@@ -197,7 +196,7 @@ public class DisplayNameTest
         action.build().perform();
 
         boolean isFF
-            = participant2.getType()
+            = getParticipant2().getType()
                     == ParticipantFactory.ParticipantType.firefox;
         if (!isFF)
         {
@@ -235,8 +234,8 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
@@ -253,7 +252,7 @@ public class DisplayNameTest
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
-        checkRemoteVideoForName(owner, participant2, newName);
+        checkRemoteVideoForName(owner, getParticipant2(), newName);
 
         MeetUIUtils.clickOnRemoteVideo(
             owner, MeetUtils.getResourceJid(secondParticipant));
@@ -265,7 +264,7 @@ public class DisplayNameTest
      */
     private void changeDisplayName(String newName)
     {
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         WebElement elem =
             secondParticipant.findElement(By.xpath(
@@ -294,7 +293,7 @@ public class DisplayNameTest
         inputElem.sendKeys(Keys.RETURN);
         // just click somewhere to lose focus, to make sure editing has ended
         String ownerResource
-            = MeetUtils.getResourceJid(participant1.getDriver());
+            = MeetUtils.getResourceJid(getParticipant1().getDriver());
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
     }

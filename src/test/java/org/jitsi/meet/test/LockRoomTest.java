@@ -65,7 +65,7 @@ public class LockRoomTest
      */
     private void ownerLockRoom()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         testRoomIsUnlocked(owner);
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
@@ -153,7 +153,7 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        testRoomIsLocked(participant1.getDriver());
+        testRoomIsLocked(getParticipant1().getDriver());
 
         try
         {
@@ -164,7 +164,7 @@ public class LockRoomTest
         catch(TimeoutException e)
         {}
 
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
@@ -173,7 +173,7 @@ public class LockRoomTest
 
         try
         {
-            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+            getParticipant2().waitToJoinMUC(5);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -185,7 +185,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.id("modal-dialog-ok-button")).click();
 
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+        getParticipant2().waitToJoinMUC(5);
 
         testRoomIsLocked(secondParticipant);
     }
@@ -197,7 +197,7 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "enterParticipantInLockedRoom" })
     public void unlockRoom()
     {
-        participant2.hangUp();
+        getParticipant2().hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
@@ -210,7 +210,7 @@ public class LockRoomTest
      */
     private void ownerUnlockRoom()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
 
@@ -234,16 +234,11 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "unlockRoom" })
     public void enterParticipantInUnlockedRoom()
     {
-        ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
-
         // if we fail to unlock the room this one will detect it
         // as participant will fail joining
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
-        MeetUtils.waitForIceConnected(secondParticipant);
-        MeetUtils.waitForSendReceiveData(secondParticipant);
+        ensureTwoParticipants();
 
-        testRoomIsUnlocked(secondParticipant);
+        testRoomIsUnlocked(getParticipant2().getDriver());
     }
 
     /**
@@ -255,7 +250,7 @@ public class LockRoomTest
     {
         ownerLockRoom();
 
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         testRoomIsLocked(secondParticipant);
         ownerUnlockRoom();
         testRoomIsUnlocked(secondParticipant);
@@ -269,14 +264,14 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "updateLockedStateWhileParticipantInRoom" })
     public void unlockAfterParticipantEnterWrongPassword()
     {
-        participant2.hangUp();
+        getParticipant2().hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
         ownerLockRoom();
 
-        testRoomIsLocked(participant1.getDriver());
+        testRoomIsLocked(getParticipant1().getDriver());
 
         try
         {
@@ -287,7 +282,7 @@ public class LockRoomTest
         catch(TimeoutException e)
         {}
 
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
@@ -296,7 +291,7 @@ public class LockRoomTest
 
         try
         {
-            MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+            getParticipant2().waitToJoinMUC(5);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -311,7 +306,7 @@ public class LockRoomTest
         secondParticipant.findElement(
             By.id("modal-dialog-ok-button")).click();
 
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant);
+        getParticipant2().waitToJoinMUC(5);
         testRoomIsUnlocked(secondParticipant);
     }
 }

@@ -94,13 +94,12 @@ public class ConferenceMigrationTest
             ", REST endpoint: " + jvbRESTEndpoint);
 
         ensureOneParticipant("config.enforcedBridge=\"" + migratedBridge +"\"");
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(secondParticipant);
+        getParticipant1().waitForIceConnected();
 
         ((JavascriptExecutor) owner)
             .executeScript(
@@ -134,9 +133,9 @@ public class ConferenceMigrationTest
 
         // Wait for conference restart
         print("Wait for ICE reconnected...");
-        MeetUtils.waitForIceConnected(owner, 60);
+        getParticipant1().waitForIceConnected(60);
         print("Owner - ICE reconnected!");
-        MeetUtils.waitForIceConnected(secondParticipant, 60);
+        getParticipant2().waitForIceConnected(60);
         print("Second peer - ICE reconnected!");
 
     }

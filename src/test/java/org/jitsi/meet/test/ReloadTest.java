@@ -82,8 +82,8 @@ public class ReloadTest
         setupListeners();
         startReloadScript(new String[]{"--restart-prosody"});
         waitForReloadAndTest();
-        dismissBridgeNotAvailableDialog(participant1.getDriver());
-        dismissBridgeNotAvailableDialog(participant2.getDriver());
+        dismissBridgeNotAvailableDialog(getParticipant1().getDriver());
+        dismissBridgeNotAvailableDialog(getParticipant2().getDriver());
     }
     
     /**
@@ -105,7 +105,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "testProsodyRestart" })
     public void ownerVideoMuteAndCheck()
     {
-        new StopVideoTest(participant1, participant2)
+        new StopVideoTest(getParticipant1(), getParticipant2())
             .stopVideoOnOwnerAndCheck();
     }
     
@@ -115,7 +115,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "ownerVideoMuteAndCheck" })
     public void ownerAudioMuteAndCheck()
     {
-        new MuteTest(participant1, participant2, null).muteOwnerAndCheck();
+        new MuteTest(getParticipant1(), getParticipant2(), null).muteOwnerAndCheck();
     }
     
     /**
@@ -124,7 +124,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "ownerAudioMuteAndCheck" })
     public void ownerSetDisplayNameAndCheck()
     {
-        new DisplayNameTest(participant1, participant2)
+        new DisplayNameTest(getParticipant1(), getParticipant2())
             .checkDisplayNameChange(DISPLAY_NAME);
     }
     
@@ -136,14 +136,14 @@ public class ReloadTest
     public void ownerCheckVideoMuted()
     {
         MeetUIUtils.assertMuteIconIsDisplayed(
-            participant1.getDriver(),
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
+            getParticipant1().getDriver(),
             true,
             true,
             "owner");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            participant2.getDriver(),
-            participant1.getDriver(),
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver(),
             true,
             true,
             "owner");
@@ -157,14 +157,14 @@ public class ReloadTest
     public void ownerCheckAudioMuted()
     {
         MeetUIUtils.assertMuteIconIsDisplayed(
-            participant1.getDriver(),
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
+            getParticipant1().getDriver(),
             true,
             false,
             "owner");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            participant2.getDriver(),
-            participant1.getDriver(),
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver(),
             true,
             false,
             "owner");
@@ -247,8 +247,8 @@ public class ReloadTest
     {
         WebDriver[] drivers =
         {
-            participant1.getDriver(),
-            participant2.getDriver()
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver()
         };
         String script
             = "APP.conference._room.addEventListener("
@@ -270,16 +270,16 @@ public class ReloadTest
      */
     private void waitForReloadAndTest(boolean isOwnerMuted)
     {
-        WebDriver[] drivers =
+        Participant[] participants =
             {
-                participant1.getDriver(),
-                participant2.getDriver()
+                getParticipant1(),
+                getParticipant2()
             };
         final String checkForConferenceLeftScript = "return "
             + "APP.conference._room.conference_left_event;";
-        for (WebDriver driver : drivers)
+        for (Participant p : participants)
         {
-            (new WebDriverWait(driver, 200))
+            (new WebDriverWait(p.getDriver(), 200))
                 .until((ExpectedCondition<Boolean>) d -> {
                     Object res =
                         ((JavascriptExecutor) d)
@@ -290,26 +290,26 @@ public class ReloadTest
         
         print("Reload detected");
 
-        for (WebDriver driver : drivers)
+        for (Participant p : participants)
         {
-            TestUtils.executeScript(driver,
+            TestUtils.executeScript(p.getDriver(),
                 "APP.conference._room.conference_left_event = false;");
         }
         
         print("Wait for ice connected.");
-        for (WebDriver driver : drivers)
+        for (Participant p : participants)
         {
-            MeetUtils.waitForIceConnected(driver, 60);
+            p.waitForIceConnected(60);
         }
         
         print("Wait for send receive data on the owner side.");
-        MeetUtils.waitForSendReceiveData(participant1.getDriver());
-        
+        getParticipant1().waitForSendReceiveData();
+
         if (isOwnerMuted)
         {
             print("Wait for send data on the second "
                 + "participant side.");
-            WebDriver participant = participant2.getDriver();
+            WebDriver participant = getParticipant2().getDriver();
             new WebDriverWait(participant, 15)
             .until((ExpectedCondition<Boolean>) d -> {
                 Map stats = (Map) ((JavascriptExecutor) participant)
@@ -331,7 +331,7 @@ public class ReloadTest
         {
             print("Wait for send receive data on the second "
                 + "participant side.");
-            MeetUtils.waitForSendReceiveData(participant2.getDriver());
+            getParticipant2().waitForSendReceiveData();
         }
         
         print("Reload finished.");

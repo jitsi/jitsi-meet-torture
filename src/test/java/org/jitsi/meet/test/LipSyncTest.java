@@ -122,18 +122,18 @@ public class LipSyncTest
         ensureOneParticipant(
             "config.enableLipSync=true&config.audioPacketDelay=15" +
                 "&config.audioLevelsInterval=100");
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
-        waitForSecondParticipantToConnect("config.disableSuspendVideo=true");
+        ensureTwoParticipants("config.disableSuspendVideo=true");
 
-        WebDriver participant = participant2.getDriver();
+        WebDriver participant = getParticipant2().getDriver();
 
         // Wait for the conference to start
-        MeetUtils.waitForIceConnected(owner);
+        getParticipant1().waitForIceConnected();
 
         // Stops audio and video on the owner to improve performance
-        new MuteTest(participant1, participant2, null).muteOwnerAndCheck();
-        new StopVideoTest(participant1, participant2)
+        new MuteTest(getParticipant1(), getParticipant2(), null).muteOwnerAndCheck();
+        new StopVideoTest(getParticipant1(), getParticipant2())
             .stopVideoOnOwnerAndCheck();
 
         // Read and inject helper script
@@ -169,8 +169,8 @@ public class LipSyncTest
 
         HeartbeatTask heartbeatTask
             = new HeartbeatTask(
-                participant1.getDriver(),
-                participant2.getDriver(),
+                getParticipant1(),
+                getParticipant2(),
                 millsToRun,
                 false);
 

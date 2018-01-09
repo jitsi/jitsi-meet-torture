@@ -44,18 +44,18 @@ public class Peer2PeerTest
     public void testSwitchToP2P()
     {
         ensureOneParticipant("config.p2p.enabled=true");
-        waitForSecondParticipantToConnect("config.p2p.enabled=true");
+        ensureTwoParticipants("config.p2p.enabled=true");
 
-        WebDriver owner = participant1.getDriver();
-        WebDriver participant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver participant = getParticipant2().getDriver();
 
         MeetUtils.waitForP2PIceConnected(owner);
         MeetUtils.waitForP2PIceConnected(participant);
 
         // This kind of verifies stats
         // FIXME also verify resolutions that are not N/A
-        MeetUtils.waitForSendReceiveData(participant);
-        MeetUtils.waitForSendReceiveData(owner);
+        getParticipant2().waitForSendReceiveData();
+        getParticipant1().waitForSendReceiveData();
 
         // FIXME verify if video is displayed on the thumbnails ?
 
@@ -90,21 +90,16 @@ public class Peer2PeerTest
         hangUpAllParticipants();
         ensureThreeParticipants();
 
-        WebDriver owner = participant1.getDriver();
-        WebDriver second = participant2.getDriver();
-        WebDriver third = participant3.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver second = getParticipant2().getDriver();
+        WebDriver third = getParticipant3().getDriver();
 
         MeetUtils.waitForP2PIceDisconnected(owner);
         MeetUtils.waitForP2PIceDisconnected(second);
         MeetUtils.waitForP2PIceDisconnected(third);
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(second);
-        MeetUtils.waitForIceConnected(third);
-
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(second);
-        MeetUtils.waitForSendReceiveData(third);
+        getParticipant1().waitForIceConnected();
+        getParticipant1().waitForSendReceiveData();
 
         // During development I noticed that peers are disconnected
         MeetUIUtils.verifyUserConnStatusIndication(second, owner, true);
@@ -130,16 +125,15 @@ public class Peer2PeerTest
     {
         hangUpAllParticipants();
         ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
-        waitForSecondParticipantToConnect(MANUAL_P2P_MODE_FRAGMENT);
+        ensureTwoParticipants(MANUAL_P2P_MODE_FRAGMENT);
 
-        WebDriver owner = participant1.getDriver();
-        WebDriver participant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver participant = getParticipant2().getDriver();
 
         // Start P2P once JVB connection is established
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(participant);
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(participant);
+        getParticipant1().waitForIceConnected();
+        getParticipant1().waitForSendReceiveData();
+
         // Check if not in P2P
         assertFalse(MeetUtils.isP2PConnected(owner));
         assertFalse(MeetUtils.isP2PConnected(owner));
@@ -152,8 +146,8 @@ public class Peer2PeerTest
 
         // This kind of verifies stats
         // FIXME also verify resolutions that are not N/A
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(participant);
+        getParticipant1().waitForSendReceiveData();
+        getParticipant2().waitForSendReceiveData();
 
         // FIXME verify if video is displayed on the thumbnails ?
         MeetUIUtils.verifyUserConnStatusIndicationLong(
@@ -171,8 +165,8 @@ public class Peer2PeerTest
         MeetUtils.waitForP2PIceDisconnected(owner);
         MeetUtils.waitForP2PIceDisconnected(participant);
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(participant);
+        getParticipant1().waitForIceConnected();
+        getParticipant2().waitForIceConnected();
 
         // FIXME verify if video is displayed on the thumbnails ?
         MeetUIUtils.verifyUserConnStatusIndicationLong(
@@ -211,15 +205,14 @@ public class Peer2PeerTest
     {
         hangUpAllParticipants();
         ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
-        waitForSecondParticipantToConnect(MANUAL_P2P_MODE_FRAGMENT);
+        ensureTwoParticipants(MANUAL_P2P_MODE_FRAGMENT);
 
-        WebDriver owner = participant1.getDriver();
-        WebDriver participant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver participant = getParticipant2().getDriver();
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(participant);
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(participant);
+        getParticipant1().waitForIceConnected();
+        getParticipant1().waitForSendReceiveData();
+
         // Check if not in P2P
         assertFalse(MeetUtils.isP2PConnected(owner));
         assertFalse(MeetUtils.isP2PConnected(owner));
@@ -240,8 +233,8 @@ public class Peer2PeerTest
 
         // This kind of verifies stats
         // FIXME also verify resolutions that are not N/A
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(participant);
+        getParticipant1().waitForSendReceiveData();
+        getParticipant2().waitForSendReceiveData();
 
         // Verify that the audio is coming through
         MeetUIUtils.waitForAudioMuted(owner, participant, "2nd peer", false);
@@ -261,8 +254,8 @@ public class Peer2PeerTest
         MeetUtils.waitForP2PIceDisconnected(owner);
         MeetUtils.waitForP2PIceDisconnected(participant);
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(participant);
+        getParticipant1().waitForIceConnected();
+        getParticipant2().waitForIceConnected();
 
         // FIXME verify if video is displayed on the thumbnails ?
         MeetUIUtils.verifyUserConnStatusIndicationLong(

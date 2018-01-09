@@ -53,7 +53,7 @@ public class VideoLayoutTest
     @Test
     public void testVideoLayout()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         driverVideoLayoutTest(owner);
     }
 

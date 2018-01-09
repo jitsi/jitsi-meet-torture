@@ -112,9 +112,9 @@ public class DesktopSharingTest
             }
         }).start();
 
-        final WebDriver owner = participant1.getDriver();
+        final WebDriver owner = getParticipant1().getDriver();
 
-        // now lets wait satarting or error on startup
+        // now lets wait starting or error on startup
         try
         {
             waitStartSignal.await(2, TimeUnit.SECONDS);
@@ -135,9 +135,10 @@ public class DesktopSharingTest
             owner,
             "return (APP.conference.membersCount == 2);",
             25);
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForRemoteStreams(owner, 1);
+        Participant ownerParticipant = getParticipant1();
+        ownerParticipant.waitForIceConnected();
+        ownerParticipant.waitForSendReceiveData();
+        ownerParticipant.waitForRemoteStreams(1);
 
         // now lets check whether his stream is screen
         String remoteParticipantID = owner

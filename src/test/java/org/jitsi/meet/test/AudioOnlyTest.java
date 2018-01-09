@@ -54,9 +54,9 @@ public class AudioOnlyTest
     public void enableAudioOnlyAndCheck()
     {
         setAudioOnlyAndCheck(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "owner",
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             true);
     }
 
@@ -65,13 +65,13 @@ public class AudioOnlyTest
      */
     @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
     public void videoUnmuteDisabledInAudioOnly() {
-        MeetUIUtils.clickOnToolbarButton(participant1.getDriver(),
+        MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
             MUTE_BUTTON_ID);
 
         verifyVideoMute(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "owner",
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             true);
     }
 
@@ -80,7 +80,7 @@ public class AudioOnlyTest
      */
     @Test(dependsOnMethods = { "videoUnmuteDisabledInAudioOnly" })
     public void avatarsDisplayForParticipants() {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         TestUtils.waitForDisplayedElementByXPath(owner, LARGE_AVATAR_XPATH, 2);
 
@@ -94,9 +94,9 @@ public class AudioOnlyTest
     @Test(dependsOnMethods = { "avatarsDisplayForParticipants" })
     public void disableAudioOnlyAndCheck() {
         setAudioOnlyAndCheck(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "owner",
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             false);
     }
 

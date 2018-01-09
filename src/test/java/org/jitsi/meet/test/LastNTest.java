@@ -39,12 +39,12 @@ public class LastNTest
     public void testLastN()
     {
         ensureOneParticipant("config.startAudioMuted=0&config.channelLastN=1");
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         ensureThreeParticipants();
 
-        WebDriver secondParticipant = participant2.getDriver();
-        WebDriver thirdParticipant = participant3.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver thirdParticipant = getParticipant3().getDriver();
 
         assertEquals(
             3, MeetUIUtils.getThumbnails(owner).size(),
@@ -54,12 +54,12 @@ public class LastNTest
             "number of visible thumbnails");
 
         MeetUIUtils.assertAudioMuted(secondParticipant, owner, "owner");
-        MeetUIUtils.assertAudioMuted(owner, secondParticipant, "participant2");
-        MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "participant3");
+        MeetUIUtils.assertAudioMuted(owner, secondParticipant, "getParticipant2()");
+        MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "getParticipant3()");
 
         // unmute second participant
         MuteTest muteTest
-            = new MuteTest(participant1, participant2, participant3);
+            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
         muteTest.unMuteParticipantAndCheck();
 
         // so now he should be active speaker

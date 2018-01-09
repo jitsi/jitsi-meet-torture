@@ -48,12 +48,11 @@ public class SinglePortTest
     @Test
     public void singlePortTest()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // Just make sure everyone is ready
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(secondParticipant);
+        getParticipant1().waitForSendReceiveData();
 
         String ownerPortStr = getRemotePort(owner);
         String secondParticipantPortStr = getRemotePort(secondParticipant);

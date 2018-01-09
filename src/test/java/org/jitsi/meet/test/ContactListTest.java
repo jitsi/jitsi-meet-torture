@@ -51,7 +51,7 @@ public class ContactListTest
     @Test
     public void testContactList()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         // Make sure that the contact list panel is open.
         MeetUIUtils.displayContactListPanel(owner);
@@ -61,7 +61,7 @@ public class ContactListTest
         doContactCountCheck(owner, 2);
 
         // Add a third participant to the call.
-        waitForThirdParticipantToConnect();
+        ensureThreeParticipants();
 
         // Make sure we have a line in the contact list for every participant on
         // the call.
@@ -100,9 +100,9 @@ public class ContactListTest
     {
         String ownerJid = MeetUtils.getResourceJid(owner);
         String secondParticipantJid
-            = MeetUtils.getResourceJid(participant2.getDriver());
+            = MeetUtils.getResourceJid(getParticipant2().getDriver());
         String thirdParticipantJid
-            = MeetUtils.getResourceJid(participant3.getDriver());
+            = MeetUtils.getResourceJid(getParticipant3().getDriver());
 
         String ownerLiXPath = getContactListParticipantXPath(ownerJid);
         String secondParticipantLiXPath
@@ -125,7 +125,7 @@ public class ContactListTest
     private void doPinSecondParticipantCheck(WebDriver owner)
     {
         final String secondParticipantJid
-            = MeetUtils.getResourceJid(participant2.getDriver());
+            = MeetUtils.getResourceJid(getParticipant2().getDriver());
         WebElement secondPartLi
             = owner.findElement(By.xpath(getContactListParticipantXPath(
                 secondParticipantJid)));

@@ -61,7 +61,7 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
@@ -93,7 +93,7 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         try
         {
             // give time for the internal frame to load and attach to the page.
@@ -141,13 +141,13 @@ public class EtherpadTest
         }
 
         MeetUIUtils.clickOnToolbarButtonByClass(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "icon-share-doc");
 
         TestUtils.waitMillis(5000);
 
         TestUtils.waitForDisplayedElementByID(
-            participant1.getDriver(), "largeVideo", 10);
+            getParticipant1().getDriver(), "largeVideo", 10);
     }
 
     /**
@@ -162,7 +162,7 @@ public class EtherpadTest
             return;
         }
 
-        new SwitchVideoTest(participant1, participant2)
+        new SwitchVideoTest(getParticipant1(), getParticipant2())
             .ownerClickOnLocalVideoAndTest();
     }
 
@@ -179,7 +179,7 @@ public class EtherpadTest
         }
 
         SwitchVideoTest switchVideoTest
-            = new SwitchVideoTest(participant1, participant2);
+            = new SwitchVideoTest(getParticipant1(), getParticipant2());
         try
         {
             switchVideoTest.ownerClickOnRemoteVideoAndTest();

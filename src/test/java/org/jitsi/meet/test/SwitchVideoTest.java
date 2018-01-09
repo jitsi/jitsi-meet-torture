@@ -44,8 +44,7 @@ public class SwitchVideoTest
      */
     public SwitchVideoTest(Participant participant1, Participant participant2)
     {
-        this.participant1 = participant1;
-        this.participant2 = participant2;
+        this.addParticipants(participant1, participant2);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class SwitchVideoTest
     @Test
     public void ownerClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(participant1.getDriver());
+        clickOnLocalVideoAndTest(getParticipant1().getDriver());
     }
 
     /**
@@ -83,8 +82,8 @@ public class SwitchVideoTest
     public void ownerClickOnRemoteVideoAndTest()
     {
         clickOnRemoteVideoAndTest(
-            participant1.getDriver(),
-            participant2.getDriver());
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
 
     /**
@@ -94,8 +93,8 @@ public class SwitchVideoTest
     public void ownerUnpinRemoteVideoAndTest()
     {
         unpinRemoteVideoAndTest(
-            participant1.getDriver(),
-            participant2.getDriver());
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
 
     /**
@@ -106,8 +105,8 @@ public class SwitchVideoTest
     public void participantUnpinRemoteVideo()
     {
         unpinRemoteVideoAndTest(
-            participant2.getDriver(),
-            participant1.getDriver());
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver());
     }
 
     /**
@@ -169,7 +168,7 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = { "ownerUnpinRemoteVideoAndTest" })
     public void participantClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(participant2.getDriver());
+        clickOnLocalVideoAndTest(getParticipant2().getDriver());
     }
 
     /**
@@ -180,8 +179,8 @@ public class SwitchVideoTest
     public void participantClickOnRemoteVideoAndTest()
     {
         clickOnRemoteVideoAndTest(
-            participant2.getDriver(),
-            participant1.getDriver());
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver());
     }
 
 }

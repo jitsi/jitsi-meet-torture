@@ -156,8 +156,7 @@ public class AuthSetupConference
             throw new RuntimeException(e);
         }
 
-        startParticipant1(null, null);
-        WebDriver moderator = participant1.getDriver();
+        WebDriver moderator = joinFirstParticipant().getDriver();
 
         String authButtonName = "jqi_state0_" +
                 "buttonspandatai18ndialogIamHostIamthehostspan";

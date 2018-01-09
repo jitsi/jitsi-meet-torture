@@ -44,7 +44,7 @@ public class StartMutedTest
     @Test
     public void checkboxesTest()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         // Make sure settings panel is displayed
         MeetUIUtils.displaySettingsPanel(owner);
@@ -58,9 +58,6 @@ public class StartMutedTest
         owner.findElement(By.id("startVideoMuted")).click();
 
         ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
-        MeetUtils.waitForIceConnected(secondParticipant);
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -82,19 +79,16 @@ public class StartMutedTest
         ensureOneParticipant("config.startAudioMuted=1&" +
             "config.debugAudioLevels=true&" +
             "config.startVideoMuted=1");
-        WebDriver owner = participant1.getDriver();
-        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
+        WebDriver owner = getParticipant1().getDriver();
 
         ensureTwoParticipants();
-        final WebDriver secondParticipant = participant2.getDriver();
+        final WebDriver secondParticipant = getParticipant2().getDriver();
         ((JavascriptExecutor) owner)
             .executeScript(
                 "console.log('Start configOptionsTest, second participant: "
                     + MeetUtils.getResourceJid(secondParticipant) + "');");
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(secondParticipant);
+        getParticipant1().waitForIceConnected();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -120,8 +114,8 @@ public class StartMutedTest
      */
     private void checkSecondParticipantForMute()
     {
-        WebDriver secondParticipant = participant2.getDriver();
-        WebDriver owner = participant1.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 

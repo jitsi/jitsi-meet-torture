@@ -44,8 +44,7 @@ public class StopVideoTest
     public StopVideoTest(
         Participant participant1, Participant participant2)
     {
-        this.participant1 = participant1;
-        this.participant2 = participant2;
+        this.addParticipants(participant1, participant2);
     }
 
     @Override
@@ -63,8 +62,8 @@ public class StopVideoTest
     public void stopVideoOnOwnerAndCheck()
     {
         MeetUIUtils.muteVideoAndCheck(
-            participant1.getDriver(),
-            participant2.getDriver());
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
 
     /**
@@ -73,19 +72,19 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopVideoOnOwnerAndCheck" })
     public void startVideoOnOwnerAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(participant1.getDriver(),
+        MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
             "toolbar_button_camera");
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             "//span[starts-with(@id, 'participant_')]"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 10);
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "//span[@id='localVideoContainer']"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 10);
@@ -98,7 +97,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "startVideoOnOwnerAndCheck" })
     public void stopAndStartVideoOnOwnerAndCheckStream()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         // mute owner
         stopVideoOnOwnerAndCheck();
@@ -123,7 +122,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckStream" })
     public void stopAndStartVideoOnOwnerAndCheckEvents()
     {
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         JavascriptExecutor executor = (JavascriptExecutor) secondParticipant;
 
         String listenForTrackRemoved = "APP.conference._room.addEventListener("
@@ -162,8 +161,8 @@ public class StopVideoTest
     public void stopVideoOnParticipantAndCheck()
     {
         MeetUIUtils.muteVideoAndCheck(
-            participant2.getDriver(),
-            participant1.getDriver());
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver());
     }
 
     /**
@@ -173,15 +172,15 @@ public class StopVideoTest
     public void startVideoOnParticipantAndCheck()
     {
         MeetUIUtils.clickOnToolbarButton(
-            participant2.getDriver(), "toolbar_button_camera");
+            getParticipant2().getDriver(), "toolbar_button_camera");
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             TestUtils.getXPathStringForClassName("//span", "videoMuted") +
             "/i[@class='icon-camera-disabled']", 5);
         
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             TestUtils.getXPathStringForClassName("//span", "videoMuted") +
             "/i[@class='icon-camera-disabled']", 5);
     }
@@ -195,22 +194,19 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "startVideoOnParticipantAndCheck" })
     public void stopOwnerVideoBeforeSecondParticipantJoins()
     {
-        participant2.hangUp();
+        getParticipant2().hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
         MeetUIUtils.clickOnToolbarButton(
-            participant1.getDriver(),
+            getParticipant1().getDriver(),
             "toolbar_button_camera");
 
         TestUtils.waitMillis(500);
 
         ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
-
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
-        MeetUtils.waitForIceConnected(secondParticipant);
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         TestUtils.waitForElementByXPath(
             secondParticipant,

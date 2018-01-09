@@ -51,7 +51,7 @@ public class ActiveSpeakerTest
     public void testActiveSpeaker()
     {
         // skip if we are not chrome
-        if (participant1.getType()
+        if (getParticipant1().getType()
                 != ParticipantFactory.ParticipantType.chrome)
         {
             throw new SkipException("skip as it is not chrome");
@@ -62,16 +62,16 @@ public class ActiveSpeakerTest
 
         // Owner becomes active speaker - check from 2nd peer's perspective
         testActiveSpeaker(
-            participant1, participant2, participant3);
+            getParticipant1(), getParticipant2(), getParticipant3());
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(participant3, participant2, participant1);
+        testActiveSpeaker(getParticipant3(), getParticipant2(), getParticipant1());
         // 2nd peer becomes active speaker - check from owner's perspective
-        testActiveSpeaker(participant2, participant1, participant3);
+        testActiveSpeaker(getParticipant2(), getParticipant1(), getParticipant3());
 
         // check the displayed speakers, there should be only one speaker
-        assertOneDominantSpeaker(participant1.getDriver());
-        assertOneDominantSpeaker(participant2.getDriver());
-        assertOneDominantSpeaker(participant3.getDriver());
+        assertOneDominantSpeaker(getParticipant1().getDriver());
+        assertOneDominantSpeaker(getParticipant2().getDriver());
+        assertOneDominantSpeaker(getParticipant3().getDriver());
     }
 
     /**
@@ -101,7 +101,7 @@ public class ActiveSpeakerTest
     private void muteAllParticipants()
     {
         MuteTest muteTest
-            = new MuteTest(participant1, participant2, participant3);
+            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
         muteTest.muteOwnerAndCheck();
         muteTest.muteParticipantAndCheck();
         muteTest.muteThirdParticipantAndCheck();

@@ -170,7 +170,7 @@ public class PeerConnectionStatusTest
     {
         // Start the second participant with TCP disabled, so that we can
         // force it to disconnect just by blocking the UDP port.
-        waitForSecondParticipantToConnect(TCPTest.DISABLE_TCP_URL_FRAGMENT);
+        ensureTwoParticipants(TCPTest.DISABLE_TCP_URL_FRAGMENT);
     }
 
     /**
@@ -183,9 +183,9 @@ public class PeerConnectionStatusTest
     public void test2ndPeerInterruptedDuringCall()
         throws Exception
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         assertNotNull(owner);
-        WebDriver secondPeer = participant2.getDriver();
+        WebDriver secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);
 
         // 1. Block media flow on 2nd and check if is indicated as disconnected
@@ -219,13 +219,13 @@ public class PeerConnectionStatusTest
         // Mute video(this is not real live scenario, but we want to make
         // sure that the grey avatar is displayed if the connection gets
         // disrupted while video muted)
-        //        new StopVideoTest("stopVideoOnParticipantAndCheck")
-        //            .stopVideoOnParticipantAndCheck();
+        StopVideoTest stopVideoTest
+            = new StopVideoTest(getParticipant1(), getParticipant2());
+        stopVideoTest.stopVideoOnParticipantAndCheck();
         MeetUIUtils.assertGreyAvatarOnLarge(owner);
 
         // The avatar should remain
-        //        new StopVideoTest("startVideoOnParticipantAndCheck")
-        //            .startVideoOnParticipantAndCheck();
+        stopVideoTest.startVideoOnParticipantAndCheck();
         MeetUIUtils.assertGreyAvatarOnLarge(owner);
     }
 
@@ -239,8 +239,8 @@ public class PeerConnectionStatusTest
     public void test2ndPeerRestored()
         throws Exception
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondPeer = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondPeer = getParticipant2().getDriver();
 
         // 1. Unlock the port and see if we recover
         unblockPort(peer2bundlePort);
@@ -263,9 +263,9 @@ public class PeerConnectionStatusTest
     public void test2ndPeerExpired()
         throws Exception
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         assertNotNull(owner);
-        WebDriver secondPeer = participant2.getDriver();
+        WebDriver secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);
 
         // The purpose of next steps is to check if JVB sends
@@ -294,11 +294,11 @@ public class PeerConnectionStatusTest
         // 8. Join with 3rd and see if the user is marked as interrupted
         ensureThreeParticipants();
 
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         assertNotNull(owner);
-        WebDriver secondPeer = participant2.getDriver();
+        WebDriver secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);
-        WebDriver thirdPeer = participant3.getDriver();
+        WebDriver thirdPeer = getParticipant3().getDriver();
         assertNotNull(thirdPeer);
 
         MeetUIUtils.verifyUserConnStatusIndication(
@@ -326,17 +326,18 @@ public class PeerConnectionStatusTest
     @Test(dependsOnMethods = { "testJoin3rdWhile2ndExpired" })
     public void test2ndFailsICEOnJoin()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         assertNotNull(owner);
-        WebDriver secondPeer = participant2.getDriver();
+        WebDriver secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);
-        WebDriver thirdPeer = participant3.getDriver();
+        WebDriver thirdPeer = getParticipant3().getDriver();
         assertNotNull(thirdPeer);
 
         // Close 2nd and join with failICE=true
-        participant2.hangUp();
-        waitForSecondParticipantToJoin("config.failICE=true");
-        secondPeer = participant2.getDriver();
+        getParticipant2().hangUp();
+        ensureTwoParticipants("config.failICE=true");
+
+        secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);
 
         // It will be marked as disconnected only after 15 seconds since
@@ -348,7 +349,7 @@ public class PeerConnectionStatusTest
         MeetUIUtils.verifyUserConnStatusIndication(
             thirdPeer, secondPeer, false);
 
-        participant3.hangUp();
+        getParticipant3().hangUp();
     }
 
     /**

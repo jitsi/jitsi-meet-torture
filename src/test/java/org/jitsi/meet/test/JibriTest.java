@@ -86,7 +86,7 @@ public class JibriTest
     @Test
     public void checkJibriEnabled()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         List<WebElement> elems = owner.findElements(
             By.xpath("//a[@class='button fa " + "fa-play-circle']"));
 
@@ -99,7 +99,7 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriEnabled" })
     public void startLiveStreaming()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
 
         // fill in the dialog
@@ -120,8 +120,8 @@ public class JibriTest
     @Test(dependsOnMethods = { "startLiveStreaming" })
     public void checkJibriStatusOn()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         try
         {
             TestUtils.waitForElementByXPath(owner,
@@ -174,8 +174,8 @@ public class JibriTest
     @Test(dependsOnMethods = { "stopLiveStreaming" })
     public void checkJibriStatusOff()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         try
         {
             TestUtils.waitForElementByXPath(owner,
@@ -205,11 +205,11 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriStatusOn" })
     public void checkForJibriParticipant()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         assertEquals(
             2, MeetUIUtils.getVisibleThumbnails(owner).size(),
             "number of visible thumbnails for owner");
-        WebDriver sencondParticipant = participant2.getDriver();
+        WebDriver sencondParticipant = getParticipant2().getDriver();
         assertEquals(
             2, MeetUIUtils.getVisibleThumbnails(sencondParticipant).size(),
             "number of visible thumbnails for second participant");
@@ -237,7 +237,7 @@ public class JibriTest
     @Test(dependsOnMethods = { "testOnlineYoutubeStream" })
     public void stopLiveStreaming()
     {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
 
         // fill in the dialog

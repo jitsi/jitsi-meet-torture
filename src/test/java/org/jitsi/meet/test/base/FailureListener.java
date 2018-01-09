@@ -118,18 +118,18 @@ public class FailureListener
     private void takeScreenshots(
         String fileName, AbstractBaseTest testInstance)
     {
-        takeScreenshot(testInstance.participant1.getDriver(),
+        takeScreenshot(testInstance.getParticipant1().getDriver(),
             fileName + "-owner.png");
 
-        if (testInstance.participant2 != null)
+        if (testInstance.getParticipant2() != null)
         {
-            takeScreenshot(testInstance.participant2.getDriver(),
+            takeScreenshot(testInstance.getParticipant2().getDriver(),
                 fileName + "-participant.png");
         }
 
-        if (testInstance.participant3 != null)
+        if (testInstance.getParticipant3() != null)
         {
-            takeScreenshot(testInstance.participant3.getDriver(),
+            takeScreenshot(testInstance.getParticipant3().getDriver(),
                 fileName + "-third.png");
         }
     }
@@ -169,18 +169,18 @@ public class FailureListener
      */
     private void saveHtmlSources(String fileName, AbstractBaseTest testInstance)
     {
-        saveHtmlSource(testInstance.participant1.getDriver(),
+        saveHtmlSource(testInstance.getParticipant1().getDriver(),
             fileName + "-owner.html");
 
-        if (testInstance.participant2 != null)
+        if (testInstance.getParticipant2() != null)
         {
-            saveHtmlSource(testInstance.participant2.getDriver(),
+            saveHtmlSource(testInstance.getParticipant2().getDriver(),
                 fileName + "-participant.html");
         }
 
-        if (testInstance.participant3 != null)
+        if (testInstance.getParticipant3() != null)
         {
-            saveHtmlSource(testInstance.participant3.getDriver(),
+            saveHtmlSource(testInstance.getParticipant3().getDriver(),
                 fileName + "-third.html");
         }
     }
@@ -211,18 +211,18 @@ public class FailureListener
     private void saveMeetDebugLog(
         String fileNamePrefix, AbstractBaseTest testInstance)
     {
-        saveMeetDebugLog(testInstance.participant1.getDriver(),
+        saveMeetDebugLog(testInstance.getParticipant1().getDriver(),
             fileNamePrefix + "-meetlog-owner.json");
 
-        if (testInstance.participant2 != null)
+        if (testInstance.getParticipant2() != null)
         {
-            saveMeetDebugLog(testInstance.participant2.getDriver(),
+            saveMeetDebugLog(testInstance.getParticipant2().getDriver(),
                 fileNamePrefix + "-meetlog-participant.json");
         }
 
-        if (testInstance.participant3 != null)
+        if (testInstance.getParticipant3() != null)
         {
-            saveMeetDebugLog(testInstance.participant3.getDriver(),
+            saveMeetDebugLog(testInstance.getParticipant3().getDriver(),
                 fileNamePrefix + "-meetlog-third.json");
         }
     }
@@ -261,24 +261,24 @@ public class FailureListener
         String fileNamePrefix, AbstractBaseTest testInstance)
     {
         saveBrowserLogs(
-            testInstance.participant1.getDriver(),
+            testInstance.getParticipant1().getDriver(),
             fileNamePrefix, "-console-owner", ".log",
-            testInstance.participant1.getType());
+            testInstance.getParticipant1().getType());
 
-        if (testInstance.participant2 != null)
+        if (testInstance.getParticipant2() != null)
         {
             saveBrowserLogs(
-                testInstance.participant2.getDriver(),
+                testInstance.getParticipant2().getDriver(),
                 fileNamePrefix, "-console-secondParticipant", ".log",
-                testInstance.participant2.getType());
+                testInstance.getParticipant2().getType());
         }
 
-        if (testInstance.participant3 != null)
+        if (testInstance.getParticipant3() != null)
         {
             saveBrowserLogs(
-                testInstance.participant3.getDriver(),
+                testInstance.getParticipant3().getDriver(),
                 fileNamePrefix, "-console-thirdParticipant", ".log",
-                testInstance.participant3.getType());
+                testInstance.getParticipant3().getType());
         }
     }
 

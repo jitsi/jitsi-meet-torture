@@ -133,7 +133,7 @@ public class DataChannelTest
     @Test
     public void testDataChannelOfOwner()
     {
-        testDataChannel(participant1.getDriver());
+        testDataChannel(getParticipant1().getDriver());
     }
 
     /**
@@ -143,7 +143,7 @@ public class DataChannelTest
     @Test(dependsOnMethods = { "testDataChannelOfOwner" })
     public void testDataChannelOfSecondParticipant()
     {
-        testDataChannel(participant2.getDriver());
+        testDataChannel(getParticipant2().getDriver());
     }
 
     /**

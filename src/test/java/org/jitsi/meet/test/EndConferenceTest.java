@@ -42,7 +42,7 @@ public class EndConferenceTest
     @Test
     public void hangupCallAndCheck()
     {
-        final WebDriver owner = participant1.getDriver();
+        final WebDriver owner = getParticipant1().getDriver();
         final String url = owner.getCurrentUrl();
 
         // hangup and wait for redirect

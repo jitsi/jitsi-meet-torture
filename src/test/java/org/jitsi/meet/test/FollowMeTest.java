@@ -49,8 +49,8 @@ public class FollowMeTest
     }
 
     private void oneTimeSetUp() {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         MeetUIUtils.displaySettingsPanel(owner);
         MeetUIUtils.displaySettingsPanel(secondParticipant);
@@ -71,7 +71,7 @@ public class FollowMeTest
     @Test
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         Boolean allModeratorsEnabled = (Boolean)(
             (JavascriptExecutor) secondParticipant)
@@ -94,8 +94,8 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFollowMeCheckboxVisibleOnlyForModerator" })
     public void testShareDocumentCommandsAreFollowed()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
@@ -125,8 +125,8 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testShareDocumentCommandsAreFollowed" })
     public void testFilmstripCommandsAreFollowed()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         MeetUIUtils.displayFilmstripPanel(owner);
         MeetUIUtils.displayFilmstripPanel(secondParticipant);
@@ -153,8 +153,8 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
     public void testNextOnStageCommandsAreFollowed()
     {
-        WebDriver owner = participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);

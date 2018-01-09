@@ -110,7 +110,7 @@ public class MaxUsersTest
         }
         else
         {
-            checkDialog(participant2.getDriver());
+            checkDialog(getParticipant2().getDriver());
         }
     }
 

@@ -31,13 +31,6 @@ import static org.testng.Assert.assertFalse;
 public class MeetUtils
 {
     /**
-     * The javascript code which returns {@code true} if we are joined in
-     * the muc.
-     */
-    public static final String IS_MUC_JOINED =
-        "return APP.conference.isJoined();";
-
-    /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
@@ -165,43 +158,6 @@ public class MeetUtils
     }
 
     /**
-     * Waits for number of remote streams.
-     * @param participant the driver to use for the check.
-     * @param n number of remote streams to wait for.
-     */
-    public static void waitForRemoteStreams(
-            final WebDriver participant,
-            final int n)
-    {
-        waitForRemoteStreams(participant, n, 15);
-    }
-
-    /**
-     * Waits for number of remote streams.
-     * @param participant the driver to use for the check.
-     * @param n number of remote streams to wait for.
-     * @param timeout the maximum amount of time in seconds to wait.
-     */
-    public static void waitForRemoteStreams(
-        final WebDriver participant,
-        final int n,
-        int timeout)
-    {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return (Boolean)((JavascriptExecutor) participant)
-                        .executeScript(
-                            "return APP.conference"
-                                + ".getNumberOfParticipantsWithTracks() >= "
-                                + n + ";");
-                }
-            });
-    }
-
-    /**
      * Waits for the page to be loaded before continuing with the operations.
      * @param driver the webdriver that just loaded a page
      */
@@ -228,38 +184,6 @@ public class MeetUtils
                 true,
                 "Timeout waiting for Page Load Request to complete.");
         }
-    }
-
-    /**
-     * Waits until data has been sent and received over the ICE connection
-     * in {@code participant}.
-     * @param participant the participant.
-     */
-    public static void waitForSendReceiveData(final WebDriver participant)
-    {
-        new WebDriverWait(participant, 15)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Map stats = (Map) ((JavascriptExecutor) participant)
-                            .executeScript("return APP.conference.getStats();");
-
-                    Map<String, Long> bitrate =
-                            (Map<String, Long>) stats.get("bitrate");
-
-                    if (bitrate != null)
-                    {
-                        long download = bitrate.get("download");
-                        long upload = bitrate.get("upload");
-
-                        if (download > 0 && upload > 0)
-                            return true;
-                    }
-
-                    return false;
-                }
-            });
     }
 
     /**
@@ -295,57 +219,6 @@ public class MeetUtils
             .executeScript(
                 "return APP.conference._room.xmpp.connection.connected;");
         return res != null && res.equals(Boolean.TRUE);
-    }
-
-    /**
-     * Waits until {@code participant} joins the MUC.
-     * @param participant the participant.
-     * @param timeout the maximum time to wait in seconds.
-     */
-    public static void waitForParticipantToJoinMUC(
-        WebDriver participant, long timeout)
-    {
-        TestUtils.waitForBoolean(
-            participant,
-            IS_MUC_JOINED,
-            timeout);
-    }
-
-    /**
-     * Checks whether a participant is in the MUC.
-     *
-     * @param participant the participant.
-     * @return {@code true} if the specified {@code participant} has joined the
-     * room; otherwise, {@code false}
-     */
-    public static boolean isInMuc(WebDriver participant)
-    {
-        Object res = ((JavascriptExecutor) participant)
-            .executeScript(IS_MUC_JOINED);
-        return res != null && res.equals(Boolean.TRUE);
-    }
-
-    /**
-     * Waits 30 sec for the given participant to enter the ICE 'connected'
-     * state.
-     *
-     * @param participant the participant.
-     */
-    public static void waitForIceConnected(WebDriver participant)
-    {
-        waitForIceConnected(participant, 30);
-    }
-
-    /**
-     * Waits for the given participant to enter the ICE 'connected' state.
-     *
-     * @param participant the participant.
-     * @param timeout timeout in seconds.
-     */
-    public static void waitForIceConnected(WebDriver participant, long timeout)
-    {
-        TestUtils.waitForBoolean(
-            participant, ICE_CONNECTED_CHECK_SCRIPT, timeout);
     }
 
     public static boolean isP2PConnected(WebDriver participant)
@@ -420,15 +293,6 @@ public class MeetUtils
     {
         TestUtils.waitForBoolean(
             participant, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
-    }
-
-    /**
-     * Waits until {@code participant} joins the MUC.
-     * @param participant the participant.
-     */
-    public static void waitForParticipantToJoinMUC(WebDriver participant)
-    {
-        waitForParticipantToJoinMUC(participant, 5);
     }
 
     /**

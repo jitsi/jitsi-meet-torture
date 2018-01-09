@@ -86,7 +86,7 @@ public class RingOverlayTest
     {
         ensureOneParticipant(JWT_TOKEN, null);
 
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         // test the values show on ring overlay about the user we are calling to
         String ringOverlayDivXpath = "div[@id='ringOverlay']";
@@ -133,15 +133,15 @@ public class RingOverlayTest
 
         // Join with second participant
         ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // overlay absent or hidden
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             owner, "//" + ringOverlayDivXpath, 2);
 
-        new DisplayNameTest(participant1, participant2)
+        new DisplayNameTest(getParticipant1(), getParticipant2())
             .checkRemoteVideoForName(
-                secondParticipant, participant1, USER_NAME);
+                secondParticipant, getParticipant1(), USER_NAME);
 
         // let's check the avatar now
 

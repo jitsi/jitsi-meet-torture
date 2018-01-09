@@ -59,7 +59,7 @@ public class AvatarTest
         hangUpAllParticipantsExceptTheOwner();
 
         // Start owner
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
@@ -75,7 +75,7 @@ public class AvatarTest
 
         // Join with second participant
         ensureTwoParticipants();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
 
         // Verify that the owner is muted from 2nd peer perspective
@@ -103,7 +103,7 @@ public class AvatarTest
         MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
         StopVideoTest stopVideoTest
-            = new StopVideoTest(this.participant1, this.participant2);
+            = new StopVideoTest(this.getParticipant1(), this.getParticipant2());
         stopVideoTest.startVideoOnOwnerAndCheck();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
@@ -140,8 +140,8 @@ public class AvatarTest
             getThumbnailSrc(owner, secondPeerResource));
 
         // Start the third participant
-        waitForThirdParticipantToConnect();
-        WebDriver thirdParticipant = participant3.getDriver();
+        ensureThreeParticipants();
+        WebDriver thirdParticipant = getParticipant3().getDriver();
 
         String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
 
@@ -173,7 +173,7 @@ public class AvatarTest
         MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
         MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
-        participant3.hangUp();
+        getParticipant3().hangUp();
 
         TestUtils.waitMillis(1500);
 
@@ -201,8 +201,8 @@ public class AvatarTest
     @Test
     public void changeAvatarAndCheck()
     {
-        final WebDriver owner = participant1.getDriver();
-        final WebDriver secondParticipant = participant2.getDriver();
+        final WebDriver owner = getParticipant1().getDriver();
+        final WebDriver secondParticipant = getParticipant2().getDriver();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 

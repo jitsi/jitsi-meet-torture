@@ -16,8 +16,8 @@
 package org.jitsi.meet.test.base;
 
 import io.github.bonigarcia.wdm.*;
-import org.jitsi.meet.test.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
@@ -166,7 +166,7 @@ public class ParticipantFactory
             String name
                 = configPrefix.substring(configPrefix.indexOf('.') + 1);
 
-            return new Participant<>(
+            return new WebParticipant(
                 name,
                 startWebDriver(name, configPrefix, participantType),
                 participantType,
@@ -242,11 +242,12 @@ public class ParticipantFactory
         {
             InternetExplorerDriverManager.getInstance().setup();
 
-            DesiredCapabilities caps = DesiredCapabilities.internetExplorer();
-            caps.setCapability("ignoreZoomSetting", true);
+            InternetExplorerOptions ieOptions = new InternetExplorerOptions();
+            ieOptions.ignoreZoomSettings();
+
             System.setProperty("webdriver.ie.driver.silent", "true");
 
-            return new InternetExplorerDriver(caps);
+            return new InternetExplorerDriver(ieOptions);
         }
         else
         {

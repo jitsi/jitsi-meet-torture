@@ -131,10 +131,10 @@ public class PSNRTest
 
         // stop everything to maximize performance
         MuteTest muteTest
-            = new MuteTest(participant1, participant2, null);
+            = new MuteTest(getParticipant1(), getParticipant2(), null);
         muteTest.muteOwnerAndCheck();
         muteTest.muteParticipantAndCheck();
-        new StopVideoTest(participant1, participant2)
+        new StopVideoTest(getParticipant1(), getParticipant2())
             .stopVideoOnOwnerAndCheck();
 
         // Sleep 30 seconds to allow the clients to ramp up
@@ -147,7 +147,7 @@ public class PSNRTest
         } catch (InterruptedException e) {}
         print("Wait for ramp up done");
 
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         VideoOperator ownerVideoOperator = new VideoOperator(owner);
 
@@ -174,8 +174,8 @@ public class PSNRTest
 
         HeartbeatTask heartbeatTask
             = new HeartbeatTask(
-                participant1.getDriver(),
-                participant2.getDriver(),
+                getParticipant1(),
+                getParticipant2(),
                 timeToRunInMillis,
                 false);
 
@@ -190,7 +190,7 @@ public class PSNRTest
                 "RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
-        participant2.hangUp();
+        getParticipant2().hangUp();
 
         for (String id : ids)
         {

@@ -79,14 +79,14 @@ public class DesktopSharingImitationTest
     {
         // hide thumbs
         MeetUIUtils.clickOnToolbarButton(
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             "toolbar_film_strip");
 
         TestUtils.waitMillis(5000);
 
         // check layout
         new VideoLayoutTest()
-            .driverVideoLayoutTest(participant2.getDriver());
+            .driverVideoLayoutTest(getParticipant2().getDriver());
     }
 
     /**
@@ -103,7 +103,7 @@ public class DesktopSharingImitationTest
             videoType = "screen";
 
         // change the type of video that we will report
-        ((JavascriptExecutor) participant1.getDriver())
+        ((JavascriptExecutor) getParticipant1().getDriver())
             .executeScript(
             "APP.xmpp.getConnection().emuc.presMap['videoType'] = '"
                 + videoType + "'");

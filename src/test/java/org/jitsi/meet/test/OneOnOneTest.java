@@ -54,10 +54,10 @@ public class OneOnOneTest
     public void testFilmstripHiddenInOneOnOne()
     {
         ensureOneParticipant(oneOnOneConfigOverrides);
-        waitForSecondParticipantToConnect(oneOnOneConfigOverrides);
+        ensureTwoParticipants(oneOnOneConfigOverrides);
 
-        WebDriver owner =  participant1.getDriver();
-        WebDriver secondParticipant = participant2.getDriver();
+        WebDriver owner =  getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // Prevent toolbar from being always displayed as filmstrip visibility
         // is tied to toolbar visibility.
@@ -74,13 +74,13 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripHiddenInOneOnOne" })
     public void testFilmstripVisibleWithMoreThanTwo() {
-        waitForThirdParticipantToConnect(oneOnOneConfigOverrides);
+        ensureThreeParticipants(oneOnOneConfigOverrides);
 
-        WebDriver thirdParticipant = participant3.getDriver();
+        WebDriver thirdParticipant = getParticipant3().getDriver();
         stopDockingToolbar(thirdParticipant);
 
-        verifyRemoteVideosDisplay(participant1.getDriver(), true);
-        verifyRemoteVideosDisplay(participant2.getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant1().getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant2().getDriver(), true);
         verifyRemoteVideosDisplay(thirdParticipant, true);
     }
 
@@ -91,12 +91,12 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripVisibleWithMoreThanTwo" })
     public void testFilmstripDisplayWhenReturningToOneOnOne() {
-        MeetUIUtils.clickOnLocalVideo(participant2.getDriver());
+        MeetUIUtils.clickOnLocalVideo(getParticipant2().getDriver());
 
-        participant3.hangUp();
+        getParticipant3().hangUp();
 
-        verifyRemoteVideosDisplay(participant1.getDriver(), false);
-        verifyRemoteVideosDisplay(participant2.getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant1().getDriver(), false);
+        verifyRemoteVideosDisplay(getParticipant2().getDriver(), true);
     }
 
     /**
@@ -105,11 +105,11 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripDisplayWhenReturningToOneOnOne" })
     public void testFilmstripVisibleOnSelfViewFocus() {
-        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
-        verifyRemoteVideosDisplay(participant1.getDriver(), true);
+        MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
+        verifyRemoteVideosDisplay(getParticipant1().getDriver(), true);
 
-        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
-        verifyRemoteVideosDisplay(participant1.getDriver(), false);
+        MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
+        verifyRemoteVideosDisplay(getParticipant1().getDriver(), false);
     }
 
     /**
@@ -118,7 +118,7 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripVisibleOnSelfViewFocus" })
     public void testFilmstripHoverShowsVideos() {
-        WebDriver owner = participant1.getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         WebElement toolbar = owner.findElement(By.id("localVideoContainer"));
         Actions hoverOnToolbar = new Actions(owner);

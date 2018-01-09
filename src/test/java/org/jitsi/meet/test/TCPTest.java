@@ -66,13 +66,13 @@ public class TCPTest
         // Initially we should be connected over UDP
         assertEquals(
             "udp",
-            MeetUtils.getProtocol(participant2.getDriver()),
+            MeetUtils.getProtocol(getParticipant2().getDriver()),
             "We must be connected through UDP");
 
-        participant2.hangUp();
+        getParticipant2().hangUp();
 
-        waitForSecondParticipantToConnect(DISABLE_UDP_URL_FRAGMENT);
-        WebDriver secondParticipant = participant2.getDriver();
+        ensureTwoParticipants(DISABLE_UDP_URL_FRAGMENT);
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         assertEquals(
             "tcp",

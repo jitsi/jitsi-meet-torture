@@ -311,7 +311,7 @@ public class ConnectionTimeTest
      */
     private boolean isUsingAttach()
     {
-        return (Boolean) ((JavascriptExecutor) participant2.getDriver())
+        return (Boolean) ((JavascriptExecutor) getParticipant2().getDriver())
             .executeScript("return !!config.externalConnectUrl;");
     }
 
@@ -347,14 +347,14 @@ public class ConnectionTimeTest
             refreshSecondParticipant();
 
             // just ping the first participant, to avoid timeout of the session
-            MeetUtils.isInMuc(participant1.getDriver());
+            getParticipant1().isInMuc();
 
             waitForMeasurements();
 
             for(TimeMeasurements s : TimeMeasurements.values())
             {
                 data[s.ordinal()][i]
-                    = s.execute(participant2.getDriver());
+                    = s.execute(getParticipant2().getDriver());
                 print(s + ": " + data[s.ordinal()][i] );
             }
         }
@@ -373,12 +373,12 @@ public class ConnectionTimeTest
     private void refreshSecondParticipant()
     {
         // initially the second participant is not connected
-        if (participant2 != null)
+        if (getParticipant2() != null)
         {
-            participant2.hangUp();
+            getParticipant2().hangUp();
         }
 
-        waitForSecondParticipantToJoin(null);
+        ensureTwoParticipants();
     }
     
     /**
@@ -389,7 +389,7 @@ public class ConnectionTimeTest
     private void waitForMeasurements()
     {
         TestUtils.waitForCondition(
-            participant2.getDriver(),
+            getParticipant2().getDriver(),
             10,
             (ExpectedCondition<Boolean>) w
                 -> TimeMeasurements.isReadyToStart(w)

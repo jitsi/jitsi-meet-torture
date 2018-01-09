@@ -17,6 +17,7 @@ package org.jitsi.meet.test.base;
 
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 import java.util.concurrent.*;
 
@@ -24,7 +25,7 @@ import java.util.concurrent.*;
  * The participant instance holding the {@link WebDriver}.
  * @param <T> the driver type.
  */
-public class Participant<T extends WebDriver>
+public abstract class Participant<T extends WebDriver>
 {
     /**
      * The driver.
@@ -86,6 +87,13 @@ public class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName, String fragment)
     {
+        // not hanguped, so not joining
+        if (!this.hungUp)
+        {
+            TestUtils.print("Not joining " + roomName + ", already joined.");
+            return;
+        }
+
         String URL = this.meetURL + "/" + roomName;
         URL += "#config.requireDisplayName=false";
         URL += "&config.debug=true";
@@ -181,6 +189,9 @@ public class Participant<T extends WebDriver>
      */
     public void hangUp()
     {
+        if (this.hungUp)
+            return;
+
         MeetUIUtils.clickOnToolbarButton(
             driver, "toolbar_button_hangup", false);
 
@@ -195,15 +206,6 @@ public class Participant<T extends WebDriver>
         // parameters, which change during testing
         driver.get("about:blank");
         MeetUtils.waitForPageToLoad(driver);
-    }
-
-    /**
-     * Check whether participant has hangup or is still in a conference.
-     * @return
-     */
-    public boolean isHungUp()
-    {
-        return this.hungUp;
     }
 
     /**
@@ -238,4 +240,42 @@ public class Participant<T extends WebDriver>
     {
         return name;
     }
+
+    /**
+     * Waits until this participant joins the MUC.
+     * @param timeout the maximum time to wait in seconds.
+     */
+    public abstract void waitToJoinMUC(long timeout);
+
+    /**
+     * Checks whether this participant is in the MUC.
+     *
+     * @return {@code true} if the specified {@code participant} has joined the
+     * room; otherwise, {@code false}
+     */
+    public abstract boolean isInMuc();
+
+    /**
+     * Waits 15 sec for the given participant to enter the ICE 'connected'
+     * state.
+     */
+    public abstract void waitForIceConnected();
+
+    /**
+     * Waits for the given participant to enter the ICE 'connected' state.
+     * @param timeout timeout in seconds.
+     */
+    public abstract void waitForIceConnected(long timeout);
+
+    /**
+     * Waits until data has been sent and received over the ICE connection
+     * in this participant.
+     */
+    public abstract void waitForSendReceiveData();
+
+    /**
+     * Waits for number of remote streams.
+     * @param n number of remote streams to wait for.
+     */
+    public abstract void waitForRemoteStreams(int n);
 }

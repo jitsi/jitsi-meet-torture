@@ -44,11 +44,11 @@ public class UDPTest
     {
         assertEquals(
              "udp",
-             MeetUtils.getProtocol(participant1.getDriver()),
+             MeetUtils.getProtocol(getParticipant1().getDriver()),
             "The owner must be connected through UDP");
         assertEquals(
             "udp",
-            MeetUtils.getProtocol(participant2.getDriver()),
+            MeetUtils.getProtocol(getParticipant2().getDriver()),
             "The second participant must be connected through UDP");
     }
 }

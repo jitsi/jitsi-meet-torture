@@ -70,8 +70,8 @@ public class LongLivedTest
         int millsToRun = (minutesToRun - 1) * 60 * 1000;
         HeartbeatTask heartbeatTask
             = new HeartbeatTask(
-                participant1.getDriver(),
-                participant2.getDriver(),
+                getParticipant1(),
+                getParticipant2(),
                 millsToRun,
                 true);
 
