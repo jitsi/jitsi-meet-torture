@@ -32,15 +32,24 @@ public abstract class AbstractParticipantHelper
      * first to join is the owner of the conference, in some cases has more
      * options than the rest of the participants.
      */
-    private List<Participant<? extends WebDriver>> participants = new LinkedList<>();
+    private List<Participant<? extends WebDriver>> participants
+        = new LinkedList<>();
 
     /**
-     * Adds already created participants to the current helper.
+     * Default.
+     */
+    protected AbstractParticipantHelper()
+    {}
+
+    /**
+     * Constructs with predefined room name and participants.
+     * @param roomName predefined room name.
      * @param participants the participants to add.
      */
-    protected void addParticipants(
+    protected AbstractParticipantHelper(String roomName,
         Participant<? extends WebDriver>... participants)
     {
+        this.currentRoomName = roomName;
         this.participants.addAll(Arrays.asList(participants));
     }
 

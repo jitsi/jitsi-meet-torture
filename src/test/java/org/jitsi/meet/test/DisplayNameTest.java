@@ -53,15 +53,12 @@ public class DisplayNameTest
     {}
 
     /**
-     * Constructs DisplayNameTest with already allocated participants.
-     * @param participant1 the first participant
-     * @param participant2 the second participant
+     * Constructs DisplayNameTest with already allocated test.
+     * @param baseTest the parent test
      */
-    public DisplayNameTest(
-        Participant participant1,
-        Participant participant2)
+    public DisplayNameTest(AbstractBaseTest baseTest)
     {
-        this.addParticipants(participant1, participant2);
+        super(baseTest);
     }
 
     /**

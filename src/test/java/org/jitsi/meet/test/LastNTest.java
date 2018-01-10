@@ -58,8 +58,7 @@ public class LastNTest
         MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "getParticipant3()");
 
         // unmute second participant
-        MuteTest muteTest
-            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
+        MuteTest muteTest = new MuteTest(this);
         muteTest.unMuteParticipantAndCheck();
 
         // so now he should be active speaker

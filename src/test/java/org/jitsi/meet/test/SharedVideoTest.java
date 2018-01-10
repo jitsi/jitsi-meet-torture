@@ -329,8 +329,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "muteTest" })
     public void switchVideoTest()
     {
-        new SwitchVideoTest(getParticipant1(), getParticipant2())
-            .participantClickOnRemoteVideoAndTest();
+        new SwitchVideoTest(this).participantClickOnRemoteVideoAndTest();
     }
 
     /**

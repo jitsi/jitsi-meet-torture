@@ -100,8 +100,7 @@ public class ActiveSpeakerTest
 
     private void muteAllParticipants()
     {
-        MuteTest muteTest
-            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
+        MuteTest muteTest = new MuteTest(this);
         muteTest.muteOwnerAndCheck();
         muteTest.muteParticipantAndCheck();
         muteTest.muteThirdParticipantAndCheck();

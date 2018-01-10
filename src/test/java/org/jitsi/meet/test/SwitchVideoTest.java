@@ -39,12 +39,10 @@ public class SwitchVideoTest
 
     /**
      * Constructs SwitchVideoTest with already allocated participants.
-     * @param participant1 the first participant
-     * @param participant2 the second participant
      */
-    public SwitchVideoTest(Participant participant1, Participant participant2)
+    public SwitchVideoTest(AbstractBaseTest baseTest)
     {
-        this.addParticipants(participant1, participant2);
+        super(baseTest);
     }
 
     @Override

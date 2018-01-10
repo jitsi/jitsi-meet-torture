@@ -219,8 +219,7 @@ public class PeerConnectionStatusTest
         // Mute video(this is not real live scenario, but we want to make
         // sure that the grey avatar is displayed if the connection gets
         // disrupted while video muted)
-        StopVideoTest stopVideoTest
-            = new StopVideoTest(getParticipant1(), getParticipant2());
+        StopVideoTest stopVideoTest = new StopVideoTest(this);
         stopVideoTest.stopVideoOnParticipantAndCheck();
         MeetUIUtils.assertGreyAvatarOnLarge(owner);
 

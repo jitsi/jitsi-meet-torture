@@ -40,16 +40,11 @@ public class MuteTest
 
     /**
      * Constructs MuteTest with already allocated participants.
-     * @param participant1
-     * @param participant2
-     * @param participant3
+     * @param baseTest the parent test.
      */
-    public MuteTest(
-        Participant participant1,
-        Participant participant2,
-        Participant participant3)
+    public MuteTest(AbstractBaseTest baseTest)
     {
-        addParticipants(participant1, participant2, participant3);
+        super(baseTest);
     }
 
     @Override

@@ -132,9 +132,8 @@ public class LipSyncTest
         getParticipant1().waitForIceConnected();
 
         // Stops audio and video on the owner to improve performance
-        new MuteTest(getParticipant1(), getParticipant2(), null).muteOwnerAndCheck();
-        new StopVideoTest(getParticipant1(), getParticipant2())
-            .stopVideoOnOwnerAndCheck();
+        new MuteTest(this).muteOwnerAndCheck();
+        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
 
         // Read and inject helper script
         VideoOperator ownerOperator = new VideoOperator(owner);

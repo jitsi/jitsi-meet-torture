@@ -37,14 +37,12 @@ public class StopVideoTest
     {}
 
     /**
-     * Constructs StopVideoTest with already allocated participants.
-     * @param participant1 the first participant
-     * @param participant2 the second participant
+     * Constructs StopVideoTest with already allocated test.
+     * @param baseTest the parent test
      */
-    public StopVideoTest(
-        Participant participant1, Participant participant2)
+    public StopVideoTest(AbstractBaseTest baseTest)
     {
-        this.addParticipants(participant1, participant2);
+        super(baseTest);
     }
 
     @Override

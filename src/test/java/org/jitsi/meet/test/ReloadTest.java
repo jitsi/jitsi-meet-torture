@@ -105,8 +105,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "testProsodyRestart" })
     public void ownerVideoMuteAndCheck()
     {
-        new StopVideoTest(getParticipant1(), getParticipant2())
-            .stopVideoOnOwnerAndCheck();
+        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
     }
     
     /**
@@ -115,7 +114,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "ownerVideoMuteAndCheck" })
     public void ownerAudioMuteAndCheck()
     {
-        new MuteTest(getParticipant1(), getParticipant2(), null).muteOwnerAndCheck();
+        new MuteTest(this).muteOwnerAndCheck();
     }
     
     /**
@@ -124,8 +123,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "ownerAudioMuteAndCheck" })
     public void ownerSetDisplayNameAndCheck()
     {
-        new DisplayNameTest(getParticipant1(), getParticipant2())
-            .checkDisplayNameChange(DISPLAY_NAME);
+        new DisplayNameTest(this).checkDisplayNameChange(DISPLAY_NAME);
     }
     
     /**

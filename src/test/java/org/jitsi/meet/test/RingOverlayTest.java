@@ -139,7 +139,7 @@ public class RingOverlayTest
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             owner, "//" + ringOverlayDivXpath, 2);
 
-        new DisplayNameTest(getParticipant1(), getParticipant2())
+        new DisplayNameTest(this)
             .checkRemoteVideoForName(
                 secondParticipant, getParticipant1(), USER_NAME);
 

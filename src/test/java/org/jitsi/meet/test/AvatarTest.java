@@ -102,8 +102,7 @@ public class AvatarTest
         // Check if avatar is displayed on owner's local video thumbnail
         MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
-        StopVideoTest stopVideoTest
-            = new StopVideoTest(this.getParticipant1(), this.getParticipant2());
+        StopVideoTest stopVideoTest = new StopVideoTest(this);
         stopVideoTest.startVideoOnOwnerAndCheck();
 
         MeetUIUtils.assertMuteIconIsDisplayed(

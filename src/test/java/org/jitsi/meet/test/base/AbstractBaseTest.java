@@ -69,6 +69,25 @@ public abstract class AbstractBaseTest
      */
     private static List<String> testsToInclude = null;
 
+    /**
+     * Default.
+     */
+    protected AbstractBaseTest()
+    {}
+
+    /**
+     * Constructs new AbstractBaseTest with predefined baseTest, to
+     * get its participants and room name.
+     * @param baseTest the parent test.
+     */
+    protected AbstractBaseTest(AbstractBaseTest baseTest)
+    {
+        super(baseTest.currentRoomName,
+            baseTest.getParticipant1(),
+            baseTest.getParticipant2(),
+            baseTest.getParticipant3());
+    }
+
     @BeforeClass
     public void check()
     {

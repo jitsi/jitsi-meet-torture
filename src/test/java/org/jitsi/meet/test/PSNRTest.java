@@ -130,12 +130,10 @@ public class PSNRTest
         }
 
         // stop everything to maximize performance
-        MuteTest muteTest
-            = new MuteTest(getParticipant1(), getParticipant2(), null);
+        MuteTest muteTest = new MuteTest(this);
         muteTest.muteOwnerAndCheck();
         muteTest.muteParticipantAndCheck();
-        new StopVideoTest(getParticipant1(), getParticipant2())
-            .stopVideoOnOwnerAndCheck();
+        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
 
         // Sleep 30 seconds to allow the clients to ramp up
         int rampUpDurationSeconds = 30;

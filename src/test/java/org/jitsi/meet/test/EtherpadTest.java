@@ -162,8 +162,7 @@ public class EtherpadTest
             return;
         }
 
-        new SwitchVideoTest(getParticipant1(), getParticipant2())
-            .ownerClickOnLocalVideoAndTest();
+        new SwitchVideoTest(this).ownerClickOnLocalVideoAndTest();
     }
 
     /**
@@ -178,8 +177,7 @@ public class EtherpadTest
             return;
         }
 
-        SwitchVideoTest switchVideoTest
-            = new SwitchVideoTest(getParticipant1(), getParticipant2());
+        SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
         try
         {
             switchVideoTest.ownerClickOnRemoteVideoAndTest();
