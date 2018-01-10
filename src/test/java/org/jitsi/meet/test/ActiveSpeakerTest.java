@@ -15,12 +15,17 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * The tests for active speaker detection feature.
@@ -28,72 +33,45 @@ import java.util.*;
  * @author Pawel Domas
  */
 public class ActiveSpeakerTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public ActiveSpeakerTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with ordered tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new ActiveSpeakerTest("testActiveSpeaker"));
-
-        return suite;
+        // This test requires a conference of three
+        ensureThreeParticipants();
     }
 
     /**
      * Active speaker test scenario.
      */
+    @Test
     public void testActiveSpeaker()
     {
-        System.err.println("Start testActiveSpeaker.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-
         // skip if we are not chrome
-        if (ConferenceFixture.getBrowserType(owner) !=
-                ConferenceFixture.BrowserType.chrome)
+        if (getParticipant1().getType()
+                != ParticipantFactory.ParticipantType.chrome)
         {
-            return;
+            throw new SkipException("skip as it is not chrome");
         }
-
-        // This test requires a conference of three
-        ConferenceFixture.ensureThreeParticipants();
-
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
 
         // Mute all
         muteAllParticipants();
 
         // Owner becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(owner, secondParticipant, thirdParticipant);
+        testActiveSpeaker(
+            getParticipant1(), getParticipant2(), getParticipant3());
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(thirdParticipant, secondParticipant, owner);
+        testActiveSpeaker(getParticipant3(), getParticipant2(), getParticipant1());
         // 2nd peer becomes active speaker - check from owner's perspective
-        testActiveSpeaker(secondParticipant, owner, thirdParticipant);
+        testActiveSpeaker(getParticipant2(), getParticipant1(), getParticipant3());
 
         // check the displayed speakers, there should be only one speaker
-        assertOneDominantSpeaker(owner);
-        assertOneDominantSpeaker(secondParticipant);
-        assertOneDominantSpeaker(thirdParticipant);
-
-        // Dispose 3rd
-        ConferenceFixture.close(thirdParticipant);
-
-        // Unmuted owner and the 2nd
-        unMuteOwnerAndSecond();
+        assertOneDominantSpeaker(getParticipant1().getDriver());
+        assertOneDominantSpeaker(getParticipant2().getDriver());
+        assertOneDominantSpeaker(getParticipant3().getDriver());
     }
 
     /**
@@ -116,25 +94,17 @@ public class ActiveSpeakerTest
         }
 
         assertEquals(
-            "Wrong number of dominant speaker indicators.", 1, speakers);
+            1, speakers,
+            "Wrong number of dominant speaker indicators.");
     }
 
     private void muteAllParticipants()
     {
-        System.err.println("Start muteAllParticipants.");
-
-        new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
-        new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
-        new MuteTest("muteThirdParticipantAndCheck")
-                .muteThirdParticipantAndCheck();
-    }
-
-    private void unMuteOwnerAndSecond()
-    {
-        System.err.println("Start unMuteOwnerAndSecond.");
-
-        new MuteTest("unMuteOwnerAndCheck").unMuteOwnerAndCheck();
-        new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
+        MuteTest muteTest
+            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
+        muteTest.muteOwnerAndCheck();
+        muteTest.muteParticipantAndCheck();
+        muteTest.muteThirdParticipantAndCheck();
     }
 
     /**
@@ -142,25 +112,31 @@ public class ActiveSpeakerTest
      * Verifies from <tt>peer2</tt> perspective if he has been displayed on
      * the large video area. Mutes him back.
      *
-     * @param activeSpeaker <tt>WebDriver</tt> instance of the participant who
-     *                      will be testes as an active speaker.
-     * @param peer2 <tt>WebDriver</tt> of the participant who will be observing
-     *              and verifying active speaker change.
-     * @param peer3 used only to print some debugging info
+     * @param activeSpeakerParticipant <tt>Participant</tt> instance of the
+     * participant who will be testes as an active speaker.
+     * @param peer2Participant <tt>Participant</tt> of the participant who will
+     * be observing and verifying active speaker change.
+     * @param peer3Participant used only to print some debugging info
      */
     private void testActiveSpeaker(
-        WebDriver activeSpeaker, WebDriver peer2, WebDriver peer3)
+        Participant activeSpeakerParticipant,
+        Participant peer2Participant,
+        Participant peer3Participant)
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
-        if (ConferenceFixture.getBrowserType(activeSpeaker)
-                == ConferenceFixture.BrowserType.firefox)
+        if (activeSpeakerParticipant.getType()
+            != ParticipantFactory.ParticipantType.chrome)
         {
-            return;
+            throw new SkipException("skip as it is not chrome");
         }
 
-        System.err.println("Start testActiveSpeaker for participant: "
-            + ConferenceFixture.getParticipantName(activeSpeaker));
+        print("Start testActiveSpeaker for participant: "
+            + activeSpeakerParticipant.getName());
+
+        WebDriver activeSpeaker = activeSpeakerParticipant.getDriver();
+        WebDriver peer2 = peer2Participant.getDriver();
+        WebDriver peer3 = peer3Participant.getDriver();
 
         final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
 
@@ -191,20 +167,14 @@ public class ActiveSpeakerTest
         try
         {
             new WebDriverWait(peer2, 10).until(
-                    new ExpectedCondition<Boolean>()
-                    {
-                        public Boolean apply(WebDriver d)
-                        {
-                            return speakerEndpoint.equals(
-                                MeetUIUtils.getLargeVideoResource(d));
-                        }
-                    });
+                (ExpectedCondition<Boolean>) d -> speakerEndpoint.equals(
+                    MeetUIUtils.getLargeVideoResource(d)));
         }
         catch (TimeoutException exc)
         {
             assertEquals(
-                "Active speaker not displayed on large video " + new Date(),
-                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2));
+                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2),
+                "Active speaker not displayed on large video " + new Date());
         }
 
         // just a debug print to go in logs

@@ -16,15 +16,19 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
-import junit.framework.*;
 import org.apache.http.*;
 import org.apache.http.client.config.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.*;
 
+import org.jitsi.meet.test.base.*;
+import org.testng.annotations.*;
+
 import java.io.*;
 import java.net.*;
+
+import static org.testng.Assert.*;
 
 /**
  * This test will assume for now jicofo and videobridge are on the same machine
@@ -33,7 +37,7 @@ import java.net.*;
  * @author Damian Minkov
  */
 public class RestTests
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Property to enable/disable rest tests.
@@ -43,12 +47,19 @@ public class RestTests
 
     private String serverAddress = null;
 
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
+    @Test
     public void testRestAPI()
         throws MalformedURLException
     {
         serverAddress = new URL(
-            System.getProperty(ConferenceFixture.JITSI_MEET_URL_PROP))
-            .getHost();
+            System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP))
+                .getHost();
 
         checkJicofoHealth();
         checkJVBHealth();
@@ -60,8 +71,6 @@ public class RestTests
      */
     private void checkJicofoHealth()
     {
-        System.err.println("checkJicofoHealth");
-
         runRestClient(serverAddress, 8888, "/about/health");
     }
 
@@ -70,8 +79,6 @@ public class RestTests
      */
     private void checkJVBHealth()
     {
-        System.err.println("checkJVBHealth");
-
         runRestClient(serverAddress, 8080, "/about/health");
     }
 
@@ -80,14 +87,14 @@ public class RestTests
      */
     private void checkConferencesThroughREST()
     {
-        System.err.println("checkConferencesThroughREST");
-
         String conferences
             = runRestClient(serverAddress, 8080, "/colibri/conferences");
 
         JsonArray confs = new Gson().fromJson(conferences, JsonArray.class);
-        if(confs == null || confs.size() == 0)
-            assertFalse("Expected at least one conference", true);
+        if (confs == null || confs.size() == 0)
+        {
+            fail("Expected at least one conference");
+        }
     }
 
     /**
@@ -97,7 +104,7 @@ public class RestTests
      * @param queryURL the url part without the host
      * @return the body content from the response
      */
-    private static String runRestClient(
+    private String runRestClient(
         String serverAddress, int port, String queryURL)
     {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -113,26 +120,20 @@ public class RestTests
         try
         {
             HttpGet httpget = new HttpGet(queryURL);
-            CloseableHttpResponse response = httpclient.execute(
-                targetHost, httpget);
-            try
+            try (CloseableHttpResponse response = httpclient.execute(
+                targetHost, httpget))
             {
-                if(response.getStatusLine().getStatusCode() != 200)
-                    assertFalse("REST returned error:"
-                        + response.getStatusLine(), true);
+                if (response.getStatusLine().getStatusCode() != 200)
+                {
+                    fail("REST returned error:" + response.getStatusLine());
+                }
 
-                HttpEntity entity = response.getEntity();
-                return EntityUtils.toString(entity);
-            }
-            finally
-            {
-                response.close();
+                return EntityUtils.toString(response.getEntity());
             }
         }
         catch (IOException e)
         {
-            assertFalse("REST no enabled or not reachable:" + e.getMessage(),
-                true);
+            fail("REST no enabled or not reachable:" + e.getMessage());
         }
 
         return null;

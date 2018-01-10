@@ -28,14 +28,15 @@ Note that `SetupConference` will always be run as the first test, and `DisposeCo
  - ``export ANDROID_HOME="~/Library/Android/sdk"``
  - ``appium``
 ### Start tests
-- create settings file from the template
-``cp src/test/resources/settings.properties.template src/test/resources/settings.properties``
-- fill in settings
+- pass settings as params
   * mobile.participant (android or ios)
   * mobile.caps.deviceName
   * mobile.caps.app (path to apk or ipa file of jitsi-meet to test)
 - start tests
-``mvn test``
+``mvn test -Dmobile.participant=android -Dmobile.caps.deviceName=Android -Dmobile.caps.app=../path-to-apk-file.apk``
+
+### Package mobile tests
+``mvn package -Dmobile.participant=android ... -Pmobile`` 
 
 ## Writing mobile tests
 To be able to use the tests with services like AWS Device Farm which has 
@@ -43,11 +44,11 @@ limitations how they run the tests there are some general rules.
 In order to be able to specify the tests to run we are using testng and
 it config file testng.xml 
 * The tests does not have order, priority, grouping.
-* All tests to be ran are declared in src/test/resources/testng.xml 
+* All tests to be ran are declared in src/test/resources/mobile/testng.xml 
     (just the class name)
 * Tests extend org.jitsi.meet.test.mobile.base.AstractBaseTest which is 
 responsible for setting up the driver.
-* You cannot use static variables shared between tests and test methods.
+* You cannot use static variables shared between tests.
 * With all the above limitations we end up with one class 
 with one test method.
 

@@ -15,9 +15,13 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests whether the Jitsi-Videobridge single-port mode works. Note that this
@@ -26,28 +30,14 @@ import org.openqa.selenium.*;
  * @author Boris Grozev
  */
 public class SinglePortTest
-        extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public SinglePortTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new SinglePortTest("singlePortTest"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
@@ -55,14 +45,14 @@ public class SinglePortTest
      * Starts it again with UDP disabled and checks that it is connected over
      * TCP.
      */
+    @Test
     public void singlePortTest()
     {
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         // Just make sure everyone is ready
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForSendReceiveData(secondParticipant);
+        getParticipant1().waitForSendReceiveData();
 
         String ownerPortStr = getRemotePort(owner);
         String secondParticipantPortStr = getRemotePort(secondParticipant);
@@ -89,9 +79,9 @@ public class SinglePortTest
         }
 
         assertEquals(
-                "The two participants must be connected to the same port.",
-                ownerPort,
-                secondParticipantPort);
+            ownerPort,
+            secondParticipantPort,
+            "The two participants must be connected to the same port.");
     }
 
     /**

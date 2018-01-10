@@ -32,34 +32,20 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.4.0</version>
+            <version>3.8.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/junit/junit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.ant/ant-junit -->
-        <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant-junit</artifactId>
-            <version>1.10.0</version>
+            <version>23.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
-            <version>3.4.0</version>
+            <version>3.8.1</version>
         </dependency>
 
         <dependency>
@@ -76,7 +62,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.11</version>
+            <version>6.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -86,7 +72,93 @@
 
     </dependencies>
 
+    <!-- Here we list all properties that we currently support in both
+        mobile and desktop settings file. Having empty values we guarantee that
+        we will use the values supplied from command line and all missing will
+        be empty.
+        We can add default values here. -->
+    <properties>
+        <!-- desktop -->
+        <threadcount>1</threadcount>
+        <!-- not used at the moment -->
+
+        <!-- mobile -->
+        <mobile.participant/>
+        <mobile.caps.deviceName/>
+        <mobile.caps.app/>
+        <appium.screenshots.dir>
+            target/surefire-reports/screenshots
+        </appium.screenshots.dir>
+    </properties>
+
+    <!-- Defines two profiles mobile and desktop.
+        Using the appropriate setting.properties and testng.xml files.
+        Enables filtering so we can fill up the settings.properties files
+        using the command line supplied values
+     -->
+    <profiles>
+        <profile>
+            <id>mobile</id>
+            <activation>
+                <property>
+                    <name>target</name>
+                    <value>mobile</value>
+                </property>
+            </activation>
+            <properties>
+                <suite.xml>src/test/resources/mobile/testng.xml</suite.xml>
+            </properties>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources/mobile</directory>
+                        <includes>
+                            <include>testng.xml</include>
+                            <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+        <profile>
+            <id>desktop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>target</name>
+                    <value>desktop</value>
+                </property>
+            </activation>
+            <properties>
+                <suite.xml>src/test/resources/desktop/testng.xml</suite.xml>
+            </properties>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources/desktop</directory>
+                        <includes>
+                            <include>testng.xml</include>
+                            <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
+        <!-- exclude everything, every profile will include the needed files -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -94,16 +166,30 @@
                 <version>2.20</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${suite.xml}</suiteXmlFile>
                     </suiteXmlFiles>
+                    <properties>
+                        <property>
+                            <name>configfailurepolicy</name>
+                            <value>continue</value>
+                        </property>
+                        <property>
+                            <name>parallel</name>
+                            <value>tests</value>
+                        </property>
+                        <property>
+                            <name>threadcount</name>
+                            <value>${threadcount}</value>
+                        </property>
+                    </properties>
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 

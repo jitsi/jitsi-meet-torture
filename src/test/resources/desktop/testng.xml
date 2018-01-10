@@ -1,0 +1,201 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="TortureSuite" verbose="1">
+    <test name="ActiveSpeakerTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ActiveSpeakerTest" />
+        </classes>
+    </test>
+    <test name="AudioOnlyTest">
+        <classes>
+            <class name="org.jitsi.meet.test.AudioOnlyTest" />
+        </classes>
+    </test>
+    <test name="AvatarTest">
+        <classes>
+            <class name="org.jitsi.meet.test.AvatarTest" />
+        </classes>
+    </test>
+    <test name="ConnectionTimeTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ConnectionTimeTest" />
+        </classes>
+    </test>
+    <test name="ContactListTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ContactListTest" />
+        </classes>
+    </test>
+    <test name="DataChannelTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DataChannelTest" />
+        </classes>
+    </test>
+    <test name="DisplayNameTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DisplayNameTest" />
+        </classes>
+    </test>
+    <test name="EndConferenceTest">
+        <classes>
+            <class name="org.jitsi.meet.test.EndConferenceTest" />
+        </classes>
+    </test>
+    <test name="EtherpadTest">
+        <classes>
+            <class name="org.jitsi.meet.test.EtherpadTest" />
+        </classes>
+    </test>
+    <test name="FilmstripOnlyTest">
+        <classes>
+            <class name="org.jitsi.meet.test.FilmstripOnlyTest" />
+        </classes>
+    </test>
+    <test name="FollowMeTest">
+        <classes>
+            <class name="org.jitsi.meet.test.FollowMeTest" />
+        </classes>
+    </test>
+    <test name="JibriTest">
+        <classes>
+            <!-- JibriTest needs configuration or it is ignored by default -->
+            <class name="org.jitsi.meet.test.JibriTest" />
+        </classes>
+    </test>
+    <test name="LipSyncTest">
+        <classes>
+            <class name="org.jitsi.meet.test.LipSyncTest" />
+        </classes>
+    </test>
+    <test name="LockRoomTest">
+        <classes>
+            <class name="org.jitsi.meet.test.LockRoomTest" />
+        </classes>
+    </test>
+    <test name="MuteTest">
+        <classes>
+            <class name="org.jitsi.meet.test.MuteTest" />
+        </classes>
+    </test>
+    <test name="OneOnOneTest">
+        <classes>
+            <class name="org.jitsi.meet.test.OneOnOneTest" />
+        </classes>
+    </test>
+    <test name="Peer2PeerTest">
+        <classes>
+            <class name="org.jitsi.meet.test.Peer2PeerTest" />
+        </classes>
+    </test>
+    <test name="ReloadTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ReloadTest" />
+        </classes>
+    </test>
+    <test name="RingOverlayTest">
+        <classes>
+            <class name="org.jitsi.meet.test.RingOverlayTest" />
+        </classes>
+    </test>
+    <test name="SharedVideoTest">
+        <classes>
+            <class name="org.jitsi.meet.test.SharedVideoTest" />
+        </classes>
+    </test>
+    <test name="SinglePortTest">
+        <classes>
+            <class name="org.jitsi.meet.test.SinglePortTest" />
+        </classes>
+    </test>
+    <test name="StartMutedTest">
+        <classes>
+            <class name="org.jitsi.meet.test.StartMutedTest" />
+        </classes>
+    </test>
+    <test name="StopVideoTest">
+        <classes>
+            <class name="org.jitsi.meet.test.StopVideoTest" />
+        </classes>
+    </test>
+    <test name="SwitchVideoTest">
+        <classes>
+            <class name="org.jitsi.meet.test.SwitchVideoTest" />
+        </classes>
+    </test>
+    <test name="TCPTest">
+        <classes>
+            <class name="org.jitsi.meet.test.TCPTest" />
+        </classes>
+    </test>
+    <test name="UDPTest">
+        <classes>
+            <class name="org.jitsi.meet.test.UDPTest" />
+        </classes>
+    </test>
+    <test name="VideoLayoutTest">
+        <classes>
+            <class name="org.jitsi.meet.test.VideoLayoutTest" />
+        </classes>
+    </test>
+
+    <!-- Ignored by default from the default tests to execute,
+    needs to be explicitly enabled using:
+    -Djitsi-meet.tests.toInclude=....
+    or
+    -Djitsi-meet.tests.toRun=...
+    -->
+    <test name="AuthSetupConference">
+        <classes>
+            <class name="org.jitsi.meet.test.AuthSetupConference" />
+        </classes>
+    </test>
+    <test name="ConferenceMigrationTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ConferenceMigrationTest" />
+        </classes>
+    </test>
+    <test name="DesktopSharingImitationTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DesktopSharingImitationTest" />
+        </classes>
+    </test>
+    <test name="DesktopSharingTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DesktopSharingTest" />
+        </classes>
+    </test>
+    <test name="JVBConferencesCheck">
+        <classes>
+            <class name="org.jitsi.meet.test.JVBConferencesCheck" />
+        </classes>
+    </test>
+    <test name="LastNTest">
+        <classes>
+            <class name="org.jitsi.meet.test.LastNTest" />
+        </classes>
+    </test>
+    <test name="LongLivedTest">
+        <classes>
+            <class name="org.jitsi.meet.test.LongLivedTest" />
+        </classes>
+    </test>
+    <test name="MaxUsersTest">
+        <classes>
+            <class name="org.jitsi.meet.test.MaxUsersTest" />
+        </classes>
+    </test>
+    <test name="PeerConnectionStatusTest">
+        <classes>
+            <class name="org.jitsi.meet.test.PeerConnectionStatusTest" />
+        </classes>
+    </test>
+    <test name="PSNRTest">
+        <classes>
+            <class name="org.jitsi.meet.test.PSNRTest" />
+        </classes>
+    </test>
+    <test name="RestTests">
+        <classes>
+            <class name="org.jitsi.meet.test.RestTests" />
+        </classes>
+    </test>
+</suite>

@@ -15,27 +15,21 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests for users' avatars.
  */
 public class AvatarTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public AvatarTest(String name)
-    {
-        super(name);
-    }
-
     public static String EMAIL = "example@jitsi.org";
     public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
 
@@ -47,32 +41,25 @@ public class AvatarTest
      */
     private static String secondParticipantAvatarSrc = null;
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
+    @Override
+    public void setup()
     {
-        TestSuite suite = new TestSuite();
+        super.setup();
 
-        suite.addTest(new AvatarTest("changeAvatarAndCheck"));
-        suite.addTest(new AvatarTest("avatarWhenVideoMuted"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Scenario tests few cases for the avatar to be displayed when user mutes
      * his video.
      */
+    @Test(dependsOnMethods = { "changeAvatarAndCheck" })
     public void avatarWhenVideoMuted()
     {
-        System.err.println("Start avatarWhenVideoMuted.");
-
-        ConferenceFixture.closeAllParticipantsExceptTheOwner();
+        hangUpAllParticipantsExceptTheOwner();
 
         // Start owner
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
         String ownerResource = MeetUtils.getResourceJid(owner);
 
         // Mute owner video
@@ -82,14 +69,13 @@ public class AvatarTest
         String ownerThumbSrc = getLocalThumbnailSrc(owner);
         final String ownerLargeSrc = getLargeVideoSrc(owner);
         assertTrue(
-                "invalid avatar on the large video: " + ownerLargeSrc +
-                        ", should start with: " + ownerThumbSrc,
-                ownerLargeSrc.startsWith(ownerThumbSrc));
+            ownerLargeSrc.startsWith(ownerThumbSrc),
+            "invalid avatar on the large video: " + ownerLargeSrc +
+                    ", should start with: " + ownerThumbSrc);
 
         // Join with second participant
-        ConferenceFixture.waitForSecondParticipantToConnect();
-        WebDriver secondParticipant
-                = ConferenceFixture.getSecondParticipant();
+        ensureTwoParticipants();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         String secondPeerResource = MeetUtils.getResourceJid(secondParticipant);
 
         // Verify that the owner is muted from 2nd peer perspective
@@ -106,13 +92,9 @@ public class AvatarTest
         MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
         // Check if owner's avatar is on large video now
         TestUtils.waitForCondition(secondParticipant, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc = getLargeVideoSrc(d);
-                    return currentSrc.equals(ownerLargeSrc);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc = getLargeVideoSrc(d);
+                return currentSrc.equals(ownerLargeSrc);
             });
 
         // Owner pins second participant's video
@@ -120,8 +102,9 @@ public class AvatarTest
         // Check if avatar is displayed on owner's local video thumbnail
         MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
         // Unmute - now local avatar should be hidden and local video displayed
-        new StopVideoTest("startVideoOnOwnerAndCheck")
-            .startVideoOnOwnerAndCheck();
+        StopVideoTest stopVideoTest
+            = new StopVideoTest(this.getParticipant1(), this.getParticipant2());
+        stopVideoTest.startVideoOnOwnerAndCheck();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
@@ -132,16 +115,14 @@ public class AvatarTest
         MeetUIUtils.assertLocalThumbnailShowsVideo(owner);
 
         // Now both owner and 2nd have video muted
-        new StopVideoTest("stopVideoOnOwnerAndCheck")
-            .stopVideoOnOwnerAndCheck();
+        stopVideoTest.stopVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
                 true,
                 true, //video
                 "owner");
-        new StopVideoTest("stopVideoOnParticipantAndCheck")
-            .stopVideoOnParticipantAndCheck();
+        stopVideoTest.stopVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 owner,
                 secondParticipant,
@@ -159,8 +140,8 @@ public class AvatarTest
             getThumbnailSrc(owner, secondPeerResource));
 
         // Start the third participant
-        ConferenceFixture.waitForThirdParticipantToConnect();
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
+        ensureThreeParticipants();
+        WebDriver thirdParticipant = getParticipant3().getDriver();
 
         String secondPeerSrc = getLocalThumbnailSrc(secondParticipant);
 
@@ -192,21 +173,19 @@ public class AvatarTest
         MeetUIUtils.assertAvatarDisplayed(thirdParticipant, ownerResource);
         MeetUIUtils.assertLocalThumbnailShowsVideo(thirdParticipant);
 
-        ConferenceFixture.close(thirdParticipant);
+        getParticipant3().hangUp();
 
         TestUtils.waitMillis(1500);
 
         // Unmute owner and 2nd videos
-        new StopVideoTest("startVideoOnOwnerAndCheck")
-            .startVideoOnOwnerAndCheck();
+        stopVideoTest.startVideoOnOwnerAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
                 false,
                 true, //video
                 "owner");
-        new StopVideoTest("startVideoOnParticipantAndCheck")
-            .startVideoOnParticipantAndCheck();
+        stopVideoTest.startVideoOnParticipantAndCheck();
         MeetUIUtils.assertMuteIconIsDisplayed(
                 secondParticipant,
                 owner,
@@ -219,15 +198,11 @@ public class AvatarTest
      *  Changes the avatar for one participant and checks if it has changed
      *  properly everywhere
      */
+    @Test
     public void changeAvatarAndCheck()
     {
-        System.err.println("Start changeAvatarAndCheck.");
-
-        ConferenceFixture.ensureTwoParticipants();
-
-        final WebDriver owner = ConferenceFixture.getOwner();
-        final WebDriver secondParticipant
-            = ConferenceFixture.getSecondParticipant();
+        final WebDriver owner = getParticipant1().getDriver();
+        final WebDriver secondParticipant = getParticipant2().getDriver();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 
@@ -254,14 +229,8 @@ public class AvatarTest
 
         //check if the local avatar in the settings menu has changed
         TestUtils.waitForCondition(owner, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return getSrcByXPath(owner, "//img[@id='avatar']")
-                        .contains(HASH);
-                }
-            });
+            (ExpectedCondition<Boolean>) d
+                -> getSrcByXPath(owner, "//img[@id='avatar']").contains(HASH));
 
         //check if the avatar in the local thumbnail has changed
         checkSrcIsCorrect(getLocalThumbnailSrc(owner));
@@ -272,14 +241,10 @@ public class AvatarTest
         // sometimes the notification for the avatar change can be more
         // than 5 seconds
         TestUtils.waitForCondition(secondParticipant, 15,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc =
-                        getThumbnailSrc(secondParticipant, ownerResourceJid);
-                    return !currentSrc.equals(srcOneSecondParticipant);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc =
+                    getThumbnailSrc(secondParticipant, ownerResourceJid);
+                return !currentSrc.equals(srcOneSecondParticipant);
             });
 
         //check if the avatar in the thumbnail for the other participant has
@@ -291,13 +256,9 @@ public class AvatarTest
         //check if the avatar displayed on large video has changed for the other
         // participant
         TestUtils.waitForCondition(secondParticipant, 5,
-            new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    String currentSrc = getLargeVideoSrc(secondParticipant);
-                    return currentSrc.contains(HASH);
-                }
+            (ExpectedCondition<Boolean>) d -> {
+                String currentSrc = getLargeVideoSrc(secondParticipant);
+                return currentSrc.contains(HASH);
             });
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
@@ -326,8 +287,8 @@ public class AvatarTest
     private void checkSrcIsCorrect(String src)
     {
         assertTrue(
-            "The avatar invalid src: " + src +" hash: " + HASH,
-            src.contains(HASH));
+            src.contains(HASH),
+            "The avatar invalid src: " + src +" hash: " + HASH);
     }
 
     /**

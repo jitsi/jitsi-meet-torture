@@ -17,11 +17,15 @@ package org.jitsi.meet.test;
 
 import java.util.*;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
-import junit.framework.*;
+import static org.testng.Assert.*;
 
 /**
  * Test for Jibri recorder.
@@ -29,7 +33,7 @@ import junit.framework.*;
  * @author Hristo Terezov
  */
 public class JibriTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * The youtube stream key
@@ -52,73 +56,50 @@ public class JibriTest
     public static String PUBLIC_URL_PROP = "jibri.public_url";
 
     /**
-     * Constructs test
-     * 
-     * @param name the method name for the test.
-     */
-    public JibriTest(String name)
-    {
-        super(name);
-    }
-
-    /**
      * Lists the possible statuses for the youtube stream.
      *
      */
     enum YT_STATUS
     {
         ONLINE, OFFLINE
-    };
-
-    /**
-     * Orders the tests.
-     * 
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-        streamKey = System.getProperty(STREAM_KEY_PROP);
-        publicURL = System.getProperty(PUBLIC_URL_PROP);
-        if(streamKey == null || publicURL == null)
-        {
-            return suite;
-        }
-        
-        suite.addTest(new JibriTest("checkJibriEnabled"));
-        suite.addTest(new JibriTest("startLiveStreaming"));
-        suite.addTest(new JibriTest("checkJibriStatusOn"));
-        suite.addTest(new JibriTest("checkForJibriParticipant"));
-        suite.addTest(new JibriTest("testOnlineYoutubeStream"));
-        suite.addTest(new JibriTest("stopLiveStreaming"));
-        suite.addTest(new JibriTest("checkJibriStatusOff"));
-        suite.addTest(new JibriTest("testOfflineYoutubeStream"));
-
-        return suite;
     }
 
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        streamKey = System.getProperty(STREAM_KEY_PROP);
+        publicURL = System.getProperty(PUBLIC_URL_PROP);
+        if (streamKey == null || publicURL == null)
+        {
+            throw new SkipException(
+                "no streamKey or publicURL");
+        }
+
+        ensureTwoParticipants();
+    }
 
     /**
      * Checks if the recording button exists.
      */
+    @Test
     public void checkJibriEnabled()
     {
-        System.err.println("Start checkJibriEnabled.");
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
         List<WebElement> elems = owner.findElements(
             By.xpath("//a[@class='button fa " + "fa-play-circle']"));
 
-        assertFalse("Jibri button is missing", elems.isEmpty());
-
+        assertFalse(elems.isEmpty(), "Jibri button is missing");
     }
 
     /**
      * Starts the streaming.
      */
+    @Test(dependsOnMethods = { "checkJibriEnabled" })
     public void startLiveStreaming()
     {
-        System.err.println("Start startLiveStreaming.");
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
 
         // fill in the dialog
@@ -136,11 +117,11 @@ public class JibriTest
      * Check the jibri text label after starting the recording. It should be
      * first pending and than on.
      */
+    @Test(dependsOnMethods = { "startLiveStreaming" })
     public void checkJibriStatusOn()
     {
-        System.err.println("Start checkJibriStatusOn.");
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         try
         {
             TestUtils.waitForElementByXPath(owner,
@@ -190,11 +171,11 @@ public class JibriTest
      * Check the jibri text label after stopping the recording. It should be
      * off.
      */
+    @Test(dependsOnMethods = { "stopLiveStreaming" })
     public void checkJibriStatusOff()
     {
-        System.err.println("Start checkJibriStatusOff.");
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         try
         {
             TestUtils.waitForElementByXPath(owner,
@@ -221,23 +202,25 @@ public class JibriTest
     /**
      * Checks that there is not jibri thumbnail
      */
+    @Test(dependsOnMethods = { "checkJibriStatusOn" })
     public void checkForJibriParticipant()
     {
-        System.err.println("Start checkForJibriParticipant.");
-        WebDriver owner = ConferenceFixture.getOwner();
-        assertEquals("number of visible thumbnails for owner", 2,
-            MeetUIUtils.getVisibleThumbnails(owner).size());
-        WebDriver sencondParticipant = ConferenceFixture.getSecondParticipant();
-        assertEquals("number of visible thumbnails for second participant", 2,
-            MeetUIUtils.getVisibleThumbnails(sencondParticipant).size());
+        WebDriver owner = getParticipant1().getDriver();
+        assertEquals(
+            2, MeetUIUtils.getVisibleThumbnails(owner).size(),
+            "number of visible thumbnails for owner");
+        WebDriver sencondParticipant = getParticipant2().getDriver();
+        assertEquals(
+            2, MeetUIUtils.getVisibleThumbnails(sencondParticipant).size(),
+            "number of visible thumbnails for second participant");
     }
 
     /**
      * Opens the public URL for the video and checks that the stream is live.
      */
+    @Test(dependsOnMethods = { "checkForJibriParticipant" })
     public void testOnlineYoutubeStream()
     {
-        System.err.println("Start testOnlineYoutubeStream.");
         try
         {
             testYTStatus(YT_STATUS.ONLINE);
@@ -251,10 +234,10 @@ public class JibriTest
     /**
      * Stops the recording.
      */
+    @Test(dependsOnMethods = { "testOnlineYoutubeStream" })
     public void stopLiveStreaming()
     {
-        System.err.println("Start stopLiveStreaming.");
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
 
         // fill in the dialog
@@ -269,9 +252,9 @@ public class JibriTest
     /**
      * Opens the public URL for the video and checks that the stream is offline.
      */
+    @Test(dependsOnMethods = { "checkJibriStatusOff" })
     public void testOfflineYoutubeStream()
     {
-        System.err.println("Start testOfflineYoutubeStream.");
         try
         {
             testYTStatus(YT_STATUS.OFFLINE);
@@ -290,21 +273,39 @@ public class JibriTest
      */
     private void testYTStatus(final YT_STATUS expectedStatus)
     {
-        System.err.println("Start testYTStatus.");
-        final WebDriver driver = ConferenceFixture.openURL(publicURL);
-        System.err.println("testYTStatus wait for the status");
-        TestUtils.waitForCondition(driver, 300, new ExpectedCondition<Boolean>()
-        {
+        Participant p = openURL(publicURL);
+        WebDriver driver = p.getDriver();
+        print("testYTStatus wait for the status");
+        TestUtils.waitForCondition(driver, 300,
+            (ExpectedCondition<Boolean>) w ->
+                getYTStatus(driver) == expectedStatus);
+        print("testYTStatus quit");
+        p.quit();
+        print("testYTStatus done");
+    }
 
-            @Override
-            public Boolean apply(WebDriver w)
-            {
-                return getYTStatus(driver) == expectedStatus;
-            }
-        });
-        System.err.println("testYTStatus quit");
-        ConferenceFixture.quit(driver, false);
-        System.err.println("testYTStatus done");
+    /**
+     * Opens URL using new WebDriver.
+     * @param URL the URL to be opened
+     * @return the {@code Participant} which was created.
+     */
+    private static Participant openURL(String URL)
+    {
+        print("Opening URL: " + URL);
+
+        Participant pageParticipant
+            = ParticipantFactory.getInstance()
+                .createParticipant("web.participantOther");
+        WebDriver driver = pageParticipant.getDriver();
+
+        driver.get(URL);
+        MeetUtils.waitForPageToLoad(driver);
+
+        ((JavascriptExecutor) driver)
+            .executeScript(
+                "document.title='" + pageParticipant.getName() + "'");
+
+        return pageParticipant;
     }
 
     /**

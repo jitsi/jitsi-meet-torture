@@ -15,48 +15,40 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Checks that 'owner' and 'secondParticipant' are connected via UDP.
  * @author Boris Grozev
  */
 public class UDPTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs this <tt>Test</tt>.
-     * @param name the method name for the test.
-     */
-    public UDPTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with ordered tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-        suite.addTest(new UDPTest("udpTest"));
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Asserts that 'owner' and 'secondParticipant' are connected via UDP.
      */
+    @Test
     public void udpTest()
     {
         assertEquals(
-                 "The owner must be connected through UDP",
-                 "udp",
-                 MeetUtils.getProtocol(ConferenceFixture.getOwner()));
+             "udp",
+             MeetUtils.getProtocol(getParticipant1().getDriver()),
+            "The owner must be connected through UDP");
         assertEquals(
-                "The second participant must be connected through UDP",
-                "udp",
-                MeetUtils.getProtocol(ConferenceFixture.getSecondParticipant()));
+            "udp",
+            MeetUtils.getProtocol(getParticipant2().getDriver()),
+            "The second participant must be connected through UDP");
     }
 }

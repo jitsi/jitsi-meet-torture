@@ -15,9 +15,13 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests whether the Jitsi-Meet client can connect to jitsi-videobridge using
@@ -27,7 +31,7 @@ import org.openqa.selenium.*;
  * @author Boris Grozev
  */
 public class TCPTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * The URL fragment which when added to a Jitsi-Meet URL will effectively
@@ -43,26 +47,12 @@ public class TCPTest
     public static final String DISABLE_TCP_URL_FRAGMENT
         = "config.webrtcIceTcpDisable=true";
 
-    /**
-     * Constructs test.
-     * @param name the method name for the test.
-     */
-    public TCPTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new TCPTest("tcpTest"));
-
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
@@ -70,33 +60,23 @@ public class TCPTest
      * Starts it again with UDP disabled and checks that it is connected over
      * TCP.
      */
+    @Test
     public void tcpTest()
     {
         // Initially we should be connected over UDP
-        assertEquals("We must be connected through UDP",
-                     "udp",
-                     MeetUtils
-                         .getProtocol(ConferenceFixture.getSecondParticipant()));
+        assertEquals(
+            "udp",
+            MeetUtils.getProtocol(getParticipant2().getDriver()),
+            "We must be connected through UDP");
 
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant(DISABLE_UDP_URL_FRAGMENT);
-        ConferenceFixture.waitForSecondParticipantToConnect();
+        getParticipant2().hangUp();
 
-        assertEquals("We must be connected through TCP",
-                     "tcp",
-                     MeetUtils.getProtocol(secondParticipant));
+        ensureTwoParticipants(DISABLE_UDP_URL_FRAGMENT);
+        WebDriver secondParticipant = getParticipant2().getDriver();
+
+        assertEquals(
+            "tcp",
+            MeetUtils.getProtocol(secondParticipant),
+            "We must be connected through TCP");
     }
-
-
-    /**
-     * Brings the conference to the default state before.
-     */
-    @Override
-    protected void tearDown()
-    {
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        ConferenceFixture.waitForSecondParticipantToConnect();
-    }
-
 }

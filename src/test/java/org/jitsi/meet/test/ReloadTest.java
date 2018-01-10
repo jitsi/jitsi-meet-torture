@@ -15,15 +15,17 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 import java.util.*;
 
-import org.openqa.selenium.support.ui.*;
+import static org.testng.Assert.*;
 
 /**
  * Launches a hook script that will restart prosody and jicofo and checks
@@ -31,7 +33,7 @@ import org.openqa.selenium.support.ui.*;
  * the reload. 
  */
 public class ReloadTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * 
@@ -51,53 +53,21 @@ public class ReloadTest
      */
     private final static String DISPLAY_NAME = "testDisplayName";
 
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public ReloadTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-        
         final String hookScript = System.getProperty(HOOK_SCRIPT);
         final String host = System.getProperty(HOST);
 
-        if(hookScript == null || host == null)
-            return suite;
-        
-        suite.addTest(new ReloadTest("restartParticipants"));
-        suite.addTest(new ReloadTest("testProsodyRestart"));
-        suite.addTest(new ReloadTest("ownerVideoMuteAndCheck"));
-        suite.addTest(new ReloadTest("ownerAudioMuteAndCheck"));
-        suite.addTest(new ReloadTest("ownerSetDisplayNameAndCheck"));
-        suite.addTest(new ReloadTest("testJicofoRestart"));
-        suite.addTest(new ReloadTest("ownerCheckVideoMuted"));
-        suite.addTest(new ReloadTest("ownerCheckAudioMuted"));
-        suite.addTest(new ReloadTest("ownerCheckDisplayName"));
+        if (hookScript == null || host == null)
+        {
+            throw new SkipException(
+                "no hook script or host has been specified");
+        }
 
-        return suite;
-    }
-
-    /**
-     * Restarts the two participants so we clear states of previous tests.
-     */
-    public void restartParticipants()
-    {
-        ConferenceFixture.restartParticipants();
-
-        MeetUtils.waitForSendReceiveData(
-            ConferenceFixture.getOwner());
-        MeetUtils.waitForSendReceiveData(
-            ConferenceFixture.getSecondParticipant());
+        ensureTwoParticipants();
     }
 
     /**
@@ -106,14 +76,14 @@ public class ReloadTest
      * and audio/video data is transmitted. Also dismisses Video Bridge not 
      * available error dialog (which is shown because of prosody restart)
      */
+    @Test
     public void testProsodyRestart()
     {
-        System.err.println("Start testProsodyRestart.");
         setupListeners();
         startReloadScript(new String[]{"--restart-prosody"});
         waitForReloadAndTest();
-        dismissBridgeNotAvailableDialog(ConferenceFixture.getOwner());
-        dismissBridgeNotAvailableDialog(ConferenceFixture.getSecondParticipant());
+        dismissBridgeNotAvailableDialog(getParticipant1().getDriver());
+        dismissBridgeNotAvailableDialog(getParticipant2().getDriver());
     }
     
     /**
@@ -121,9 +91,9 @@ public class ReloadTest
      * checks that all participant have joined successfully the conference 
      * and audio/video data is transmitted.
      */
+    @Test(dependsOnMethods = { "ownerSetDisplayNameAndCheck" })
     public void testJicofoRestart()
     {
-        System.err.println("Start testJicofoRestart.");
         setupListeners();
         startReloadScript(new String[]{"--restart-jicofo"});
         waitForReloadAndTest(true);
@@ -132,44 +102,48 @@ public class ReloadTest
     /**
      * Executes {@link StopVideoTest#stopVideoOnOwnerAndCheck()}.
      */
+    @Test(dependsOnMethods = { "testProsodyRestart" })
     public void ownerVideoMuteAndCheck()
     {
-        new StopVideoTest("stopVideoOnOwnerAndCheck")
+        new StopVideoTest(getParticipant1(), getParticipant2())
             .stopVideoOnOwnerAndCheck();
     }
     
     /**
      * Executes {@link MuteTest#muteOwnerAndCheck()}.
      */
+    @Test(dependsOnMethods = { "ownerVideoMuteAndCheck" })
     public void ownerAudioMuteAndCheck()
     {
-        new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
+        new MuteTest(getParticipant1(), getParticipant2(), null).muteOwnerAndCheck();
     }
     
     /**
-     * Executes {@link DisplayNameTest#checkDisplayNameChange()}.
+     * Executes {@link DisplayNameTest#checkDisplayNameChange}.
      */
+    @Test(dependsOnMethods = { "ownerAudioMuteAndCheck" })
     public void ownerSetDisplayNameAndCheck()
     {
-        new DisplayNameTest().checkDisplayNameChange(DISPLAY_NAME);
+        new DisplayNameTest(getParticipant1(), getParticipant2())
+            .checkDisplayNameChange(DISPLAY_NAME);
     }
     
     /**
      * Checks video mute status for the local video for the owner and 
      * the remote video for second participant.
      */
+    @Test(dependsOnMethods = { "testJicofoRestart" })
     public void ownerCheckVideoMuted()
     {
-        System.err.println("Start ownerCheckVideoMuted.");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getOwner(),
+            getParticipant1().getDriver(),
+            getParticipant1().getDriver(),
             true,
             true,
             "owner");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver(),
             true,
             true,
             "owner");
@@ -179,18 +153,18 @@ public class ReloadTest
      * Checks audio mute status for the local video for the owner and 
      * the remote video for second participant.
      */
+    @Test(dependsOnMethods = { "ownerCheckVideoMuted" })
     public void ownerCheckAudioMuted()
     {
-        System.err.println("Start ownerCheckAudioMuted.");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getOwner(),
+            getParticipant1().getDriver(),
+            getParticipant1().getDriver(),
             true,
             false,
             "owner");
         MeetUIUtils.assertMuteIconIsDisplayed(
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner(),
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver(),
             true,
             false,
             "owner");
@@ -199,9 +173,9 @@ public class ReloadTest
     /**
      * Checks the display name of the owner.
      */
+    @Test(dependsOnMethods = { "ownerCheckAudioMuted" })
     public void ownerCheckDisplayName()
     {
-        System.err.println("Start ownerCheckDisplayName.");
         DisplayNameTest test = new DisplayNameTest();
         test.doLocalDisplayNameCheck(DISPLAY_NAME);
         test.doRemoteDisplayNameCheck(DISPLAY_NAME);
@@ -213,16 +187,17 @@ public class ReloadTest
      */
     private void dismissBridgeNotAvailableDialog(WebDriver participant)
     {
-        System.err.println("Start dismissBridgeNotAvailableDialog.");
         WebElement element;
 
-        try {
+        try
+        {
             element = participant.findElement(By.name("jqi_state0_buttonOk"));
-        } catch (org.openqa.selenium.NoSuchElementException ex) {
+        } catch (org.openqa.selenium.NoSuchElementException ex)
+        {
             element = null;
         }
          
-        if(element != null)
+        if (element != null)
             element.click();
     }
     
@@ -235,7 +210,7 @@ public class ReloadTest
         final String hookScript = System.getProperty(HOOK_SCRIPT);
         final String host = System.getProperty(HOST);
 
-        if(hookScript == null || host == null)
+        if (hookScript == null || host == null)
             return;
 
         CmdExecutor exec = new CmdExecutor();
@@ -248,12 +223,11 @@ public class ReloadTest
 
             int result = exec.executeCmd(cmd);
 
-            assertEquals("Script returned non-zero value", 0, result);
+            assertEquals(0, result, "Script returned non-zero value");
         }
         catch (Exception hookException)
         {
-            assertFalse("Error executing hook script:"
-                + hookException.getMessage(), true);
+            fail("Error executing hook script:" + hookException.getMessage());
         }
     }
     
@@ -271,8 +245,11 @@ public class ReloadTest
      */
     private void setupListeners()
     {
-        WebDriver[] drivers = {ConferenceFixture.getOwner(), 
-            ConferenceFixture.getSecondParticipant()};
+        WebDriver[] drivers =
+        {
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver()
+        };
         String script
             = "APP.conference._room.addEventListener("
                 + "        JitsiMeetJS.events.conference.CONFERENCE_LEFT,"
@@ -280,9 +257,9 @@ public class ReloadTest
                 + "            APP.conference._room.conference_left_event = true;"
                 + "        });"
                 + "";
-        for(int i = 0; i < drivers.length; i++) 
+        for (WebDriver driver : drivers)
         {
-            TestUtils.executeScript(drivers[i], script);
+            TestUtils.executeScript(driver, script);
         }
     }
 
@@ -293,78 +270,70 @@ public class ReloadTest
      */
     private void waitForReloadAndTest(boolean isOwnerMuted)
     {
-        System.err.println("Start waitForReloadAndTest.");
-        WebDriver[] drivers = {ConferenceFixture.getOwner(), 
-            ConferenceFixture.getSecondParticipant()};
+        Participant[] participants =
+            {
+                getParticipant1(),
+                getParticipant2()
+            };
         final String checkForConferenceLeftScript = "return "
             + "APP.conference._room.conference_left_event;";
-        for(int i = 0; i < drivers.length; i++) 
+        for (Participant p : participants)
         {
-            (new WebDriverWait(drivers[i], 200))
-                .until(new ExpectedCondition<Boolean>()
-                {
-                    public Boolean apply(WebDriver d)
-                    {
-                        Object res = 
-                            ((JavascriptExecutor) d)
+            (new WebDriverWait(p.getDriver(), 200))
+                .until((ExpectedCondition<Boolean>) d -> {
+                    Object res =
+                        ((JavascriptExecutor) d)
                             .executeScript(checkForConferenceLeftScript);
-                        return res != null && res.equals(Boolean.TRUE);
-                    }
+                    return res != null && res.equals(Boolean.TRUE);
                 });
         }
         
-        System.err.println("Reload detected");
-        
-        for(int i = 0; i < drivers.length; i++) 
+        print("Reload detected");
+
+        for (Participant p : participants)
         {
-            TestUtils.executeScript(drivers[i], 
+            TestUtils.executeScript(p.getDriver(),
                 "APP.conference._room.conference_left_event = false;");
         }
         
-        System.err.println("Wait for ice connected.");
-        for(int i = 0; i < drivers.length; i++) 
+        print("Wait for ice connected.");
+        for (Participant p : participants)
         {
-            MeetUtils.waitForIceConnected(drivers[i], 60);
+            p.waitForIceConnected(60);
         }
         
-        System.err.println("Wait for send receive data on the owner side.");
-        MeetUtils.waitForSendReceiveData(ConferenceFixture.getOwner());
-        
-        if(isOwnerMuted)
+        print("Wait for send receive data on the owner side.");
+        getParticipant1().waitForSendReceiveData();
+
+        if (isOwnerMuted)
         {
-            System.err.println("Wait for send data on the second "
+            print("Wait for send data on the second "
                 + "participant side.");
-            final WebDriver participant 
-                = ConferenceFixture.getSecondParticipant();
+            WebDriver participant = getParticipant2().getDriver();
             new WebDriverWait(participant, 15)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
+            .until((ExpectedCondition<Boolean>) d -> {
+                Map stats = (Map) ((JavascriptExecutor) participant)
+                        .executeScript("return APP.conference.getStats();");
+
+                Map<String, Long> bitrate =
+                        (Map<String, Long>) stats.get("bitrate");
+
+                if (bitrate != null)
                 {
-                    Map stats = (Map) ((JavascriptExecutor) participant)
-                            .executeScript("return APP.conference.getStats();");
-
-                    Map<String, Long> bitrate =
-                            (Map<String, Long>) stats.get("bitrate");
-
-                    if (bitrate != null)
-                    {
-                        long upload = bitrate.get("upload");
-                        if (upload > 0)
-                            return true;
-                    }
-
-                    return false;
+                    long upload = bitrate.get("upload");
+                    return upload > 0;
                 }
+
+                return false;
             });
         }
         else 
         {
-            System.err.println("Wait for send receive data on the second "
+            print("Wait for send receive data on the second "
                 + "participant side.");
-            MeetUtils.waitForSendReceiveData(ConferenceFixture.getSecondParticipant());
+            getParticipant2().waitForSendReceiveData();
         }
         
-        System.err.println("Reload finished.");
+        print("Reload finished.");
     }
 }

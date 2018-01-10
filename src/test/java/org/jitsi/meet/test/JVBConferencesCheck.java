@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
 import org.apache.http.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
@@ -23,8 +22,13 @@ import org.apache.http.protocol.*;
 import org.apache.http.util.*;
 import com.google.gson.*;
 
+import org.jitsi.meet.test.base.*;
+import org.testng.annotations.*;
+
 import java.net.*;
 import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Test that connects to JVB instance and saves a list of conferences on the
@@ -36,7 +40,7 @@ import java.util.*;
  * @author Damian Minkov
  */
 public class JVBConferencesCheck
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * List used to save the list of available conferences on the first run
@@ -44,21 +48,30 @@ public class JVBConferencesCheck
      */
     private static List<String> firstRunConferences = null;
 
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * Just gets the url to connect to the jvb instance and saves
      * the current allocated conferences on first run. On second compare current
      * with first run list.
      */
+    @Test
     public void testJVBConferences()
     {
+        ensureTwoParticipants();
+
         String jvbAddress = System.getProperty("jitsi-meet.jvb.address");
 
         HttpHost targetHost = null;
 
-        if(jvbAddress == null)
+        if (jvbAddress == null)
         {
             String meetAddress =
-                System.getProperty(ConferenceFixture.JITSI_MEET_URL_PROP);
+                System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP);
             try
             {
                 String host = new URL(meetAddress).getHost();
@@ -90,7 +103,7 @@ public class JVBConferencesCheck
 
         CloseableHttpResponse response = null;
 
-        ArrayList<String> conferencesList = new ArrayList<String>();
+        ArrayList<String> conferencesList = new ArrayList<>();
         try
         {
             response = httpClient.execute(
@@ -100,7 +113,7 @@ public class JVBConferencesCheck
             String value = EntityUtils.toString(entity);
 
             JsonElement jsonElem = new JsonParser().parse(value);
-            if(jsonElem.isJsonArray())
+            if (jsonElem.isJsonArray())
             {
                 JsonArray jsonArray = jsonElem.getAsJsonArray();
                 for(int i = 0; i < jsonArray.size(); i++)
@@ -116,7 +129,7 @@ public class JVBConferencesCheck
         }
         finally
         {
-            if(response != null)
+            if (response != null)
             {
                 try
                 {
@@ -126,18 +139,22 @@ public class JVBConferencesCheck
             }
         }
 
-        if(firstRunConferences == null)
+        if (firstRunConferences == null)
         {
             firstRunConferences = conferencesList;
+            hangUpAllParticipants();
+            ensureTwoParticipants();
+            testJVBConferences();
         }
         else
         {
             conferencesList.removeAll(firstRunConferences);
 
-            System.err.println("NEW_CONFERENCES=" + conferencesList);
+            print("NEW_CONFERENCES=" + conferencesList);
 
-            assertFalse("The list of conferences must not be empty",
-                conferencesList.isEmpty());
+            assertFalse(
+                conferencesList.isEmpty(),
+                "The list of conferences must not be empty");
         }
     }
 }

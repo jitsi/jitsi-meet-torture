@@ -15,10 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
 /**
  * Start muted tests
@@ -26,42 +27,24 @@ import org.openqa.selenium.*;
  * @author Pawel Domas
  */
 public class StartMutedTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public StartMutedTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new StartMutedTest("checkboxesTest"));
-        suite.addTest(new StartMutedTest("configOptionsTest"));
-        suite.addTest(new StartMutedTest("restartParticipants"));
-        return suite;
+        ensureOneParticipant();
     }
 
     /**
      * Restarts the second participant tab and checks start muted checkboxes.
      * Test if the second participant is muted and the owner is unmuted.
      */
+    @Test
     public void checkboxesTest()
     {
-        System.err.println("Start checkboxesTest.");
-
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
-        TestUtils.waitMillis(1000);
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
 
         // Make sure settings panel is displayed
         MeetUIUtils.displaySettingsPanel(owner);
@@ -74,10 +57,7 @@ public class StartMutedTest
         owner.findElement(By.id("startAudioMuted")).click();
         owner.findElement(By.id("startVideoMuted")).click();
 
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
-        MeetUtils.waitForIceConnected(secondParticipant);
+        ensureTwoParticipants();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -91,28 +71,24 @@ public class StartMutedTest
      * Opens new room and sets start muted config parameters trough the URL.
      * Test if the second participant is muted and the owner is unmuted.
      */
+    @Test(dependsOnMethods = { "checkboxesTest" })
     public void configOptionsTest()
     {
-        System.err.println("Start configOptionsTest.");
+        hangUpAllParticipants();
 
-        ConferenceFixture.closeAllParticipants();
+        ensureOneParticipant("config.startAudioMuted=1&" +
+            "config.debugAudioLevels=true&" +
+            "config.startVideoMuted=1");
+        WebDriver owner = getParticipant1().getDriver();
 
-        WebDriver owner
-            = ConferenceFixture.startOwner("config.startAudioMuted=1&" +
-                                           "config.debugAudioLevels=true&" +
-                                           "config.startVideoMuted=1");
-        MeetUtils.waitForParticipantToJoinMUC(owner, 10);
-
-        final WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
+        ensureTwoParticipants();
+        final WebDriver secondParticipant = getParticipant2().getDriver();
         ((JavascriptExecutor) owner)
             .executeScript(
                 "console.log('Start configOptionsTest, second participant: "
                     + MeetUtils.getResourceJid(secondParticipant) + "');");
-        MeetUtils.waitForParticipantToJoinMUC(secondParticipant, 10);
 
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForIceConnected(secondParticipant);
+        getParticipant1().waitForIceConnected();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -138,10 +114,8 @@ public class StartMutedTest
      */
     private void checkSecondParticipantForMute()
     {
-        System.err.println("Start checkSecondParticipantForMute.");
-
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         final String ownerResourceJid = MeetUtils.getResourceJid(owner);
 
@@ -175,13 +149,5 @@ public class StartMutedTest
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']",
             25);
-    }
-
-    /**
-     * Restarts the two participants so we clear states of this test.
-     */
-    public void restartParticipants()
-    {
-        ConferenceFixture.restartParticipants();
     }
 }

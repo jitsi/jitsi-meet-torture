@@ -1,60 +1,41 @@
 package org.jitsi.meet.test;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.jitsi.meet.test.util.MeetUIUtils;
-import org.jitsi.meet.test.util.MeetUtils;
-import org.jitsi.meet.test.util.TestUtils;
-import org.openqa.selenium.WebDriver;
+import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.util.*;
 
-import java.util.Iterator;
-import java.util.Set;
+import org.openqa.selenium.*;
+import org.testng.annotations.*;
+
+import java.util.*;
 
 /**
  * Tests features of filmstrip only mode.
  *
  * @author Leonard Kim
  */
-public class FilmstripOnlyTest extends TestCase {
+public class FilmstripOnlyTest
+    extends AbstractBaseTest
+{
     private final String enableFilmstripOnlyMode
         = "interfaceConfig.filmStripOnly=true";
 
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public FilmstripOnlyTest(String name)
+    @Override
+    public void setup()
     {
-        super(name);
-    }
+        super.setup();
 
-    /**
-     * Orders the tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(
-            new FilmstripOnlyTest("testLoadsOnlyTheFilmstrip"));
-        suite.addTest(
-            new FilmstripOnlyTest("testDisplaysDeviceSelection"));
-        suite.addTest(
-            new FilmstripOnlyTest("testCleanup"));
-        return suite;
+        ensureOneParticipant(enableFilmstripOnlyMode);
+        ensureTwoParticipants();
     }
 
     /**
      * Checks if filmstrip only mode can load.
      */
+    @Test
     public void testLoadsOnlyTheFilmstrip() {
-        WebDriver owner =  ConferenceFixture.getOwner();
-        WebDriver remote = ConferenceFixture.getSecondParticipant();
+        WebDriver owner =  getParticipant1().getDriver();
+        WebDriver remote = getParticipant2().getDriver();
         String remoteResourceJid = MeetUtils.getResourceJid(remote);
-
-        ConferenceFixture.close(owner);
-        ConferenceFixture.startOwner(enableFilmstripOnlyMode);
 
         MeetUIUtils.assertLocalThumbnailShowsVideo(owner);
 
@@ -75,8 +56,9 @@ public class FilmstripOnlyTest extends TestCase {
     /**
      * Checks if device selection popup can load.
      */
+    @Test(dependsOnMethods = { "testLoadsOnlyTheFilmstrip" })
     public void testDisplaysDeviceSelection() {
-        WebDriver owner =  ConferenceFixture.getOwner();
+        WebDriver owner =  getParticipant1().getDriver();
 
         MeetUIUtils.clickOnToolbarButton(
             owner,
@@ -97,14 +79,5 @@ public class FilmstripOnlyTest extends TestCase {
 
         owner.close();
         owner.switchTo().window(mainWindowHandle);
-    }
-
-    /**
-     * Resets the meeting states of the participants. Necessary as each test
-     * does not necessarily ensure a clean state on start and being in
-     * filmstrip only mode could affect tests.
-     */
-    public void testCleanup() {
-        ConferenceFixture.restartParticipants();
     }
 }

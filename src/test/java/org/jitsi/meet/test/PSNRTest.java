@@ -15,14 +15,15 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
 import org.jitsi.meet.test.util.*;
 
 import org.json.simple.*;
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
+import static org.testng.Assert.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -37,8 +38,22 @@ import java.util.concurrent.*;
  * @author Ivan Symchych
  */
 public class PSNRTest
-    extends TestCase
+    extends AbstractBaseTest
 {
+    /**
+     * Defines the directory in which the psnr output file should be written
+     */
+
+    public static final String PSNR_OUTPUT_DIR_PROP = "psnr.output.dir";
+
+    /**
+     * Defines the filename to use when writing the psnr output (which will
+     * be written to inside the {@link #PSNR_OUTPUT_DIR_PROP}
+     * directory).
+     */
+    public static final String PSNR_OUTPUT_FILENAME_PROP =
+        "psnr.output.filename";
+
     /**
      * The PSNR script that produces PSNR results for every frame that we've
      * captured.
@@ -76,12 +91,27 @@ public class PSNRTest
      */
     private static final float MIN_PSNR = 22f;
 
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        ensureTwoParticipants();
+    }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * A test where we read some configurations or fallback to default values
      * and we expect a conference to be already established (by SetupConference)
      * and we keep checking whether this is still the case, and if something
      * is not working we fail.
      */
+    @Test
     public void testPSNR()
         throws Exception
     {
@@ -100,21 +130,24 @@ public class PSNRTest
         }
 
         // stop everything to maximize performance
-        new MuteTest("muteOwnerAndCheck").muteOwnerAndCheck();
-        new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
-        new StopVideoTest("stopVideoOnOwnerAndCheck").stopVideoOnOwnerAndCheck();
+        MuteTest muteTest
+            = new MuteTest(getParticipant1(), getParticipant2(), null);
+        muteTest.muteOwnerAndCheck();
+        muteTest.muteParticipantAndCheck();
+        new StopVideoTest(getParticipant1(), getParticipant2())
+            .stopVideoOnOwnerAndCheck();
 
         // Sleep 30 seconds to allow the clients to ramp up
         int rampUpDurationSeconds = 30;
-        System.err.println("Waiting " + rampUpDurationSeconds +
+        print("Waiting " + rampUpDurationSeconds +
             " seconds for ramp up");
         try
         {
             Thread.sleep(rampUpDurationSeconds * 1000);
         } catch (InterruptedException e) {}
-        System.err.println("Wait for ramp up done");
+        print("Wait for ramp up done");
 
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
 
         VideoOperator ownerVideoOperator = new VideoOperator(owner);
 
@@ -139,7 +172,12 @@ public class PSNRTest
         // execute every 1 sec. This heartbeat task isn't necessary for the
         // PSNR testing but it can provide hints as to why the PSNR has failed.
 
-        HeartbeatTask heartbeatTask = new HeartbeatTask(timeToRunInMillis, false);
+        HeartbeatTask heartbeatTask
+            = new HeartbeatTask(
+                getParticipant1(),
+                getParticipant2(),
+                timeToRunInMillis,
+                false);
 
         heartbeatTask.start(/* delay */ 1000, /* period */ 1000);
 
@@ -147,12 +185,12 @@ public class PSNRTest
 
         ownerVideoOperator.stopRecording();
 
-        System.err.println("REAL FPS: " + ownerVideoOperator.getRealFPS());
-        System.err.println(
+        print("REAL FPS: " + ownerVideoOperator.getRealFPS());
+        print(
                 "RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
-        ConferenceFixture.closeSecondParticipant();
+        getParticipant2().hangUp();
 
         for (String id : ids)
         {
@@ -196,12 +234,13 @@ public class PSNRTest
                 {
                     while ((s = stdInput.readLine()) != null)
                     {
-                        System.err.println(s);
+                        print(s);
                         int frameNum = Integer.parseInt(s.split(" ")[0]);
                         float psnr = Float.parseFloat(s.split(" ")[1]);
 
-                        assertTrue("Frame is bellow the PSNR threshold",
-                            psnr > MIN_PSNR);
+                        assertTrue(
+                            psnr > MIN_PSNR,
+                            "Frame is bellow the PSNR threshold");
 
                         if (prevFrameNumber != -1 &&
                             frameNum == prevFrameNumber)
@@ -239,7 +278,7 @@ public class PSNRTest
                     // read any errors from the attempted command
                     while ((s = stdError.readLine()) != null)
                     {
-                        System.err.println(s);
+                        print(s);
                     }
                 }
                 catch (IOException e)
@@ -247,7 +286,9 @@ public class PSNRTest
                     e.printStackTrace();
                 }
 
-                assertTrue("The psnr-test.sh failed.", proc.waitFor() == 0);
+                assertTrue(
+                    proc.waitFor() == 0,
+                    "The psnr-test.sh failed.");
 
                 // If the test has passed for a specific frame, delete
                 // it to optimize disk space usage.
@@ -267,10 +308,9 @@ public class PSNRTest
             json.put("numFrozenFrames", numFrozenFrames);
             json.put("numSkippedFrames", numSkippedFrames);
 
-            String psnrOutputDir =
-                System.getProperty(ConferenceFixture.PSNR_OUTPUT_DIR_PROP);
-            String psnrOutputFilename =
-                System.getProperty(ConferenceFixture.PSNR_OUTPUT_FILENAME_PROP);
+            String psnrOutputDir = System.getProperty(PSNR_OUTPUT_DIR_PROP);
+            String psnrOutputFilename
+                = System.getProperty(PSNR_OUTPUT_FILENAME_PROP);
             if (psnrOutputDir != null && !psnrOutputDir.isEmpty() &&
                 psnrOutputFilename != null && !psnrOutputFilename.isEmpty())
             {

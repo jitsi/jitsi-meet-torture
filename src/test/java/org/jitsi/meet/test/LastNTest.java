@@ -15,97 +15,76 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * The tests for LastN feature.
  *
  */
 public class LastNTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Constructs test
-     * @param name the method name for the test.
-     */
-    public LastNTest(String name)
-    {
-        super(name);
-    }
-
-    /**
-     * Orders the tests.
-     * @return the suite with ordered tests.
-     */
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite();
-
-        suite.addTest(new LastNTest("testLastN"));
-        suite.addTest(new LastNTest("restartParticipants"));
-
-        return suite;
-    }
-
     /**
      * Last N test scenario.
      */
+    @Test
     public void testLastN()
     {
-        System.err.println("Start testLastN.");
+        ensureOneParticipant("config.startAudioMuted=0&config.channelLastN=1");
+        WebDriver owner = getParticipant1().getDriver();
 
-        // close everything first
-        ConferenceFixture.closeAllParticipants();
+        ensureThreeParticipants();
 
-        WebDriver owner = ConferenceFixture.startOwner(
-            "config.startAudioMuted=0&config.channelLastN=1");
-        ConferenceFixture.waitForSecondParticipantToConnect();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver thirdParticipant = getParticipant3().getDriver();
 
-        ConferenceFixture.waitForThirdParticipantToConnect();
-        WebDriver thirdParticipant = ConferenceFixture.getThirdParticipant();
-
-        assertEquals("number of thumbnails", 3,
-                     MeetUIUtils.getThumbnails(owner).size());
-        assertEquals("number of visible thumbnails", 2,
-                     MeetUIUtils.getVisibleThumbnails(owner).size());
+        assertEquals(
+            3, MeetUIUtils.getThumbnails(owner).size(),
+            "number of thumbnails");
+        assertEquals(
+            2, MeetUIUtils.getVisibleThumbnails(owner).size(),
+            "number of visible thumbnails");
 
         MeetUIUtils.assertAudioMuted(secondParticipant, owner, "owner");
-        MeetUIUtils.assertAudioMuted(owner, secondParticipant, "participant2");
-        MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "participant3");
+        MeetUIUtils.assertAudioMuted(owner, secondParticipant, "getParticipant2()");
+        MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "getParticipant3()");
 
         // unmute second participant
-        new MuteTest("unMuteParticipantAndCheck").unMuteParticipantAndCheck();
+        MuteTest muteTest
+            = new MuteTest(getParticipant1(), getParticipant2(), getParticipant3());
+        muteTest.unMuteParticipantAndCheck();
 
         // so now he should be active speaker
         assertTrue(
-            "second participant is active speaker for the owner",
-            MeetUIUtils.isActiveSpeaker(owner, secondParticipant));
+            MeetUIUtils.isActiveSpeaker(owner, secondParticipant),
+            "second participant is active speaker for the owner");
         assertActiveSpeakerThumbIsVisible(owner, secondParticipant);
         assertTrue(
-            "second participant is active speaker for the third participant",
-            MeetUIUtils.isActiveSpeaker(thirdParticipant, secondParticipant));
+            MeetUIUtils.isActiveSpeaker(thirdParticipant, secondParticipant),
+            "second participant is active speaker for the third participant");
         assertActiveSpeakerThumbIsVisible(thirdParticipant, secondParticipant);
 
-        new MuteTest("muteParticipantAndCheck").muteParticipantAndCheck();
+        muteTest.muteParticipantAndCheck();
 
         // unmute third participant
-        new MuteTest("unMuteThirdParticipantAndCheck")
-            .unMuteThirdParticipantAndCheck();
+        muteTest.unMuteThirdParticipantAndCheck();
 
         // so now he should be active speaker
         assertTrue(
-            "third participant is active speaker for the owner",
-            MeetUIUtils.isActiveSpeaker(owner, thirdParticipant));
+            MeetUIUtils.isActiveSpeaker(owner, thirdParticipant),
+            "third participant is active speaker for the owner");
         assertActiveSpeakerThumbIsVisible(owner, thirdParticipant);
         assertTrue(
-            "third participant is active speaker for the second participant",
-            MeetUIUtils.isActiveSpeaker(secondParticipant, thirdParticipant));
+            MeetUIUtils.isActiveSpeaker(secondParticipant, thirdParticipant),
+            "third participant is active speaker for the second participant");
         assertActiveSpeakerThumbIsVisible(secondParticipant, thirdParticipant);
     }
 
@@ -118,31 +97,27 @@ public class LastNTest
     {
         List<WebElement> thumbs = MeetUIUtils.getVisibleThumbnails(observer);
 
-        assertEquals("number of visible thumbnails", 2, thumbs.size());
+        assertEquals(
+            2, thumbs.size(),
+            "number of visible thumbnails");
 
         // remove local thumbnail from the list
         String localContainerId = "localVideoContainer";
-        Iterator<WebElement> it = thumbs.iterator();
-        while (it.hasNext()) {
-            WebElement thumb = it.next();
-            if (localContainerId.equals(thumb.getAttribute("id"))) {
-                it.remove();
-            }
-        }
+        thumbs.removeIf(
+            thumb -> localContainerId.equals(thumb.getAttribute("id")));
 
         assertEquals(1, thumbs.size());
 
         WebElement testeeThumb = thumbs.get(0);
         String testeeJid = MeetUtils.getResourceJid(testee);
-        assertEquals("active speaker thumbnail id",
-                     "participant_" + testeeJid, testeeThumb.getAttribute("id"));
+        assertEquals(
+            "participant_" + testeeJid, testeeThumb.getAttribute("id"),
+            "active speaker thumbnail id");
     }
 
-    /**
-     * Retart participants.
-     */
-    public void restartParticipants()
+    @Override
+    public boolean skipTestByDefault()
     {
-        ConferenceFixture.restartParticipants();
+        return true;
     }
 }

@@ -16,12 +16,13 @@
 package org.jitsi.meet.test.tasks;
 
 import org.jitsi.meet.test.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.*;
+import org.testng.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-
-import static org.junit.Assert.fail;
 
 /**
  * A HeartbeatTask class can be used to make sure that the conference is running
@@ -38,9 +39,16 @@ public class HeartbeatTask
     private final Timer timer = new Timer();
     private final CountDownLatch waitSignal = new CountDownLatch(1);
     private final boolean enableBitrateCheck;
+    private final Participant participant1;
+    private final Participant participant2;
 
-    public HeartbeatTask(int millsToRun, boolean enableBitrateCheck)
+    public HeartbeatTask(
+        Participant participant1,
+        Participant participant2,
+        int millsToRun, boolean enableBitrateCheck)
     {
+        this.participant1 = participant1;
+        this.participant2 = participant2;
         // XXX bitrate checks fail on beta. not enough bandwidth to check
         // why.
         this.enableBitrateCheck = enableBitrateCheck;
@@ -71,48 +79,43 @@ public class HeartbeatTask
     {
         try
         {
-            System.err.println("Checking at " + new Date()
+            TestUtils.print("Checking at " + new Date()
                 + " / to finish: " + millsToRun + " ms.");
 
-            if (!MeetUtils.isIceConnected(
-                ConferenceFixture.getOwner()))
+            if (!MeetUtils.isIceConnected(participant1.getDriver()))
             {
                 assertAndQuit("Owner ice is not connected.");
                 return;
             }
 
-            if (!MeetUtils.isInMuc(
-                ConferenceFixture.getOwner()))
+            if (!participant1.isInMuc())
             {
                 assertAndQuit("Owner is not in the muc.");
                 return;
             }
 
-            if (!MeetUtils.isIceConnected(
-                ConferenceFixture.getSecondParticipant()))
+            if (!MeetUtils.isIceConnected(participant2.getDriver()))
             {
                 assertAndQuit(
                     "Second participant ice is not connected.");
                 return;
             }
 
-            if (!MeetUtils.isInMuc(
-                ConferenceFixture.getSecondParticipant()))
+            if (!participant2.isInMuc())
             {
                 assertAndQuit(
                     "The second participant is not in the muc.");
                 return;
             }
 
-            long downloadOwner = MeetUtils.getDownloadBitrate(
-                ConferenceFixture.getOwner());
+            long downloadOwner
+                = MeetUtils.getDownloadBitrate(participant1.getDriver());
             long downloadParticipant =
-                MeetUtils.getDownloadBitrate(
-                    ConferenceFixture.getSecondParticipant());
+                MeetUtils.getDownloadBitrate(participant2.getDriver());
 
             if (downloadOwner <= 0)
             {
-                System.err.println("Owner no download bitrate");
+                TestUtils.print("Owner no download bitrate");
                 ownerDownloadSignal.countDown();
             }
             else
@@ -126,7 +129,7 @@ public class HeartbeatTask
 
             if (enableBitrateCheck && downloadParticipant <= 0)
             {
-                System.err.println(
+                TestUtils.print(
                    "Second participant no download bitrate");
                secondPDownloadSignal.countDown();
             }
@@ -140,15 +143,13 @@ public class HeartbeatTask
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(
-                ConferenceFixture.getOwner()))
+            if (!MeetUtils.isXmppConnected(participant1.getDriver()))
             {
                 assertAndQuit("Owner xmpp connection is not connected");
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(
-                ConferenceFixture.getSecondParticipant()))
+            if (!MeetUtils.isXmppConnected(participant2.getDriver()))
             {
                 assertAndQuit("The second participant xmpp "
                     + "connection is not connected");
@@ -179,7 +180,7 @@ public class HeartbeatTask
      */
     private void assertAndQuit(String msg)
     {
-        System.err.println(msg);
+        TestUtils.print(msg);
         waitSignal.countDown();
         timer.cancel();
     }
@@ -199,13 +200,13 @@ public class HeartbeatTask
             waitSignal.await(timeout, timeUnit);
 
             if (waitSignal.getCount() == 0)
-                fail("A problem with the conf occurred");
+                Assert.fail("A problem with the conf occurred");
         }
         catch (Exception e)
         {
             e.printStackTrace();
 
-            fail("An error occurred: " + e.getMessage());
+            Assert.fail("An error occurred: " + e.getMessage());
         }
     }
 }

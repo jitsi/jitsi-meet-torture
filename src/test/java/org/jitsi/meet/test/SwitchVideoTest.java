@@ -15,9 +15,13 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests switching video of participants.
@@ -25,50 +29,40 @@ import org.openqa.selenium.*;
  * @author Pawel Domas
  */
 public class SwitchVideoTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
-     * Constructs test.
-     * @param name the method name for the test.
+     * Default constructor.
      */
-    public SwitchVideoTest(String name)
-    {
-        super(name);
-    }
+    public SwitchVideoTest()
+    {}
 
     /**
-     * Orders the tests.
-     * @return the suite with order tests.
+     * Constructs SwitchVideoTest with already allocated participants.
+     * @param participant1 the first participant
+     * @param participant2 the second participant
      */
-    public static junit.framework.Test suite()
+    public SwitchVideoTest(Participant participant1, Participant participant2)
     {
-        TestSuite suite = new TestSuite();
+        this.addParticipants(participant1, participant2);
+    }
 
-        suite.addTest(new SwitchVideoTest(
-            "ownerClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTest(
-            "ownerClickOnRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTest(
-            "ownerUnpinRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTest(
-            "participantClickOnLocalVideoAndTest"));
-        suite.addTest(new SwitchVideoTest(
-            "participantClickOnRemoteVideoAndTest"));
-        suite.addTest(new SwitchVideoTest(
-            "participantUnpinRemoteVideo"));
+    @Override
+    public void setup()
+    {
+        super.setup();
 
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
+    @Test
     public void ownerClickOnLocalVideoAndTest()
     {
-        System.err.println("Start ownerClickOnLocalVideoAndTest.");
-
-        clickOnLocalVideoAndTest(ConferenceFixture.getOwner());
+        clickOnLocalVideoAndTest(getParticipant1().getDriver());
     }
 
     /**
@@ -77,8 +71,6 @@ public class SwitchVideoTest
      */
     private void clickOnLocalVideoAndTest(WebDriver driver)
     {
-        System.err.println("Start clickOnLocalVideoAndTest.");
-
         MeetUIUtils.selectLocalVideo(driver);
     }
 
@@ -86,38 +78,35 @@ public class SwitchVideoTest
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
+    @Test(dependsOnMethods = { "ownerClickOnLocalVideoAndTest" })
     public void ownerClickOnRemoteVideoAndTest()
     {
-        System.err.println("Start ownerClickOnRemoteVideoAndTest.");
-
         clickOnRemoteVideoAndTest(
-            ConferenceFixture.getOwnerInstance(),
-            ConferenceFixture.getSecondParticipantInstance());
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
 
     /**
      * Unpins remote video in owner and verifies if the operation has succeeded.
      */
+    @Test(dependsOnMethods = { "ownerClickOnRemoteVideoAndTest" })
     public void ownerUnpinRemoteVideoAndTest()
     {
-        System.err.println("Start ownerUnpinRemoteVideoAndTest.");
-
         unpinRemoteVideoAndTest(
-            ConferenceFixture.getOwner(),
-            ConferenceFixture.getSecondParticipant());
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
 
     /**
      * Unpins remote video in the 2nd participant and verifies if the operation
      * has succeeded.
      */
+    @Test(dependsOnMethods = { "participantClickOnRemoteVideoAndTest" })
     public void participantUnpinRemoteVideo()
     {
-        System.err.println("Start participantUnpinRemoteVideo.");
-
         unpinRemoteVideoAndTest(
-            ConferenceFixture.getSecondParticipant(),
-            ConferenceFixture.getOwner());
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver());
     }
 
     /**
@@ -131,8 +120,6 @@ public class SwitchVideoTest
      */
     private void unpinRemoteVideoAndTest(WebDriver host, WebDriver peer)
     {
-        System.err.println("Start unpinRemoteVideoAndTest.");
-
         // Peer's endpoint ID
         String peerEndpointId = MeetUtils.getResourceJid(peer);
 
@@ -144,7 +131,8 @@ public class SwitchVideoTest
         WebElement pinnedThumb = host.findElement(By.xpath(pinnedThumbXpath));
 
         assertNotNull(
-            "Pinned remote video not found for " + peerEndpointId, pinnedThumb);
+            pinnedThumb,
+            "Pinned remote video not found for " + peerEndpointId);
 
         // click on remote
         host.findElement(By.xpath(pinnedThumbXpath))
@@ -166,12 +154,10 @@ public class SwitchVideoTest
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      *
-     * @param where
+     * @param where the driver to operate over.
      */
     public static void clickOnRemoteVideoAndTest(WebDriver where, WebDriver who)
     {
-        System.err.println("Start clickOnRemoteVideoAndTest.");
-
         MeetUIUtils.selectRemoteVideo(where, who);
     }
 
@@ -179,25 +165,22 @@ public class SwitchVideoTest
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
+    @Test(dependsOnMethods = { "ownerUnpinRemoteVideoAndTest" })
     public void participantClickOnLocalVideoAndTest()
     {
-        System.err.println("Start participantClickOnLocalVideoAndTest.");
-
-        clickOnLocalVideoAndTest(
-            ConferenceFixture.getSecondParticipantInstance());
+        clickOnLocalVideoAndTest(getParticipant2().getDriver());
     }
 
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
+    @Test(dependsOnMethods = { "participantClickOnLocalVideoAndTest" })
     public void participantClickOnRemoteVideoAndTest()
     {
-        System.err.println("Start participantClickOnRemoteVideoAndTest.");
-
         clickOnRemoteVideoAndTest(
-            ConferenceFixture.getSecondParticipantInstance(),
-            ConferenceFixture.getOwnerInstance());
+            getParticipant2().getDriver(),
+            getParticipant1().getDriver());
     }
 
 }

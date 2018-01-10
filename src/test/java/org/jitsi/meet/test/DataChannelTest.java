@@ -15,10 +15,15 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
-import org.jitsi.meet.test.util.TestUtils;
+
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests the WebRTC data channels in a Meet conference (i.e.
@@ -27,35 +32,14 @@ import org.jitsi.meet.test.util.TestUtils;
  * @author Lyubomir Marinov
  */
 public class DataChannelTest
-    extends TestCase
+    extends AbstractBaseTest
 {
-    /**
-     * Collects the tests implemented by the class {@code DataChannelTest} into
-     * a (new) {@code TestSuite}.
-     *
-     * @return a (new} {@code TestSuite} which collects the tests implemented by
-     * the class {@code DataChannelTest}
-     */
-    public static Test suite()
+    @Override
+    public void setup()
     {
-        TestSuite suite = new TestSuite();
+        super.setup();
 
-        suite.addTest(new DataChannelTest("testDataChannelOfOwner"));
-        suite.addTest(
-                new DataChannelTest("testDataChannelOfSecondParticipant"));
-
-        return suite;
-    }
-
-    /**
-     * Initializes a new {@code DataChannelTest} instance with a specific name.
-     *
-     * @param name the name of the new instance. It may be the name of the test
-     * method to run.
-     */
-    public DataChannelTest(String name)
-    {
-        super(name);
+        ensureTwoParticipants();
     }
 
     /**
@@ -136,9 +120,9 @@ public class DataChannelTest
     {
         waitForDataChannelToOpen(webDriver);
         assertTrue(
-                "Failed to send a ClientHello to Videobridge over a WebRTC data"
-                    + " channel!",
-                sendClientHello(webDriver));
+            sendClientHello(webDriver),
+            "Failed to send a ClientHello to Videobridge over a WebRTC data"
+                + " channel!");
         waitToReceiveServerHello(webDriver);
     }
 
@@ -146,18 +130,20 @@ public class DataChannelTest
      * Tests the WebRTC data channel between Videobridge and the Meet conference
      * owner.
      */
+    @Test
     public void testDataChannelOfOwner()
     {
-        testDataChannel(ConferenceFixture.getOwner());
+        testDataChannel(getParticipant1().getDriver());
     }
 
     /**
      * Tests the WebRTC data channel between Videobridge and the second
      * participant (i.e. not the owner) in the Meet conference.
      */
+    @Test(dependsOnMethods = { "testDataChannelOfOwner" })
     public void testDataChannelOfSecondParticipant()
     {
-        testDataChannel(ConferenceFixture.getSecondParticipant());
+        testDataChannel(getParticipant2().getDriver());
     }
 
     /**
@@ -171,14 +157,7 @@ public class DataChannelTest
     private void waitForDataChannelToOpen(WebDriver webDriver)
     {
         new WebDriverWait(webDriver, 15).until(
-                new ExpectedCondition<Boolean>()
-                {
-                    @Override
-                    public Boolean apply(WebDriver webDriver)
-                    {
-                        return isDataChannelOpen(webDriver);
-                    }
-                });
+            (ExpectedCondition<Boolean>) this::isDataChannelOpen);
     }
 
     /**
@@ -193,13 +172,6 @@ public class DataChannelTest
     private void waitToReceiveServerHello(WebDriver webDriver)
     {
         new WebDriverWait(webDriver, 15).until(
-                new ExpectedCondition<Boolean>()
-                {
-                    @Override
-                    public Boolean apply(WebDriver webDriver)
-                    {
-                        return isServerHelloReceived(webDriver);
-                    }
-                });
+            (ExpectedCondition<Boolean>) this::isServerHelloReceived);
     }
 }

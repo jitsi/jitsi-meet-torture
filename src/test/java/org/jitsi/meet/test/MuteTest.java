@@ -15,10 +15,12 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.testng.annotations.*;
 
 /**
  * Tests the muting and unmuting of the participants in Meet conferences.
@@ -27,49 +29,49 @@ import org.openqa.selenium.interactions.*;
  * @author Lyubomir Marinov
  */
 public class MuteTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
-     * Constructs test
-     * @param name the method name for the test.
+     * Default constructor.
      */
-    public MuteTest(String name)
+    public MuteTest()
     {
-        super(name);
     }
 
     /**
-     * Orders the tests.
-     * @return the suite with order tests.
+     * Constructs MuteTest with already allocated participants.
+     * @param participant1
+     * @param participant2
+     * @param participant3
      */
-    public static junit.framework.Test suite()
+    public MuteTest(
+        Participant participant1,
+        Participant participant2,
+        Participant participant3)
     {
-        TestSuite suite = new TestSuite();
+        addParticipants(participant1, participant2, participant3);
+    }
 
-        suite.addTest(new MuteTest("muteOwnerAndCheck"));
-        suite.addTest(new MuteTest("unMuteOwnerAndCheck"));
-        suite.addTest(new MuteTest("muteParticipantAndCheck"));
-        suite.addTest(new MuteTest("unMuteParticipantAndCheck"));
-        suite.addTest(new MuteTest("ownerMutesParticipantAndCheck"));
-        suite.addTest(new MuteTest(
-                    "participantUnMutesAfterOwnerMutedHimAndCheck"));
-        suite.addTest(new MuteTest(
-                    "muteOwnerBeforeSecondParticipantJoins"));
+    @Override
+    public void setup()
+    {
+        super.setup();
 
-        return suite;
+        ensureTwoParticipants();
     }
 
     /**
      * Mutes the owner and checks at other participant is this is visible.
      */
+    @Test
     public void muteOwnerAndCheck()
     {
         toggleMuteAndCheck(
-                "muteOwnerAndCheck",
-                ConferenceFixture.getOwner(),
-                "owner",
-                ConferenceFixture.getSecondParticipant(),
-                true);
+            "muteOwnerAndCheck",
+            getParticipant1().getDriver(),
+            "owner",
+            getParticipant2().getDriver(),
+            true);
 
         TestUtils.waitMillis(2000);
     }
@@ -77,40 +79,43 @@ public class MuteTest
     /**
      * Unmutes owner and checks at other participant is this is visible.
      */
+    @Test(dependsOnMethods = { "muteOwnerAndCheck" })
     public void unMuteOwnerAndCheck()
     {
         toggleMuteAndCheck(
-                "unMuteOwnerAndCheck",
-                ConferenceFixture.getOwner(),
-                "owner",
-                ConferenceFixture.getSecondParticipant(),
-                false);
+            "unMuteOwnerAndCheck",
+            getParticipant1().getDriver(),
+            "owner",
+            getParticipant2().getDriver(),
+            false);
     }
 
     /**
      * Mutes the participant and checks at owner side.
      */
+    @Test(dependsOnMethods = { "unMuteOwnerAndCheck" })
     public void muteParticipantAndCheck()
     {
         toggleMuteAndCheck(
-                "muteParticipantAndCheck",
-                ConferenceFixture.getSecondParticipant(),
-                "participant2",
-                ConferenceFixture.getOwner(),
-                true);
+            "muteParticipantAndCheck",
+            getParticipant2().getDriver(),
+            "getParticipant2()",
+            getParticipant1().getDriver(),
+            true);
     }
 
     /**
      * UnMutes the participant and checks at owner side.
      */
+    @Test(dependsOnMethods = { "muteParticipantAndCheck" })
     public void unMuteParticipantAndCheck()
     {
         toggleMuteAndCheck(
-                "unMuteParticipantAndCheck",
-                ConferenceFixture.getSecondParticipant(),
-                "participant2",
-                ConferenceFixture.getOwner(),
-                false);
+            "unMuteParticipantAndCheck",
+            getParticipant2().getDriver(),
+            "getParticipant2()",
+            getParticipant1().getDriver(),
+            false);
     }
 
     /**
@@ -118,12 +123,14 @@ public class MuteTest
      */
     public void muteThirdParticipantAndCheck()
     {
+        ensureThreeParticipants();
+
         toggleMuteAndCheck(
-                "muteThirdParticipantAndCheck",
-                ConferenceFixture.getThirdParticipant(),
-                "participant3",
-                ConferenceFixture.getOwner(),
-                true);
+            "muteThirdParticipantAndCheck",
+            getParticipant3().getDriver(),
+            "getParticipant3()",
+            getParticipant1().getDriver(),
+            true);
     }
 
     /**
@@ -132,11 +139,11 @@ public class MuteTest
     public void unMuteThirdParticipantAndCheck()
     {
         toggleMuteAndCheck(
-                "unMuteThirdParticipantAndCheck",
-                ConferenceFixture.getThirdParticipant(),
-                "participant3",
-                ConferenceFixture.getOwner(),
-                false);
+            "unMuteThirdParticipantAndCheck",
+            getParticipant3().getDriver(),
+            "getParticipant3()",
+            getParticipant1().getDriver(),
+            false);
     }
 
     /**
@@ -144,12 +151,11 @@ public class MuteTest
      * Hovers over it. Finds the mute link and mute it.
      * Then checks in the second participant page whether it is muted
      */
+    @Test(dependsOnMethods = { "unMuteParticipantAndCheck" })
     public void ownerMutesParticipantAndCheck()
     {
-        System.err.println("Start ownerMutesParticipantAndCheck.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        WebDriver secondParticipant = ConferenceFixture.getSecondParticipant();
+        WebDriver owner = getParticipant1().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
 
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);
@@ -192,7 +198,7 @@ public class MuteTest
             = TestUtils.getXPathStringForClassName("//span", "audioMuted")
                 + "//i[@class='icon-mic-disabled']";
         TestUtils.waitForElementByXPath(
-            ConferenceFixture.getSecondParticipant(),
+            getParticipant2().getDriver(),
             participantMutedIconXPath,
             5);
 
@@ -203,23 +209,22 @@ public class MuteTest
      * UnMutes once again the second participant and checks in the owner page
      * does this change is reflected.
      */
+    @Test(dependsOnMethods = { "ownerMutesParticipantAndCheck" })
     public void participantUnMutesAfterOwnerMutedHimAndCheck()
     {
-        System.err.println("Start participantUnMutesAfterOwnerMutedHimAndCheck.");
-
         TestUtils.waitMillis(1000);
 
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(), "toolbar_button_mute");
+            getParticipant2().getDriver(), "toolbar_button_mute");
 
         TestUtils.waitMillis(1000);
 
         MeetUIUtils.assertMuteIconIsDisplayed(
-                ConferenceFixture.getOwner(),
-                ConferenceFixture.getSecondParticipant(),
-                false, //should be unmuted
-                false, //audio
-                "participant2"
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver(),
+            false, //should be unmuted
+            false, //audio
+            "getParticipant2()"
         );
 
         // lets give time to the ui to reflect the change in the ui of the owner
@@ -232,28 +237,21 @@ public class MuteTest
      * of the mute icon.
      * At the end unmutes to clear the state.
      */
+    @Test(dependsOnMethods = { "participantUnMutesAfterOwnerMutedHimAndCheck" })
     public void muteOwnerBeforeSecondParticipantJoins()
     {
-        System.err.println("Start muteOwnerBeforeSecondParticipantJoins.");
-
-        WebDriver owner = ConferenceFixture.getOwner();
-        ConferenceFixture.close(ConferenceFixture.getSecondParticipant());
+        WebDriver owner = getParticipant1().getDriver();
+        getParticipant2().hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_mute");
 
-        WebDriver secondParticipant
-            = ConferenceFixture.startSecondParticipant();
-
-        MeetUtils.waitForParticipantToJoinMUC(
-            secondParticipant, 15);
-
-        MeetUtils.waitForIceConnected(secondParticipant);
+        ensureTwoParticipants();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
-                secondParticipant,
+                getParticipant2().getDriver(),
                 owner,
                 true, //should be muted
                 false, //audio
@@ -285,7 +283,6 @@ public class MuteTest
             WebDriver observer,
             boolean muted)
     {
-        System.err.println("Start " + testName + ".");
         MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
         MeetUIUtils.assertMuteIconIsDisplayed(
                 observer,

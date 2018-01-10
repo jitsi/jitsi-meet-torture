@@ -22,7 +22,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-import static org.junit.Assert.fail;
+import static org.testng.Assert.fail;
 
 /**
  * Utility class.
@@ -210,7 +210,7 @@ public class TestUtils
                 {
                     List<WebElement> elements = d.findElements(by);
 
-                    if(!elements.isEmpty())
+                    if (!elements.isEmpty())
                     {
                         foundElement[0] = elements.get(0);
                         return true;
@@ -499,12 +499,12 @@ public class TestUtils
      */
     public static String getResourceFromJid(String jid)
     {
-        if(jid == null)
+        if (jid == null)
             return null;
 
         int ix = jid.lastIndexOf("/");
 
-        if(ix == -1)
+        if (ix == -1)
             return null;
 
         return jid.substring(ix + 1, jid.length());
@@ -584,5 +584,14 @@ public class TestUtils
         return elementName
                 + "[contains(concat(' ', normalize-space(@class), ' '), ' "
                 + className + " ')]";
+    }
+
+    /**
+     * Prints a text with a prefix of the thread id.
+     * @param txt the text to print.
+     */
+    public static void print(String txt)
+    {
+        System.err.println("[" + Thread.currentThread().getId() + "] " + txt);
     }
 }

@@ -22,7 +22,7 @@ import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.*;
 
 /**
  * Class contains utility operations specific to jitsi-meet user interface.
@@ -73,8 +73,8 @@ public class MeetUIUtils
             = where.findElement(By.xpath(largeAvatarXPath));
         String avatarClass = avatarElement.getAttribute("class");
         assertTrue(
-                "Avatar on large video is not \"grey\": " + avatarClass,
-                avatarClass.contains("remoteVideoProblemFilter"));
+            avatarClass.contains("remoteVideoProblemFilter"),
+            "Avatar on large video is not \"grey\": " + avatarClass);
 
     }
 
@@ -289,12 +289,12 @@ public class MeetUIUtils
         }
         catch (NoSuchElementException | TimeoutException e)
         {
-            if(failOnMissing)
+            if (failOnMissing)
                 throw e;
 
             // there is no element, so its not visible, just continue
             // cause failOnMissing is false
-            System.err.println("Button is missing:" + xpath);
+            TestUtils.print("Button is missing:" + xpath);
         }
     }
 
@@ -510,7 +510,7 @@ public class MeetUIUtils
             String name)
     {
         String id = "";
-        if(testee != observer)
+        if (testee != observer)
         {
             String resource = MeetUtils.getResourceJid(testee);
             id = "participant_" + resource;
@@ -610,7 +610,7 @@ public class MeetUIUtils
                         {
                             if (audioLevel != null && audioLevel > 0.1)
                             {
-                                System.err.println(
+                                TestUtils.print(
                                         "muted exiting on: " + audioLevel);
                                 return true;
                             }
@@ -624,7 +624,7 @@ public class MeetUIUtils
                         {
                             if (audioLevel != null && audioLevel > 0.1)
                             {
-                                System.err.println(
+                                TestUtils.print(
                                         "unmuted exiting on: " + audioLevel);
                                 return true;
                             }
@@ -680,7 +680,7 @@ public class MeetUIUtils
             = "//span[@id='participant_" + resource + "']//video";
         List<WebElement> videoElems
             = participant.findElements(By.xpath(videoElementXPath));
-        if(videoElems.size() > 0)
+        if (videoElems.size() > 0)
         {
             TestUtils.waitForNotDisplayedElementByXPath(
                 participant, videoElementXPath, 5);
@@ -727,7 +727,7 @@ public class MeetUIUtils
             = "//span[@id='participant_" + resource + "']/video";
         List<WebElement> videoElems
             = participant.findElements(By.xpath(videoElementXPath));
-        if(videoElems.size() > 0)
+        if (videoElems.size() > 0)
         {
             TestUtils.waitForNotDisplayedElementByXPath(
                 participant, videoElementXPath, 5);

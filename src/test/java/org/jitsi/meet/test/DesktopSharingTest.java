@@ -15,23 +15,25 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.concurrent.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Launches a hook script that will launch a participant that will join
  * the conference and that participant will be sharing its screen.
  */
 public class DesktopSharingTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * A property to specified the external script that will be used to
@@ -44,22 +46,29 @@ public class DesktopSharingTest
      */
     private Exception hookException = null;
 
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * Ensure we have only one participant available in the room - the owner.
      * Starts the new participants using the external script and check whether
      * the stream we are receiving from him is screen.
      * Returns at the end the state we found tests - with 2 participants.
      */
+    @Test
     public void testDesktopSharingInPresence()
     {
         final String hookScript = System.getProperty(HOOK_SCRIPT);
 
-        if(hookScript == null)
+        if (hookScript == null)
             return;
 
-        System.err.println("Start testDesktopSharingInPresence.");
+        print("Start testDesktopSharingInPresence.");
 
-        ConferenceFixture.closeAllParticipantsExceptTheOwner();
+        ensureOneParticipant();
 
         // Counter we wait for the process execution in the thread to finish
         final CountDownLatch waitEndSignal = new CountDownLatch(1);
@@ -70,55 +79,50 @@ public class DesktopSharingTest
 
         // this will fire a hook script, which needs to launch a browser that
         // will join our room
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
+        new Thread(() -> {
+            try
             {
-                try
-                {
-                    String URL =
-                        System.getProperty(
-                            ConferenceFixture.JITSI_MEET_URL_PROP) + "/"
-                            + ConferenceFixture.currentRoomName
-                            + "#config.requireDisplayName=false"
-                            + "&config.firefox_fake_device=true"
-                            + "&config.autoEnableDesktopSharing=true";
-                    String[] cmd =
-                        { hookScript, URL};
+                String URL =
+                    System.getProperty(
+                        ParticipantFactory.JITSI_MEET_URL_PROP) + "/"
+                        + currentRoomName
+                        + "#config.requireDisplayName=false"
+                        + "&config.firefox_fake_device=true"
+                        + "&config.autoEnableDesktopSharing=true";
+                String[] cmd =
+                    { hookScript, URL};
 
-                    System.err.println("Start the script with param:"+ URL);
-                    ProcessBuilder pb = new ProcessBuilder(cmd);
+                print("Start the script with param:"+ URL);
+                ProcessBuilder pb = new ProcessBuilder(cmd);
 
-                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-                    Process p = pb.start();
+                pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                Process p = pb.start();
 
-                    waitStartSignal.countDown();
+                waitStartSignal.countDown();
 
-                    p.waitFor();
-                    System.err.println("Script ended execution.");
-                    waitEndSignal.countDown();
-                }
-                catch (IOException | InterruptedException e)
-                {
-                    hookException = e;
-                    waitStartSignal.countDown();
-                }
+                p.waitFor();
+                print("Script ended execution.");
+                waitEndSignal.countDown();
+            }
+            catch (IOException | InterruptedException e)
+            {
+                hookException = e;
+                waitStartSignal.countDown();
             }
         }).start();
 
-        final WebDriver owner = ConferenceFixture.getOwner();
+        final WebDriver owner = getParticipant1().getDriver();
 
-        // now lets wait satarting or error on startup
+        // now lets wait starting or error on startup
         try
         {
             waitStartSignal.await(2, TimeUnit.SECONDS);
-            if(hookException != null)
+            if (hookException != null)
             {
                 hookException.printStackTrace();
-                assertFalse("Error executing hook script:"
-                    + hookException.getMessage(), true);
+                fail("Error executing hook script:"
+                    + hookException.getMessage());
             }
         }
         catch (InterruptedException e)
@@ -131,9 +135,10 @@ public class DesktopSharingTest
             owner,
             "return (APP.conference.membersCount == 2);",
             25);
-        MeetUtils.waitForIceConnected(owner);
-        MeetUtils.waitForSendReceiveData(owner);
-        MeetUtils.waitForRemoteStreams(owner, 1);
+        Participant ownerParticipant = getParticipant1();
+        ownerParticipant.waitForIceConnected();
+        ownerParticipant.waitForSendReceiveData();
+        ownerParticipant.waitForRemoteStreams(1);
 
         // now lets check whether his stream is screen
         String remoteParticipantID = owner
@@ -150,35 +155,32 @@ public class DesktopSharingTest
             final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
                 + remoteParticipantID + "');";
             (new WebDriverWait(owner, 5))
-                .until(new ExpectedCondition<Boolean>()
-                {
-                    public Boolean apply(WebDriver d)
-                    {
-                        Object res =
-                            ((JavascriptExecutor) owner)
-                                .executeScript(scriptToExecute);
-                        remoteVideoType[0] = res;
+                .until((ExpectedCondition<Boolean>) d -> {
+                    Object res =
+                        ((JavascriptExecutor) owner)
+                            .executeScript(scriptToExecute);
+                    remoteVideoType[0] = res;
 
-                        return res != null && res.equals(expectedResult);
-                    }
+                    return res != null && res.equals(expectedResult);
                 });
         }
         catch (TimeoutException e)
         {
-            assertEquals("Wrong video type, maybe desktop sharing didn't work",
-                expectedResult, remoteVideoType[0]);
+            assertEquals(
+                expectedResult, remoteVideoType[0],
+                "Wrong video type, maybe desktop sharing didn't work");
         }
 
         // allow the participant to leave
         try
         {
             waitEndSignal.await(10, TimeUnit.SECONDS);
-            System.err.println("End DesktopSharingTest.");
+            print("End DesktopSharingTest.");
         }
         catch (InterruptedException e)
         {
             e.printStackTrace();
         }
-        ConferenceFixture.ensureTwoParticipants();
+        ensureTwoParticipants();
     }
 }

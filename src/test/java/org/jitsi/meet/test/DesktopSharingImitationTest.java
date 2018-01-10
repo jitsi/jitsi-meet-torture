@@ -15,10 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
-
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.JavascriptExecutor;
+import org.testng.annotations.*;
 
 /**
  * A test which switches on/imitate desktop sharing to check whether it is
@@ -32,34 +33,42 @@ import org.openqa.selenium.JavascriptExecutor;
  * @author Damian Minkov
  */
 public class DesktopSharingImitationTest
-    extends TestCase
+    extends AbstractBaseTest
 {
     /**
      * Used to toggle desktop sharing imitation.
      */
     private boolean desktopImitated = false;
 
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        ensureOneParticipant();
+    }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     /**
      * Currently we imitate desktop sharing in order to check video stretch
      * on the other side.
      */
+    @Test
     public void testDesktopSharing()
     {
-        ConferenceFixture.closeAllParticipantsExceptTheOwner();
-
         toggleDesktopSharing();
 
-        ConferenceFixture.ensureTwoParticipants();
+        ensureTwoParticipants();
         TestUtils.waitMillis(2000);
 
         checkExpandingDesktopSharingLargeVideo();
 
         toggleDesktopSharing();
-
-        // now let's clean up, quit second and join him again
-        ConferenceFixture.closeSecondParticipant();
-        TestUtils.waitMillis(1000);
-        ConferenceFixture.ensureTwoParticipants();
     }
 
     /**
@@ -70,14 +79,14 @@ public class DesktopSharingImitationTest
     {
         // hide thumbs
         MeetUIUtils.clickOnToolbarButton(
-            ConferenceFixture.getSecondParticipant(),
+            getParticipant2().getDriver(),
             "toolbar_film_strip");
 
         TestUtils.waitMillis(5000);
 
         // check layout
         new VideoLayoutTest()
-            .driverVideoLayoutTest(ConferenceFixture.getSecondParticipant());
+            .driverVideoLayoutTest(getParticipant2().getDriver());
     }
 
     /**
@@ -88,13 +97,13 @@ public class DesktopSharingImitationTest
     private void toggleDesktopSharing()
     {
         String videoType;
-        if(desktopImitated)
+        if (desktopImitated)
             videoType = "camera";
         else
             videoType = "screen";
 
         // change the type of video that we will report
-        ((JavascriptExecutor) ConferenceFixture.getOwner())
+        ((JavascriptExecutor) getParticipant1().getDriver())
             .executeScript(
             "APP.xmpp.getConnection().emuc.presMap['videoType'] = '"
                 + videoType + "'");

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 package org.jitsi.meet.test;
-import junit.framework.*;
+
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * A test making sure that the contact list panel can be open, that it contains
@@ -29,21 +32,26 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Yana Stamcheva
  */
 public class ContactListTest
-        extends TestCase
+    extends AbstractBaseTest
 {
+    @Override
+    public void setup()
+    {
+        super.setup();
+
+        // We make sure that we have a conference with at least 2 participants.
+        ensureTwoParticipants();
+    }
+
     /**
      * Tests if the contact list contains the right number of participants, but
      * also if the list contains every participant in the call. Tests if a click
      * pins a participant.
      */
+    @Test
     public void testContactList()
     {
-        System.err.println("Start testContactList.");
-
-        // We make sure that we have a conference with at least 2 participants.
-        ConferenceFixture.ensureTwoParticipants();
-
-        WebDriver owner = ConferenceFixture.getOwner();
+        WebDriver owner = getParticipant1().getDriver();
 
         // Make sure that the contact list panel is open.
         MeetUIUtils.displayContactListPanel(owner);
@@ -53,7 +61,7 @@ public class ContactListTest
         doContactCountCheck(owner, 2);
 
         // Add a third participant to the call.
-        ConferenceFixture.waitForThirdParticipantToConnect();
+        ensureThreeParticipants();
 
         // Make sure we have a line in the contact list for every participant on
         // the call.
@@ -61,9 +69,6 @@ public class ContactListTest
 
         // Pins a participant clicking on a contact list entry.
         doPinSecondParticipantCheck(owner);
-
-        // Dispose the third participant.
-        ConferenceFixture.closeThirdParticipant();
     }
 
     /**
@@ -95,9 +100,9 @@ public class ContactListTest
     {
         String ownerJid = MeetUtils.getResourceJid(owner);
         String secondParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+            = MeetUtils.getResourceJid(getParticipant2().getDriver());
         String thirdParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getThirdParticipant());
+            = MeetUtils.getResourceJid(getParticipant3().getDriver());
 
         String ownerLiXPath = getContactListParticipantXPath(ownerJid);
         String secondParticipantLiXPath
@@ -120,7 +125,7 @@ public class ContactListTest
     private void doPinSecondParticipantCheck(WebDriver owner)
     {
         final String secondParticipantJid
-            = MeetUtils.getResourceJid(ConferenceFixture.getSecondParticipant());
+            = MeetUtils.getResourceJid(getParticipant2().getDriver());
         WebElement secondPartLi
             = owner.findElement(By.xpath(getContactListParticipantXPath(
                 secondParticipantJid)));
@@ -137,21 +142,15 @@ public class ContactListTest
         try
         {
             new WebDriverWait(owner, 10).until(
-                    new ExpectedCondition<Boolean>()
-                    {
-                        public Boolean apply(WebDriver d)
-                        {
-                            return secondParticipantJid.equals(
-                                    MeetUIUtils.getLargeVideoResource(d));
-                        }
-                    });
+                (ExpectedCondition<Boolean>) d -> secondParticipantJid.equals(
+                        MeetUIUtils.getLargeVideoResource(d)));
         }
         catch (TimeoutException exc)
         {
             assertEquals(
-                    "Pinned participant not displayed on large video",
-                    secondParticipantJid,
-                    MeetUIUtils.getLargeVideoResource(owner));
+                secondParticipantJid,
+                MeetUIUtils.getLargeVideoResource(owner),
+                "Pinned participant not displayed on large video");
         }
         finally
         {

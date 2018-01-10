@@ -15,9 +15,12 @@
  */
 package org.jitsi.meet.test;
 
-import junit.framework.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+
 import org.openqa.selenium.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
@@ -38,7 +41,7 @@ import java.util.*;
  * @author Pawel Domas
  */
 public class AuthSetupConference
-    extends SetupConference
+    extends AbstractBaseTest
 {
     /**
      * The name of system property which specifies the name of .properties file
@@ -99,39 +102,13 @@ public class AuthSetupConference
      */
     public static final String LOGIN_BTN_NAME = PNAME_BASE + "login_btn_name";
 
-    /**
-     * Constructs test.
-     *
-     * @param name method name.
-     */
-    public AuthSetupConference(String name)
+    @Override
+    public boolean skipTestByDefault()
     {
-        super(name);
+        return true;
     }
 
-    /**
-     * Orders tests.
-     * @return the suite with order tests.
-     */
-    public static junit.framework.Test suite()
-    {
-        TestSuite parentSuite = (TestSuite) SetupConference.suite();
-        Enumeration<Test> parentTests = parentSuite.tests();
-        TestSuite suite = new TestSuite();
-
-        // We want to insert "authenticate" after "startOwner"
-        suite.addTest(parentTests.nextElement()); // startOwner
-        suite.addTest(new AuthSetupConference("authenticate"));
-
-        // The rest of the tests
-        while (parentTests.hasMoreElements())
-        {
-            suite.addTest(parentTests.nextElement());
-        }
-
-        return suite;
-    }
-
+    @Test
     public void authenticate() {
 
         String authenticationProperties
@@ -179,7 +156,7 @@ public class AuthSetupConference
             throw new RuntimeException(e);
         }
 
-        WebDriver moderator = ConferenceFixture.getOwner();
+        WebDriver moderator = joinFirstParticipant().getDriver();
 
         String authButtonName = "jqi_state0_" +
                 "buttonspandatai18ndialogIamHostIamthehostspan";
