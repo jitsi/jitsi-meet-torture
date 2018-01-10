@@ -53,6 +53,12 @@ public abstract class Participant<T extends WebDriver>
     private boolean hungUp = true;
 
     /**
+     * We store the room name we joined as if someone calls joinConference twice
+     * to be able to detect that there is no need to load anything.
+     */
+    private String joinedRoomName = null;
+
+    /**
      * Constructs a Participant.
      * @param name the name.
      * @param driver its driver instance.
@@ -88,11 +94,15 @@ public abstract class Participant<T extends WebDriver>
     public void joinConference(String roomName, String fragment)
     {
         // not hanguped, so not joining
-        if (!this.hungUp)
+        if (!this.hungUp
+            && this.joinedRoomName != null
+            && this.joinedRoomName.equals(roomName))
         {
             TestUtils.print("Not joining " + roomName + ", already joined.");
             return;
         }
+
+        this.joinedRoomName = roomName;
 
         String URL = this.meetURL + "/" + roomName;
         URL += "#config.requireDisplayName=false";
@@ -198,6 +208,7 @@ public abstract class Participant<T extends WebDriver>
         TestUtils.waitMillis(500);
 
         this.hungUp = true;
+        this.joinedRoomName = null;
 
         TestUtils.print("Hung up in " + name + ".");
 
