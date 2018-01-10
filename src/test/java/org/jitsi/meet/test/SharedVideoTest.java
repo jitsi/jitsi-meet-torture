@@ -114,8 +114,8 @@ public class SharedVideoTest
         // make sure we are in meet, not in the frame
         owner.switchTo().defaultContent();
 
-        assertEquals(
-            true, owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+        assertTrue(
+            owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
         if (checkSecondParticipantState)
@@ -344,8 +344,7 @@ public class SharedVideoTest
             .click();
         TestUtils.waitMillis(1000);
 
-        assertEquals(
-            true,
+        assertTrue(
             getParticipant2().getDriver()
                 .findElement(By.id("sharedVideoIFrame"))
                 .isDisplayed(),
@@ -374,12 +373,12 @@ public class SharedVideoTest
 
         // video should be visible on both sides
         WebDriver secondParticipant = getParticipant2().getDriver();
-        assertEquals(
-            true, owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+        assertTrue(
+            owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
-        assertEquals(
-            true, secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                        .isDisplayed(),
+        assertTrue(
+            secondParticipant.findElement(By.id("sharedVideoIFrame"))
+                .isDisplayed(),
             "Video not displayed:");
 
         MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_sharedvideo");
@@ -511,9 +510,9 @@ public class SharedVideoTest
 
         checkPlayerLoadedAndInState(secondParticipant, stateToCheck);
 
-        assertEquals(
-            true, secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                    .isDisplayed(),
+        assertTrue(
+            secondParticipant.findElement(By.id("sharedVideoIFrame"))
+                .isDisplayed(),
             "Video not displayed:");
     }
 
