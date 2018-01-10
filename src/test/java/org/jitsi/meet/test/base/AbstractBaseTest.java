@@ -108,14 +108,18 @@ public abstract class AbstractBaseTest
     protected void checkForSkip()
         throws SkipException
     {
-        if (testsToRun == null)
+        // protect static members, initialize them once
+        synchronized (TESTS_TO_RUN_PNAME)
         {
-            testsToRun
-                = getStringTokens(System.getProperty(TESTS_TO_RUN_PNAME));
-            testsToExclude
-                = getStringTokens(System.getProperty(TESTS_TO_EXCLUDE_PNAME));
-            testsToInclude
-                = getStringTokens(System.getProperty(TESTS_TO_INCLUDE_PNAME));
+            if (testsToRun == null)
+            {
+                testsToRun = getStringTokens(
+                    System.getProperty(TESTS_TO_RUN_PNAME));
+                testsToExclude = getStringTokens(
+                    System.getProperty(TESTS_TO_EXCLUDE_PNAME));
+                testsToInclude = getStringTokens(
+                    System.getProperty(TESTS_TO_INCLUDE_PNAME));
+            }
         }
 
         String thisClassName = this.getClass().getSimpleName();
