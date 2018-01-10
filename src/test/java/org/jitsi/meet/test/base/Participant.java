@@ -98,7 +98,8 @@ public abstract class Participant<T extends WebDriver>
             && this.joinedRoomName != null
             && this.joinedRoomName.equals(roomName))
         {
-            TestUtils.print("Not joining " + roomName + ", already joined.");
+            TestUtils.print("Not joining " + this.name + " in " + roomName
+                + ", already joined.");
             return;
         }
 
