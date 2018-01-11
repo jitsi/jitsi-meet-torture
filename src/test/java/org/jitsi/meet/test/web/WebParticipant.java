@@ -185,4 +185,18 @@ public class WebParticipant<T extends WebDriver>
         MeetUIUtils.clickOnLocalVideo(driver);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void pressShortcut(Character shortcut)
+    {
+        // We just need some element to which to send the shortcut (so that
+        // the focused element doesn't swallow them).
+        WebDriver driver = getDriver();
+        WebElement largeVideo = driver.findElement(By.id("largeVideo"));
+        Actions actions = new Actions(driver);
+        actions.sendKeys(largeVideo, shortcut.toString());
+        actions.perform();
+    }
 }

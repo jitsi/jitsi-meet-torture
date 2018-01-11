@@ -15,6 +15,11 @@
             <class name="org.jitsi.meet.test.AvatarTest" />
         </classes>
     </test>
+    <test name="ChatPanelTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ChatPanelTest" />
+        </classes>
+    </test>
     <test name="ConnectionTimeTest">
         <classes>
             <class name="org.jitsi.meet.test.ConnectionTimeTest" />

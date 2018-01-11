@@ -296,4 +296,11 @@ public abstract class Participant<T extends WebDriver>
      * @param name the name to set.
      */
     public abstract void setDisplayName(String name);
+
+    /**
+     * Presses a shortcut in this {@link Participant}'s driver.
+     * @param shortcut the {@link Character} which represents the shortcut to
+     * press.
+     */
+    public abstract void pressShortcut(Character shortcut);
 }
