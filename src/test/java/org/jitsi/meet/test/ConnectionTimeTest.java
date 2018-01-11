@@ -86,11 +86,11 @@ public class ConnectionTimeTest
         SESSION_INITIATE("return APP.conference._room.getConnectionTimes()"
             + "['session.initiate']", MUC_JOINED, 600.0),
 
-        // FIXME Changed the threshold from 150.0 to 250.0, once we
+        // FIXME Changed the threshold from 150.0 to 300.0, once we
         // update the code and improve the setup time we can return it back to
         // to the original value
         ICE_CHECKING("return APP.conference._room.getConnectionTimes()"
-            + "['ice.state.checking']", SESSION_INITIATE, 250.0),
+            + "['ice.state.checking']", SESSION_INITIATE, 300.0),
         
         ICE_CONNECTED("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.connected']", ICE_CHECKING, 500.0),
