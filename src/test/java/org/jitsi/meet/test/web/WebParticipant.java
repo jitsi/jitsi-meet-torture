@@ -44,6 +44,8 @@ public class WebParticipant<T extends WebDriver>
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
 
+    private ChatPanel chatPanel;
+
     /**
      * Constructs a Participant.
      *
@@ -198,5 +200,16 @@ public class WebParticipant<T extends WebDriver>
         Actions actions = new Actions(driver);
         actions.sendKeys(largeVideo, shortcut.toString());
         actions.perform();
+    }
+
+    @Override
+    public ChatPanel getChatPanel()
+    {
+        if (chatPanel == null)
+        {
+            chatPanel = new WebChatPanel(this);
+        }
+
+        return chatPanel;
     }
 }

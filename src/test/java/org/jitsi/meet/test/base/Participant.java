@@ -253,6 +253,11 @@ public abstract class Participant<T extends WebDriver>
         return name;
     }
 
+    public ChatPanel getChatPanel()
+    {
+        return null;
+    }
+
     /**
      * Waits until this participant joins the MUC.
      * @param timeout the maximum time to wait in seconds.

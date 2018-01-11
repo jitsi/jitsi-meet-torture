@@ -16,8 +16,6 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -53,60 +51,30 @@ public class ChatPanelTest
         // The chat panel requires a display name to be set.
         participant.setDisplayName("bla");
 
+        ChatPanel chatPanel = participant.getChatPanel();
+
         assertFalse(
-            isChatPanelOpen(),
+            chatPanel.isOpen(),
             "The chat panel should be initially closed");
 
-        clickChatPanelButton();
+        chatPanel.clickToolbarButton();
         assertTrue(
-            isChatPanelOpen(),
+            chatPanel.isOpen(),
             "The chat panel should be open after clicking the button");
 
-        pressChatPanelShortcut();
+        chatPanel.pressShortcut();
         assertFalse(
-            isChatPanelOpen(),
+            chatPanel.isOpen(),
             "The chat panel should be closed after pressing the shortcut");
 
-        pressChatPanelShortcut();
+        chatPanel.pressShortcut();
         assertTrue(
-            isChatPanelOpen(),
+            chatPanel.isOpen(),
             "The chat panel should be open after pressing the shortcut");
 
-        clickChatPanelButton();
+        chatPanel.clickToolbarButton();
         assertFalse(
-            isChatPanelOpen(),
+            chatPanel.isOpen(),
             "The chat panel should be closed after clicking the button");
-    }
-
-    /**
-     * Checks whether the chat panel is currently open/visible.
-     * @return {@code true} if the chat panel is open/visible, and {@code false}
-     * otherwise.
-     */
-    private boolean isChatPanelOpen()
-    {
-        Object o =
-            ((JavascriptExecutor) participant.getDriver()).executeScript(
-                "return APP.UI.isChatVisible();");
-        return o != null && Boolean.parseBoolean(o.toString());
-    }
-
-    /**
-     * Clicks on the "chat" button on the toolbar
-     */
-    private void clickChatPanelButton()
-    {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            "toolbar_button_chat",
-            false);
-    }
-
-    /**
-     * Presses the "chat" shortcut.
-     */
-    private void pressChatPanelShortcut()
-    {
-        participant.pressShortcut('c');
     }
 }
