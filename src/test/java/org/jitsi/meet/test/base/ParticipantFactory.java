@@ -170,7 +170,11 @@ public class ParticipantFactory
 
             return new WebParticipant(
                 name,
-                startWebDriver(name, configPrefix, participantType),
+                startWebDriver(
+                    name,
+                    configPrefix,
+                    participantType,
+                    System.getProperty(configPrefix + ".version")),
                 participantType,
                 System.getProperty(JITSI_MEET_URL_PROP));
         }
@@ -187,12 +191,14 @@ public class ParticipantFactory
      * @param name the participant name.
      * @param configPrefix the configuration property to retrieve settings.
      * @param participantType the participant type we are creating a driver for.
+     * @param version (optional) version of the browser
      * @return the <tt>WebDriver</tt> instance.
      */
     private WebDriver startWebDriver(
         String name,
         String configPrefix,
-        ParticipantType participantType)
+        ParticipantType participantType,
+        String version)
     {
         boolean isRemote = Boolean.getBoolean(configPrefix + ".isRemote");
         String browserBinary
@@ -231,6 +237,12 @@ public class ParticipantFactory
             {
                 FirefoxOptions ffOptions = new FirefoxOptions();
                 ffOptions.setProfile(profile);
+
+                if (version != null && version.length() > 0)
+                {
+                    ffOptions.setCapability(CapabilityType.VERSION, version);
+                }
+
                 return new RemoteWebDriver(getRemoteDriverAddress(), ffOptions);
             }
 
@@ -330,6 +342,11 @@ public class ParticipantFactory
 
             if (isRemote)
             {
+                if (version != null && version.length() > 0)
+                {
+                    ops.setCapability(CapabilityType.VERSION, version);
+                }
+
                 return new RemoteWebDriver(getRemoteDriverAddress(), ops);
             }
 
