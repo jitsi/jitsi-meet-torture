@@ -65,7 +65,7 @@ public class PSNRTest
      * The directory where we save the captured frames.
      */
     private static final String OUTPUT_FRAME_DIR
-        = "test-reports/psnr/captured-frames/";
+        = "target/psnr/captured-frames/";
 
     /**
      * The directory where we get the input frames.
@@ -82,7 +82,7 @@ public class PSNRTest
      * The directory to use for frame resizing.
      */
     private static final String RESIZED_FRAME_DIR
-        = "test-reports/psnr/resized-frames/";
+        = "target/psnr/resized-frames/";
 
     /**
      * How long we should sample frames for psnr calculations
