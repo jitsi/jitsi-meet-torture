@@ -229,9 +229,9 @@ public class ParticipantFactory
 
             if (isRemote)
             {
-                DesiredCapabilities caps = DesiredCapabilities.firefox();
-                caps.setCapability(FirefoxDriver.PROFILE, profile);
-                return new RemoteWebDriver(getRemoteDriverAddress(), caps);
+                FirefoxOptions ffOptions = new FirefoxOptions();
+                ffOptions.setProfile(profile);
+                return new RemoteWebDriver(getRemoteDriverAddress(), ffOptions);
             }
 
             return new FirefoxDriver(new FirefoxOptions().setProfile(profile));
