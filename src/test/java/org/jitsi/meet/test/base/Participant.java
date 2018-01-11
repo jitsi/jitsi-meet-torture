@@ -290,4 +290,10 @@ public abstract class Participant<T extends WebDriver>
      * @param n number of remote streams to wait for.
      */
     public abstract void waitForRemoteStreams(int n);
+
+    /**
+     * Sets the display name of the local participant.
+     * @param name the name to set.
+     */
+    public abstract void setDisplayName(String name);
 }

@@ -88,7 +88,7 @@ public class DisplayNameTest
     {
         checkForDefaultDisplayNames();
 
-        changeDisplayName(newName);
+        getParticipant2().setDisplayName(newName);
 
         doLocalDisplayNameCheck(newName);
 
@@ -253,45 +253,5 @@ public class DisplayNameTest
 
         MeetUIUtils.clickOnRemoteVideo(
             owner, MeetUtils.getResourceJid(secondParticipant));
-    }
-
-    /**
-     * Changes the display name.
-     * @param newName the name to change.
-     */
-    private void changeDisplayName(String newName)
-    {
-        WebDriver secondParticipant = getParticipant2().getDriver();
-
-        WebElement elem =
-            secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                + "//span[@id='localDisplayName']"));
-        // hover the element before clicking
-        Actions action0 = new Actions(secondParticipant);
-        action0.moveToElement(elem);
-        action0.perform();
-
-        elem.click();
-
-        WebElement inputElem =
-            secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                + "//input[@id='editDisplayName']"));
-        Actions action = new Actions(secondParticipant);
-        action.moveToElement(inputElem);
-        action.perform();
-
-        if (newName != null && newName.length() > 0)
-            inputElem.sendKeys(newName);
-        else
-            inputElem.sendKeys(Keys.BACK_SPACE);
-
-        inputElem.sendKeys(Keys.RETURN);
-        // just click somewhere to lose focus, to make sure editing has ended
-        String ownerResource
-            = MeetUtils.getResourceJid(getParticipant1().getDriver());
-        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
-        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
     }
 }

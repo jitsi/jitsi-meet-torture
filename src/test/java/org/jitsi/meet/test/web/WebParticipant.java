@@ -18,6 +18,7 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -142,4 +143,46 @@ public class WebParticipant<T extends WebDriver>
                         + ".getNumberOfParticipantsWithTracks() >= "
                         + n + ";"));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDisplayName(String name)
+    {
+        WebDriver driver = getDriver();
+
+        WebElement elem =
+            driver.findElement(By.xpath(
+                "//span[@id='localVideoContainer']"
+                    + "//span[@id='localDisplayName']"));
+        // hover the element before clicking
+        Actions actions = new Actions(driver);
+        actions.moveToElement(elem);
+        actions.perform();
+
+        elem.click();
+
+        WebElement inputElem =
+            driver.findElement(By.xpath(
+                "//span[@id='localVideoContainer']"
+                    + "//input[@id='editDisplayName']"));
+        actions = new Actions(driver);
+        actions.moveToElement(inputElem);
+        actions.perform();
+
+        if (name != null && name.length() > 0)
+        {
+            inputElem.sendKeys(name);
+        }
+        else
+        {
+            inputElem.sendKeys(Keys.BACK_SPACE);
+        }
+
+        inputElem.sendKeys(Keys.RETURN);
+        // just click somewhere to lose focus, to make sure editing has ended
+        MeetUIUtils.clickOnLocalVideo(driver);
+    }
+
 }
