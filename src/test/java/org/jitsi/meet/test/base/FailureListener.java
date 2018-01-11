@@ -39,6 +39,16 @@ public class FailureListener
     private File outputHtmlSourceParentFolder = null;
 
     /**
+     * Returns the default reports folder or the custom one, specified by
+     * system property.
+     * @return
+     */
+    private static String getReportFolder()
+    {
+        return System.getProperty(
+            "test.report.directory", "target/surefire-reports");
+    }
+    /**
      * The folder where the logs will be saved.
      */
     private static File outputLogsParentFolder = null;
@@ -64,10 +74,9 @@ public class FailureListener
     {
         // default reports folder
         outputScreenshotsParentFolder
-            = new File("target/surefire-reports/screenshots");
-
+            = new File(getReportFolder() + "/screenshots");
         outputHtmlSourceParentFolder
-            = new File("target/surefire-reports/html-sources");
+            = new File(getReportFolder() + "/html-sources");
         outputHtmlSourceParentFolder.mkdirs();
 
         createLogsFolder();
@@ -374,7 +383,7 @@ public class FailureListener
     {
         if (outputLogsParentFolder == null)
         {
-            outputLogsParentFolder = new File("target/surefire-reports/logs");
+            outputLogsParentFolder = new File(getReportFolder() + "/logs");
             outputLogsParentFolder.mkdirs();
         }
 

@@ -90,6 +90,8 @@
             target/surefire-reports/screenshots
         </appium.screenshots.dir>
 
+        <test.report.directory>target/surefire-reports</test.report.directory>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -167,6 +169,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20</version>
                 <configuration>
+                    <reportsDirectory>${test.report.directory}</reportsDirectory>
                     <suiteXmlFiles>
                         <suiteXmlFile>${suite.xml}</suiteXmlFile>
                     </suiteXmlFiles>
