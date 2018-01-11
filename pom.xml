@@ -89,6 +89,8 @@
         <appium.screenshots.dir>
             target/surefire-reports/screenshots
         </appium.screenshots.dir>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <!-- Defines two profiles mobile and desktop.
