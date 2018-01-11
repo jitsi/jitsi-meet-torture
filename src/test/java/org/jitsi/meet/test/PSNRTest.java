@@ -22,6 +22,7 @@ import org.jitsi.meet.test.util.*;
 
 import org.json.simple.*;
 import org.openqa.selenium.*;
+import org.testng.*;
 import org.testng.annotations.*;
 import static org.testng.Assert.*;
 
@@ -72,6 +73,12 @@ public class PSNRTest
     public static final String INPUT_FRAME_DIR= "resources/psnr/stamped/";
 
     /**
+     * The video file to use as input.
+     */
+    public static final String INPUT_VIDEO_FILE
+        = "resources/psnr/psnr-input.y4m";
+
+    /**
      * The directory to use for frame resizing.
      */
     private static final String RESIZED_FRAME_DIR
@@ -96,7 +103,27 @@ public class PSNRTest
     {
         super.setup();
 
+        File inputFrameDir = new File(INPUT_FRAME_DIR);
+        if (!inputFrameDir.exists()
+            || !new File(INPUT_VIDEO_FILE).exists())
+        {
+            // Skip the PSNR tests because we don't have any PSNR
+            // resources.
+            throw new SkipException("Skip the PSNR tests, no resources");
+        }
+
+        ParticipantFactory.getInstance()
+            .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+
         ensureTwoParticipants();
+    }
+
+    @Override
+    public void cleanup()
+    {
+        super.cleanup();
+
+        ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
     }
 
     @Override
@@ -115,13 +142,6 @@ public class PSNRTest
     public void testPSNR()
         throws Exception
     {
-        File inputFrameDir = new File(INPUT_FRAME_DIR);
-        if (!inputFrameDir.exists())
-        {
-            // Skip the PSNR tests because we don't have any PSNR
-            // resources.
-            return;
-        }
         // Create the output directory for captured frames.
         File outputFrameDir = new File(OUTPUT_FRAME_DIR);
         if (!outputFrameDir.exists())

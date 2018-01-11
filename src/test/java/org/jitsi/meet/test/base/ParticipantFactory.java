@@ -74,12 +74,14 @@ public class ParticipantFactory
     /**
      * Full name of wav file which will be streamed through participant's fake
      * audio device.
+     * TODO: make this file non static and to be passed as a parameter.
      */
     private static String fakeStreamAudioFName;
 
     /**
      * Full name of wav file which will be streamed through participant's fake
      * video device.
+     * TODO: make this file non static and to be passed as a parameter.
      */
     private static String fakeStreamVideoFName;
 
