@@ -200,12 +200,14 @@ public class WebParticipant<T extends WebDriver>
         actions.perform();
     }
 
-    @Override
+    /**
+     * @return a representation of the chat panel of this participant.
+     */
     public ChatPanel getChatPanel()
     {
         if (chatPanel == null)
         {
-            chatPanel = new WebChatPanel(this);
+            chatPanel = new ChatPanel(this);
         }
 
         return chatPanel;

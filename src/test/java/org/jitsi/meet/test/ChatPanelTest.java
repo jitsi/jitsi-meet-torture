@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -31,19 +32,35 @@ import static org.testng.Assert.*;
 public class ChatPanelTest
     extends AbstractBaseTest
 {
-    Participant participant;
+    /**
+     * The single participant which will be used in this test.
+     */
+    private WebParticipant participant;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setup()
     {
         super.setup();
 
         ensureOneParticipant();
-        participant = getParticipant1();
+
+        Participant p = getParticipant1();
+        if (!(p instanceof WebParticipant))
+        {
+            throw new IllegalStateException(
+                "This test only supports web and shouldn't be run on other "
+                    + "platforms.");
+        }
+
+        participant = (WebParticipant) p;
     }
 
     /**
-     * Asserts that 'owner' and 'secondParticipant' are connected via UDP.
+     * Opens and closes the chat panel with the toolbar button and with the
+     * keyboard shortcut, and checks that the open/closed state is correct.
      */
     @Test
     public void testChatPanel()

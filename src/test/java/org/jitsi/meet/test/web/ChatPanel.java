@@ -15,30 +15,44 @@
  */
 package org.jitsi.meet.test.web;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 
-public class WebChatPanel
-    implements ChatPanel
+import java.util.*;
+
+/**
+ * Represents the chat panel in a particular {@link WebParticipant}.
+ *
+ * @author Boris Grozev
+ */
+public class ChatPanel
 {
-    private final Participant participant;
+    /**
+     * The participant.
+     */
+    private final WebParticipant participant;
 
-    WebChatPanel(Participant participant)
+    /**
+     * Initializes a new {@link ChatPanel} instance.
+     * @param participant the participant for this {@link ChatPanel}.
+     */
+    ChatPanel(WebParticipant participant)
     {
-        this.participant = participant;
+        this.participant = Objects.requireNonNull(participant, "participant");
     }
 
-    @Override
+    /**
+     * @return {@code true} if the chat panel is open/visible and {@code false}
+     * otherwise.
+     */
     public boolean isOpen()
     {
-        Object o =
-            ((JavascriptExecutor) participant.getDriver()).executeScript(
-                "return APP.UI.isChatVisible();");
+        Object o = participant.executeScript("return APP.UI.isChatVisible();");
         return o != null && Boolean.parseBoolean(o.toString());
     }
 
-    @Override
+    /**
+     * Clicks on the "chat" toolbar button which opens or closes the chat panel.
+     */
     public void clickToolbarButton()
     {
         MeetUIUtils.clickOnToolbarButton(
@@ -47,7 +61,10 @@ public class WebChatPanel
             false);
     }
 
-    @Override
+    /**
+     * Presses the "chat" keyboard shortcut which opens or closes the chat
+     * panel.
+     */
     public void pressShortcut()
     {
         participant.pressShortcut('c');
