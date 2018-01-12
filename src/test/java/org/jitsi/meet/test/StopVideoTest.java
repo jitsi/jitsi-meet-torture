@@ -120,20 +120,19 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckStream" })
     public void stopAndStartVideoOnOwnerAndCheckEvents()
     {
-        WebDriver secondParticipant = getParticipant2().getDriver();
-        JavascriptExecutor executor = (JavascriptExecutor) secondParticipant;
+        Participant secondParticipant = getParticipant2();
 
         String listenForTrackRemoved = "APP.conference._room.addEventListener("
             + "JitsiMeetJS.events.conference.TRACK_REMOVED,"
             + "function () { APP._remoteRemoved = true; }"
             + ");";
-        executor.executeScript(listenForTrackRemoved);
+        secondParticipant.executeScript(listenForTrackRemoved);
 
         String listenForTrackAdded = "APP.conference._room.addEventListener("
             + "JitsiMeetJS.events.conference.TRACK_ADDED,"
             + "function () { APP._remoteAdded = true; }"
             + ");";
-        executor.executeScript(listenForTrackAdded);
+        secondParticipant.executeScript(listenForTrackAdded);
 
         stopVideoOnOwnerAndCheck();
         startVideoOnOwnerAndCheck();
@@ -142,12 +141,12 @@ public class StopVideoTest
 
         assertFalse(
             TestUtils.executeScriptAndReturnBoolean(
-                        secondParticipant,
+                        secondParticipant.getDriver(),
                         "return APP._remoteRemoved;"),
             "Remote stream was removed");
         assertFalse(
             TestUtils.executeScriptAndReturnBoolean(
-                        secondParticipant,
+                        secondParticipant.getDriver(),
                         "return APP._remoteAdded;"),
             "Remote stream was added");
     }

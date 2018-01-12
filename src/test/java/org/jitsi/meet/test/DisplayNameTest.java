@@ -102,18 +102,19 @@ public class DisplayNameTest
     private void checkForDefaultDisplayNames()
     {
         // default remote displayname
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
         String defaultDisplayName =
-            (String)((JavascriptExecutor) owner)
-                .executeScript(
+            (String) owner.executeScript(
                     "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");
 
         // check on first browser
-        checkRemoteVideoForName(owner,
+        checkRemoteVideoForName(
+            owner,
             getParticipant2(),
             defaultDisplayName);
         // check on second browser
-        checkRemoteVideoForName(getParticipant2().getDriver(),
+        checkRemoteVideoForName(
+            getParticipant2(),
             getParticipant1(),
             defaultDisplayName);
     }
@@ -125,7 +126,7 @@ public class DisplayNameTest
      * @param nameToCheck the name to check.
      */
     public void checkRemoteVideoForName(
-        WebDriver local,
+        Participant local,
         Participant remoteParticipant,
         String nameToCheck)
     {
@@ -134,7 +135,7 @@ public class DisplayNameTest
 
         // check on local participant remote video
         WebElement displayNameElem =
-            local.findElement(By.xpath(
+            local.getDriver().findElement(By.xpath(
                 "//span[@id='participant_" + remoteParticipantResourceJid +
                     "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
@@ -231,27 +232,28 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
+        WebDriver ownerDriver = owner.getDriver();
         WebDriver secondParticipant = getParticipant2().getDriver();
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
         MeetUIUtils.clickOnRemoteVideo(
-            owner, MeetUtils.getResourceJid(secondParticipant));
+            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
 
         final String secondParticipantResourceJid = MeetUtils
             .getResourceJid(secondParticipant);
 
         WebElement localVideoWrapperElem =
-            owner.findElement(By.xpath(
+            ownerDriver.findElement(By.xpath(
                 "//span[@id='participant_" + secondParticipantResourceJid + "']"));
-        Actions action = new Actions(owner);
+        Actions action = new Actions(ownerDriver);
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
         checkRemoteVideoForName(owner, getParticipant2(), newName);
 
         MeetUIUtils.clickOnRemoteVideo(
-            owner, MeetUtils.getResourceJid(secondParticipant));
+            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
     }
 }

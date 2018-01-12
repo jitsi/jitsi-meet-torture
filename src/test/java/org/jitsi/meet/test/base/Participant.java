@@ -19,6 +19,7 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -26,6 +27,7 @@ import java.util.concurrent.*;
  * @param <T> the driver type.
  */
 public abstract class Participant<T extends WebDriver>
+    implements JavascriptExecutor
 {
     /**
      * The driver.
@@ -72,7 +74,7 @@ public abstract class Participant<T extends WebDriver>
         String meetURL)
     {
         this.name = name;
-        this.driver = driver;
+        this.driver = Objects.requireNonNull(driver, "driver");
         this.type = type;
         this.meetURL = meetURL;
     }
@@ -146,33 +148,27 @@ public abstract class Participant<T extends WebDriver>
         MeetUtils.waitForPageToLoad(driver);
 
         // disables animations
-        ((JavascriptExecutor) driver)
-            .executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+        executeScript("try { jQuery.fx.off = true; } catch(e) {}");
 
-        ((JavascriptExecutor) driver)
-            .executeScript("APP.UI.dockToolbar(true);");
+        executeScript("APP.UI.dockToolbar(true);");
 
         // disable keyframe animations (.fadeIn and .fadeOut classes)
-        ((JavascriptExecutor) driver)
-            .executeScript("$('<style>.notransition * { "
+        executeScript("$('<style>.notransition * { "
                 + "animation-duration: 0s !important; "
                 + "-webkit-animation-duration: 0s !important; } </style>')"
                 + ".appendTo(document.head);");
-        ((JavascriptExecutor) driver)
-            .executeScript("$('body').toggleClass('notransition');");
+        executeScript("$('body').toggleClass('notransition');");
 
         // Hack-in disabling of callstats (old versions of jitsi-meet don't
         // handle URL parameters)
-        ((JavascriptExecutor) driver)
-            .executeScript("config.callStatsID=false;");
+        executeScript("config.callStatsID=false;");
 
         String version
             = TestUtils.executeScriptAndReturnString(driver,
                 "return JitsiMeetJS.version;");
         TestUtils.print(name + " lib-jitsi-meet version: " + version);
 
-        ((JavascriptExecutor) driver)
-            .executeScript("document.title='" + name + "'");
+        executeScript("document.title='" + name + "'");
 
         this.hungUp = false;
     }
@@ -253,9 +249,26 @@ public abstract class Participant<T extends WebDriver>
         return name;
     }
 
-    public ChatPanel getChatPanel()
+    /**
+     * Executes a script in this {@link Participant}'s {@link WebDriver}.
+     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
+     */
+    @Override
+    public Object executeScript(String var1, Object... var2)
     {
-        return null;
+        return ((JavascriptExecutor) getDriver()).executeScript(var1, var2);
+    }
+
+    /**
+     * Executes a script asynchronously in this {@link Participant}'s
+     * {@link WebDriver}.
+     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
+     */
+    @Override
+    public Object executeAsyncScript(String var1, Object... var2)
+    {
+        return
+            ((JavascriptExecutor) getDriver()).executeAsyncScript(var1, var2);
     }
 
     /**

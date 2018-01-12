@@ -24,6 +24,8 @@ import java.util.*;
 /**
  * Java wrapper for PSNRVideoOperator.js script used to capture video frames.
  *
+ * TODO: Use Participant instead of WebDriver directly.
+ *
  * @author Pawel Domas
  */
 public class VideoOperator

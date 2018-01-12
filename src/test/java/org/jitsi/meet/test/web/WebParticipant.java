@@ -80,8 +80,7 @@ public class WebParticipant<T extends WebDriver>
      */
     public boolean isInMuc()
     {
-        Object res = ((JavascriptExecutor) getDriver())
-            .executeScript(IS_MUC_JOINED);
+        Object res = executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
     }
 
@@ -112,8 +111,8 @@ public class WebParticipant<T extends WebDriver>
     {
         new WebDriverWait(getDriver(), 15)
             .until((ExpectedCondition<Boolean>) d -> {
-                Map stats = (Map) ((JavascriptExecutor) d)
-                    .executeScript("return APP.conference.getStats();");
+                Map stats
+                    = (Map) executeScript("return APP.conference.getStats();");
 
                 Map<String, Long> bitrate =
                     (Map<String, Long>) stats.get("bitrate");
@@ -138,12 +137,11 @@ public class WebParticipant<T extends WebDriver>
     public void waitForRemoteStreams(int n)
     {
         new WebDriverWait(getDriver(), 15)
-            .until((ExpectedCondition<Boolean>) d
-                        -> (Boolean)((JavascriptExecutor) d)
-                .executeScript(
-                    "return APP.conference"
-                        + ".getNumberOfParticipantsWithTracks() >= "
-                        + n + ";"));
+            .until(
+                (ExpectedCondition<Boolean>) d
+                    -> (Boolean) executeScript(
+                        "return APP.conference"
+                        + ".getNumberOfParticipantsWithTracks() >= " + n + ";"));
     }
 
     /**

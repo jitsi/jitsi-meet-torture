@@ -18,7 +18,6 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.*;
 
 /**
@@ -85,8 +84,7 @@ public class DesktopSharingImitationTest
         TestUtils.waitMillis(5000);
 
         // check layout
-        new VideoLayoutTest()
-            .driverVideoLayoutTest(getParticipant2().getDriver());
+        new VideoLayoutTest().driverVideoLayoutTest(getParticipant2());
     }
 
     /**
@@ -103,8 +101,7 @@ public class DesktopSharingImitationTest
             videoType = "screen";
 
         // change the type of video that we will report
-        ((JavascriptExecutor) getParticipant1().getDriver())
-            .executeScript(
+        getParticipant1().executeScript(
             "APP.xmpp.getConnection().emuc.presMap['videoType'] = '"
                 + videoType + "'");
 

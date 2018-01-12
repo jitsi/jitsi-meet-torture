@@ -279,9 +279,8 @@ public class ReloadTest
         {
             (new WebDriverWait(p.getDriver(), 200))
                 .until((ExpectedCondition<Boolean>) d -> {
-                    Object res =
-                        ((JavascriptExecutor) d)
-                            .executeScript(checkForConferenceLeftScript);
+                    Object res
+                        = p.executeScript(checkForConferenceLeftScript);
                     return res != null && res.equals(Boolean.TRUE);
                 });
         }
@@ -307,23 +306,25 @@ public class ReloadTest
         {
             print("Wait for send data on the second "
                 + "participant side.");
-            WebDriver participant = getParticipant2().getDriver();
-            new WebDriverWait(participant, 15)
-            .until((ExpectedCondition<Boolean>) d -> {
-                Map stats = (Map) ((JavascriptExecutor) participant)
-                        .executeScript("return APP.conference.getStats();");
+            Participant participant = getParticipant2();
+            new WebDriverWait(participant.getDriver(), 15)
+                .until((ExpectedCondition<Boolean>) d ->
+                {
+                    Map stats
+                        = (Map) participant.executeScript(
+                            "return APP.conference.getStats();");
 
-                Map<String, Long> bitrate =
+                    Map<String, Long> bitrate =
                         (Map<String, Long>) stats.get("bitrate");
 
-                if (bitrate != null)
-                {
-                    long upload = bitrate.get("upload");
-                    return upload > 0;
-                }
+                    if (bitrate != null)
+                    {
+                        long upload = bitrate.get("upload");
+                        return upload > 0;
+                    }
 
-                return false;
-            });
+                    return false;
+                });
         }
         else 
         {

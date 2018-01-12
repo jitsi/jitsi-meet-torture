@@ -111,53 +111,51 @@ public class ActiveSpeakerTest
      * Verifies from <tt>peer2</tt> perspective if he has been displayed on
      * the large video area. Mutes him back.
      *
-     * @param activeSpeakerParticipant <tt>Participant</tt> instance of the
+     * @param activeSpeaker <tt>Participant</tt> instance of the
      * participant who will be testes as an active speaker.
-     * @param peer2Participant <tt>Participant</tt> of the participant who will
+     * @param peer2 <tt>Participant</tt> of the participant who will
      * be observing and verifying active speaker change.
-     * @param peer3Participant used only to print some debugging info
+     * @param peer3 used only to print some debugging info
      */
     private void testActiveSpeaker(
-        Participant activeSpeakerParticipant,
-        Participant peer2Participant,
-        Participant peer3Participant)
+        Participant activeSpeaker,
+        Participant peer2,
+        Participant peer3)
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
-        if (activeSpeakerParticipant.getType()
+        if (activeSpeaker.getType()
             != ParticipantFactory.ParticipantType.chrome)
         {
             throw new SkipException("skip as it is not chrome");
         }
 
         print("Start testActiveSpeaker for participant: "
-            + activeSpeakerParticipant.getName());
+            + activeSpeaker.getName());
 
-        WebDriver activeSpeaker = activeSpeakerParticipant.getDriver();
-        WebDriver peer2 = peer2Participant.getDriver();
-        WebDriver peer3 = peer3Participant.getDriver();
+        WebDriver peer2driver = peer2.getDriver();
 
-        final String speakerEndpoint = MeetUtils.getResourceJid(activeSpeaker);
+        final String speakerEndpoint
+            = MeetUtils.getResourceJid(activeSpeaker.getDriver());
 
         // just a debug print to go in logs
-        ((JavascriptExecutor) activeSpeaker)
-            .executeScript(
+        activeSpeaker.executeScript(
                 "console.log('Unmuting in testActiveSpeaker');");
         // Unmute
-        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(
+            activeSpeaker.getDriver(),
+            "toolbar_button_mute");
         // just a debug print to go in logs
-        ((JavascriptExecutor) peer2)
-            .executeScript(
+        peer2.executeScript(
                 "console.log('Participant unmuted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         // just a debug print to go in logs
-        ((JavascriptExecutor) peer3)
-            .executeScript(
+        peer3.executeScript(
                 "console.log('Participant unmuted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         MeetUIUtils.assertMuteIconIsDisplayed(
-                peer2,
-                activeSpeaker,
+                peer2.getDriver(),
+                activeSpeaker.getDriver(),
                 false,
                 false, //audio
                 speakerEndpoint);
@@ -165,36 +163,35 @@ public class ActiveSpeakerTest
         // Verify that the user is now an active speaker from peer2 perspective
         try
         {
-            new WebDriverWait(peer2, 10).until(
+            new WebDriverWait(peer2driver, 10).until(
                 (ExpectedCondition<Boolean>) d -> speakerEndpoint.equals(
                     MeetUIUtils.getLargeVideoResource(d)));
         }
         catch (TimeoutException exc)
         {
             assertEquals(
-                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2),
+                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2driver),
                 "Active speaker not displayed on large video " + new Date());
         }
 
         // just a debug print to go in logs
-        ((JavascriptExecutor) activeSpeaker)
-            .executeScript(
+        activeSpeaker.executeScript(
                 "console.log('Muting in testActiveSpeaker');");
         // Mute back again
-        MeetUIUtils.clickOnToolbarButton(activeSpeaker, "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(
+            activeSpeaker.getDriver(),
+            "toolbar_button_mute");
         // just a debug print to go in logs
-        ((JavascriptExecutor) peer2)
-            .executeScript(
+        peer2.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         // just a debug print to go in logs
-        ((JavascriptExecutor) peer3)
-            .executeScript(
+        peer3.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         MeetUIUtils.assertMuteIconIsDisplayed(
-                peer2,
-                activeSpeaker,
+                peer2driver,
+                activeSpeaker.getDriver(),
                 true,
                 false, //audio
                 speakerEndpoint);

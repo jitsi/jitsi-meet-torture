@@ -200,10 +200,11 @@ public class AvatarTest
     @Test
     public void changeAvatarAndCheck()
     {
-        final WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
+        final WebDriver ownerDriver = owner.getDriver();
         final WebDriver secondParticipant = getParticipant2().getDriver();
 
-        final String ownerResourceJid = MeetUtils.getResourceJid(owner);
+        final String ownerResourceJid = MeetUtils.getResourceJid(ownerDriver);
 
         String ownerAvatarXPath
             = "//span[@id='participant_" + ownerResourceJid
@@ -217,22 +218,22 @@ public class AvatarTest
             getSrcByXPath(secondParticipant, ownerAvatarXPath);
 
         //change the email for the conference owner
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
+        MeetUIUtils.clickOnToolbarButton(ownerDriver, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
-            owner, "//input[@id='setEmail']", 5);
+            ownerDriver, "//input[@id='setEmail']", 5);
 
         // set the value of the field through the jquery, or on FF we can
         // activate the key listener and m can mute the call and break tests
-        ((JavascriptExecutor) owner)
-            .executeScript("$('#setEmail').val('" + EMAIL + "').focusout();");
+        owner.executeScript("$('#setEmail').val('" + EMAIL + "').focusout();");
 
         //check if the local avatar in the settings menu has changed
-        TestUtils.waitForCondition(owner, 5,
+        TestUtils.waitForCondition(ownerDriver, 5,
             (ExpectedCondition<Boolean>) d
-                -> getSrcByXPath(owner, "//img[@id='avatar']").contains(HASH));
+                -> getSrcByXPath(ownerDriver, "//img[@id='avatar']")
+                        .contains(HASH));
 
         //check if the avatar in the local thumbnail has changed
-        checkSrcIsCorrect(getLocalThumbnailSrc(owner));
+        checkSrcIsCorrect(getLocalThumbnailSrc(ownerDriver));
         //check if the avatar in the contact list has changed
         //checkSrcIsCorrect(getContactSrc(owner, ownerResourceJid));
 
@@ -260,7 +261,7 @@ public class AvatarTest
                 return currentSrc.contains(HASH);
             });
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
+        MeetUIUtils.clickOnToolbarButton(ownerDriver, "toolbar_button_profile");
 
         // we check whether avatar of second participant is same on both sides
         // and we stored to check it after reload
@@ -268,13 +269,13 @@ public class AvatarTest
         String secondParticipantResourceJid
             = MeetUtils.getResourceJid(secondParticipant);
         assertEquals(secondParticipantAvatarSrc,
-            getThumbnailSrc(owner, secondParticipantResourceJid));
+            getThumbnailSrc(ownerDriver, secondParticipantResourceJid));
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted
         MeetUIUtils.assertMuteIconIsDisplayed(
             secondParticipant,
-            owner,
+            ownerDriver,
             false,
             false, //audio
             "owner");
