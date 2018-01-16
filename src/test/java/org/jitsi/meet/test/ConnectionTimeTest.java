@@ -352,11 +352,6 @@ public class ConnectionTimeTest
         {
             refreshSecondParticipant();
 
-            // FIXME just ping the first participant, to avoid timeout
-            // of the session, if such a keep-alive is needed in multiple tests
-            // we need to implement it in more generic way.
-            getParticipant1().isInMuc();
-
             waitForMeasurements();
 
             for(TimeMeasurements s : TimeMeasurements.values())

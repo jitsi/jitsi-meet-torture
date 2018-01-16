@@ -245,7 +245,7 @@ public abstract class AbstractParticipantHelper
 
     /**
      * Hangups a participant.
-     * @param index the participant index to be hanguped.
+     * @param index the participant index to be hungup.
      */
     private void hangUpParticipant(int index)
     {

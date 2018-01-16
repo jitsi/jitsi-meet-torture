@@ -59,6 +59,24 @@ public abstract class Participant<T extends WebDriver>
     private String joinedRoomName = null;
 
     /**
+     * Executor that is responsible for keeping the participant session alive.
+     */
+    private ScheduledExecutorService executor
+        = Executors.newScheduledThreadPool(1);
+
+    /**
+     * The execution of the keepalive, if it is null this means
+     * it is not started.
+     */
+    private ScheduledFuture<?> keepAliveExecution = null;
+
+    /**
+     * The seconds between calls that will make sure we keep alive the
+     * webdriver session.
+     */
+    private static final int KEEP_ALIVE_SESSION_INTERVAL = 20;
+
+    /**
      * Constructs a Participant.
      * @param name the name.
      * @param driver its driver instance.
@@ -93,7 +111,7 @@ public abstract class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName, String fragment)
     {
-        // not hanguped, so not joining
+        // not hungup, so not joining
         if (!this.hungUp
             && this.joinedRoomName != null
             && this.joinedRoomName.equals(roomName))
@@ -175,6 +193,25 @@ public abstract class Participant<T extends WebDriver>
             .executeScript("document.title='" + name + "'");
 
         this.hungUp = false;
+
+        this.keepAliveExecution = this.executor
+            .scheduleAtFixedRate(
+                () -> isInMuc(),
+                KEEP_ALIVE_SESSION_INTERVAL,
+                KEEP_ALIVE_SESSION_INTERVAL,
+                TimeUnit.SECONDS);
+    }
+
+    /**
+     * Cancels keep alive execution.
+     */
+    private synchronized void cancelKeepAlive()
+    {
+        if (this.keepAliveExecution != null)
+        {
+            this.keepAliveExecution.cancel(true);
+            this.keepAliveExecution = null;
+        }
     }
 
     /**
@@ -184,6 +221,8 @@ public abstract class Participant<T extends WebDriver>
     {
         try
         {
+            cancelKeepAlive();
+
             driver.quit();
 
             TestUtils.waitMillis(500);
@@ -202,6 +241,8 @@ public abstract class Participant<T extends WebDriver>
     {
         if (this.hungUp)
             return;
+
+        cancelKeepAlive();
 
         MeetUIUtils.clickOnToolbarButton(
             driver, "toolbar_button_hangup", false);
