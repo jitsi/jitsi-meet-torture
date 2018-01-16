@@ -19,6 +19,7 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
+import java.util.function.*;
 
 public abstract class AbstractParticipantHelper
 {
@@ -58,7 +59,7 @@ public abstract class AbstractParticipantHelper
      */
     public void ensureOneParticipant()
     {
-        ensureOneParticipant(null);
+        ensureOneParticipant((String)null);
     }
 
     /**
@@ -79,7 +80,22 @@ public abstract class AbstractParticipantHelper
      */
     public void ensureOneParticipant(String roomParameter, String fragment)
     {
-        Participant participant = joinParticipant(0, roomParameter, fragment);
+        Participant participant
+            = joinParticipant(0, roomParameter, fragment, null);
+
+        participant.waitToJoinMUC(10);
+    }
+
+    /**
+     * Starts owner, if not started. Uses the custom method to join the
+     * participant, by skipping the Participant implementation.
+     *
+     * @param joinRef
+     */
+    public void ensureOneParticipant(BiConsumer<String, String> joinRef)
+    {
+        Participant participant
+            = joinParticipant(0, null, null, joinRef);
 
         participant.waitToJoinMUC(10);
     }
@@ -90,7 +106,7 @@ public abstract class AbstractParticipantHelper
      */
     public Participant joinFirstParticipant()
     {
-        return joinParticipant(0, null, null);
+        return joinParticipant(0, null, null, null);
     }
 
     /**
@@ -99,10 +115,12 @@ public abstract class AbstractParticipantHelper
      * @param index the participant index.
      * @param roomParameter a room parameter to add, if any.
      * @param fragment adds the given string to the fragment part of the URL
+     * @param joinRef custom join method (optional).
      * @return the participant which was created
      */
     private Participant joinParticipant(
-        int index, String roomParameter, String fragment)
+        int index, String roomParameter, String fragment,
+        BiConsumer<String, String> joinRef)
     {
         Participant participant;
         if (participants.size() <= index)
@@ -123,8 +141,20 @@ public abstract class AbstractParticipantHelper
         if (roomParameter != null)
             roomName += roomParameter;
 
-        // join room
-        participant.joinConference(roomName, fragment);
+        // if there is no custom join method
+        // use the default impl from Participant
+        if (joinRef == null)
+        {
+            // join room
+            participant.joinConference(roomName, fragment);
+        }
+        else
+        {
+            // custom join implementation
+            joinRef.accept(roomName, fragment);
+            participant.joinedRoomName = roomName;
+            participant.hungUp = false;
+        }
 
         return participant;
     }
@@ -176,7 +206,7 @@ public abstract class AbstractParticipantHelper
     {
         ensureOneParticipant();
 
-        Participant participant = joinParticipant(1, null, fragment);
+        Participant participant = joinParticipant(1, null, fragment, null);
 
         participant.waitToJoinMUC(10);
 
@@ -195,7 +225,7 @@ public abstract class AbstractParticipantHelper
     {
         ensureTwoParticipantsInternal(null);
 
-        Participant participant = joinParticipant(2, null, fragment);
+        Participant participant = joinParticipant(2, null, fragment, null);
 
         participant.waitToJoinMUC(15);
 

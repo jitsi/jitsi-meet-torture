@@ -50,13 +50,13 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Is hung up.
      */
-    private boolean hungUp = true;
+    boolean hungUp = true;
 
     /**
      * We store the room name we joined as if someone calls joinConference twice
      * to be able to detect that there is no need to load anything.
      */
-    private String joinedRoomName = null;
+    String joinedRoomName = null;
 
     /**
      * Executor that is responsible for keeping the participant session alive.
