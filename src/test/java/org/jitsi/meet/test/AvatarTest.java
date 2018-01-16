@@ -194,6 +194,40 @@ public class AvatarTest
     }
 
     /**
+     * Check persistence of email.
+     * Checks that email was set, reload and check again.
+     */
+    @Test(dependsOnMethods = { "avatarWhenVideoMuted" })
+    public void testEmailPersistence()
+    {
+        WebDriver owner = getParticipant1().getDriver();
+
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
+        TestUtils.waitForDisplayedElementByXPath(
+            owner, "//input[@id='setEmail']", 5);
+
+        String currentEmailValue
+            = owner.findElement(By.xpath("//input[@id='setEmail']"))
+                .getAttribute("value");
+        assertEquals(currentEmailValue, EMAIL,
+            "Current email has wrong value");
+
+        getParticipant1().hangUp();
+        ensureTwoParticipants();
+
+        owner = getParticipant1().getDriver();
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
+        TestUtils.waitForDisplayedElementByXPath(
+            owner, "//input[@id='setEmail']", 5);
+
+        currentEmailValue
+            = owner.findElement(By.xpath("//input[@id='setEmail']"))
+            .getAttribute("value");
+        assertEquals(currentEmailValue, EMAIL,
+            "Current email has wrong value after reload");
+    }
+
+    /**
      *  Changes the avatar for one participant and checks if it has changed
      *  properly everywhere
      */

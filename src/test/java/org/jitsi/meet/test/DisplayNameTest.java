@@ -81,6 +81,26 @@ public class DisplayNameTest
     }
 
     /**
+     * Checks whether display name persisted after reload of the page.
+     */
+    @Test(dependsOnMethods = { "testChangingDisplayName" })
+    public void testDisplayNamePersistence()
+    {
+        String randomName = "Name"
+            + String.valueOf((int)(Math.random()*1000000));
+
+        changeDisplayName(randomName);
+
+        doLocalDisplayNameCheck(randomName);
+
+        // now let's reload the second participant
+        getParticipant2().hangUp();
+        ensureTwoParticipants();
+
+        doLocalDisplayNameCheck(randomName);
+    }
+
+    /**
      * Do the check, change display name and check locally and remotely.
      * @param newName the new name
      */
