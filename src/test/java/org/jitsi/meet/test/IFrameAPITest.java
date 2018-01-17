@@ -95,5 +95,7 @@ public class IFrameAPITest
         WebDriverWait wait = new WebDriverWait(participant, 10);
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
             By.id("jitsiConferenceFrame0")));
+
+        getParticipant1().startKeepAliveExecution();
     }
 }

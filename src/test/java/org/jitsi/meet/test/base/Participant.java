@@ -194,12 +194,23 @@ public abstract class Participant<T extends WebDriver>
 
         this.hungUp = false;
 
-        this.keepAliveExecution = this.executor
-            .scheduleAtFixedRate(
-                () -> isInMuc(),
-                KEEP_ALIVE_SESSION_INTERVAL,
-                KEEP_ALIVE_SESSION_INTERVAL,
-                TimeUnit.SECONDS);
+        startKeepAliveExecution();
+    }
+
+    /**
+     * Starts the keep-alive execution.
+     */
+    public void startKeepAliveExecution()
+    {
+        if (this.keepAliveExecution == null)
+        {
+            this.keepAliveExecution = this.executor
+                .scheduleAtFixedRate(
+                    () -> driver.getCurrentUrl(),
+                    KEEP_ALIVE_SESSION_INTERVAL,
+                    KEEP_ALIVE_SESSION_INTERVAL,
+                    TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -241,8 +252,6 @@ public abstract class Participant<T extends WebDriver>
     {
         if (this.hungUp)
             return;
-
-        cancelKeepAlive();
 
         MeetUIUtils.clickOnToolbarButton(
             driver, "toolbar_button_hangup", false);
