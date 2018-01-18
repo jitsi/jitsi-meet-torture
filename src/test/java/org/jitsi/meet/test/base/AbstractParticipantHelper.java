@@ -20,6 +20,7 @@ import org.openqa.selenium.*;
 
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 
 public abstract class AbstractParticipantHelper
 {
@@ -51,7 +52,12 @@ public abstract class AbstractParticipantHelper
         Participant<? extends WebDriver>... participants)
     {
         this.currentRoomName = roomName;
-        this.participants.addAll(Arrays.asList(participants));
+
+        // add only non null values
+        this.participants.addAll(
+            Arrays.stream(participants)
+                .filter(p -> p != null)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -258,6 +264,7 @@ public abstract class AbstractParticipantHelper
     public void cleanup()
     {
         participants.stream().forEach(this::quitParticipant);
+        participants.clear();
     }
 
     /**
