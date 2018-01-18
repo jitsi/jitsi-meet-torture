@@ -89,7 +89,7 @@ public class DisplayNameTest
         String randomName = "Name"
             + String.valueOf((int)(Math.random()*1000000));
 
-        changeDisplayName(randomName);
+        getParticipant2().setDisplayName(randomName);
 
         doLocalDisplayNameCheck(randomName);
 
