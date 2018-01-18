@@ -20,11 +20,12 @@
             <class name="org.jitsi.meet.test.ChatPanelTest" />
         </classes>
     </test>
+    <!-- Disable till we investigate some high conn. time values
     <test name="ConnectionTimeTest">
         <classes>
             <class name="org.jitsi.meet.test.ConnectionTimeTest" />
         </classes>
-    </test>
+    </test>-->
     <test name="ContactListTest">
         <classes>
             <class name="org.jitsi.meet.test.ContactListTest" />
