@@ -243,7 +243,7 @@ public class MeetUIUtils
      * @param xpath the xpath of the button to click.
      * @param failOnMissing whether to fail if button is missing
      */
-    public static void clickOnToolbarButtonByXpath(
+    private static void clickOnToolbarButtonByXpath(
             final WebDriver participant,
             final String xpath,
             final boolean failOnMissing)
@@ -307,18 +307,6 @@ public class MeetUIUtils
             WebDriver participant, String buttonID)
     {
         clickOnToolbarButton(participant, buttonID, true);
-    }
-
-    /**
-     * Shows the toolbar and clicks on a button identified by class name.
-     * @param participant the {@code WebDriver}.
-     * @param buttonClass the class of the button to click.
-     */
-    public static void clickOnToolbarButtonByClass(WebDriver participant,
-                                                   String buttonClass)
-    {
-        clickOnToolbarButtonByXpath(participant,
-            "//a[@class='button " + buttonClass + "']", true);
     }
 
     /**

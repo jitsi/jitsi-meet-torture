@@ -74,7 +74,7 @@ public class EtherpadTest
         TestUtils.waitForDisplayedElementByID(
                 owner, "toolbar_button_etherpad", 15);
 
-        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
 
         TestUtils.waitMillis(5000);
 
@@ -140,9 +140,8 @@ public class EtherpadTest
             return;
         }
 
-        MeetUIUtils.clickOnToolbarButtonByClass(
-            getParticipant1().getDriver(),
-            "icon-share-doc");
+        MeetUIUtils.clickOnToolbarButton(
+            getParticipant1().getDriver(), "toolbar_button_etherpad");
 
         TestUtils.waitMillis(5000);
 

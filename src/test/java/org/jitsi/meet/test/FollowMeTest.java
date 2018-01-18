@@ -103,13 +103,13 @@ public class FollowMeTest
             return;
         }
 
-        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
 
         TestUtils.waitForDisplayedElementByXPath(owner, etherpadXPath, 5);
         TestUtils.waitForDisplayedElementByXPath(
                 secondParticipant, etherpadXPath, 5);
 
-        MeetUIUtils.clickOnToolbarButtonByClass(owner, "icon-share-doc");
+        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
                 owner, etherpadXPath, 5);
