@@ -48,11 +48,11 @@ public class SinglePortTest
     @Test
     public void singlePortTest()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant owner = getParticipant1();
+        Participant secondParticipant = getParticipant2();
 
         // Just make sure everyone is ready
-        getParticipant1().waitForSendReceiveData();
+        owner.waitForSendReceiveData();
 
         String ownerPortStr = getRemotePort(owner);
         String secondParticipantPortStr = getRemotePort(secondParticipant);
@@ -86,23 +86,26 @@ public class SinglePortTest
 
     /**
      * Returns the remote port used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt> as a {@code String}, or
+     * Jitsi-Meet conference running in <tt>participant</tt> as a {@code String}, or
      * a {@code String} (which does not parse as an integer) if the port could
      * not be determined.
      * @return the remote port used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt> as a {@code String}, or
+     * Jitsi-Meet conference running in <tt>participant</tt> as a {@code String}, or
      * a {@code String} (which does not parse as an integer) if the port could
      * not be determined.
-     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @param participant the <tt>WebDriver</tt> running Jitsi-Meet.
      */
-    private static String getRemotePort(WebDriver driver)
+    private static String getRemotePort(Participant participant)
     {
-        if (driver == null)
+        if (participant == null)
+        {
             return null;
-        Object result = ((JavascriptExecutor) driver).executeScript(
-            "try {" +
-                    "return APP.conference.getStats().transport[0].ip;" +
-                "} catch (err) { return 'error: '+err; }");
+        }
+        Object result
+            = participant.executeScript(
+                "try {" +
+                        "return APP.conference.getStats().transport[0].ip;" +
+                    "} catch (err) { return 'error: '+err; }");
 
         if (result != null && result instanceof String)
         {

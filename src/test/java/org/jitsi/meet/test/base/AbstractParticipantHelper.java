@@ -307,7 +307,7 @@ public abstract class AbstractParticipantHelper
      */
     public void hangUpAllParticipants()
     {
-        participants.stream().forEach(p -> p.hangUp());
+        participants.forEach(Participant::hangUp);
     }
 
     /**

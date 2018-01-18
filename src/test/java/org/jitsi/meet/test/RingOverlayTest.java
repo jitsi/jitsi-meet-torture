@@ -133,7 +133,8 @@ public class RingOverlayTest
 
         // Join with second participant
         ensureTwoParticipants();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant secondParticipant = getParticipant2();
+        WebDriver secondParticipantDriver = secondParticipant.getDriver();
 
         // overlay absent or hidden
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
@@ -147,11 +148,11 @@ public class RingOverlayTest
 
         // Mute owner video
         String ownerResource = MeetUtils.getResourceJid(owner);
-        MeetUIUtils.muteVideoAndCheck(owner, secondParticipant);
+        MeetUIUtils.muteVideoAndCheck(owner, secondParticipantDriver);
 
-        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
+        MeetUIUtils.clickOnRemoteVideo(secondParticipantDriver, ownerResource);
         // Check if owner's avatar is on large video now
-        TestUtils.waitForCondition(secondParticipant, 5,
+        TestUtils.waitForCondition(secondParticipantDriver, 5,
             (ExpectedCondition<Boolean>) d -> {
                 String currentSrc = AvatarTest.getLargeVideoSrc(d);
                 return currentSrc.equals(USER_AVATAR_URL);

@@ -108,7 +108,7 @@ public class DisplayNameTest
     {
         checkForDefaultDisplayNames();
 
-        changeDisplayName(newName);
+        getParticipant2().setDisplayName(newName);
 
         doLocalDisplayNameCheck(newName);
 
@@ -122,18 +122,19 @@ public class DisplayNameTest
     private void checkForDefaultDisplayNames()
     {
         // default remote displayname
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
         String defaultDisplayName =
-            (String)((JavascriptExecutor) owner)
-                .executeScript(
+            (String) owner.executeScript(
                     "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");
 
         // check on first browser
-        checkRemoteVideoForName(owner,
+        checkRemoteVideoForName(
+            owner,
             getParticipant2(),
             defaultDisplayName);
         // check on second browser
-        checkRemoteVideoForName(getParticipant2().getDriver(),
+        checkRemoteVideoForName(
+            getParticipant2(),
             getParticipant1(),
             defaultDisplayName);
     }
@@ -145,7 +146,7 @@ public class DisplayNameTest
      * @param nameToCheck the name to check.
      */
     public void checkRemoteVideoForName(
-        WebDriver local,
+        Participant local,
         Participant remoteParticipant,
         String nameToCheck)
     {
@@ -154,7 +155,7 @@ public class DisplayNameTest
 
         // check on local participant remote video
         WebElement displayNameElem =
-            local.findElement(By.xpath(
+            local.getDriver().findElement(By.xpath(
                 "//span[@id='participant_" + remoteParticipantResourceJid +
                     "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
@@ -251,67 +252,28 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
+        WebDriver ownerDriver = owner.getDriver();
         WebDriver secondParticipant = getParticipant2().getDriver();
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
         MeetUIUtils.clickOnRemoteVideo(
-            owner, MeetUtils.getResourceJid(secondParticipant));
+            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
 
         final String secondParticipantResourceJid = MeetUtils
             .getResourceJid(secondParticipant);
 
         WebElement localVideoWrapperElem =
-            owner.findElement(By.xpath(
+            ownerDriver.findElement(By.xpath(
                 "//span[@id='participant_" + secondParticipantResourceJid + "']"));
-        Actions action = new Actions(owner);
+        Actions action = new Actions(ownerDriver);
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
         checkRemoteVideoForName(owner, getParticipant2(), newName);
 
         MeetUIUtils.clickOnRemoteVideo(
-            owner, MeetUtils.getResourceJid(secondParticipant));
-    }
-
-    /**
-     * Changes the display name.
-     * @param newName the name to change.
-     */
-    private void changeDisplayName(String newName)
-    {
-        WebDriver secondParticipant = getParticipant2().getDriver();
-
-        WebElement elem =
-            secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                + "//span[@id='localDisplayName']"));
-        // hover the element before clicking
-        Actions action0 = new Actions(secondParticipant);
-        action0.moveToElement(elem);
-        action0.perform();
-
-        elem.click();
-
-        WebElement inputElem =
-            secondParticipant.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                + "//input[@id='editDisplayName']"));
-        Actions action = new Actions(secondParticipant);
-        action.moveToElement(inputElem);
-        action.perform();
-
-        if (newName != null && newName.length() > 0)
-            inputElem.sendKeys(newName);
-        else
-            inputElem.sendKeys(Keys.BACK_SPACE);
-
-        inputElem.sendKeys(Keys.RETURN);
-        // just click somewhere to lose focus, to make sure editing has ended
-        String ownerResource
-            = MeetUtils.getResourceJid(getParticipant1().getDriver());
-        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
-        MeetUIUtils.clickOnRemoteVideo(secondParticipant, ownerResource);
+            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
     }
 }

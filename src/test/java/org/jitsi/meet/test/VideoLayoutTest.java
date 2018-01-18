@@ -53,49 +53,50 @@ public class VideoLayoutTest
     @Test
     public void testVideoLayout()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        driverVideoLayoutTest(owner);
+        driverVideoLayoutTest(getParticipant1());
     }
 
     /**
      * The webdriver to test.
-     * @param webDriver to test.
+     * @param participant to test.
      */
-    public void driverVideoLayoutTest(WebDriver webDriver)
+    void driverVideoLayoutTest(Participant participant)
     {
+        WebDriver driver = participant.getDriver();
         String chatXPath = "//div[@id='chat_container']";
         String contactListXPath = "//div[@id='contacts_container']";
         String settingsXPath = "//div[@id='settings_container']";
 
-        WebElement chatElem = webDriver.findElement(By.xpath(chatXPath));
+        WebElement chatElem = driver.findElement(By.xpath(chatXPath));
         WebElement contactListElem
-            = webDriver.findElement(By.xpath(contactListXPath));
+            = driver.findElement(By.xpath(contactListXPath));
         WebElement settingsElem
-            = webDriver.findElement(By.xpath(settingsXPath));
+            = driver.findElement(By.xpath(settingsXPath));
 
         if (!chatElem.isDisplayed()
                 && !contactListElem.isDisplayed()
                 && !settingsElem.isDisplayed())
         {
-            doLargeVideoSizeCheck(webDriver);
+            doLargeVideoSizeCheck(participant);
         }
     }
 
     /**
      * Checks if the video container fits the inner window width and height.
      *
-     * @param webDriver <tt>WebDriver</tt> instance of the participant for whom
+     * @param participant <tt>WebDriver</tt> instance of the participant for whom
      *                  we'll try to check the video size
      */
-    private void doLargeVideoSizeCheck(WebDriver webDriver)
+    private void doLargeVideoSizeCheck(Participant participant)
     {
-        Long innerWidth = (Long)((JavascriptExecutor) webDriver)
-                .executeScript("return window.innerWidth;");
+        Long innerWidth
+            = (Long) participant.executeScript("return window.innerWidth;");
 
-        Long innerHeight = (Long)((JavascriptExecutor) webDriver)
-                .executeScript("return window.innerHeight;");
+        Long innerHeight
+            = (Long) participant.executeScript("return window.innerHeight;");
 
-        WebElement largeVideo = webDriver.findElement(
+        WebElement largeVideo
+            = participant.getDriver().findElement(
                 By.xpath("//div[@id='largeVideoContainer']"));
 
         assertEquals(largeVideo.getSize().getWidth(), innerWidth.intValue());
@@ -104,8 +105,9 @@ public class VideoLayoutTest
         // now let's check whether the video wrapper take all the height
         // this should not be the case only for desktop sharing with thumbs
         // visible
-        WebElement largeVideoWrapper = webDriver.findElement(
-            By.xpath("//div[@id='largeVideoWrapper']"));
+        WebElement largeVideoWrapper
+            = participant.getDriver().findElement(
+                By.xpath("//div[@id='largeVideoWrapper']"));
 
         assertEquals(largeVideoWrapper.getSize().getHeight(),
             innerHeight.intValue());

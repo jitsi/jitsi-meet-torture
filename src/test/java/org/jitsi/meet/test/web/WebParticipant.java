@@ -18,6 +18,7 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -42,6 +43,8 @@ public class WebParticipant<T extends WebDriver>
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
+
+    private ChatPanel chatPanel;
 
     /**
      * Constructs a Participant.
@@ -77,8 +80,7 @@ public class WebParticipant<T extends WebDriver>
      */
     public boolean isInMuc()
     {
-        Object res = ((JavascriptExecutor) getDriver())
-            .executeScript(IS_MUC_JOINED);
+        Object res = executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
     }
 
@@ -109,8 +111,8 @@ public class WebParticipant<T extends WebDriver>
     {
         new WebDriverWait(getDriver(), 15)
             .until((ExpectedCondition<Boolean>) d -> {
-                Map stats = (Map) ((JavascriptExecutor) d)
-                    .executeScript("return APP.conference.getStats();");
+                Map stats
+                    = (Map) executeScript("return APP.conference.getStats();");
 
                 Map<String, Long> bitrate =
                     (Map<String, Long>) stats.get("bitrate");
@@ -135,11 +137,79 @@ public class WebParticipant<T extends WebDriver>
     public void waitForRemoteStreams(int n)
     {
         new WebDriverWait(getDriver(), 15)
-            .until((ExpectedCondition<Boolean>) d
-                        -> (Boolean)((JavascriptExecutor) d)
-                .executeScript(
-                    "return APP.conference"
-                        + ".getNumberOfParticipantsWithTracks() >= "
-                        + n + ";"));
+            .until(
+                (ExpectedCondition<Boolean>) d
+                    -> (Boolean) executeScript(
+                        "return APP.conference"
+                        + ".getNumberOfParticipantsWithTracks() >= " + n + ";"));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDisplayName(String name)
+    {
+        WebDriver driver = getDriver();
+
+        WebElement elem =
+            driver.findElement(By.xpath(
+                "//span[@id='localVideoContainer']"
+                    + "//span[@id='localDisplayName']"));
+        // hover the element before clicking
+        Actions actions = new Actions(driver);
+        actions.moveToElement(elem);
+        actions.perform();
+
+        elem.click();
+
+        WebElement inputElem =
+            driver.findElement(By.xpath(
+                "//span[@id='localVideoContainer']"
+                    + "//input[@id='editDisplayName']"));
+        actions = new Actions(driver);
+        actions.moveToElement(inputElem);
+        actions.perform();
+
+        if (name != null && name.length() > 0)
+        {
+            inputElem.sendKeys(name);
+        }
+        else
+        {
+            inputElem.sendKeys(Keys.BACK_SPACE);
+        }
+
+        inputElem.sendKeys(Keys.RETURN);
+        // just click somewhere to lose focus, to make sure editing has ended
+        MeetUIUtils.clickOnLocalVideo(driver);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void pressShortcut(Character shortcut)
+    {
+        // We just need some element to which to send the shortcut (so that
+        // the focused element doesn't swallow them).
+        WebDriver driver = getDriver();
+        WebElement largeVideo = driver.findElement(By.id("largeVideo"));
+        Actions actions = new Actions(driver);
+        actions.sendKeys(largeVideo, shortcut.toString());
+        actions.perform();
+    }
+
+    /**
+     * @return a representation of the chat panel of this participant.
+     */
+    public ChatPanel getChatPanel()
+    {
+        if (chatPanel == null)
+        {
+            chatPanel = new ChatPanel(this);
+        }
+
+        return chatPanel;
     }
 }

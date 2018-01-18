@@ -317,8 +317,9 @@ public class ConnectionTimeTest
      */
     private boolean isUsingAttach()
     {
-        return (Boolean) ((JavascriptExecutor) getParticipant2().getDriver())
-            .executeScript("return !!config.externalConnectUrl;");
+        return (Boolean)
+            getParticipant2()
+                .executeScript("return !!config.externalConnectUrl;");
     }
 
     /**

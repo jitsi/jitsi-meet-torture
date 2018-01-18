@@ -56,8 +56,8 @@ public class OneOnOneTest
         ensureOneParticipant(oneOnOneConfigOverrides);
         ensureTwoParticipants(oneOnOneConfigOverrides);
 
-        WebDriver owner =  getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant owner =  getParticipant1();
+        Participant secondParticipant = getParticipant2();
 
         // Prevent toolbar from being always displayed as filmstrip visibility
         // is tied to toolbar visibility.
@@ -76,11 +76,11 @@ public class OneOnOneTest
     public void testFilmstripVisibleWithMoreThanTwo() {
         ensureThreeParticipants(oneOnOneConfigOverrides);
 
-        WebDriver thirdParticipant = getParticipant3().getDriver();
+        Participant thirdParticipant = getParticipant3();
         stopDockingToolbar(thirdParticipant);
 
-        verifyRemoteVideosDisplay(getParticipant1().getDriver(), true);
-        verifyRemoteVideosDisplay(getParticipant2().getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant1(), true);
+        verifyRemoteVideosDisplay(getParticipant2(), true);
         verifyRemoteVideosDisplay(thirdParticipant, true);
     }
 
@@ -95,8 +95,8 @@ public class OneOnOneTest
 
         getParticipant3().hangUp();
 
-        verifyRemoteVideosDisplay(getParticipant1().getDriver(), false);
-        verifyRemoteVideosDisplay(getParticipant2().getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant1(), false);
+        verifyRemoteVideosDisplay(getParticipant2(), true);
     }
 
     /**
@@ -106,10 +106,10 @@ public class OneOnOneTest
     @Test(dependsOnMethods = { "testFilmstripDisplayWhenReturningToOneOnOne" })
     public void testFilmstripVisibleOnSelfViewFocus() {
         MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
-        verifyRemoteVideosDisplay(getParticipant1().getDriver(), true);
+        verifyRemoteVideosDisplay(getParticipant1(), true);
 
         MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
-        verifyRemoteVideosDisplay(getParticipant1().getDriver(), false);
+        verifyRemoteVideosDisplay(getParticipant1(), false);
     }
 
     /**
@@ -118,10 +118,11 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripVisibleOnSelfViewFocus" })
     public void testFilmstripHoverShowsVideos() {
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
+        WebDriver ownerDriver = owner.getDriver();
 
-        WebElement toolbar = owner.findElement(By.id("localVideoContainer"));
-        Actions hoverOnToolbar = new Actions(owner);
+        WebElement toolbar = ownerDriver.findElement(By.id("localVideoContainer"));
+        Actions hoverOnToolbar = new Actions(ownerDriver);
         hoverOnToolbar.moveToElement(toolbar);
         hoverOnToolbar.perform();
 
@@ -137,7 +138,7 @@ public class OneOnOneTest
      *                    visible
      */
     private void verifyRemoteVideosDisplay(
-        WebDriver testee, boolean isDisplayed)
+        Participant testee, boolean isDisplayed)
     {
         waitForToolbarsHidden(testee);
 
@@ -145,7 +146,7 @@ public class OneOnOneTest
             = "//div[@id='filmstripRemoteVideosContainer']";
 
         TestUtils.waitForDisplayedOrNotByXPath(
-            testee,
+            testee.getDriver(),
             filmstripRemoteVideosXpath,
             filmstripVisibilityWait,
             isDisplayed);
@@ -158,9 +159,8 @@ public class OneOnOneTest
      *               no longer want to dock toolbars.
 
      */
-    private void stopDockingToolbar(WebDriver testee) {
-        ((JavascriptExecutor) testee)
-            .executeScript("APP.UI.dockToolbar(false);");
+    private void stopDockingToolbar(Participant testee) {
+        testee.executeScript("APP.UI.dockToolbar(false);");
     }
 
     /**
@@ -169,14 +169,14 @@ public class OneOnOneTest
      * @param testee the <tt>WebDriver</tt> of the participant for whom we're
      *               waiting to no longer see toolbars.
      */
-    private void waitForToolbarsHidden(WebDriver testee) {
+    private void waitForToolbarsHidden(Participant testee) {
         // Wait for the visible filmstrip to no longer be displayed.
         String visibleToolbarXpath
             = "//*[contains(@class, 'toolbar_secondary')"
             + "and contains(@class ,'slideInExtX')]";
 
         TestUtils.waitForElementNotPresentByXPath(
-            testee,
+            testee.getDriver(),
             visibleToolbarXpath,
             filmstripVisibilityWait);
     }

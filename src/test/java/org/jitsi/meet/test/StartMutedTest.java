@@ -79,16 +79,15 @@ public class StartMutedTest
         ensureOneParticipant("config.startAudioMuted=1&" +
             "config.debugAudioLevels=true&" +
             "config.startVideoMuted=1");
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
 
         ensureTwoParticipants();
-        final WebDriver secondParticipant = getParticipant2().getDriver();
-        ((JavascriptExecutor) owner)
-            .executeScript(
-                "console.log('Start configOptionsTest, second participant: "
-                    + MeetUtils.getResourceJid(secondParticipant) + "');");
+        final WebDriver secondParticipantDriver = getParticipant2().getDriver();
+        owner.executeScript(
+            "console.log('Start configOptionsTest, second participant: "
+                + MeetUtils.getResourceJid(secondParticipantDriver) + "');");
 
-        getParticipant1().waitForIceConnected();
+        owner.waitForIceConnected();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -100,12 +99,14 @@ public class StartMutedTest
 
         // Unmute and see if the audio works
         MeetUIUtils.clickOnToolbarButton(
-            secondParticipant, "toolbar_button_mute");
-        ((JavascriptExecutor) owner)
-            .executeScript(
-                "console.log('configOptionsTest, unmuted second participant');");
+            secondParticipantDriver, "toolbar_button_mute");
+        owner.executeScript(
+            "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(
-            owner, secondParticipant, "second peer", false /* unmuted */);
+            owner.getDriver(),
+            secondParticipantDriver,
+            "second peer",
+            false /* unmuted */);
     }
 
     /**

@@ -301,8 +301,7 @@ public class JibriTest
         driver.get(URL);
         MeetUtils.waitForPageToLoad(driver);
 
-        ((JavascriptExecutor) driver)
-            .executeScript(
+        pageParticipant.executeScript(
                 "document.title='" + pageParticipant.getName() + "'");
 
         return pageParticipant;

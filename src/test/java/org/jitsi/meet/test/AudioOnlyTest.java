@@ -29,14 +29,15 @@ import org.testng.annotations.*;
 public class AudioOnlyTest
     extends AbstractBaseTest
 {
-    private String AUDIO_ONLY_ENABLED_ICON_XPATH
+    private static String AUDIO_ONLY_ENABLED_ICON_XPATH
         = "//div[@id='videoResolutionLabel']" +
-        "//i[contains(@class, 'icon-visibility-off')]";
-    private String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
-    private String MUTE_BUTTON_ID = "toolbar_button_camera";
-    private String VIDEO_QUALITY_BUTTON_ID
+            "//i[contains(@class, 'icon-visibility-off')]";
+    private static String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
+    private static String MUTE_BUTTON_ID = "toolbar_button_camera";
+    private static String VIDEO_QUALITY_BUTTON_ID
         = "toolbar_button_videoquality";
-    private String VIDEO_QUALITY_SLIDER_CLASS = "video-quality-dialog-slider";
+    private static String VIDEO_QUALITY_SLIDER_CLASS
+        = "video-quality-dialog-slider";
 
     @Override
     public void setup()

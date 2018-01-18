@@ -112,7 +112,7 @@ public class DesktopSharingTest
             }
         }).start();
 
-        final WebDriver owner = getParticipant1().getDriver();
+        final Participant owner = getParticipant1();
 
         // now lets wait starting or error on startup
         try
@@ -132,7 +132,7 @@ public class DesktopSharingTest
 
         // let's wait some time the user to joins
         TestUtils.waitForBoolean(
-            owner,
+            owner.getDriver(),
             "return (APP.conference.membersCount == 2);",
             25);
         Participant ownerParticipant = getParticipant1();
@@ -141,7 +141,7 @@ public class DesktopSharingTest
         ownerParticipant.waitForRemoteStreams(1);
 
         // now lets check whether his stream is screen
-        String remoteParticipantID = owner
+        String remoteParticipantID = owner.getDriver()
             .findElement(By.xpath("//span[starts-with(@id, 'participant_') " +
                 " and contains(@class,'videocontainer')]")).getAttribute("id");
         remoteParticipantID
@@ -154,11 +154,9 @@ public class DesktopSharingTest
         {
             final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
                 + remoteParticipantID + "');";
-            (new WebDriverWait(owner, 5))
+            (new WebDriverWait(owner.getDriver(), 5))
                 .until((ExpectedCondition<Boolean>) d -> {
-                    Object res =
-                        ((JavascriptExecutor) owner)
-                            .executeScript(scriptToExecute);
+                    Object res = owner.executeScript(scriptToExecute);
                     remoteVideoType[0] = res;
 
                     return res != null && res.equals(expectedResult);

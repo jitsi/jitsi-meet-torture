@@ -71,12 +71,11 @@ public class FollowMeTest
     @Test
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant secondParticipant = getParticipant2();
 
         Boolean allModeratorsEnabled = (Boolean)(
-            (JavascriptExecutor) secondParticipant)
-            .executeScript(
-                "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;");
+            secondParticipant.executeScript(
+                "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;"));
         // if all are moderators skip this check
         if (allModeratorsEnabled) {
             print("All moderators enabled, skipping check!");
@@ -84,7 +83,7 @@ public class FollowMeTest
         }
 
         TestUtils.waitForElementNotPresentByXPath(
-                secondParticipant, followMeCheckboxXPath, 5);
+                secondParticipant.getDriver(), followMeCheckboxXPath, 5);
     }
 
     /**
@@ -153,15 +152,16 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
     public void testNextOnStageCommandsAreFollowed()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        Participant owner = getParticipant1();
         WebDriver secondParticipant = getParticipant2().getDriver();
 
         String secondParticipantResource
             = MeetUtils.getResourceJid(secondParticipant);
 
         // let's make video of second participant active
-        ((JavascriptExecutor)owner).executeScript(
-            "$(\"span[id='participant_" + secondParticipantResource + "']\").click()");
+        owner.executeScript(
+            "$(\"span[id='participant_"
+                + secondParticipantResource + "']\").click()");
 
         TestUtils.waitMillis(5000);
 
