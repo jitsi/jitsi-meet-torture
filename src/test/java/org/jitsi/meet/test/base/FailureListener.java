@@ -89,10 +89,28 @@ public class FailureListener
     @Override
     public void onTestFailure(ITestResult testResult)
     {
-        if (testResult.getThrowable() != null)
+        Throwable error = testResult.getThrowable();
+        if (error != null)
         {
+            // FF crash workaround, marks test as skipped
+            if (error instanceof WebDriverException
+                && error.getMessage() != null
+                && error.getMessage().startsWith(
+                    "Failed to decode response from marionette"))
+            {
+                System.err.println("!!!! There is a test failure in "
+                    + testResult.getInstanceName() + "."
+                        + testResult.getMethod().getMethodName()
+                    + ". We will skip this test results, "
+                        + "due to known FF random crash.");
+
+                testResult.setStatus(ITestResult.SKIP);
+
+                return;
+            }
+
             TestUtils.print("TestFailure:");
-            testResult.getThrowable().printStackTrace();
+            error.printStackTrace();
         }
 
         try
@@ -127,8 +145,11 @@ public class FailureListener
     private void takeScreenshots(
         String fileName, AbstractBaseTest testInstance)
     {
-        takeScreenshot(testInstance.getParticipant1().getDriver(),
-            fileName + "-owner.png");
+        if (testInstance.getParticipant1() != null)
+        {
+            takeScreenshot(testInstance.getParticipant1().getDriver(),
+                fileName + "-owner.png");
+        }
 
         if (testInstance.getParticipant2() != null)
         {
@@ -178,8 +199,11 @@ public class FailureListener
      */
     private void saveHtmlSources(String fileName, AbstractBaseTest testInstance)
     {
-        saveHtmlSource(testInstance.getParticipant1().getDriver(),
-            fileName + "-owner.html");
+        if (testInstance.getParticipant1() != null)
+        {
+            saveHtmlSource(testInstance.getParticipant1().getDriver(),
+                fileName + "-owner.html");
+        }
 
         if (testInstance.getParticipant2() != null)
         {
@@ -220,8 +244,11 @@ public class FailureListener
     private void saveMeetDebugLog(
         String fileNamePrefix, AbstractBaseTest testInstance)
     {
-        saveMeetDebugLog(testInstance.getParticipant1().getDriver(),
-            fileNamePrefix + "-meetlog-owner.json");
+        if (testInstance.getParticipant1() != null)
+        {
+            saveMeetDebugLog(testInstance.getParticipant1().getDriver(),
+                fileNamePrefix + "-meetlog-owner.json");
+        }
 
         if (testInstance.getParticipant2() != null)
         {
@@ -269,10 +296,13 @@ public class FailureListener
     private void saveBrowserLogs(
         String fileNamePrefix, AbstractBaseTest testInstance)
     {
-        saveBrowserLogs(
-            testInstance.getParticipant1().getDriver(),
-            fileNamePrefix, "-console-owner", ".log",
-            testInstance.getParticipant1().getType());
+        if (testInstance.getParticipant1() != null)
+        {
+            saveBrowserLogs(
+                testInstance.getParticipant1().getDriver(),
+                fileNamePrefix, "-console-owner", ".log",
+                testInstance.getParticipant1().getType());
+        }
 
         if (testInstance.getParticipant2() != null)
         {
