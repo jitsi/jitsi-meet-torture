@@ -79,7 +79,7 @@ public class DesktopSharingImitationTest
         // hide thumbs
         MeetUIUtils.clickOnToolbarButton(
             getParticipant2().getDriver(),
-            "toolbar_film_strip");
+            "toggleFilmstripButton");
 
         TestUtils.waitMillis(5000);
 
