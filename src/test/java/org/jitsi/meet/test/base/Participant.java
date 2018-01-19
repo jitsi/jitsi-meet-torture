@@ -177,6 +177,18 @@ public abstract class Participant<T extends WebDriver>
                 + ".appendTo(document.head);");
         executeScript("$('body').toggleClass('notransition');");
 
+        // disable the blur effect in firefox as it has some performance issues
+        if (this.type == ParticipantFactory.ParticipantType.firefox)
+        {
+            executeScript(
+                "try { var blur "
+                    + "= document.querySelector('.video_blurred_container'); "
+                    + "if (blur) { "
+                    + "document.querySelector('.video_blurred_container')"
+                    + ".style.display = 'none' "
+                    + "} } catch(e) {}");
+        }
+
         // Hack-in disabling of callstats (old versions of jitsi-meet don't
         // handle URL parameters)
         executeScript("config.callStatsID=false;");
