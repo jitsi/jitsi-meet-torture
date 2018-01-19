@@ -64,6 +64,9 @@ public class FilmstripOnlyTest
             owner,
             "toolbar_button_fodeviceselection");
 
+        // give some time for the window to open and load
+        TestUtils.waitMillis(2000);
+
         Set<String> windowHandles = owner.getWindowHandles();
         Iterator<String> handleIterator = windowHandles.iterator();
         String mainWindowHandle = handleIterator.next();
