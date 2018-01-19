@@ -172,9 +172,9 @@ public abstract class Participant<T extends WebDriver>
 
         // disable keyframe animations (.fadeIn and .fadeOut classes)
         executeScript("$('<style>.notransition * { "
-                + "animation-duration: 0s !important; "
-                + "-webkit-animation-duration: 0s !important; } </style>')"
-                + ".appendTo(document.head);");
+            + "animation-duration: 0s !important; "
+            + "-webkit-animation-duration: 0s !important; transition:none; }"
+            + " </style>').appendTo(document.head);");
         executeScript("$('body').toggleClass('notransition');");
 
         // disable the blur effect in firefox as it has some performance issues
