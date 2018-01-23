@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 
@@ -75,21 +76,25 @@ public class ChatPanelTest
             "The chat panel should be initially closed");
 
         chatPanel.clickToolbarButton();
+        TestUtils.waitMillis(1000);
         assertTrue(
             chatPanel.isOpen(),
             "The chat panel should be open after clicking the button");
 
         chatPanel.pressShortcut();
+        TestUtils.waitMillis(1000);
         assertFalse(
             chatPanel.isOpen(),
             "The chat panel should be closed after pressing the shortcut");
 
         chatPanel.pressShortcut();
+        TestUtils.waitMillis(1000);
         assertTrue(
             chatPanel.isOpen(),
             "The chat panel should be open after pressing the shortcut");
 
         chatPanel.clickToolbarButton();
+        TestUtils.waitMillis(1000);
         assertFalse(
             chatPanel.isOpen(),
             "The chat panel should be closed after clicking the button");
