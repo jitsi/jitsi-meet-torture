@@ -96,7 +96,17 @@ public abstract class AbstractBaseTest
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
-        setup();
+        // make sure if setup fails we will cleanup
+        // when configure method @BeforeClass fails @AfterClass is not executed
+        try
+        {
+            setup();
+        }
+        catch (Throwable t)
+        {
+            cleanupClass();
+            throw t;
+        }
     }
 
     /**
@@ -181,6 +191,7 @@ public abstract class AbstractBaseTest
     @AfterClass
     public void cleanupClass()
     {
+        System.err.println("cleaaaaaannnnnnn");
         super.cleanup();
     }
 
