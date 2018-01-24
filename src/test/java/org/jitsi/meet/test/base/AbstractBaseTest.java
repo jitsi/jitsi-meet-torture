@@ -191,7 +191,6 @@ public abstract class AbstractBaseTest
     @AfterClass
     public void cleanupClass()
     {
-        System.err.println("cleaaaaaannnnnnn");
         super.cleanup();
     }
 
