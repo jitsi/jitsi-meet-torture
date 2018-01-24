@@ -261,7 +261,7 @@ public abstract class Participant<T extends WebDriver>
         if (this.hungUp)
             return;
 
-        MeetUIUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnButton(
             driver, "toolbar_button_hangup", false);
 
         TestUtils.waitMillis(500);

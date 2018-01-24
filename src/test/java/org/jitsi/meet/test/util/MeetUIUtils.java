@@ -226,75 +226,50 @@ public class MeetUIUtils
      * @param buttonID the id of the button to click.
      * @param failOnMissing whether to fail if button is missing
      */
-    public static void clickOnToolbarButton(
+    public static void clickOnButton(
             final WebDriver participant,
             final String buttonID,
             final boolean failOnMissing)
     {
-        clickOnToolbarButtonByXpath(
-            participant,
-            "//*[contains(@class, '" + buttonID + "-wrapper')]",
-            failOnMissing);
+        clickOnElement(participant, '#' + buttonID, failOnMissing);
     }
 
     /**
-     * Shows the toolbar and clicks on a button identified by xpath.
+     * Clicks on a button specified by selector (using document.querySelector).
      * @param participant the {@code WebDriver}.
-     * @param xpath the xpath of the button to click.
+     * @param selector the button selector to click.
      * @param failOnMissing whether to fail if button is missing
      */
-    private static void clickOnToolbarButtonByXpath(
-            final WebDriver participant,
-            final String xpath,
-            final boolean failOnMissing)
+    public static void clickOnElement(
+        final WebDriver participant,
+        final String selector,
+        final boolean failOnMissing)
     {
-        try
-        {
-            final String STATE_IGNORE = "ignore";
-            final String STATE_SUCCESS = "success";
+        Object clickResult = ((JavascriptExecutor) participant).executeScript(
+            "try {" +
+                "var e = document.querySelector('" + selector + "');" +
+                "if (!e) { return false;}" +
+                "e.click();" +
+                "return true;" +
+                "} catch (err) { return 'error: ' + err; }");
 
-            // tries to click for one second
-            // ignoring StaleElementReferenceException
-            String state = new WebDriverWait(participant, 1)
-                .ignoring(StaleElementReferenceException.class)
-                .until(
-                    new ExpectedCondition<String>()
-                    {
-                        public String apply(WebDriver d)
-                        {
-                            WebElement button
-                                = participant.findElement(By.xpath(xpath));
-
-                            // if element missing and we do not want
-                            // fail continue
-                            if (!failOnMissing
-                                && (button == null || !button.isDisplayed()))
-                                return STATE_IGNORE;
-
-                            button.click();
-
-                            return STATE_SUCCESS;
-                        }
-                    });
-            if (state.equals(STATE_IGNORE))
-            {
-                return;
-            }
-
-            // Move the mouse off the button to dismiss any tooltip that might
-            // have displayed.
-            Actions mouseOut = new Actions(participant);
-            mouseOut.moveToElement(participant.findElement(By.tagName("head")));
-            mouseOut.perform();
-        }
-        catch (NoSuchElementException | TimeoutException e)
+        if (clickResult != null
+            && clickResult.equals(Boolean.FALSE))
         {
             if (failOnMissing)
-                throw e;
+            {
+                throw new NoSuchElementException(
+                    "No element found for:" + selector);
+            }
 
             // there is no element, so its not visible, just continue
             // cause failOnMissing is false
-            TestUtils.print("Button is missing:" + xpath);
+            TestUtils.print("Element is missing:" + selector);
+        } else if (clickResult != null
+            && !clickResult.equals(Boolean.TRUE))
+        {
+            TestUtils.print("Error clicking element:" + selector
+                + " " + clickResult);
         }
     }
 
@@ -306,7 +281,7 @@ public class MeetUIUtils
     public static void clickOnToolbarButton(
             WebDriver participant, String buttonID)
     {
-        clickOnToolbarButton(participant, buttonID, true);
+        clickOnButton(participant, buttonID, true);
     }
 
     /**

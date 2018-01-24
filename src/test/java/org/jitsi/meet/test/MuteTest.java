@@ -168,25 +168,14 @@ public class MuteTest
         action.moveToElement(elem);
         action.perform();
 
-        // open the mute dialog
-        String muteParticipantLinkXPath
-            = "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]";
-        TestUtils.waitForDisplayedElementByXPath(
-            owner,
-            muteParticipantLinkXPath,
-            5);
-        owner.findElement(By.xpath(muteParticipantLinkXPath))
-            .click();
+        // give time for the menu to appear
+        TestUtils.waitMillis(1000);
+
+        // click the button
+        MeetUIUtils.clickOnElement(owner, "ul.popupmenu a.mutelink", true);
 
         // confirm muting
-        String muteConfirmButton
-            = "//button[contains(@id, 'modal-dialog-ok-button')]";
-        TestUtils.waitForDisplayedElementByXPath(
-            owner,
-            muteConfirmButton,
-            5);
-        owner.findElement(By.xpath(muteConfirmButton))
-            .click();
+        MeetUIUtils.clickOnButton(owner, "modal-dialog-ok-button", true);
 
         // and now check whether second participant is muted
         String participantMutedIconXPath

@@ -55,7 +55,7 @@ public class ChatPanel
      */
     public void clickToolbarButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
+        MeetUIUtils.clickOnButton(
             participant.getDriver(),
             "toolbar_button_chat",
             false);
