@@ -31,17 +31,6 @@ import static org.testng.AssertJUnit.fail;
 public class ChatPanel
 {
     /**
-     * Converts boolean to "open" or "closed" text.
-     *
-     * @param isOpen
-     * @return "open" or "closed".
-     */
-    static private String openClosedStr(boolean isOpen)
-    {
-        return isOpen ? "open" : "closed";
-    }
-
-    /**
      * The participant.
      */
     private final WebParticipant participant;
@@ -86,29 +75,46 @@ public class ChatPanel
     }
 
     /**
+     * Fails if the chat panel doesn't reach the open state withing a timeout.
+     */
+    public void assertOpen()
+    {
+        waitForOpenedOrClosed(true /* open */);
+    }
+
+    /**
+     * Fails if the chat panel doesn't reach the closed state withing a timeout.
+     */
+    public void assertClosed()
+    {
+        waitForOpenedOrClosed(false /* closed */);
+    }
+
+    /**
      * Will wait until chat panel is opened or closed. If the opened/closed
      * condition is not met after given timeout it will fail the test.
      *
-     * @param howManySeconds - How many seconds, before the wait will fail
-     * the test.
-     * @param isOpen - Will it wait for the chat to be opened opr closed ?
+     * @param open - {@code true} to wait until the panel is open, and
+     * {@code false} to wait until it is closed.
      */
-    public void waitForOpenedOrClosed(int howManySeconds, final boolean isOpen)
+    private void waitForOpenedOrClosed(boolean open)
     {
-        WebDriverWait wait = new WebDriverWait(participant.getDriver(), 2);
+        int timeout = 2;
+
+        WebDriverWait wait
+            = new WebDriverWait(participant.getDriver(), timeout);
         try
         {
-            wait.until((ExpectedCondition<Boolean>) d -> isOpen == isOpen());
+            wait.until((ExpectedCondition<Boolean>) d -> open == isOpen());
         }
         catch (TimeoutException exc)
         {
             fail(
                 String.format(
-                    "The chat was expected to be %s"
-                        + ", but was %s after %d seconds of waiting.",
-                    openClosedStr(isOpen),
-                    openClosedStr(!isOpen),
-                    howManySeconds));
+                    "The chat panel was expected to be %s " +
+                        "(timed out after %d seconds).",
+                    open ? "open" : "closed",
+                    timeout));
         }
     }
 }

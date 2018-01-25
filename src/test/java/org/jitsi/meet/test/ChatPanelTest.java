@@ -76,18 +76,18 @@ public class ChatPanelTest
 
         // The chat panel should be open after clicking the button
         chatPanel.clickToolbarButton();
-        chatPanel.waitForOpenedOrClosed(2, true /* open */);
+        chatPanel.assertOpen();
 
         // The chat panel should be closed after pressing the shortcut
         chatPanel.pressShortcut();
-        chatPanel.waitForOpenedOrClosed(2, false /* closed */);
+        chatPanel.assertClosed();
 
         // The chat panel should be open after pressing the shortcut
         chatPanel.pressShortcut();
-        chatPanel.waitForOpenedOrClosed(2, true /* open */);
+        chatPanel.assertOpen();
 
         // The chat panel should be closed after clicking the button
         chatPanel.clickToolbarButton();
-        chatPanel.waitForOpenedOrClosed(2, false /* closed */);
+        chatPanel.assertClosed();
     }
 }
