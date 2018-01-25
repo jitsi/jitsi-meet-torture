@@ -17,7 +17,6 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -75,22 +74,20 @@ public class ChatPanelTest
             chatPanel.isOpen(),
             "The chat panel should be initially closed");
 
-        chatPanel.clickToolbarButton();
-
         // The chat panel should be open after clicking the button
-        WebDriverWait wait = new WebDriverWait(participant.getDriver(), 2);
-        wait.until((ExpectedCondition<Boolean>) d -> chatPanel.isOpen());
-
-        chatPanel.pressShortcut();
-        // The chat panel should be closed after pressing the shortcut
-        wait.until((ExpectedCondition<Boolean>) d -> !chatPanel.isOpen());
-
-        chatPanel.pressShortcut();
-        // The chat panel should be open after pressing the shortcut
-        wait.until((ExpectedCondition<Boolean>) d -> chatPanel.isOpen());
-
         chatPanel.clickToolbarButton();
+        chatPanel.waitForOpenedOrClosed(2, true /* open */);
+
+        // The chat panel should be closed after pressing the shortcut
+        chatPanel.pressShortcut();
+        chatPanel.waitForOpenedOrClosed(2, false /* closed */);
+
+        // The chat panel should be open after pressing the shortcut
+        chatPanel.pressShortcut();
+        chatPanel.waitForOpenedOrClosed(2, true /* open */);
+
         // The chat panel should be closed after clicking the button
-        wait.until((ExpectedCondition<Boolean>) d -> !chatPanel.isOpen());
+        chatPanel.clickToolbarButton();
+        chatPanel.waitForOpenedOrClosed(2, false /* closed */);
     }
 }

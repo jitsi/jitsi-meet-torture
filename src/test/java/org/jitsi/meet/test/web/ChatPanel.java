@@ -16,8 +16,12 @@
 package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
+
+import static org.testng.AssertJUnit.fail;
 
 /**
  * Represents the chat panel in a particular {@link WebParticipant}.
@@ -26,6 +30,17 @@ import java.util.*;
  */
 public class ChatPanel
 {
+    /**
+     * Converts boolean to "open" or "closed" text.
+     *
+     * @param isOpen
+     * @return "open" or "closed".
+     */
+    static private String openClosedStr(boolean isOpen)
+    {
+        return isOpen ? "open" : "closed";
+    }
+
     /**
      * The participant.
      */
@@ -68,5 +83,32 @@ public class ChatPanel
     public void pressShortcut()
     {
         participant.pressShortcut('c');
+    }
+
+    /**
+     * Will wait until chat panel is opened or closed. If the opened/closed
+     * condition is not met after given timeout it will fail the test.
+     *
+     * @param howManySeconds - How many seconds, before the wait will fail
+     * the test.
+     * @param isOpen - Will it wait for the chat to be opened opr closed ?
+     */
+    public void waitForOpenedOrClosed(int howManySeconds, final boolean isOpen)
+    {
+        WebDriverWait wait = new WebDriverWait(participant.getDriver(), 2);
+        try
+        {
+            wait.until((ExpectedCondition<Boolean>) d -> isOpen == isOpen());
+        }
+        catch (TimeoutException exc)
+        {
+            fail(
+                String.format(
+                    "The chat was expected to be %s"
+                        + ", but was %s after %d seconds of waiting.",
+                    openClosedStr(isOpen),
+                    openClosedStr(!isOpen),
+                    howManySeconds));
+        }
     }
 }
