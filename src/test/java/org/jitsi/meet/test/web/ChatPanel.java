@@ -73,7 +73,7 @@ public class ChatPanel
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             "toolbar_button_chat",
-            false);
+            true);
     }
 
     /**
