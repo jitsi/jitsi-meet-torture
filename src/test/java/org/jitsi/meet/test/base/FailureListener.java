@@ -98,7 +98,7 @@ public class FailureListener
                 && error.getMessage().startsWith(
                     "Failed to decode response from marionette"))
             {
-                System.err.println("!!!! There is a test failure in "
+                TestUtils.print("!!!! There is a test failure in "
                     + testResult.getInstanceName() + "."
                         + testResult.getMethod().getMethodName()
                     + ". We will skip this test results, "

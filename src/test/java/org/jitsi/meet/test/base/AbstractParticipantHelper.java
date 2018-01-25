@@ -136,6 +136,12 @@ public abstract class AbstractParticipantHelper
                 = ParticipantFactory.getInstance()
                     .createParticipant("web.participant" + (++index));
             participants.add(participant);
+
+            // Adds a print in the console/selenium-node logs
+            // useful when checking crashes or failures in node logs
+            participant.executeScript(
+                "console.log('--- Will start test:"
+                    + getClass().getSimpleName() + "')");
         }
         else
             participant = participants.get(index);
