@@ -169,7 +169,10 @@ public class MuteTest
         action.perform();
 
         // give time for the menu to appear
-        TestUtils.waitMillis(1000);
+        TestUtils.waitForDisplayedElementByXPath(
+            owner,
+            "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
+            5);
 
         // click the button
         MeetUIUtils.clickOnElement(owner, "ul.popupmenu a.mutelink", true);
