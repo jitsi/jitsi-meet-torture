@@ -59,8 +59,8 @@ public class WebParticipant<T extends WebDriver>
      * @param type    the type (type of browser).
      * @param meetURL the url to use when joining room.
      */
-    public WebParticipant(String name, WebDriver driver,
-        ParticipantFactory.ParticipantType type, String meetURL)
+    public WebParticipant(
+            String name, WebDriver driver, ParticipantType type, String meetURL)
     {
         super(name, driver, type, meetURL);
     }

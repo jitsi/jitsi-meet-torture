@@ -51,8 +51,7 @@ public class ActiveSpeakerTest
     public void testActiveSpeaker()
     {
         // skip if we are not chrome
-        if (getParticipant1().getType()
-                != ParticipantFactory.ParticipantType.chrome)
+        if (!getParticipant1().getType().isChrome())
         {
             throw new SkipException("skip as it is not chrome");
         }
@@ -124,8 +123,7 @@ public class ActiveSpeakerTest
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
-        if (activeSpeaker.getType()
-            != ParticipantFactory.ParticipantType.chrome)
+        if (!activeSpeaker.getType().isChrome())
         {
             throw new SkipException("skip as it is not chrome");
         }

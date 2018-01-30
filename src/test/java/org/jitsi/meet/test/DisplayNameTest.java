@@ -160,9 +160,7 @@ public class DisplayNameTest
                     "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
 
-        boolean isFF
-            = remoteParticipant.getType()
-                    == ParticipantFactory.ParticipantType.firefox;
+        boolean isFF = remoteParticipant.getType().isFirefox();
         if (!isFF)
         {
             assertTrue(
@@ -214,8 +212,7 @@ public class DisplayNameTest
         action.build().perform();
 
         boolean isFF
-            = getParticipant2().getType()
-                    == ParticipantFactory.ParticipantType.firefox;
+            = getParticipant2().getType().isFirefox();
         if (!isFF)
         {
             assertTrue(

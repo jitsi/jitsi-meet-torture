@@ -41,7 +41,7 @@ public abstract class Participant<T extends WebDriver>
     /**
      * The participant type chrome, firefox etc.
      */
-    private final ParticipantFactory.ParticipantType type;
+    private final ParticipantType type;
 
     /**
      * The name of the participant.
@@ -92,7 +92,7 @@ public abstract class Participant<T extends WebDriver>
     public Participant(
         String name,
         T driver,
-        ParticipantFactory.ParticipantType type,
+        ParticipantType type,
         String meetURL)
     {
         this.name = name;
@@ -182,7 +182,7 @@ public abstract class Participant<T extends WebDriver>
         executeScript("$('body').toggleClass('notransition');");
 
         // disable the blur effect in firefox as it has some performance issues
-        if (this.type == ParticipantFactory.ParticipantType.firefox)
+        if (this.type.isFirefox())
         {
             executeScript(
                 "try { var blur "
@@ -301,7 +301,7 @@ public abstract class Participant<T extends WebDriver>
      * Returns the participant type.
      * @return the participant type.
      */
-    public ParticipantFactory.ParticipantType getType()
+    public ParticipantType getType()
     {
         return type;
     }
@@ -463,7 +463,7 @@ public abstract class Participant<T extends WebDriver>
 
     public LogEntries getBrowserLogs()
     {
-        if (type == ParticipantFactory.ParticipantType.firefox)
+        if (type.isFirefox())
         {
             // not currently supported in FF
             // https://github.com/SeleniumHQ/selenium/issues/2910
@@ -477,7 +477,7 @@ public abstract class Participant<T extends WebDriver>
 
     public File getChromeWebDriverLogFile()
     {
-        if (type == ParticipantFactory.ParticipantType.chrome)
+        if (type.isChrome())
         {
             File srcFile
                 = new File(

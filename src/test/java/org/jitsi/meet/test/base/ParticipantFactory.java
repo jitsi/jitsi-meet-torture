@@ -86,32 +86,6 @@ public class ParticipantFactory
     private static String fakeStreamVideoFName;
 
     /**
-     * The available participant type value.
-     */
-    public enum ParticipantType
-    {
-        android,
-        chrome, // default one
-        edge,
-        firefox,
-        ios,
-        safari;
-
-        /**
-         * Default is chrome.
-         * @param type the participant type string
-         * @return the participant type enum item.
-         */
-        public static ParticipantType valueOfString(String type)
-        {
-            if (type == null)
-                return chrome;
-            else
-                return ParticipantType.valueOf(type);
-        }
-    }
-
-    /**
      * The factory static instance.
      */
     private static ParticipantFactory instance;
@@ -219,7 +193,7 @@ public class ParticipantFactory
             = System.getProperty(configPrefix + ".binary");
 
         // by default we load chrome, but we can load safari or firefox
-        if (participantType == ParticipantType.firefox)
+        if (participantType.isFirefox())
         {
             FirefoxDriverManager.getInstance().setup();
 
