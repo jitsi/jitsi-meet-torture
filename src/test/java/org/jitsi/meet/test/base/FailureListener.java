@@ -138,57 +138,43 @@ public class FailureListener
     }
 
     /**
-     * Takes screenshot of owner and participant.
-     *
-     * @param fileName the filename to use.
+     * Gets a suffix appended to participant related filename (screenshot, logs
+     * etc.) which will allow to identify the participant.
+     * @param idx - The participant's index in the all participants array.
+     * @return a <tt>String</tt>
      */
-    private void takeScreenshots(
-        String fileName, AbstractBaseTest testInstance)
+    private String getParticipantFilenameSuffix(int idx)
     {
-        if (testInstance.getParticipant1() != null)
+        switch (idx)
         {
-            takeScreenshot(testInstance.getParticipant1().getDriver(),
-                fileName + "-owner.png");
-        }
-
-        if (testInstance.getParticipant2() != null)
-        {
-            takeScreenshot(testInstance.getParticipant2().getDriver(),
-                fileName + "-participant.png");
-        }
-
-        if (testInstance.getParticipant3() != null)
-        {
-            takeScreenshot(testInstance.getParticipant3().getDriver(),
-                fileName + "-third.png");
+        case 0:
+            return "-owner";
+        case 1:
+            return "-participant";
+        case 2:
+            return "-third";
+        default:
+            return "-" + (idx + 1);
         }
     }
 
     /**
-     * Takes screenshot for the supplied page.
-     * @param driver the driver controlling the page.
-     * @param fileName the destination screenshot file name.
+     * Takes screenshot of all participants.
+     *
+     * @param fileName the filename to use.
+     * @param participantHelper The participant helper which holds participant
+     * instances.
      */
-    private void takeScreenshot(WebDriver driver, String fileName)
+    private void takeScreenshots(
+            String fileName, AbstractParticipantHelper participantHelper)
     {
-        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-
-        if (takesScreenshot == null)
+        List<Participant> participants = participantHelper.getAllParticipants();
+        for (int i = 0; i < participants.size(); i++)
         {
-            TestUtils.print("No driver to take screenshot from! FileName:"
-                + fileName);
-            return;
-        }
-
-        File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        File destFile = new File(outputScreenshotsParentFolder, fileName);
-        try
-        {
-            FileUtils.copyFile(scrFile, destFile);
-        }
-        catch (IOException ioe)
-        {
-            throw new RuntimeException(ioe);
+            Participant p = participants.get(i);
+            p.takeScreenshot(
+                outputScreenshotsParentFolder,
+                fileName + getParticipantFilenameSuffix(i) + ".png");
         }
     }
 

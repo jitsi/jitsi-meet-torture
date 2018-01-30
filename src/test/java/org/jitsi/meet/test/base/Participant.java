@@ -19,6 +19,7 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -376,6 +377,33 @@ public abstract class Participant<T extends WebDriver>
      * @param name the name to set.
      */
     public abstract void setDisplayName(String name);
+
+    /**
+     * Takes screenshot.
+     * @param outputDir the screenshots output directory.
+     * @param fileName the destination screenshot file name.
+     */
+    public void takeScreenshot(File outputDir, String fileName)
+    {
+        if (!(driver instanceof TakesScreenshot))
+        {
+            TestUtils.print(
+                "Driver does not support taking screenshots ! FileName:"
+                    + fileName);
+            return;
+        }
+
+        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+
+        File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
+        if (!scrFile.renameTo(new File(outputDir, fileName)))
+        {
+            throw new RuntimeException(
+                "Failed to rename screenshot file to directory name: "
+                    + outputDir.toString() + ", file name: " + fileName
+                    + ", original file: " + scrFile.toString());
+        }
+    }
 
     /**
      * Presses a shortcut in this {@link Participant}'s driver.

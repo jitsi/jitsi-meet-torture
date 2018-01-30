@@ -317,6 +317,15 @@ public abstract class AbstractParticipantHelper
     }
 
     /**
+     * Gets the list of all participants.
+     * @return a copy of the list which holds all participants.
+     */
+    public List<Participant> getAllParticipants()
+    {
+        return new ArrayList<>(participants);
+    }
+
+    /**
      * Returns the first participant.
      * @return the first participant.
      */
