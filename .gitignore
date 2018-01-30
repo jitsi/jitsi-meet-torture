@@ -17,6 +17,7 @@ test-reports
 classes
 target
 *.log
+target/
 
 # PSNR test sequences and output files
 resources/psnr/output/
