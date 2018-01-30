@@ -15,13 +15,16 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.apache.commons.io.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.logging.*;
 import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.*;
 
 /**
  * The participant instance holding the {@link WebDriver}.
@@ -312,6 +315,12 @@ public abstract class Participant<T extends WebDriver>
         return name;
     }
 
+    public JavascriptExecutor getJSExecutor()
+    {
+        return driver instanceof JavascriptExecutor
+            ? (JavascriptExecutor) driver : null;
+    }
+
     /**
      * Executes a script in this {@link Participant}'s {@link WebDriver}.
      * See {@link JavascriptExecutor#executeScript(String, Object...)}.
@@ -319,7 +328,10 @@ public abstract class Participant<T extends WebDriver>
     @Override
     public Object executeScript(String var1, Object... var2)
     {
-        return ((JavascriptExecutor) getDriver()).executeScript(var1, var2);
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeScript(var1, var2) : null;
     }
 
     /**
@@ -330,8 +342,10 @@ public abstract class Participant<T extends WebDriver>
     @Override
     public Object executeAsyncScript(String var1, Object... var2)
     {
-        return
-            ((JavascriptExecutor) getDriver()).executeAsyncScript(var1, var2);
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeAsyncScript(var1, var2) : null;
     }
 
     /**
@@ -403,6 +417,78 @@ public abstract class Participant<T extends WebDriver>
                     + outputDir.toString() + ", file name: " + fileName
                     + ", original file: " + scrFile.toString());
         }
+    }
+
+    /**
+     * Saves the html source of the supplied page.
+     * @param outputDir the output directory.
+     * @param fileName the destination html file name.
+     */
+    public void saveHtmlSource(File outputDir, String fileName)
+    {
+        try(FileOutputStream fOut
+                = FileUtils.openOutputStream(
+                        new File(outputDir, fileName)))
+        {
+            fOut.write(
+                    driver.getPageSource().replace(">",">\n").getBytes());
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public String getMeetDebugLog()
+    {
+        try
+        {
+            Object log
+                = executeScript(
+                    "try{ "
+                        + "return JSON.stringify("
+                        + "  APP.conference.getLogs(), null, '    ');"
+                        + "}catch (e) {}");
+
+            return log instanceof String ? (String) log : null;
+        }
+        catch (Exception e)
+        {
+            Logger.getGlobal()
+                .log(Level.SEVERE, "Failed to get meet logs from " + name, e);
+
+            return null;
+        }
+    }
+
+    public LogEntries getBrowserLogs()
+    {
+        if (type == ParticipantFactory.ParticipantType.firefox)
+        {
+            // not currently supported in FF
+            // https://github.com/SeleniumHQ/selenium/issues/2910
+            return null;
+        }
+
+        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+
+        return logs;
+    }
+
+    public File getChromeWebDriverLogFile()
+    {
+        if (type == ParticipantFactory.ParticipantType.chrome)
+        {
+            File srcFile
+                = new File(
+                        ParticipantFactory.getChromeWebDriverLogFile(name));
+
+            // in case of remote driver the file does not exist
+            if (srcFile.exists())
+                return srcFile;
+        }
+
+        return null;
     }
 
     /**

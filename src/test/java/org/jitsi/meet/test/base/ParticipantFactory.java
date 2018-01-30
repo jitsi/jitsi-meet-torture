@@ -117,6 +117,20 @@ public class ParticipantFactory
     private static ParticipantFactory instance;
 
     /**
+     * Returns the filename for Chrome participant pointing to the Chrome web
+     * driver console logs. It's configured for every Chrome driver through
+     * the 'webdriver.chrome.logfile' system property.
+     *
+     * @param participantName {@link Participant#getName()}
+     * @return a string with a path pointing to the log file.
+     */
+    static public String getChromeWebDriverLogFile(String participantName)
+    {
+        return FailureListener.createLogsFolder()
+            + "/chrome-console-" + participantName + ".log";
+    }
+
+    /**
      * The private constructor of the factory.
      */
     private ParticipantFactory()
@@ -268,9 +282,9 @@ public class ParticipantFactory
             ChromeDriverManager.getInstance().setup();
 
             System.setProperty("webdriver.chrome.verboseLogging", "true");
-            System.setProperty("webdriver.chrome.logfile",
-                FailureListener.createLogsFolder() +
-                    "/chrome-console-" + name + ".log");
+            System.setProperty(
+                    "webdriver.chrome.logfile",
+                    getChromeWebDriverLogFile(name));
 
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);
