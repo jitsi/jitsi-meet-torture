@@ -153,20 +153,8 @@ public abstract class AbstractParticipantHelper
         if (roomParameter != null)
             roomName += roomParameter;
 
-        // if there is no custom join method
-        // use the default impl from Participant
-        if (joinRef == null)
-        {
-            // join room
-            participant.joinConference(roomName, fragment);
-        }
-        else
-        {
-            // custom join implementation
-            joinRef.accept(roomName, fragment);
-            participant.joinedRoomName = roomName;
-            participant.hungUp = false;
-        }
+        // join room
+        participant.joinConference(roomName, fragment, joinRef);
 
         return participant;
     }
