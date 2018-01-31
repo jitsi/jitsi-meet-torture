@@ -182,10 +182,32 @@ public class WebTestBase extends AbstractBaseTest
         String                     fragment,
         BiConsumer<String, String> joinRef)
     {
-        String configPrefix = "web.participant" + (index + 1);
+        Participant p = getParticipant(index);
 
-        return joinParticipant(
-            index, configPrefix, roomParameter, fragment, joinRef);
+        if (p == null)
+        {
+            // There's an assumption that the participants are created
+            // starting from 0, 1, 2, so throw an Exception if they happen to be
+            // created in different order.
+            int size = getAllParticipants().size();
+            if (index != size)
+            {
+                throw new IllegalArgumentException(
+                    String.format(
+                        "New participant would have been inserted at different "
+                            + "index than expected. Index: %d, size %d.",
+                        index,
+                        size));
+            }
+
+            String configPrefix = "web.participant" + (index + 1);
+
+            p = createParticipant(configPrefix);
+        }
+
+        p.joinConference(currentRoomName, roomParameter, fragment, joinRef);
+
+        return p;
     }
 
     /**

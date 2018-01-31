@@ -107,18 +107,25 @@ public abstract class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName)
     {
-        this.joinConference(roomName, null, null);
+        this.joinConference(roomName, null, null, null);
     }
 
     /**
      * Joins a conference.
+     *
+     * FIXME: explain fragment, move the logic of appending config part out from
+     * WebParticipant to shared class/method.
+     *
      * @param roomName the room name to join.
      * @param fragment adds the given string to the fragment part of the URL.
      */
     public void joinConference(
-        String roomName, String fragment,
+        String roomName, String roomParameter, String fragment,
         BiConsumer<String, String> customJoinImpl)
     {
+        if (roomParameter != null)
+            roomName += roomParameter;
+
         // not hungup, so not joining
         if (!this.hungUp
             && this.joinedRoomName != null

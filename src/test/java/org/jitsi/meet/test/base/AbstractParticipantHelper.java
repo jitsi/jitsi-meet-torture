@@ -19,7 +19,6 @@ import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
-import java.util.function.*;
 
 public abstract class AbstractParticipantHelper
 {
@@ -58,49 +57,22 @@ public abstract class AbstractParticipantHelper
     /**
      * Joins a participant, created if does not exists.
      *
-     * @param index the participant index.
-     * @param roomParameter a room parameter to add, if any.
-     * @param fragment adds the given string to the fragment part of the URL
-     * @param joinRef custom join method (optional).
+     * @param configPrefix  the config prefix which is used to identify
+     * the config properties which describe the new participant.
      * @return the participant which was created
      */
-    protected Participant joinParticipant(
-            int                        index,
-            String                     configPrefix,
-            String                     roomParameter,
-            String                     fragment,
-            BiConsumer<String, String> joinRef)
+    protected Participant createParticipant(String configPrefix)
     {
-        Participant<? extends WebDriver> participant;
+        Participant<? extends WebDriver> participant
+            = ParticipantFactory.getInstance().createParticipant(configPrefix);
 
-        if (index >= participants.size())
-        {
-            // we need to create this participant.
-            participant
-                = ParticipantFactory
-                    .getInstance()
-                    .createParticipant(configPrefix);
+        participants.add(participant);
 
-            participants.add(participant);
-
-            // Adds a print in the console/selenium-node logs
-            // useful when checking crashes or failures in node logs
-            participant.executeScript(
+        // Adds a print in the console/selenium-node logs
+        // useful when checking crashes or failures in node logs
+        participant.executeScript(
                 "console.log('--- Will start test:"
                     + getClass().getSimpleName() + "')");
-        }
-        else
-            participant = participants.get(index);
-
-        String roomName = currentRoomName;
-
-        // we do not persist room params for now, in case of jwt
-        // we want them just for one of the participants
-        if (roomParameter != null)
-            roomName += roomParameter;
-
-        // join room
-        participant.joinConference(roomName, fragment, joinRef);
 
         return participant;
     }
@@ -110,14 +82,9 @@ public abstract class AbstractParticipantHelper
      * @param index the index of the participant.
      * @return the participant if it exists or null.
      */
-    private Participant getParticipant(int index)
+    protected Participant getParticipant(int index)
     {
-        if (participants.size() <= index)
-        {
-            return null;
-        }
-        else
-            return participants.get(index);
+        return index < participants.size() ? participants.get(index) : null;
     }
 
     /**
