@@ -17,8 +17,8 @@ package org.jitsi.meet.test;
 
 import java.util.*;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -35,7 +35,7 @@ import static org.testng.Assert.*;
  * @author Hristo Terezov
  */
 public class ConnectionTimeTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Number of conferences that are going to be started and closed to 

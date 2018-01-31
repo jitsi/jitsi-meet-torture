@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -32,7 +33,7 @@ import static org.testng.Assert.*;
  * @author Hristo Terezov
  */
 public class MaxUsersTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Number of participants in the call.

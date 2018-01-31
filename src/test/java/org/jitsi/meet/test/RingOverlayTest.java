@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -31,7 +32,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class RingOverlayTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * A test token to use. This is the encoded values:

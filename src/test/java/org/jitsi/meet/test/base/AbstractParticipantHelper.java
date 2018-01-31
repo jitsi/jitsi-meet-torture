@@ -20,7 +20,6 @@ import org.openqa.selenium.*;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.*;
 
 public abstract class AbstractParticipantHelper
 {
@@ -49,70 +48,11 @@ public abstract class AbstractParticipantHelper
      * @param participants the participants to add.
      */
     protected AbstractParticipantHelper(String roomName,
-        Participant<? extends WebDriver>... participants)
+        List<Participant<? extends WebDriver>> participants)
     {
         this.currentRoomName = roomName;
-
-        // add only non null values
-        this.participants.addAll(
-            Arrays.stream(participants)
-                .filter(p -> p != null)
-                .collect(Collectors.toList()));
-    }
-
-    /**
-     * Starts the owner, if it is not started.
-     */
-    public void ensureOneParticipant()
-    {
-        ensureOneParticipant((String)null);
-    }
-
-    /**
-     * Starts the owner, if it is not started.
-     * @param fragment adds the given string to the fragment part of the URL
-     */
-    public void ensureOneParticipant(String fragment)
-    {
-        this.ensureOneParticipant(null, fragment);
-    }
-
-    /**
-     * Starts the owner, if it is not started.
-     * @param roomParameter an extra parameter to the url. The fragment adds
-     * parameters as # where roomParameter actually changes query parameters
-     * adding ?something=value.
-     * @param fragment adds the given string to the fragment part of the URL
-     */
-    public void ensureOneParticipant(String roomParameter, String fragment)
-    {
-        Participant participant
-            = joinParticipant(0, roomParameter, fragment, null);
-
-        participant.waitToJoinMUC(10);
-    }
-
-    /**
-     * Starts owner, if not started. Uses the custom method to join the
-     * participant, by skipping the Participant implementation.
-     *
-     * @param joinRef
-     */
-    public void ensureOneParticipant(BiConsumer<String, String> joinRef)
-    {
-        Participant participant
-            = joinParticipant(0, null, null, joinRef);
-
-        participant.waitToJoinMUC(10);
-    }
-
-    /**
-     * Joins the first participant.
-     * @return the participant which was created.
-     */
-    public Participant joinFirstParticipant()
-    {
-        return joinParticipant(0, null, null, null);
+        this.participants
+            = Objects.requireNonNull(participants, "participants");
     }
 
     /**
@@ -124,17 +64,23 @@ public abstract class AbstractParticipantHelper
      * @param joinRef custom join method (optional).
      * @return the participant which was created
      */
-    private Participant joinParticipant(
-        int index, String roomParameter, String fragment,
-        BiConsumer<String, String> joinRef)
+    protected Participant joinParticipant(
+            int                        index,
+            String                     configPrefix,
+            String                     roomParameter,
+            String                     fragment,
+            BiConsumer<String, String> joinRef)
     {
-        Participant participant;
-        if (participants.size() <= index)
+        Participant<? extends WebDriver> participant;
+
+        if (index >= participants.size())
         {
             // we need to create this participant.
             participant
-                = ParticipantFactory.getInstance()
-                    .createParticipant("web.participant" + (++index));
+                = ParticipantFactory
+                    .getInstance()
+                    .createParticipant(configPrefix);
+
             participants.add(participant);
 
             // Adds a print in the console/selenium-node logs
@@ -175,75 +121,6 @@ public abstract class AbstractParticipantHelper
     }
 
     /**
-     * Starts the owner and the seconds participant, if they are not started,
-     * and stops the third participant, if it is not stopped.
-     * participants(owner and 'second participant').
-     */
-    public void ensureTwoParticipants()
-    {
-        ensureTwoParticipants(null);
-    }
-
-    /**
-     * Starts the owner and the seconds participant, if they are not started,
-     * and stops the third participant, if it is not stopped.
-     * participants(owner and 'second participant').
-     * @param fragment adds the given string to the fragment part of the URL
-     */
-    public void ensureTwoParticipants(String fragment)
-    {
-        ensureTwoParticipantsInternal(fragment);
-
-        hangUpParticipant(2);
-    }
-
-    /**
-     * Starts the owner and the seconds participant, if they are not started.
-     * participants(owner and 'second participant').
-     * @param fragment adds the given string to the fragment part of the URL
-     */
-    private void ensureTwoParticipantsInternal(String fragment)
-    {
-        ensureOneParticipant();
-
-        Participant participant = joinParticipant(1, null, fragment, null);
-
-        participant.waitToJoinMUC(10);
-
-        participant.waitForIceConnected();
-        participant.waitForSendReceiveData();
-
-        TestUtils.waitMillis(500);
-    }
-
-    /**
-     * Starts the owner, second participant and third participant if they aren't
-     * started.
-     * @param fragment adds the given string to the fragment part of the URL
-     */
-    public void ensureThreeParticipants(String fragment)
-    {
-        ensureTwoParticipantsInternal(null);
-
-        Participant participant = joinParticipant(2, null, fragment, null);
-
-        participant.waitToJoinMUC(15);
-
-        participant.waitForIceConnected();
-        participant.waitForSendReceiveData();
-        participant.waitForRemoteStreams(2);
-    }
-
-    /**
-     * Starts the owner, second participant and third participant if they aren't
-     * started.
-     */
-    public void ensureThreeParticipants()
-    {
-        ensureThreeParticipants(null);
-    }
-
-    /**
      * Setup helper by generating the room name to use.
      */
     public void setup()
@@ -278,22 +155,11 @@ public abstract class AbstractParticipantHelper
      * Hangups a participant.
      * @param index the participant index to be hungup.
      */
-    private void hangUpParticipant(int index)
+    protected void hangUpParticipant(int index)
     {
         Participant participant = getParticipant(index);
         if (participant != null)
             participant.hangUp();
-    }
-
-    /**
-     * Starts the owner, if it isn't started and hangups all other participants.
-     */
-    public void hangUpAllParticipantsExceptTheOwner()
-    {
-        ensureOneParticipant();
-
-        hangUpParticipant(1);
-        hangUpParticipant(2);
     }
 
     /**
@@ -308,7 +174,7 @@ public abstract class AbstractParticipantHelper
      * Gets the list of all participants.
      * @return a copy of the list which holds all participants.
      */
-    public List<Participant> getAllParticipants()
+    public List<Participant<? extends WebDriver>> getAllParticipants()
     {
         return new ArrayList<>(participants);
     }

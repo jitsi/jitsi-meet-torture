@@ -145,7 +145,8 @@ public class ParticipantFactory
      *
      * @param configPrefix the config prefix.
      */
-    public Participant createParticipant(String configPrefix)
+    public Participant<? extends WebDriver> createParticipant(
+            String configPrefix)
     {
         if (configPrefix.startsWith("web"))
         {

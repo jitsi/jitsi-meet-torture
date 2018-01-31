@@ -15,11 +15,10 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
-import org.testng.*;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -41,7 +40,7 @@ import java.util.*;
  * @author Pawel Domas
  */
 public class AuthSetupConference
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The name of system property which specifies the name of .properties file

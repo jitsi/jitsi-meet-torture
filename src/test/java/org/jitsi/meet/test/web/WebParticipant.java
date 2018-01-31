@@ -29,10 +29,8 @@ import java.util.concurrent.*;
 
 /**
  * The web specific participant implementation.
- * @param <T>
  */
-public class WebParticipant<T extends WebDriver>
-    extends Participant
+public class WebParticipant extends Participant<WebDriver>
 {
     /**
      * The javascript code which returns {@code true} if we are joined in

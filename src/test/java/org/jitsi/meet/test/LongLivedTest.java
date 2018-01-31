@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.tasks.*;
+import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
@@ -28,7 +28,7 @@ import java.util.concurrent.*;
  * @author Damian Minkov
  */
 public class LongLivedTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
     public boolean skipTestByDefault()

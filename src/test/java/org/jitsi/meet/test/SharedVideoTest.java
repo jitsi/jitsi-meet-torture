@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -29,7 +30,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class SharedVideoTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Links to youtube videos and their expected urls, used for loading and

@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.TimeoutException;
@@ -33,7 +34,7 @@ import static org.testng.Assert.*;
  * the conference and that participant will be sharing its screen.
  */
 public class DesktopSharingTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * A property to specified the external script that will be used to

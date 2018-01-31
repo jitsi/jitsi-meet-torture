@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -27,7 +28,7 @@ import org.testng.annotations.*;
  * @author Pawel Domas
  */
 public class StartMutedTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
     public void setup()

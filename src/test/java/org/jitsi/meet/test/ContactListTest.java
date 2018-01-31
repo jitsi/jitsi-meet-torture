@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -32,7 +32,7 @@ import static org.testng.Assert.*;
  * @author Yana Stamcheva
  */
 public class ContactListTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
     public void setup()

@@ -15,8 +15,9 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.Test;
@@ -29,7 +30,7 @@ import org.testng.annotations.Test;
  * @author Damian Minkov
  */
 public class IFrameAPITest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * A url for a page that loads the iframe API.

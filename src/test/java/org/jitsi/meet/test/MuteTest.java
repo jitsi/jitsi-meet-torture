@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
@@ -29,7 +30,7 @@ import org.testng.annotations.*;
  * @author Lyubomir Marinov
  */
 public class MuteTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Default constructor.

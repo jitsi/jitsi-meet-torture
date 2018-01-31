@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -26,7 +26,7 @@ import org.testng.annotations.*;
  * Test if we can hangup the call.
  */
 public class EndConferenceTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
     public void setup()

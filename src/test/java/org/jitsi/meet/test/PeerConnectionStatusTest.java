@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.*;
@@ -46,7 +46,7 @@ import static org.testng.Assert.*;
  * @author Pawel Domas
  */
 public class PeerConnectionStatusTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Name of the system property which point to the firewall script used to

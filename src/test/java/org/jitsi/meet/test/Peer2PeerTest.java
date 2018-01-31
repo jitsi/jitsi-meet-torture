@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -29,7 +29,7 @@ import static org.testng.Assert.*;
  * @author Pawel Domas
  */
 public class Peer2PeerTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The config fragment which enables P2P test mode.

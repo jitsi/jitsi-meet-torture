@@ -15,8 +15,9 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -26,7 +27,7 @@ import static org.testng.Assert.*;
  * @author Boris Grozev
  */
 public class UDPTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
     public void setup()

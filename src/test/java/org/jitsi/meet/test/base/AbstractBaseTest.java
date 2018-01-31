@@ -82,10 +82,7 @@ public abstract class AbstractBaseTest
      */
     protected AbstractBaseTest(AbstractBaseTest baseTest)
     {
-        super(baseTest.currentRoomName,
-            baseTest.getParticipant1(),
-            baseTest.getParticipant2(),
-            baseTest.getParticipant3());
+        super(baseTest.currentRoomName, baseTest.getAllParticipants());
     }
 
     @BeforeClass

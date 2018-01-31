@@ -23,6 +23,8 @@ import org.apache.http.util.*;
 import com.google.gson.*;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.web.*;
+
 import org.testng.annotations.*;
 
 import java.net.*;
@@ -40,7 +42,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class JVBConferencesCheck
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * List used to save the list of available conferences on the first run

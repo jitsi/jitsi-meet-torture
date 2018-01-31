@@ -15,8 +15,8 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
@@ -32,7 +32,7 @@ import org.testng.annotations.*;
  * @author Damian Minkov
  */
 public class DesktopSharingImitationTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Used to toggle desktop sharing imitation.

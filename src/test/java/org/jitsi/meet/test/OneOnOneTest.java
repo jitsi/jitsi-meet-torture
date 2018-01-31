@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -28,7 +29,7 @@ import org.testng.annotations.*;
  * @author Leonard Kim
  */
 public class OneOnOneTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The duration to wait, in seconds, remote videos in filmstrip to display

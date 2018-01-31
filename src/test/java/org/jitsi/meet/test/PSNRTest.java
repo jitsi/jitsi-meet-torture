@@ -19,6 +19,7 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.json.simple.*;
 import org.openqa.selenium.*;
@@ -39,7 +40,7 @@ import java.util.concurrent.*;
  * @author Ivan Symchych
  */
 public class PSNRTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Defines the directory in which the psnr output file should be written
