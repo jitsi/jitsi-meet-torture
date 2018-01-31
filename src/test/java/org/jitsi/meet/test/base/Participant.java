@@ -62,7 +62,7 @@ public abstract class Participant<T extends WebDriver>
      * We store the room name we joined as if someone calls joinConference twice
      * to be able to detect that there is no need to load anything.
      */
-    String joinedRoomName = null;
+    private String joinedRoomName = null;
 
     /**
      * Executor that is responsible for keeping the participant session alive.
@@ -167,7 +167,7 @@ public abstract class Participant<T extends WebDriver>
         {
             this.keepAliveExecution = this.executor
                 .scheduleAtFixedRate(
-                    () -> driver.getCurrentUrl(),
+                    driver::getCurrentUrl,
                     KEEP_ALIVE_SESSION_INTERVAL,
                     KEEP_ALIVE_SESSION_INTERVAL,
                     TimeUnit.SECONDS);
@@ -415,9 +415,7 @@ public abstract class Participant<T extends WebDriver>
             return null;
         }
 
-        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-
-        return logs;
+        return driver.manage().logs().get(LogType.BROWSER);
     }
 
     public File getChromeWebDriverLogFile()
