@@ -51,7 +51,7 @@ public abstract class Participant<T extends WebDriver>
     /**
      * The url to join conferences.
      */
-    protected final String meetURL;
+    private final JitsiMeetUrl meetURL = new JitsiMeetUrl();
 
     /**
      * Is hung up.
@@ -88,17 +88,25 @@ public abstract class Participant<T extends WebDriver>
      * @param driver its driver instance.
      * @param type the type (type of browser).
      * @param meetURL the url to use when joining room.
+     * @param defaultConfigPart the hash part of the URL which specifies default
+     * config overrides. For example:
+     * "config.requireDisplayName=false&config.debug=true"
+     * This will be added for every conference URL joined by this
+     * <tt>Participant</tt> instance. Note that the hash sign ("#") is added
+     * automagically, so it should be omitted.
      */
     public Participant(
         String name,
         T driver,
         ParticipantType type,
-        String meetURL)
+        String meetURL,
+        String defaultConfigPart)
     {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name");
         this.driver = Objects.requireNonNull(driver, "driver");
-        this.type = type;
-        this.meetURL = meetURL;
+        this.type = Objects.requireNonNull(type, "type");
+        this.meetURL.setServerUrl(meetURL);
+        this.meetURL.appendConfig(defaultConfigPart);
     }
 
     /**
@@ -113,20 +121,27 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Joins a conference.
      *
-     * FIXME: explain fragment, move the logic of appending config part out from
-     * WebParticipant to shared class/method.
-     *
      * @param roomName the room name to join.
-     * @param fragment adds the given string to the fragment part of the URL.
+     * @param roomParameter the {@link JitsiMeetUrl#roomParameters} part of
+     * the Jitsi Meet URL.
+     * @param config the {@link JitsiMeetUrl#hashConfigPart} which will be
+     * appended at the end of the default config part (if any) specified in the
+     * {@link Participant}'s constructor.
      */
     public void joinConference(
-        String roomName, String roomParameter, String fragment,
-        BiConsumer<String, String> customJoinImpl)
+        String roomName, String roomParameter, String config,
+        Consumer<JitsiMeetUrl> customJoinImpl)
     {
-        if (roomParameter != null)
-            roomName += roomParameter;
+        JitsiMeetUrl conferenceUrl = (JitsiMeetUrl) this.meetURL.clone();
+
+        conferenceUrl.setRoomName(roomName);
+        conferenceUrl.setRoomParameters(roomParameter);
+        conferenceUrl.appendConfig(config);
+
+        TestUtils.print(getName() + " is opening URL: " + conferenceUrl);
 
         // not hungup, so not joining
+        // FIXME this should also check for room parameters, config etc.
         if (!this.hungUp
             && this.joinedRoomName != null
             && this.joinedRoomName.equals(roomName))
@@ -138,11 +153,11 @@ public abstract class Participant<T extends WebDriver>
 
         if (customJoinImpl != null)
         {
-            customJoinImpl.accept(roomName, fragment);
+            customJoinImpl.accept(conferenceUrl);
         }
         else
         {
-            doJoinConference(roomName, fragment);
+            doJoinConference(conferenceUrl);
         }
 
         this.joinedRoomName = roomName;
@@ -153,10 +168,12 @@ public abstract class Participant<T extends WebDriver>
 
     /**
      * Implements the logic of joining a conference.
-     * @param roomName the name of the room to be joined
-     * @param fragment adds the given string to the fragment part of the URL.
+     * @param conferenceUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
      */
-    protected abstract void doJoinConference(String roomName, String fragment);
+    protected abstract void doJoinConference(JitsiMeetUrl conferenceUrl);
 
     /**
      * Starts the keep-alive execution.

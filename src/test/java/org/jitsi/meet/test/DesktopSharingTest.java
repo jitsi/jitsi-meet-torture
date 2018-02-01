@@ -83,17 +83,19 @@ public class DesktopSharingTest
         new Thread(() -> {
             try
             {
-                String URL =
-                    System.getProperty(
-                        ParticipantFactory.JITSI_MEET_URL_PROP) + "/"
-                        + currentRoomName
-                        + "#config.requireDisplayName=false"
-                        + "&config.firefox_fake_device=true"
-                        + "&config.autoEnableDesktopSharing=true";
-                String[] cmd =
-                    { hookScript, URL};
+                JitsiMeetUrl url = ParticipantFactory.getJitsiMeetUrl();
 
-                print("Start the script with param:"+ URL);
+                url.setRoomName(currentRoomName);
+                // FIXME the config part may need to by synced up with
+                // WebParticipant#DEFAULT_CONFIG
+                url.setHashConfigPart(
+                    "config.requireDisplayName=false"
+                        + "&config.firefox_fake_device=true"
+                        + "&config.autoEnableDesktopSharing=true");
+
+                String[] cmd = { hookScript, url.toString()};
+
+                print("Start the script with param:"+ url);
                 ProcessBuilder pb = new ProcessBuilder(cmd);
 
                 pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);

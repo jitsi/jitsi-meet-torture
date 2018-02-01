@@ -141,6 +141,22 @@ public class ParticipantFactory
     }
 
     /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link #JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    public static JitsiMeetUrl getJitsiMeetUrl()
+    {
+        JitsiMeetUrl url = new JitsiMeetUrl();
+
+        url.setServerUrl(System.getProperty(JITSI_MEET_URL_PROP));
+
+        return url;
+    }
+
+    /**
      * The configuration prefix to use for initializing the participant.
      *
      * @param configPrefix the config prefix.

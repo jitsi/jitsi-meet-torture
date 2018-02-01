@@ -77,9 +77,10 @@ public class WebTestBase extends AbstractBaseTest
      * Starts owner, if not started. Uses the custom method to join the
      * participant, by skipping the Participant implementation.
      *
-     * @param joinRef
+     * @param joinRef a custom implementation of
+     * the {@link Participant#doJoinConference(JitsiMeetUrl)} method.
      */
-    public void ensureOneParticipant(BiConsumer<String, String> joinRef)
+    public void ensureOneParticipant(Consumer<JitsiMeetUrl> joinRef)
     {
         Participant participant
             = joinParticipant(0, null, null, joinRef);
@@ -180,7 +181,7 @@ public class WebTestBase extends AbstractBaseTest
         int                        index,
         String                     roomParameter,
         String                     fragment,
-        BiConsumer<String, String> joinRef)
+        Consumer<JitsiMeetUrl>     joinRef)
     {
         Participant p = getParticipant(index);
 

@@ -46,6 +46,19 @@ public class WebParticipant extends Participant<WebDriver>
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
 
+    /**
+     * Default config for Web participants.
+     */
+    public static final String DEFAULT_CONFIG
+        = "config.requireDisplayName=false"
+            + "&config.debug=true"
+            + "&config.disableAEC=true"
+            + "&config.disableNS=true"
+            + "&config.callStatsID=false"
+            + "&config.alwaysVisibleToolbar=true"
+            + "&config.p2p.enabled=false"
+            + "&config.disable1On1Mode=true";
+
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
@@ -61,30 +74,15 @@ public class WebParticipant extends Participant<WebDriver>
     public WebParticipant(
             String name, WebDriver driver, ParticipantType type, String meetURL)
     {
-        super(name, driver, type, meetURL);
+        super(name, driver, type, meetURL, DEFAULT_CONFIG);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void doJoinConference(String roomName, String fragment)
+    public void doJoinConference(JitsiMeetUrl conferenceUrl)
     {
-        String URL = this.meetURL + "/" + roomName;
-        URL += "#config.requireDisplayName=false";
-        URL += "&config.debug=true";
-        URL += "&config.disableAEC=true";
-        URL += "&config.disableNS=true";
-        URL += "&config.callStatsID=false";
-        URL += "&config.alwaysVisibleToolbar=true";
-        URL += "&config.p2p.enabled=false";
-        URL += "&config.disable1On1Mode=true";
-
-        if (fragment != null)
-            URL += "&" + fragment;
-
-        TestUtils.print(getName() + " is opening URL: " + URL);
-
         // with chrome v52 we start getting error:
         // "Timed out receiving message from renderer" and
         // "Navigate timeout: cannot determine loading status"
@@ -97,7 +95,7 @@ public class WebParticipant extends Participant<WebDriver>
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         try
         {
-            driver.get(URL);
+            driver.get(conferenceUrl.toString());
         }
         catch (org.openqa.selenium.TimeoutException ex)
         {

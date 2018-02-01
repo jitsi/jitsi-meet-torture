@@ -72,8 +72,8 @@ public class JVBConferencesCheck
 
         if (jvbAddress == null)
         {
-            String meetAddress =
-                System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP);
+            String meetAddress
+                = ParticipantFactory.getJitsiMeetUrl().getServerUrl();
             try
             {
                 String host = new URL(meetAddress).getHost();
@@ -82,6 +82,7 @@ public class JVBConferencesCheck
             }
             catch(Throwable t)
             {
+                // FIXME: shouldn't the test fail here ?
                 t.printStackTrace();
             }
         }
@@ -95,6 +96,7 @@ public class JVBConferencesCheck
             }
             catch(Throwable t)
             {
+                // FIXME: shouldn't the test fail here ?
                 t.printStackTrace();
             }
         }
@@ -127,6 +129,7 @@ public class JVBConferencesCheck
         }
         catch(Throwable t)
         {
+            // FIXME: shouldn't the test fail here ?
             t.printStackTrace();
         }
         finally
