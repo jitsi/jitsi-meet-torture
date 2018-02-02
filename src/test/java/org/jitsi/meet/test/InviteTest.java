@@ -34,9 +34,9 @@ public class InviteTest extends WebTestBase
 
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
 

@@ -108,7 +108,7 @@ public class WebTestBase extends AbstractBaseTest
     {
         ensureTwoParticipantsInternal(fragment);
 
-        hangUpParticipant(2);
+        participants.hangUpParticipant(2);
     }
 
     /**
@@ -158,14 +158,49 @@ public class WebTestBase extends AbstractBaseTest
     }
 
     /**
+     * Returns the first participant.
+     * @return the first participant.
+     */
+    public Participant getParticipant1()
+    {
+        return participants.getParticipant(0);
+    }
+
+    /**
+     * Returns the second participant.
+     * @return the second participant.
+     */
+    public Participant getParticipant2()
+    {
+        return participants.getParticipant(1);
+    }
+
+    /**
+     * Returns the third participant.
+     * @return the third participant.
+     */
+    public Participant getParticipant3()
+    {
+        return participants.getParticipant(2);
+    }
+
+    /**
+     * Hangups all participants.
+     */
+    public void hangUpAllParticipants()
+    {
+        participants.hangUpAllParticipants();
+    }
+
+    /**
      * Starts the owner, if it isn't started and hangups all other participants.
      */
     public void hangUpAllParticipantsExceptTheOwner()
     {
         ensureOneParticipant();
 
-        hangUpParticipant(1);
-        hangUpParticipant(2);
+        participants.hangUpParticipant(1);
+        participants.hangUpParticipant(2);
     }
 
     /**
@@ -183,14 +218,14 @@ public class WebTestBase extends AbstractBaseTest
         String                     fragment,
         Consumer<JitsiMeetUrl>     joinRef)
     {
-        Participant p = getParticipant(index);
+        Participant p = participants.getParticipant(index);
 
         if (p == null)
         {
             // There's an assumption that the participants are created
             // starting from 0, 1, 2, so throw an Exception if they happen to be
             // created in different order.
-            int size = getAllParticipants().size();
+            int size = participants.getAllParticipants().size();
             if (index != size)
             {
                 throw new IllegalArgumentException(
@@ -203,7 +238,7 @@ public class WebTestBase extends AbstractBaseTest
 
             String configPrefix = "web.participant" + (index + 1);
 
-            p = createParticipant(configPrefix);
+            p = participants.createParticipant(configPrefix);
         }
 
         p.joinConference(currentRoomName, roomParameter, fragment, joinRef);

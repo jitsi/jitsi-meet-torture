@@ -40,9 +40,9 @@ public class FollowMeTest
             "//input[@id='followMeCheckBox']";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
 

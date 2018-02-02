@@ -17,6 +17,7 @@ package org.jitsi.meet.test.base;
 
 import org.jitsi.meet.test.util.*;
 
+import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -30,7 +31,6 @@ import java.util.stream.*;
  */
 @Listeners(FailureListener.class)
 public abstract class AbstractBaseTest
-    extends AbstractParticipantHelper
 {
     /**
      * The name of the property which controls the list of tests to be run.
@@ -70,19 +70,35 @@ public abstract class AbstractBaseTest
     private static List<String> testsToInclude = null;
 
     /**
+     * The current room name used.
+     */
+    protected final String currentRoomName;
+
+    /**
+     * The participants pool created/used by this test instance.
+     */
+    final protected ParticipantHelper participants;
+
+    /**
      * Default.
      */
     protected AbstractBaseTest()
-    {}
+    {
+        currentRoomName
+            = "torture" + String.valueOf((int)(Math.random()*1000000));
+        participants = new ParticipantHelper();
+    }
 
     /**
      * Constructs new AbstractBaseTest with predefined baseTest, to
      * get its participants and room name.
+     *
      * @param baseTest the parent test.
      */
     protected AbstractBaseTest(AbstractBaseTest baseTest)
     {
-        super(baseTest.currentRoomName, baseTest.getAllParticipants());
+        currentRoomName = baseTest.currentRoomName;
+        participants = new ParticipantHelper(baseTest.participants);
     }
 
     @BeforeClass
@@ -97,13 +113,32 @@ public abstract class AbstractBaseTest
         // when configure method @BeforeClass fails @AfterClass is not executed
         try
         {
-            setup();
+            setupClass();
         }
         catch (Throwable t)
         {
             cleanupClass();
             throw t;
         }
+    }
+
+    /**
+     * Returns all {@link Participant}s held by the underlying
+     * {@link ParticipantHelper}.
+     */
+    public List<Participant<? extends WebDriver>>  getAllParticipants()
+    {
+        return participants.getAllParticipants();
+    }
+
+    /**
+     * Method is called "before class". {@link AbstractBaseTest} will figure out
+     * if the test should be skipped in which case this method will not be
+     * called.
+     */
+    protected void setupClass()
+    {
+        // Currently does nothing.
     }
 
     /**
@@ -185,10 +220,14 @@ public abstract class AbstractBaseTest
         return false;
     }
 
+    /**
+     * Method called "AfterClass". Will clean up any dangling
+     * {@link Participant}s held by the {@link ParticipantHelper}.
+     */
     @AfterClass
     public void cleanupClass()
     {
-        super.cleanup();
+        this.participants.cleanup();
     }
 
     @BeforeMethod

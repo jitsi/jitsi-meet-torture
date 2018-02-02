@@ -66,9 +66,9 @@ public class JibriTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         streamKey = System.getProperty(STREAM_KEY_PROP);
         publicURL = System.getProperty(PUBLIC_URL_PROP);

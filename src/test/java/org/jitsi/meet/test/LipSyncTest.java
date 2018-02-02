@@ -83,9 +83,9 @@ public class LipSyncTest
     private boolean debug;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         // We need special config to be passed and audio
         // video streams reset, because the audio does not loop in Chrome and we
@@ -99,9 +99,9 @@ public class LipSyncTest
     }
 
     @Override
-    public void cleanup()
+    public void cleanupClass()
     {
-        super.cleanup();
+        super.cleanupClass();
 
         ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
         ParticipantFactory.getInstance().setFakeStreamAudioFile(

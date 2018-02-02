@@ -47,9 +47,9 @@ public class StopVideoTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

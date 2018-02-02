@@ -35,9 +35,9 @@ public class ContactListTest
     extends WebTestBase
 {
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         // We make sure that we have a conference with at least 2 participants.
         ensureTwoParticipants();

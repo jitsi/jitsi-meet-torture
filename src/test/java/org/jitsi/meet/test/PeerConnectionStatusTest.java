@@ -87,9 +87,9 @@ public class PeerConnectionStatusTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         firewallScript = System.getProperty(FIREWALL_SCRIPT_PROP_NAME);
         if (firewallScript == null)
@@ -356,9 +356,9 @@ public class PeerConnectionStatusTest
      * in case any of the tests fails.
      */
     @Override
-    public void cleanup()
+    public void cleanupClass()
     {
-        super.cleanup();
+        super.cleanupClass();
 
         try
         {

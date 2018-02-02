@@ -40,9 +40,9 @@ public class AudioOnlyTest
         = "video-quality-dialog-slider";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

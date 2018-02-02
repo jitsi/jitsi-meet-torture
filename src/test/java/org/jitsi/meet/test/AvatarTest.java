@@ -43,9 +43,9 @@ public class AvatarTest
     private static String secondParticipantAvatarSrc = null;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

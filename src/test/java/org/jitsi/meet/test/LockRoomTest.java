@@ -41,9 +41,9 @@ public class LockRoomTest
     public static String ROOM_KEY = null;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
     }

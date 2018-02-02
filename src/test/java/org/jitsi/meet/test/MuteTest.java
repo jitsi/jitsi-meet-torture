@@ -49,9 +49,9 @@ public class MuteTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

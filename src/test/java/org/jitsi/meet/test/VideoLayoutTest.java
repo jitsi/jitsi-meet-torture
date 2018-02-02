@@ -37,9 +37,9 @@ public class VideoLayoutTest
     extends WebTestBase
 {
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
     }

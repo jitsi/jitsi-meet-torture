@@ -100,9 +100,9 @@ public class PSNRTest
     private static final float MIN_PSNR = 22f;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         File inputFrameDir = new File(INPUT_FRAME_DIR);
         if (!inputFrameDir.exists()
@@ -120,9 +120,9 @@ public class PSNRTest
     }
 
     @Override
-    public void cleanup()
+    public void cleanupClass()
     {
-        super.cleanup();
+        super.cleanupClass();
 
         ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
     }

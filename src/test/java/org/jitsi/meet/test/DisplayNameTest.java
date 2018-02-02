@@ -40,9 +40,9 @@ public class DisplayNameTest
     private final static String DEFAULT_DISPLAY_NAME = "me";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

@@ -30,9 +30,9 @@ public class UDPTest
     extends WebTestBase
 {
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

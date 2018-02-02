@@ -119,16 +119,19 @@ public class FailureListener
             AbstractBaseTest testInstance
                 = (AbstractBaseTest)testResult.getInstance();
 
+            List<Participant<? extends WebDriver>> participants
+                = testInstance.getAllParticipants();
+
             String fileNamePrefix
                 = testResult.getTestClass().getRealClass().getCanonicalName();
 
-            takeScreenshots(fileNamePrefix, testInstance);
+            takeScreenshots(fileNamePrefix, participants);
 
-            saveHtmlSources(fileNamePrefix, testInstance);
+            saveHtmlSources(fileNamePrefix, participants);
 
-            saveMeetDebugLog(fileNamePrefix, testInstance);
+            saveMeetDebugLog(fileNamePrefix, participants);
 
-            saveBrowserLogs(fileNamePrefix, testInstance);
+            saveBrowserLogs(fileNamePrefix, participants);
 
             saveThreadDump(fileNamePrefix);
         }
@@ -142,14 +145,14 @@ public class FailureListener
      * Takes screenshot of all participants.
      *
      * @param fileName the filename to use.
-     * @param participantHelper The participant helper which holds participant
-     * instances.
+     * @param participants the participants for whom the screenshots will be
+     * taken.
      */
     private void takeScreenshots(
-            String fileName, AbstractParticipantHelper participantHelper)
+            String fileName,
+            List<Participant<? extends WebDriver>> participants)
     {
-        participantHelper
-            .getAllParticipants()
+        participants
             .forEach(
                 p -> p.takeScreenshot(
                         outputScreenshotsParentFolder,
@@ -160,12 +163,14 @@ public class FailureListener
      * Saves html sources of owner and participant in the moment of failure.
      *
      * @param fileName the filename to use.
+     * @param participants the participants for whom the HTML sources will be
+     * saved.
      */
     private void saveHtmlSources(
-            String fileName, AbstractParticipantHelper participantHelper)
+            String fileName,
+            List<Participant<? extends WebDriver>> participants)
     {
-        participantHelper
-            .getAllParticipants()
+        participants
             .forEach(
                 p -> p.saveHtmlSource(
                         outputHtmlSourceParentFolder,
@@ -177,10 +182,10 @@ public class FailureListener
      * if we do not find it we skip it.
      */
     private void saveMeetDebugLog(
-        String fileNamePrefix, AbstractParticipantHelper participantHelper)
+            String fileNamePrefix,
+            List<Participant<? extends WebDriver>> participants)
     {
-        participantHelper
-            .getAllParticipants()
+        participants
             .forEach(
                 p -> saveMeetDebugLog(
                         p,
@@ -216,10 +221,10 @@ public class FailureListener
      * Saves browser console logs.
      */
     private void saveBrowserLogs(
-        String fileNamePrefix, AbstractParticipantHelper participantHelper)
+            String fileNamePrefix,
+            List<Participant<? extends WebDriver>> participants)
     {
-        participantHelper
-            .getAllParticipants()
+        participants
             .forEach(
                 p -> saveBrowserLogs(
                     p,

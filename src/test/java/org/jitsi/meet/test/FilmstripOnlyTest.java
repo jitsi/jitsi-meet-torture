@@ -20,9 +20,9 @@ public class FilmstripOnlyTest
         = "interfaceConfig.filmStripOnly=true";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant(enableFilmstripOnlyMode);
         ensureTwoParticipants();

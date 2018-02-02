@@ -15,43 +15,37 @@
  */
 package org.jitsi.meet.test.base;
 
-import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
 
-public abstract class AbstractParticipantHelper
+/**
+ * Helper class for managing {@link Participant}s.
+ */
+public class ParticipantHelper
 {
-    /**
-     * The current room name used.
-     */
-    protected String currentRoomName;
-
     /**
      * The current test participant list, the order is important, as the
      * first to join is the owner of the conference, in some cases has more
      * options than the rest of the participants.
      */
-    private List<Participant<? extends WebDriver>> participants
-        = new LinkedList<>();
+    private final List<Participant<? extends WebDriver>> participants;
 
     /**
      * Default.
      */
-    protected AbstractParticipantHelper()
-    {}
+    protected ParticipantHelper()
+    {
+        participants = new LinkedList<>();
+    }
 
     /**
      * Constructs with predefined room name and participants.
-     * @param roomName predefined room name.
      * @param participants the participants to add.
      */
-    protected AbstractParticipantHelper(String roomName,
-        List<Participant<? extends WebDriver>> participants)
+    protected ParticipantHelper(ParticipantHelper participants)
     {
-        this.currentRoomName = roomName;
-        this.participants
-            = Objects.requireNonNull(participants, "participants");
+        this.participants = participants.getAllParticipants();
     }
 
     /**
@@ -61,7 +55,7 @@ public abstract class AbstractParticipantHelper
      * the config properties which describe the new participant.
      * @return the participant which was created
      */
-    protected Participant createParticipant(String configPrefix)
+    public Participant createParticipant(String configPrefix)
     {
         Participant<? extends WebDriver> participant
             = ParticipantFactory.getInstance().createParticipant(configPrefix);
@@ -82,18 +76,9 @@ public abstract class AbstractParticipantHelper
      * @param index the index of the participant.
      * @return the participant if it exists or null.
      */
-    protected Participant getParticipant(int index)
+    public Participant getParticipant(int index)
     {
         return index < participants.size() ? participants.get(index) : null;
-    }
-
-    /**
-     * Setup helper by generating the room name to use.
-     */
-    public void setup()
-    {
-        this.currentRoomName
-            = "torture" + String.valueOf((int)(Math.random()*1000000));
     }
 
     /**
@@ -109,7 +94,7 @@ public abstract class AbstractParticipantHelper
      * Hangups a participant.
      * @param index the participant index to be hungup.
      */
-    protected void hangUpParticipant(int index)
+    public void hangUpParticipant(int index)
     {
         Participant participant = getParticipant(index);
         if (participant != null)
@@ -130,33 +115,6 @@ public abstract class AbstractParticipantHelper
      */
     public List<Participant<? extends WebDriver>> getAllParticipants()
     {
-        return new ArrayList<>(participants);
-    }
-
-    /**
-     * Returns the first participant.
-     * @return the first participant.
-     */
-    public Participant getParticipant1()
-    {
-        return getParticipant(0);
-    }
-
-    /**
-     * Returns the second participant.
-     * @return the second participant.
-     */
-    public Participant getParticipant2()
-    {
-        return getParticipant(1);
-    }
-
-    /**
-     * Returns the third participant.
-     * @return the third participant.
-     */
-    public Participant getParticipant3()
-    {
-        return getParticipant(2);
+        return new LinkedList<>(participants);
     }
 }

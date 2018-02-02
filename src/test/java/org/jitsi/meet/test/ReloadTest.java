@@ -55,9 +55,9 @@ public class ReloadTest
     private final static String DISPLAY_NAME = "testDisplayName";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         final String hookScript = System.getProperty(HOOK_SCRIPT);
         final String host = System.getProperty(HOST);

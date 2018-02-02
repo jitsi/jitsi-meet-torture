@@ -42,11 +42,16 @@ public class EtherpadTest
     private static boolean enabled = true;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
+    }
+
+    private WebDriver getParticipant1Driver()
+    {
+        return getParticipant1().getDriver();
     }
 
     /**
@@ -61,7 +66,7 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver owner = getParticipant1Driver();
 
         if (!MeetUtils.isEtherpadEnabled(owner))
         {
@@ -93,7 +98,7 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver owner = getParticipant1Driver();
         try
         {
             // give time for the internal frame to load and attach to the page.
@@ -140,13 +145,15 @@ public class EtherpadTest
             return;
         }
 
+        WebDriver participant1Driver = getParticipant1Driver();
+
         MeetUIUtils.clickOnToolbarButton(
-            getParticipant1().getDriver(), "toolbar_button_etherpad");
+            participant1Driver, "toolbar_button_etherpad");
 
         TestUtils.waitMillis(5000);
 
         TestUtils.waitForDisplayedElementByID(
-            getParticipant1().getDriver(), "largeVideo", 10);
+            participant1Driver, "largeVideo", 10);
     }
 
     /**

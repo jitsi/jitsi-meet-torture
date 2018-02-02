@@ -40,9 +40,9 @@ public class DesktopSharingImitationTest
     private boolean desktopImitated = false;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
     }

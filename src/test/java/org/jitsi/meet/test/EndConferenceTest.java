@@ -29,9 +29,9 @@ public class EndConferenceTest
     extends WebTestBase
 {
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }
