@@ -128,7 +128,7 @@ public abstract class AbstractBaseTest
      */
     public List<Participant<? extends WebDriver>>  getAllParticipants()
     {
-        return participants.getAllParticipants();
+        return participants.getAll();
     }
 
     /**

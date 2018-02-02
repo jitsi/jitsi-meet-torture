@@ -45,7 +45,7 @@ public class ParticipantHelper
      */
     protected ParticipantHelper(ParticipantHelper participants)
     {
-        this.participants = participants.getAllParticipants();
+        this.participants = participants.getAll();
     }
 
     /**
@@ -76,7 +76,7 @@ public class ParticipantHelper
      * @param index the index of the participant.
      * @return the participant if it exists or null.
      */
-    public Participant getParticipant(int index)
+    public Participant get(int index)
     {
         return index < participants.size() ? participants.get(index) : null;
     }
@@ -94,9 +94,9 @@ public class ParticipantHelper
      * Hangups a participant.
      * @param index the participant index to be hungup.
      */
-    public void hangUpParticipant(int index)
+    public void hangUpByIndex(int index)
     {
-        Participant participant = getParticipant(index);
+        Participant participant = get(index);
         if (participant != null)
             participant.hangUp();
     }
@@ -104,7 +104,7 @@ public class ParticipantHelper
     /**
      * Hangups all participants.
      */
-    public void hangUpAllParticipants()
+    public void hangUpAll()
     {
         participants.forEach(Participant::hangUp);
     }
@@ -113,7 +113,7 @@ public class ParticipantHelper
      * Gets the list of all participants.
      * @return a copy of the list which holds all participants.
      */
-    public List<Participant<? extends WebDriver>> getAllParticipants()
+    public List<Participant<? extends WebDriver>> getAll()
     {
         return new LinkedList<>(participants);
     }

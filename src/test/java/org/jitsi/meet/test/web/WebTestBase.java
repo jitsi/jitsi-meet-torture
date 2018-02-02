@@ -108,7 +108,7 @@ public class WebTestBase extends AbstractBaseTest
     {
         ensureTwoParticipantsInternal(fragment);
 
-        participants.hangUpParticipant(2);
+        participants.hangUpByIndex(2);
     }
 
     /**
@@ -163,7 +163,7 @@ public class WebTestBase extends AbstractBaseTest
      */
     public Participant getParticipant1()
     {
-        return participants.getParticipant(0);
+        return participants.get(0);
     }
 
     /**
@@ -172,7 +172,7 @@ public class WebTestBase extends AbstractBaseTest
      */
     public Participant getParticipant2()
     {
-        return participants.getParticipant(1);
+        return participants.get(1);
     }
 
     /**
@@ -181,7 +181,7 @@ public class WebTestBase extends AbstractBaseTest
      */
     public Participant getParticipant3()
     {
-        return participants.getParticipant(2);
+        return participants.get(2);
     }
 
     /**
@@ -189,7 +189,7 @@ public class WebTestBase extends AbstractBaseTest
      */
     public void hangUpAllParticipants()
     {
-        participants.hangUpAllParticipants();
+        participants.hangUpAll();
     }
 
     /**
@@ -199,8 +199,8 @@ public class WebTestBase extends AbstractBaseTest
     {
         ensureOneParticipant();
 
-        participants.hangUpParticipant(1);
-        participants.hangUpParticipant(2);
+        participants.hangUpByIndex(1);
+        participants.hangUpByIndex(2);
     }
 
     /**
@@ -218,14 +218,14 @@ public class WebTestBase extends AbstractBaseTest
         String                     fragment,
         Consumer<JitsiMeetUrl>     joinRef)
     {
-        Participant p = participants.getParticipant(index);
+        Participant p = participants.get(index);
 
         if (p == null)
         {
             // There's an assumption that the participants are created
             // starting from 0, 1, 2, so throw an Exception if they happen to be
             // created in different order.
-            int size = participants.getAllParticipants().size();
+            int size = participants.getAll().size();
             if (index != size)
             {
                 throw new IllegalArgumentException(
