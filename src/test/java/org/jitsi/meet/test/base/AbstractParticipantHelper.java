@@ -101,21 +101,8 @@ public abstract class AbstractParticipantHelper
      */
     public void cleanup()
     {
-        participants.stream().forEach(this::quitParticipant);
+        participants.stream().forEach(Participant::quitSafely);
         participants.clear();
-    }
-
-    /**
-     * Quits a participant if initialized.
-     * @param participant the participant to quit.
-     */
-    private void quitParticipant(Participant<? extends WebDriver> participant)
-    {
-        if (participant == null)
-            return;
-
-        TestUtils.print("Quiting " + participant.getName());
-        participant.quit();
     }
 
     /**

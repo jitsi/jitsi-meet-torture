@@ -208,19 +208,30 @@ public abstract class Participant<T extends WebDriver>
      */
     public void quit()
     {
+        TestUtils.print("Quiting " + name);
+
+        cancelKeepAlive();
+
+        driver.quit();
+
+        // FIXME missing comment on why this is necessary ? (if it really is...)
+        TestUtils.waitMillis(500);
+    }
+
+    /**
+     * Will call {@link #quit()}, but with catch any <tt>Throwable</tt>s.
+     */
+    public void quitSafely()
+    {
         try
         {
-            cancelKeepAlive();
-
-            driver.quit();
-
-            TestUtils.waitMillis(500);
+            this.quit();
         }
-        catch(Throwable t)
+        catch (Throwable t)
         {
+            // FIXME: use Logger ?
             t.printStackTrace();
         }
-
     }
 
     /**
