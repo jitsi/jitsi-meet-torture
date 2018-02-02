@@ -24,6 +24,8 @@ import java.util.*;
  */
 public class ParticipantHelper
 {
+    private final ParticipantFactory participantFactory;
+
     /**
      * The current test participant list, the order is important, as the
      * first to join is the owner of the conference, in some cases has more
@@ -37,6 +39,7 @@ public class ParticipantHelper
     protected ParticipantHelper()
     {
         participants = new LinkedList<>();
+        participantFactory = new ParticipantFactory();
     }
 
     /**
@@ -46,6 +49,7 @@ public class ParticipantHelper
     protected ParticipantHelper(ParticipantHelper participants)
     {
         this.participants = participants.getAll();
+        this.participantFactory = participants.participantFactory;
     }
 
     /**
@@ -58,7 +62,7 @@ public class ParticipantHelper
     public Participant createParticipant(String configPrefix)
     {
         Participant<? extends WebDriver> participant
-            = ParticipantFactory.getInstance().createParticipant(configPrefix);
+            = participantFactory.createParticipant(configPrefix);
 
         participants.add(participant);
 
@@ -88,6 +92,15 @@ public class ParticipantHelper
     {
         participants.stream().forEach(Participant::quitSafely);
         participants.clear();
+    }
+
+    /**
+     * @return the {@link ParticipantFactoryConfig} instance used by the
+     * underlying {@link ParticipantFactory} to create new participants.
+     */
+    public ParticipantFactoryConfig getFactoryConfig()
+    {
+        return participantFactory;
     }
 
     /**

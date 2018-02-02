@@ -290,13 +290,13 @@ public class JibriTest
      * @param URL the URL to be opened
      * @return the {@code Participant} which was created.
      */
-    private static Participant openURL(String URL)
+    private Participant openURL(String URL)
     {
         print("Opening URL: " + URL);
 
         Participant pageParticipant
-            = ParticipantFactory.getInstance()
-                .createParticipant("web.participantOther");
+            = participants.createParticipant("web.participantOther");
+
         WebDriver driver = pageParticipant.getDriver();
 
         driver.get(URL);

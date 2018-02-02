@@ -32,7 +32,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
-public class ParticipantFactory
+public class ParticipantFactory implements ParticipantFactoryConfig
 {
     /**
      * The url of the deployment to connect to.
@@ -72,11 +72,6 @@ public class ParticipantFactory
         = "jitsi-meet.fakeStreamVideoFile";
 
     /**
-     * The factory static instance.
-     */
-    private static ParticipantFactory instance;
-
-    /**
      * Full name of wav file which will be streamed through participant's fake
      * audio device.
      * TODO: make this file non static and to be passed as a parameter.
@@ -107,7 +102,7 @@ public class ParticipantFactory
     /**
      * The private constructor of the factory.
      */
-    private ParticipantFactory()
+    ParticipantFactory()
     {
         TestSettings.initSettings();
 
@@ -124,20 +119,6 @@ public class ParticipantFactory
         {
             setFakeStreamVideoFile(fakeStreamVideoFile.trim());
         }
-    }
-
-    /**
-     * Returns the static factory instance.
-     * @return the factory instance.
-     */
-    public static ParticipantFactory getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new ParticipantFactory();
-        }
-
-        return instance;
     }
 
     /**
@@ -427,13 +408,7 @@ public class ParticipantFactory
     }
 
     /**
-     * Sets the name of wav audio file which will be streamed through fake audio
-     * device by participants. The file location is relative to working folder.
-     * For remote drivers a parent folder can be set and the file will be
-     * searched in there.
-     *
-     * @param fakeStreamAudioFile full name of wav file for the fake audio
-     *                            device.
+     * {@inheritDoc}
      */
     public void setFakeStreamAudioFile(String fakeStreamAudioFile)
     {
@@ -441,13 +416,7 @@ public class ParticipantFactory
     }
 
     /**
-     * Sets the name of y4m video file which will be streamed through fake video
-     * device by participants. The file location is relative to working folder.
-     * For remote drivers a parent folder can be set and the file will be
-     * searched in there.
-     *
-     * @param fakeStreamVideoFile full name of y4m file for the fake video
-     *                            device.
+     * {@inheritDoc}
      */
     public void setFakeStreamVideoFile(String fakeStreamVideoFile)
     {

@@ -92,20 +92,10 @@ public class LipSyncTest
         // don't want to end up with silence being streamed
 
         // this file is required in order to run this test
-        ParticipantFactory.getInstance().setFakeStreamVideoFile(
-            "resources/fakeVideoStream.y4m");
-        ParticipantFactory.getInstance().setFakeStreamAudioFile(
-            "resources/fakeAudioStream-lipsync.wav");
-    }
+        ParticipantFactoryConfig factory = participants.getFactoryConfig();
 
-    @Override
-    public void cleanupClass()
-    {
-        super.cleanupClass();
-
-        ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
-        ParticipantFactory.getInstance().setFakeStreamAudioFile(
-            "resources/fakeAudioStream.wav");
+        factory.setFakeStreamVideoFile("resources/fakeVideoStream.y4m");
+        factory.setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");
     }
 
     /**

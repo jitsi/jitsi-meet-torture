@@ -113,18 +113,11 @@ public class PSNRTest
             throw new SkipException("Skip the PSNR tests, no resources");
         }
 
-        ParticipantFactory.getInstance()
+        participants
+            .getFactoryConfig()
             .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
         ensureTwoParticipants();
-    }
-
-    @Override
-    public void cleanupClass()
-    {
-        super.cleanupClass();
-
-        ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
     }
 
     @Override
