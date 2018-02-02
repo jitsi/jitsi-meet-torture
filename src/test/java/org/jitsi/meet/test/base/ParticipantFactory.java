@@ -72,23 +72,23 @@ public class ParticipantFactory
         = "jitsi-meet.fakeStreamVideoFile";
 
     /**
+     * The factory static instance.
+     */
+    private static ParticipantFactory instance;
+
+    /**
      * Full name of wav file which will be streamed through participant's fake
      * audio device.
      * TODO: make this file non static and to be passed as a parameter.
      */
-    private static String fakeStreamAudioFName;
+    private String fakeStreamAudioFName;
 
     /**
      * Full name of wav file which will be streamed through participant's fake
      * video device.
      * TODO: make this file non static and to be passed as a parameter.
      */
-    private static String fakeStreamVideoFName;
-
-    /**
-     * The factory static instance.
-     */
-    private static ParticipantFactory instance;
+    private String fakeStreamVideoFName;
 
     /**
      * Returns the filename for Chrome participant pointing to the Chrome web
