@@ -239,6 +239,12 @@ public class WebTestBase extends AbstractBaseTest
             String configPrefix = "web.participant" + (index + 1);
 
             p = participants.createParticipant(configPrefix);
+
+            // Adds a print in the console/selenium-node logs
+            // useful when checking crashes or failures in node logs
+            p.executeScript(
+                    "console.log('--- Will start test:"
+                        + getClass().getSimpleName() + "')");
         }
 
         p.joinConference(currentRoomName, roomParameter, fragment, joinRef);

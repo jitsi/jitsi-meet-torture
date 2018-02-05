@@ -66,12 +66,6 @@ public class ParticipantHelper
 
         participants.add(participant);
 
-        // Adds a print in the console/selenium-node logs
-        // useful when checking crashes or failures in node logs
-        participant.executeScript(
-                "console.log('--- Will start test:"
-                    + getClass().getSimpleName() + "')");
-
         return participant;
     }
 
