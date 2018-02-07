@@ -45,6 +45,8 @@ public class WebParticipant<T extends WebDriver>
         "return APP.conference.getConnectionState() === 'connected';";
 
     private ChatPanel chatPanel;
+    private DialInNumbersPage dialInNumbersPage;
+    private InfoDialog infoDialog;
 
     /**
      * Constructs a Participant.
@@ -211,5 +213,29 @@ public class WebParticipant<T extends WebDriver>
         }
 
         return chatPanel;
+    }
+
+    /**
+     * @return a representation of the dial in page of this participant.
+     */
+    public DialInNumbersPage getDialInNumbersPage() {
+        if (dialInNumbersPage == null)
+        {
+            dialInNumbersPage = new DialInNumbersPage(this);
+        }
+
+        return dialInNumbersPage;
+    }
+
+    /**
+     * @return a representation of the info dialog of this participant.
+     */
+    public InfoDialog getInfoDialog() {
+        if (infoDialog == null)
+        {
+            infoDialog = new InfoDialog(this);
+        }
+
+        return infoDialog;
     }
 }

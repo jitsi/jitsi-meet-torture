@@ -61,6 +61,11 @@
             <class name="org.jitsi.meet.test.FollowMeTest" />
         </classes>
     </test>
+    <test name="InviteTest">
+        <classes>
+            <class name="org.jitsi.meet.test.InviteTest" />
+        </classes>
+    </test>
     <test name="JibriTest">
         <classes>
             <!-- JibriTest needs configuration or it is ignored by default -->
@@ -85,6 +90,11 @@
     <test name="MuteTest">
         <classes>
             <class name="org.jitsi.meet.test.MuteTest" />
+        </classes>
+    </test>
+    <test name="NewLockRoomTest">
+        <classes>
+            <class name="org.jitsi.meet.test.NewLockRoomTest" />
         </classes>
     </test>
     <test name="OneOnOneTest">
