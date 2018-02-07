@@ -29,7 +29,6 @@ public class InfoDialog
     private final String ADD_PASSWORD_LINK = "add-password";
     private final String ADD_PASSWORD_FIELD = "info-password-input";
     private final String CONFERENCE_URL = "info-dialog-conference-url";
-    private final String COPY_INFO = "info-copy";
     private final String INFO_DIALOG_BUTTON = "toolbar_button_info";
     private final String INFO_DIALOG_CONTAINER = "info-dialog";
     private final String LOCAL_LOCK = "info-password-local";
@@ -110,20 +109,6 @@ public class InfoDialog
         }
 
         this.clickToolbarButton();
-    }
-
-    /**
-     * Clicks the link to copy conference information to the clipboard.
-     */
-    public void copyInfoToClipboard() {
-        this.open();
-
-        WebElement dialog = this.get();
-
-        WebElement moreNumbersElement
-            = dialog.findElement(By.className(COPY_INFO));
-
-        moreNumbersElement.click();
     }
 
     /**

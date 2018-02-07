@@ -8,11 +8,6 @@ import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.testng.Assert.assertTrue;
@@ -68,8 +63,7 @@ public class InviteTest extends AbstractBaseTest
      * Checks if the info dialog shows a dial in number and pin (conference ID).
      */
     @Test
-    public void testDialInDisplays()
-    {
+    public void testDialInDisplays() {
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -78,34 +72,6 @@ public class InviteTest extends AbstractBaseTest
 
         String displayedPin = infoDialog.getPinNumber();
         assertTrue(displayedPin.length() > 1);
-    }
-
-
-    /**
-     * Checks if copying the conference info copies conference-specific
-     * information about how to joining.
-     */
-    @Test
-    public void testCopyInviteInformation() {
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
-
-        infoDialog.copyInfoToClipboard();
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-        String result = "";
-
-        try {
-            result = (String) clipboard.getContents(null)
-                    .getTransferData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException | IOException ex) {
-            ex.printStackTrace();
-        }
-
-        System.out.println("WHAT " + " " + result);
-        assertTrue(result.contains(infoDialog.getDialInNumber()));
-        assertTrue(result.contains(infoDialog.getPinNumber()));
-        assertTrue(result.contains(infoDialog.getMeetingURL()));
     }
 
     /**
