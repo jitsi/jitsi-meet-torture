@@ -2,10 +2,12 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.AbstractBaseTest;
 import org.jitsi.meet.test.base.Participant;
+import org.jitsi.meet.test.util.MeetUtils;
 import org.jitsi.meet.test.web.DialInNumbersPage;
 import org.jitsi.meet.test.web.InfoDialog;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.WebDriver;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -23,6 +25,13 @@ public class InviteTest extends AbstractBaseTest
      * The single participant which will be used in this test.
      */
     private WebParticipant participant;
+
+    /**
+     * Whether the test is enabled. The test will be dynamically disabled,
+     * unless dial in is detected as enabled for the jitsi-meet instance (by
+     * inspecting window.config values).
+     */
+    private static boolean enabled = true;
 
 
     @Override
@@ -62,8 +71,15 @@ public class InviteTest extends AbstractBaseTest
     /**
      * Checks if the info dialog shows a dial in number and pin (conference ID).
      */
-    @Test
+    @Test(dependsOnMethods = { "testInviteURLDisplays" })
     public void testDialInDisplays() {
+        if (!MeetUtils.isDialInEnabled(participant.getDriver()))
+        {
+            InviteTest.enabled = false;
+
+            throw new SkipException(
+                "No dial in configuration detected. Disabling test.");
+        }
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -78,7 +94,7 @@ public class InviteTest extends AbstractBaseTest
      * Checks if clicking to view more numbers shows the appropriate static
      * page.
      */
-    @Test
+    @Test(dependsOnMethods = { "testDialInDisplays" })
     public void testViewMoreNumbers() {
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
