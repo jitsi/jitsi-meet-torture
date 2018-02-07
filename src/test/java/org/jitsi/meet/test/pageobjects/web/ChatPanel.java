@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jitsi.meet.test.web;
+package org.jitsi.meet.test.pageobjects.web;
 
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
@@ -39,7 +40,7 @@ public class ChatPanel
      * Initializes a new {@link ChatPanel} instance.
      * @param participant the participant for this {@link ChatPanel}.
      */
-    ChatPanel(WebParticipant participant)
+    public ChatPanel(WebParticipant participant)
     {
         this.participant = Objects.requireNonNull(participant, "participant");
     }
