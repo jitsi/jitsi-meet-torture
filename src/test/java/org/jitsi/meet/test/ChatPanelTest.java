@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.pageobjects.web.ChatPanel;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 
