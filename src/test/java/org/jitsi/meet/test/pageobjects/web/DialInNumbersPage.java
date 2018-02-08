@@ -1,6 +1,7 @@
-package org.jitsi.meet.test.web;
+package org.jitsi.meet.test.pageobjects.web;
 
 import org.jitsi.meet.test.util.TestUtils;
+import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

@@ -18,7 +18,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
-import org.jitsi.meet.test.web.InfoDialog;
+import org.jitsi.meet.test.pageobjects.web.InfoDialog;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
