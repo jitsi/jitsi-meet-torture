@@ -57,7 +57,7 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>4.1.2</version>
+            <version>5.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -102,12 +102,9 @@
         <!-- not used at the moment -->
 
         <!-- mobile -->
-        <mobile.participant/>
+        <mobile.participant1/>
         <mobile.caps.deviceName/>
         <mobile.caps.app/>
-        <appium.screenshots.dir>
-            target/surefire-reports/screenshots
-        </appium.screenshots.dir>
 
         <test.report.directory>target/surefire-reports</test.report.directory>
 

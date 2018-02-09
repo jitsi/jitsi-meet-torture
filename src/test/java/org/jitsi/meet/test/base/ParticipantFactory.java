@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import io.github.bonigarcia.wdm.*;
+import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
@@ -28,6 +29,7 @@ import org.openqa.selenium.safari.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
@@ -72,6 +74,11 @@ public class ParticipantFactory implements ParticipantFactoryConfig
         = "jitsi-meet.fakeStreamVideoFile";
 
     /**
+     * The test config.
+     */
+    private final Properties config;
+
+    /**
      * Full name of wav file which will be streamed through participant's fake
      * audio device.
      * TODO: make this file non static and to be passed as a parameter.
@@ -90,7 +97,7 @@ public class ParticipantFactory implements ParticipantFactoryConfig
      */
     ParticipantFactory()
     {
-        TestSettings.initSettings();
+        this.config = TestSettings.initSettings();
 
         String fakeStreamAudioFile = System.getProperty(FAKE_AUDIO_FNAME_PROP);
         if (fakeStreamAudioFile == null)
@@ -131,31 +138,41 @@ public class ParticipantFactory implements ParticipantFactoryConfig
     public Participant<? extends WebDriver> createParticipant(
             String configPrefix)
     {
-        if (configPrefix.startsWith("web"))
+        // It will be Chrome by default...
+        ParticipantType participantType
+            =  ParticipantType.valueOfString(
+                    System.getProperty(configPrefix + ".type", "chrome"));
+
+        String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
+        String serverUrl = getJitsiMeetUrl().getServerUrl();
+
+        if (participantType.isWeb())
         {
-            ParticipantType participantType
-                =  ParticipantType.valueOfString(
-                        System.getProperty(configPrefix + ".type"));
-
-            String name
-                = configPrefix.substring(configPrefix.indexOf('.') + 1);
-
             return new WebParticipant(
-                name,
-                startWebDriver(
                     name,
-                    configPrefix,
+                    startWebDriver(
+                            name,
+                            configPrefix,
+                            participantType,
+                            System.getProperty(configPrefix + ".version")),
                     participantType,
-                    System.getProperty(configPrefix + ".version")),
-                participantType,
-                System.getProperty(JITSI_MEET_URL_PROP));
+                    serverUrl);
         }
-        else if (configPrefix.startsWith("mobile"))
+        else if (participantType.isMobile())
         {
-            // TODO
-        }
+            MobileParticipantBuilder mobileBuilder
+                = new MobileParticipantBuilder(
+                        config,
+                        configPrefix,
+                        participantType);
 
-        return null;
+            return mobileBuilder.startNewDriver(serverUrl);
+        }
+        else
+        {
+            throw new IllegalArgumentException(
+                    participantType + " not supported");
+        }
     }
 
     /**

@@ -30,9 +30,14 @@ public class FailureListener
     implements ITestListener
 {
     /**
+     * The folder where the logs will be saved.
+     */
+    private static File outputLogsParentFolder = null;
+
+    /**
      * The folder where the screenshost will be saved.
      */
-    private File outputScreenshotsParentFolder = null;
+    private static File outputScreenshotsParentFolder = null;
 
     /**
      * The folder where the htmls will be saved.
@@ -49,10 +54,36 @@ public class FailureListener
         return System.getProperty(
             "test.report.directory", "target/surefire-reports");
     }
+
     /**
-     * The folder where the logs will be saved.
+     * Gets the screenshots parent output folder.
+     *
+     * @return a <tt>File</tt> instance.
      */
-    private static File outputLogsParentFolder = null;
+    synchronized public static File getScreenshotsOutputFolder()
+    {
+        if (outputScreenshotsParentFolder == null)
+        {
+            // This property will be defined when the test are running on
+            // AWS mobile device farm for example. If it's not we go with
+            // the tests results location.
+            String appiumScreenshotDir
+                = System.getProperty("appium.screenshots.dir");
+
+            if (appiumScreenshotDir != null)
+            {
+                outputScreenshotsParentFolder = new File(appiumScreenshotDir);
+            }
+            else
+            {
+                outputScreenshotsParentFolder
+                    = new File(getReportFolder() + "/screenshots");
+            }
+
+            outputScreenshotsParentFolder.mkdirs();
+        }
+        return outputScreenshotsParentFolder;
+    }
 
     @Override
     public void onTestStart(ITestResult iTestResult)
@@ -74,8 +105,6 @@ public class FailureListener
     public void onStart(ITestContext iTestContext)
     {
         // default reports folder
-        outputScreenshotsParentFolder
-            = new File(getReportFolder() + "/screenshots");
         outputHtmlSourceParentFolder
             = new File(getReportFolder() + "/html-sources");
         outputHtmlSourceParentFolder.mkdirs();
@@ -155,7 +184,7 @@ public class FailureListener
         participants
             .forEach(
                 p -> p.takeScreenshot(
-                        outputScreenshotsParentFolder,
+                        getScreenshotsOutputFolder(),
                         fileName + "-" + p.getName() + ".png"));
     }
 
