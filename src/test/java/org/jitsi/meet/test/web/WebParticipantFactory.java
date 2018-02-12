@@ -28,6 +28,7 @@ import org.openqa.selenium.safari.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
@@ -64,6 +65,19 @@ public class WebParticipantFactory
      */
     private static final String REMOTE_RESOURCE_PARENT_PATH_NAME_PROP
         = "remote.resource.path";
+
+    /**
+     * The prefix for the URL used to download an extension.
+     */
+    private static String EXT_DOWNLOAD_URL_PREFIX
+        = "https://clients2.google.com/service/update2/crx"
+            + "?response=redirect&prodversion=38.0&x=id%3D";
+
+    /**
+     * The suffix for the URL used to download an extension.
+     */
+    private static String EXT_DOWNLOAD_URL_SUFIX
+        = "%26installsource%3Dondemand%26uc";
 
     /**
      * The private constructor of the factory.
@@ -178,10 +192,24 @@ public class WebParticipantFactory
             final ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
-            ops.addArguments("disable-extensions");
             ops.addArguments("disable-plugins");
             ops.addArguments("mute-audio");
             ops.addArguments("disable-infobars");
+
+            if(options.getChromeExtensionId() != null)
+            {
+                try
+                {
+                    ops.addExtensions(
+                        downloadExtension(options.getChromeExtensionId()));
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            ops.addArguments("auto-select-desktop-capture-source=Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
@@ -321,5 +349,25 @@ public class WebParticipantFactory
         }
 
         return null;
+    }
+
+    /**
+     * Downloads extension from chrome webstore.
+     * @param id - the id of the extension.
+     * @returns <tt>File</tt> associated with the downloaded extension.
+     */
+    private static File downloadExtension(String id)
+        throws IOException
+    {
+        URL website = new URL(
+            EXT_DOWNLOAD_URL_PREFIX + id + EXT_DOWNLOAD_URL_SUFIX);
+        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        File extension = File.createTempFile("jidesha", ".crx");
+        extension.deleteOnExit();
+
+        FileOutputStream fos = new FileOutputStream(extension);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+        return extension;
     }
 }

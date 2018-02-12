@@ -15,17 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-
 import org.openqa.selenium.*;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
-
-import java.io.*;
-import java.util.concurrent.*;
 
 import static org.testng.Assert.*;
 
@@ -37,128 +31,76 @@ public class DesktopSharingTest
     extends WebTestBase
 {
     /**
-     * A property to specified the external script that will be used to
-     * start the new participant.
+     * The id of the desktop sharing button.
      */
-    public final static String HOOK_SCRIPT = "desktop.sharing.hook.script";
+    private static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
 
     /**
-     * Exception on starting the hook, null if script has started successfully.
+     * The XPATH of the desktop sharing button.
      */
-    private Exception hookException = null;
+    private static String DS_BUTTON_XPATH = "//a[@id='" + DS_BUTTON_ID + "']";
 
     @Override
-    public boolean skipTestByDefault()
+    public void setupClass()
     {
-        return true;
-    }
-
-    /**
-     * Ensure we have only one participant available in the room - the owner.
-     * Starts the new participants using the external script and check whether
-     * the stream we are receiving from him is screen.
-     * Returns at the end the state we found tests - with 2 participants.
-     */
-    @Test
-    public void testDesktopSharingInPresence()
-    {
-        final String hookScript = System.getProperty(HOOK_SCRIPT);
-
-        if (hookScript == null)
-            return;
-
-        print("Start testDesktopSharingInPresence.");
+        super.setupClass();
 
         ensureOneParticipant();
 
-        // Counter we wait for the process execution in the thread to finish
-        final CountDownLatch waitEndSignal = new CountDownLatch(1);
+        ensureTwoParticipants(
+            null, null, null,
+            new WebParticipantOptions().setChromeExtensionId(
+                (String) MeetUtils.getConfigValue(
+                    getParticipant1().getDriver(),
+                    "desktopSharingChromeExtId")
+            ));
+    }
 
-        // counter we wait for indication that the process has started
-        // or that it ended up with an exception - hookException
-        final CountDownLatch waitStartSignal = new CountDownLatch(1);
+    /**
+     * Check desktop sharing start.
+     */
+    @Test
+    public void testDesktopSharingStart()
+    {
+        startDesktopSharing();
+        checkExpandingDesktopSharingLargeVideo(true);
+        testDesktopSharingInPresence("desktop");
 
-        // this will fire a hook script, which needs to launch a browser that
-        // will join our room
-        new Thread(() -> {
-            try
-            {
-                JitsiMeetUrl url = getJitsiMeetUrl();
+    }
 
-                // FIXME the config part may need to by synced up with
-                // WebParticipant#DEFAULT_CONFIG
-                url.setHashConfigPart(
-                    "config.requireDisplayName=false"
-                        + "&config.firefox_fake_device=true"
-                        + "&config.autoEnableDesktopSharing=true");
+    /**
+     * Check desktop sharing stop.
+     */
+    @Test
+    public void testDesktopSharingStop()
+    {
+        stopDesktopSharing();
+        checkExpandingDesktopSharingLargeVideo(false);
+        testDesktopSharingInPresence("camera");
+    }
 
-                String[] cmd = { hookScript, url.toString()};
-
-                print("Start the script with param:"+ url);
-                ProcessBuilder pb = new ProcessBuilder(cmd);
-
-                pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
-                Process p = pb.start();
-
-                waitStartSignal.countDown();
-
-                p.waitFor();
-                print("Script ended execution.");
-                waitEndSignal.countDown();
-            }
-            catch (IOException | InterruptedException e)
-            {
-                hookException = e;
-                waitStartSignal.countDown();
-            }
-        }).start();
-
-        final Participant owner = getParticipant1();
-
-        // now lets wait starting or error on startup
-        try
-        {
-            waitStartSignal.await(2, TimeUnit.SECONDS);
-            if (hookException != null)
-            {
-                hookException.printStackTrace();
-                fail("Error executing hook script:"
-                    + hookException.getMessage());
-            }
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        // let's wait some time the user to joins
-        TestUtils.waitForBoolean(
-            owner.getDriver(),
-            "return (APP.conference.membersCount == 2);",
-            25);
-        Participant ownerParticipant = getParticipant1();
-        ownerParticipant.waitForIceConnected();
-        ownerParticipant.waitForSendReceiveData();
-        ownerParticipant.waitForRemoteStreams(1);
-
+    /**
+     * Checks the status of desktop sharing received from the presence and
+     * compares it to the passed expected result.
+     * @param expectedResult camera/desktop
+     */
+    private void testDesktopSharingInPresence(final String  expectedResult)
+    {
         // now lets check whether his stream is screen
-        String remoteParticipantID = owner.getDriver()
-            .findElement(By.xpath("//span[starts-with(@id, 'participant_') " +
-                " and contains(@class,'videocontainer')]")).getAttribute("id");
-        remoteParticipantID
-            = remoteParticipantID.replaceAll("participant_", "");
+        String participant1Jid
+            = MeetUtils.getResourceJid(getParticipant2().getDriver());
 
-        final String expectedResult = "desktop";
         // holds the last retrieved value for the remote type
         final Object[] remoteVideoType = new Object[1];
         try
         {
             final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
-                + remoteParticipantID + "');";
-            (new WebDriverWait(owner.getDriver(), 5))
+                + participant1Jid + "');";
+            (new WebDriverWait(
+                    getParticipant2().getDriver(), 5))
                 .until((ExpectedCondition<Boolean>) d -> {
-                    Object res = owner.executeScript(scriptToExecute);
+                    Object res =
+                        getParticipant1().executeScript(scriptToExecute);
                     remoteVideoType[0] = res;
 
                     return res != null && res.equals(expectedResult);
@@ -167,20 +109,69 @@ public class DesktopSharingTest
         catch (TimeoutException e)
         {
             assertEquals(
-                expectedResult, remoteVideoType[0],
-                "Wrong video type, maybe desktop sharing didn't work");
+                    expectedResult, remoteVideoType[0],
+                    "Wrong video type, maybe desktop sharing didn't work");
         }
+    }
 
-        // allow the participant to leave
-        try
-        {
-            waitEndSignal.await(10, TimeUnit.SECONDS);
-            print("End DesktopSharingTest.");
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        ensureTwoParticipants();
+    /**
+     * Starts desktop sharing.
+     */
+    private void startDesktopSharing()
+    {
+        TestUtils.waitForElementByXPath(
+                getParticipant2().getDriver(),
+                DS_BUTTON_XPATH,
+                5);
+        MeetUIUtils.clickOnToolbarButton(getParticipant2().getDriver(),
+                DS_BUTTON_ID);
+        TestUtils.waitForElementContainsClassByXPath(
+                getParticipant2().getDriver(), DS_BUTTON_XPATH,
+                "toggled", 2);
+    }
+
+    /**
+     * Stops desktop sharing.
+     */
+    private void stopDesktopSharing()
+    {
+        TestUtils.waitForElementByXPath(
+                getParticipant2().getDriver(),
+                DS_BUTTON_XPATH,
+                5);
+        MeetUIUtils.clickOnToolbarButton(getParticipant2().getDriver(),
+                DS_BUTTON_ID);
+        TestUtils.waitForElementNotContainsClassByXPath(
+                getParticipant2().getDriver(), DS_BUTTON_XPATH,
+                "toggled", 2);
+    }
+
+    /**
+     * Checks the video layout on the other side, after we imitate
+     * desktop sharing.
+     * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
+     *                        otherwise.
+     */
+    private void checkExpandingDesktopSharingLargeVideo(boolean isScreenSharing)
+    {
+        // check layout
+        new VideoLayoutTest().driverVideoLayoutTest(
+            getParticipant1(), isScreenSharing);
+
+        // hide thumbs
+        MeetUIUtils.clickOnToolbarButton(
+            getParticipant1().getDriver(), "toggleFilmstripButton");
+
+        TestUtils.waitMillis(5000);
+
+        // check layout
+        new VideoLayoutTest().driverVideoLayoutTest(
+            getParticipant1(), isScreenSharing);
+
+        // show thumbs
+        MeetUIUtils.clickOnToolbarButton(
+            getParticipant1().getDriver(), "toggleFilmstripButton");
+
+        TestUtils.waitMillis(5000);
     }
 }
