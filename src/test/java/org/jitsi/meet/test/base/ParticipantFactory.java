@@ -86,20 +86,6 @@ public class ParticipantFactory implements ParticipantFactoryConfig
     private String fakeStreamVideoFName;
 
     /**
-     * Returns the filename for Chrome participant pointing to the Chrome web
-     * driver console logs. It's configured for every Chrome driver through
-     * the 'webdriver.chrome.logfile' system property.
-     *
-     * @param participantName {@link Participant#getName()}
-     * @return a string with a path pointing to the log file.
-     */
-    static public String getChromeWebDriverLogFile(String participantName)
-    {
-        return FailureListener.createLogsFolder()
-            + "/chrome-console-" + participantName + ".log";
-    }
-
-    /**
      * The private constructor of the factory.
      */
     ParticipantFactory()
@@ -256,7 +242,8 @@ public class ParticipantFactory implements ParticipantFactoryConfig
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty(
                     "webdriver.chrome.logfile",
-                    getChromeWebDriverLogFile(name));
+                    FailureListener.createLogsFolder()
+                        + "/chrome-console-" + name + ".log");
 
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);

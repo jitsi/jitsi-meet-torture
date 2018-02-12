@@ -446,22 +446,6 @@ public abstract class Participant<T extends WebDriver>
         return driver.manage().logs().get(LogType.BROWSER);
     }
 
-    public File getChromeWebDriverLogFile()
-    {
-        if (type.isChrome())
-        {
-            File srcFile
-                = new File(
-                        ParticipantFactory.getChromeWebDriverLogFile(name));
-
-            // in case of remote driver the file does not exist
-            if (srcFile.exists())
-                return srcFile;
-        }
-
-        return null;
-    }
-
     /**
      * Presses a shortcut in this {@link Participant}'s driver.
      * @param shortcut the {@link Character} which represents the shortcut to

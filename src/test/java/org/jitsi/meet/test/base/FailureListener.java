@@ -295,16 +295,6 @@ public class FailureListener
                     out.close();
                 }
             }
-
-            //
-            File srcFile = p.getChromeWebDriverLogFile();
-            if (srcFile != null)
-            {
-                FileUtils.copyFile(
-                    srcFile,
-                    new File(outputLogsParentFolder,
-                        fileNamePrefix + suffix + "-chrome" + extension));
-            }
         }
         catch (IOException e)
         {
