@@ -56,6 +56,10 @@ public class MeetUtils
     public static final String ICE_DISCONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'disconnected';";
 
+    public static final String DIAL_IN_ENABLED_CHECK_SCRIPT =
+        "return Boolean(config.dialInConfCodeUrl && config.dialInNumbersUrl " +
+            "&& config.hosts && config.hosts.muc)";
+
     /**
      * The javascript code which returns {@code true} if etherpad is enabled.
      */
@@ -349,6 +353,16 @@ public class MeetUtils
         return
             "return APP.conference.isConnectionInterrupted() "
                 + ( isActive ? "===" : "!==" ) + "false";
+    }
+
+    /**
+     * Checks whether dial in is enabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if dial in is enabled.
+     */
+    public static boolean isDialInEnabled(WebDriver driver) {
+        return TestUtils.executeScriptAndReturnBoolean(
+            driver, DIAL_IN_ENABLED_CHECK_SCRIPT);
     }
 
     /**
