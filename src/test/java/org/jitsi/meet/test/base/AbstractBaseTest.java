@@ -77,7 +77,13 @@ public abstract class AbstractBaseTest
     /**
      * The participants pool created/used by this test instance.
      */
-    final protected ParticipantHelper participants;
+    protected ParticipantHelper participants;
+
+    /**
+     * Set to <tt>true</tt> or <tt>false</tt>, after
+     * {@link #checkForSkip(Properties)} gets executed.
+     */
+    private Boolean skipped;
 
     /**
      * Default.
@@ -86,7 +92,7 @@ public abstract class AbstractBaseTest
     {
         currentRoomName
             = "torture" + String.valueOf((int)(Math.random()*1000000));
-        participants = new ParticipantHelper();
+        participants = null;
     }
 
     /**
@@ -101,13 +107,32 @@ public abstract class AbstractBaseTest
         participants = new ParticipantHelper(baseTest.participants);
     }
 
+    /**
+     * NOTE: We don't want this method to be overridden in subclasses, because
+     * it contains TestNG specific ITestContext. Use {@link #setupClass()} to do
+     * any per class setup.
+     * @param context - The TestNG test context.
+     */
     @BeforeClass
-    public void check()
+    final public void setupClassPrivate(ITestContext context)
     {
-        checkForSkip();
+        Properties config = TestSettings.initSettings();
+
+        config = mergeTestNGSuiteProperties(config, context);
+
+        // See if this test should be skipped.
+        this.skipped = checkForSkip(config);
+
+        if (skipped)
+        {
+            throw new SkipException(
+                    "skips-" + this.getClass().getSimpleName());
+        }
 
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
+
+        participants = new ParticipantHelper(new ParticipantFactory(config));
 
         // make sure if setup fails we will cleanup
         // when configure method @BeforeClass fails @AfterClass is not executed
@@ -120,6 +145,34 @@ public abstract class AbstractBaseTest
             cleanupClass();
             throw t;
         }
+    }
+
+    /**
+     * Merge torture test config with the TestNG suite parameters. TestNG
+     * parameters can be declared in <parameter> tags in testng.xml file which
+     * describes the test Suite.
+     *
+     * @param config - The torture tests config initialized by
+     * {@link TestSettings}.
+     * @param context - The TestNG {@link ITestContext} instance for the suite
+     * currently being executed.
+     *
+     * @return the merged properties set.
+     */
+    private Properties mergeTestNGSuiteProperties(
+            Properties config, ITestContext context)
+    {
+        Map<String, String> params
+            = context.getSuite().getXmlSuite().getAllParameters();
+
+        Properties output = new Properties(config);
+
+        for (Map.Entry<String, String> entry : params.entrySet())
+        {
+            output.setProperty(entry.getKey(), entry.getValue());
+        }
+
+        return output;
     }
 
     /**
@@ -145,9 +198,10 @@ public abstract class AbstractBaseTest
      * Checks whether the current test need to be skiped and throw SkipException
      * if this is true.
      *
+     * @param config - The torture tests config.
      * @throws SkipException thrown when test execution needs to be skipped
      */
-    protected void checkForSkip()
+    private boolean checkForSkip(Properties config)
         throws SkipException
     {
         // protect static members, initialize them once
@@ -156,11 +210,11 @@ public abstract class AbstractBaseTest
             if (testsToRun == null)
             {
                 testsToRun = getStringTokens(
-                    System.getProperty(TESTS_TO_RUN_PNAME));
+                    config.getProperty(TESTS_TO_RUN_PNAME));
                 testsToExclude = getStringTokens(
-                    System.getProperty(TESTS_TO_EXCLUDE_PNAME));
+                    config.getProperty(TESTS_TO_EXCLUDE_PNAME));
                 testsToInclude = getStringTokens(
-                    System.getProperty(TESTS_TO_INCLUDE_PNAME));
+                    config.getProperty(TESTS_TO_INCLUDE_PNAME));
             }
         }
 
@@ -169,7 +223,7 @@ public abstract class AbstractBaseTest
         // if test is explicitly in exclude, skip
         if (testsToExclude.contains(thisClassName))
         {
-            throw new SkipException("skips-" + thisClassName);
+            return true;
         }
 
         // if test is not explicitly in include
@@ -181,8 +235,10 @@ public abstract class AbstractBaseTest
             || (!testsToRun.isEmpty()
             && !testsToRun.contains(thisClassName))))
         {
-            throw new SkipException("skips-" + thisClassName);
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -218,6 +274,28 @@ public abstract class AbstractBaseTest
     public boolean skipTestByDefault()
     {
         return false;
+    }
+
+    /**
+     * Checks if this test class is to be skipped.
+     *
+     * NOTE the method must not be called prior to
+     * {@link AbstractBaseTest#setupClassPrivate(ITestContext)} execution
+     * ("BeforeClass" TestNG annotation).
+     *
+     * @return <tt>true</tt> if this test class should be skipped or
+     * <tt>false</tt> otherwise.
+     * @throws IllegalStateException if "BeforeClass" test annotation has not
+     * been executed yet and the skipped value is unknown.
+     */
+    public boolean isSkipped()
+    {
+        if (skipped == null)
+        {
+            throw new IllegalStateException(
+                    "Method called, before the test class was configured");
+        }
+        return skipped;
     }
 
     /**

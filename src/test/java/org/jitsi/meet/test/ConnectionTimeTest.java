@@ -225,13 +225,9 @@ public class ConnectionTimeTest
     @DataProvider(name = "dp")
     public Object[][] createData()
     {
-        // a workaround where if the tests is no in the list of tests
-        // to be executed, to skip executing the DataProvider
-        try
-        {
-            super.checkForSkip();
-        }
-        catch (SkipException e)
+        // If the tests is not in the list of tests to be executed,
+        // skip executing the DataProvider.
+        if (isSkipped())
         {
             return new Object[0][0];
         }

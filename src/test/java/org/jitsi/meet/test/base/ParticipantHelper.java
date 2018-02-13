@@ -35,11 +35,14 @@ public class ParticipantHelper
 
     /**
      * Default.
+     *
+     * @param factory - The participants factory which will be used to create
+     * new {@link Participant}s.
      */
-    protected ParticipantHelper()
+    protected ParticipantHelper(ParticipantFactory factory)
     {
         participants = new LinkedList<>();
-        participantFactory = new ParticipantFactory();
+        participantFactory = Objects.requireNonNull(factory, "factory");
     }
 
     /**

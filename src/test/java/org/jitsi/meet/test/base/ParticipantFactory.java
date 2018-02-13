@@ -94,10 +94,13 @@ public class ParticipantFactory implements ParticipantFactoryConfig
 
     /**
      * The private constructor of the factory.
+     *
+     * @param config - A <tt>Properties</tt> instance holding configuration
+     * properties required to setup new participants.
      */
-    ParticipantFactory()
+    ParticipantFactory(Properties config)
     {
-        this.config = TestSettings.initSettings();
+        this.config = Objects.requireNonNull(config, "config");
 
         String fakeStreamAudioFile = System.getProperty(FAKE_AUDIO_FNAME_PROP);
         if (fakeStreamAudioFile == null)
