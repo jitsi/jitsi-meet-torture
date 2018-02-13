@@ -27,17 +27,23 @@ import org.jitsi.meet.test.mobile.*;
 public class MobileTestBase extends AbstractBaseTest
 {
     /**
-     * Name of the config property which can be used to override
-     * {@link #PARTICIPANT_1_DEFAULT_PREFIX}.
+     * This prefix is used to configure properties consumed by
+     * {@link MobileTestBase} and it's subclasses.
      */
-    private static final String PARTICIPANT_1_PREFIX_CFG_PROP
-        = "mobile.participant1Prefix";
+    private static final String _MOBILE_TEST_PREFIX = "mobileTest.";
 
     /**
      * Default config prefix for 1st mobile participant.
      */
-    private static final String PARTICIPANT_1_DEFAULT_PREFIX
-        = "mobile.participant1";
+    private static final String DEFAULT_PARTICIPANT_1_PREFIX
+        = _MOBILE_TEST_PREFIX + "participant1";
+
+    /**
+     * Name of the config property which can be used to override
+     * {@link #DEFAULT_PARTICIPANT_1_PREFIX}.
+     */
+    private static final String PROP_PARTICIPANT_1_PREFIX
+        = _MOBILE_TEST_PREFIX + "participant1Prefix";
 
     /**
      * @return the config prefix for 1st mobile participant.
@@ -46,8 +52,8 @@ public class MobileTestBase extends AbstractBaseTest
     {
         String defaultParticipant
             = System.getProperty(
-                    PARTICIPANT_1_PREFIX_CFG_PROP,
-                    PARTICIPANT_1_DEFAULT_PREFIX);
+                    PROP_PARTICIPANT_1_PREFIX,
+                    DEFAULT_PARTICIPANT_1_PREFIX);
 
         System.err.println("Default participant: " + defaultParticipant);
 
@@ -56,8 +62,8 @@ public class MobileTestBase extends AbstractBaseTest
 
     /**
      * Creates the 1st mobile participant for
-     * {@link #PARTICIPANT_1_DEFAULT_PREFIX} config prefix.
-     * The {@link #PARTICIPANT_1_PREFIX_CFG_PROP} can be used to override it.
+     * {@link #DEFAULT_PARTICIPANT_1_PREFIX} config prefix.
+     * The {@link #PROP_PARTICIPANT_1_PREFIX} can be used to override it.
      *
      * @return {@link MobileParticipant}
      */

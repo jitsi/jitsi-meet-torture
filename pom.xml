@@ -102,7 +102,7 @@
         <!-- not used at the moment -->
 
         <!-- mobile -->
-        <mobile.participant1/>
+        <mobile.participant/>
         <mobile.caps.deviceName/>
         <mobile.caps.app/>
 

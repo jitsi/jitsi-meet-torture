@@ -144,7 +144,15 @@ public class ParticipantFactory implements ParticipantFactoryConfig
         // It will be Chrome by default...
         ParticipantType participantType
             =  ParticipantType.valueOfString(
-                    System.getProperty(configPrefix + ".type", "chrome"));
+                    System.getProperty(configPrefix + ".type"));
+
+        if (participantType == null)
+        {
+            TestUtils.print(
+                    "No participant type specified for prefix: "
+                        + configPrefix+", will use Chrome...");
+            participantType = ParticipantType.chrome;
+        }
 
         String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
         String serverUrl = getJitsiMeetUrl().getServerUrl();
@@ -163,13 +171,13 @@ public class ParticipantFactory implements ParticipantFactoryConfig
         }
         else if (participantType.isMobile())
         {
-            MobileParticipantBuilder mobileBuilder
-                = new MobileParticipantBuilder(
+            MobileParticipantBuilder builder
+                = MobileParticipantBuilder.createBuilder(
                         config,
                         configPrefix,
                         participantType);
 
-            return mobileBuilder.startNewDriver(serverUrl);
+            return builder.startNewDriver(serverUrl);
         }
         else
         {
