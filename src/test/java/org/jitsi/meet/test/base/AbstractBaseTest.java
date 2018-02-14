@@ -134,17 +134,7 @@ public abstract class AbstractBaseTest
 
         participants = new ParticipantHelper(new ParticipantFactory(config));
 
-        // make sure if setup fails we will cleanup
-        // when configure method @BeforeClass fails @AfterClass is not executed
-        try
-        {
-            setupClass();
-        }
-        catch (Throwable t)
-        {
-            cleanupClass();
-            throw t;
-        }
+        setupClass();
     }
 
     /**
