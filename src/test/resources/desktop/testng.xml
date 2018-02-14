@@ -92,11 +92,6 @@
             <class name="org.jitsi.meet.test.MuteTest" />
         </classes>
     </test>
-    <test name="NewLockRoomTest">
-        <classes>
-            <class name="org.jitsi.meet.test.NewLockRoomTest" />
-        </classes>
-    </test>
     <test name="OneOnOneTest">
         <classes>
             <class name="org.jitsi.meet.test.OneOnOneTest" />

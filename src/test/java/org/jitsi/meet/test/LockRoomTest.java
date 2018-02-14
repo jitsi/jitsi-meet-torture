@@ -16,8 +16,9 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.util.*;
-import org.jitsi.meet.test.web.*;
 
+import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
@@ -34,6 +35,7 @@ import static org.testng.Assert.*;
  * the padlock is unlocked.
  *
  * @author Damian Minkov
+ * @author Leonard Kim
  */
 public class LockRoomTest
     extends WebTestBase
@@ -65,86 +67,20 @@ public class LockRoomTest
      */
     private void ownerLockRoom()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        testRoomIsUnlocked(owner);
-
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
-
-        // fill in the dialog
-        togglePasswordEdit(owner);
-
-        String inputXPath = "//input[@id='newPasswordInput']";
-        TestUtils.waitForElementByXPath(owner, inputXPath, 5);
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
-        owner.findElement(
-            By.xpath(inputXPath)).sendKeys(ROOM_KEY);
 
-        owner.findElement(
-            By.id("addPasswordBtn")).click();
+        WebParticipant participant = (WebParticipant) getParticipant1();
+        InfoDialog infoDialog = participant.getInfoDialog();
+        infoDialog.open();
 
+        assertFalse(infoDialog.isLocked());
+
+        infoDialog.addPassword(ROOM_KEY);
         TestUtils.waitMillis(1000);
+        infoDialog.close();
+        infoDialog.open();
 
-        closeInviteDialog(owner);
-        testRoomIsLocked(owner);
-    }
-
-    private void togglePasswordEdit(WebDriver user) {
-        By addPasswordXPath = By.xpath("//a[contains(@class, 'password-overview-toggle-edit')]");
-        TestUtils.waitForElementBy(user, addPasswordXPath, 5);
-        user.findElement(addPasswordXPath).click();
-    }
-
-    /**
-    * Closing invite dialog
-    */
-    private void closeInviteDialog(WebDriver user)
-    {
-        String closeXPath = "//button[@id='modal-dialog-ok-button']";
-        WebElement closeBtn = user.findElement(By.xpath(closeXPath));
-        closeBtn.click();
-    }
-
-    /**
-    * Checks whether room is locked
-    */
-    private void testRoomIsLocked(WebDriver user)
-    {
-        testRoomLockState(user, "is-locked");
-    }
-
-    /**
-    * Checks whether room is unlocked
-    */
-    private void testRoomIsUnlocked(WebDriver user)
-    {
-        testRoomLockState(user, "is-unlocked");
-    }
-
-    /**
-     * Checks room for particular state.
-     * @param user the Driver.
-     * @param state the state to test locked/unlocked.
-     */
-    private void testRoomLockState(WebDriver user, String state)
-    {
-        MeetUIUtils.clickOnToolbarButton(user, "toolbar_button_link");
-
-        // Add a wait till the dialog loads
-        // when we have dial-in option it can change the ui a little
-        // when we load numbers
-        // loading is done only the first time we open the dialog
-        // but here in the tests we have a lot of closing/opening/join/leave
-        // of participants so we make it always wait a little
-        TestUtils.waitMillis(1200);
-
-        String unlockedXPath = "//div[contains(@class, '" + state + "')]";
-
-        TestUtils.waitForDisplayedElementByXPath(user, unlockedXPath, 5);
-        WebElement elem = user.findElement(By.xpath(unlockedXPath));
-
-        assertTrue(elem.isDisplayed(), "Room must be " + state);
-
-        closeInviteDialog(user);
+        assertTrue(infoDialog.isLocked());
     }
 
     /**
@@ -153,7 +89,10 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        testRoomIsLocked(getParticipant1().getDriver());
+        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        InfoDialog ownerInfoDialog = ownerParticipant.getInfoDialog();
+        ownerInfoDialog.open();
+        assertTrue(ownerInfoDialog.isLocked());
 
         try
         {
@@ -187,7 +126,12 @@ public class LockRoomTest
 
         getParticipant2().waitToJoinMUC(5);
 
-        testRoomIsLocked(secondParticipant);
+
+        WebParticipant secondWebParticipant
+            = (WebParticipant) getParticipant2();
+        InfoDialog secondInfoDialog = secondWebParticipant.getInfoDialog();
+        secondInfoDialog.open();
+        assertTrue(secondInfoDialog.isLocked());
     }
 
     /**
@@ -202,7 +146,9 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        ownerUnlockRoom();
+        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        InfoDialog infoDialog = ownerParticipant.getInfoDialog();
+        infoDialog.removePassword();
     }
 
     /**
@@ -210,22 +156,15 @@ public class LockRoomTest
      */
     private void ownerUnlockRoom()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        WebParticipant participant = (WebParticipant) getParticipant1();
+        InfoDialog infoDialog = participant.getInfoDialog();
+        infoDialog.open();
+        infoDialog.removePassword();
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_link");
+        // just in case wait
+        TestUtils.waitMillis(1000);
 
-        togglePasswordEdit(owner);
-
-        WebElement removeButton = TestUtils.waitForElementBy(
-            owner,
-            By.id("inviteDialogRemovePassword"),
-            1);
-        assertNotNull(removeButton, "Missing remove button");
-        removeButton.click();
-        closeInviteDialog(owner);
-
-        // Wait for the lock icon to disappear
-        testRoomIsUnlocked(owner);
+        assertFalse(infoDialog.isLocked());
     }
 
     /**
@@ -238,7 +177,11 @@ public class LockRoomTest
         // as participant will fail joining
         ensureTwoParticipants();
 
-        testRoomIsUnlocked(getParticipant2().getDriver());
+        WebParticipant participant = (WebParticipant) getParticipant2();
+        InfoDialog infoDialog = participant.getInfoDialog();
+        infoDialog.open();
+
+        assertFalse(infoDialog.isLocked());
     }
 
     /**
@@ -250,10 +193,14 @@ public class LockRoomTest
     {
         ownerLockRoom();
 
-        WebDriver secondParticipant = getParticipant2().getDriver();
-        testRoomIsLocked(secondParticipant);
+        WebParticipant participant = (WebParticipant) getParticipant2();
+        InfoDialog infoDialog = participant.getInfoDialog();
+        infoDialog.open();
+        assertTrue(infoDialog.isLocked());
+
         ownerUnlockRoom();
-        testRoomIsUnlocked(secondParticipant);
+
+        assertFalse(infoDialog.isLocked());
     }
 
     /**
@@ -270,8 +217,6 @@ public class LockRoomTest
         TestUtils.waitMillis(1000);
 
         ownerLockRoom();
-
-        testRoomIsLocked(getParticipant1().getDriver());
 
         try
         {
@@ -307,6 +252,10 @@ public class LockRoomTest
             By.id("modal-dialog-ok-button")).click();
 
         getParticipant2().waitToJoinMUC(5);
-        testRoomIsUnlocked(secondParticipant);
+
+        WebParticipant participant = (WebParticipant) getParticipant2();
+        InfoDialog infoDialog = participant.getInfoDialog();
+        infoDialog.open();
+        assertFalse(infoDialog.isLocked());
     }
 }
