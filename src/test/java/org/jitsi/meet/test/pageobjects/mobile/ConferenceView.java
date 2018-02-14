@@ -60,6 +60,9 @@ public class ConferenceView extends AbstractMobilePage
         return conference;
     }
 
+    /**
+     * @return the {@link ToolbarView}.
+     */
     public ToolbarView getToolbarView()
     {
         if (toolbar == null)

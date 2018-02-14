@@ -16,7 +16,6 @@
 package org.jitsi.meet.test.mobile;
 
 import org.jitsi.meet.test.mobile.base.*;
-import org.jitsi.meet.test.pageobjects.mobile.*;
 import org.testng.annotations.*;
 
 /**
@@ -28,6 +27,10 @@ import org.testng.annotations.*;
 public class WelcomePageTest
     extends MobileTestBase
 {
+    /**
+     * Executes {@link #testJoinConference(MobileParticipant)}} for the 1st
+     * mobile participant.
+     */
     @Test
     public void joinConference()
     {
@@ -38,6 +41,12 @@ public class WelcomePageTest
         mobile.quit();
     }
 
+    /**
+     * Will enter conference room name in the welcome page and join
+     * the conference. After join will press the hangup button.
+     *
+     * @param participant - A mobile participant on which the test will execute.
+     */
     private void testJoinConference(MobileParticipant participant)
     {
         participant.joinConference(currentRoomName);

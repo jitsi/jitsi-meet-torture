@@ -18,11 +18,12 @@ package org.jitsi.meet.test.pageobjects.mobile;
 import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
-import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
 
 /**
  * Page object for the mobile toolbar area.
+ *
+ * @author Pawel Domas
  */
 public class ToolbarView extends AbstractMobilePage
 {
@@ -40,7 +41,8 @@ public class ToolbarView extends AbstractMobilePage
     /**
      * Creates new <tt>ToolbarView</tt>.
      *
-     * @param participant <tt>MobileParticipant</tt> instance.
+     * @param conferenceView - A {@link ConferenceView} in which this toolbar is
+     * located.
      */
     public ToolbarView(ConferenceView conferenceView)
     {
@@ -49,6 +51,11 @@ public class ToolbarView extends AbstractMobilePage
         this.conferenceView = conferenceView;
     }
 
+    /**
+     * Checks if the toolbar is currently open.
+     *
+     * @return <tt>true</tt> if open.
+     */
     public boolean isOpen()
     {
         return !participant.getDriver()
@@ -66,6 +73,9 @@ public class ToolbarView extends AbstractMobilePage
         return hangup;
     }
 
+    /**
+     * Opens the toolbar if it's closed.
+     */
     public void open()
     {
         if (!isOpen())

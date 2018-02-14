@@ -28,6 +28,8 @@ import java.util.logging.*;
 
 /**
  * A mobile {@link Participant}.
+ *
+ * @author Pawel Domas
  */
 public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
 {
@@ -36,25 +38,57 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
      */
     private final static Logger logger = Logger.getGlobal();
 
+    /**
+     * The app bundle identifier used to reinstall/start the app if it was
+     * previously installed on the device.
+     */
     private final String appBundleId;
 
-    private final String appPath;
+    /**
+     * The full path to the binary file which can be used to install the app on
+     * the device.
+     */
+    private final String app;
 
+    /**
+     * The conference view instance.
+     *
+     * FIXME refactor things to have a page objects factory which would be
+     * stored in a field here instead of keeping all the objects in participant
+     * directly.
+     */
     private ConferenceView conferenceView;
 
+    /**
+     * The Appium driver instance.
+     */
     private final AppiumDriver<WebElement> driver;
 
+    /**
+     * Initializes {@link MobileParticipant}.
+     *
+     * @param driver - The Appium driver instance connected to the mobile
+     * device.
+     * @param name - The name for this participant.
+     * @param type - The participant's type.
+     * @param appBundleId - The app bundle identifies which can be used to
+     * start/uninstall the app.
+     * @param app - A full path to the app binary file which can be used to
+     * install the app on the device.
+     * @param meetServerURL - The server part of {@link JitsiMeetUrl}. See
+     * {@link JitsiMeetUrl#serverUrl} for more details.
+     */
     public MobileParticipant(AppiumDriver<WebElement> driver,
                              String name,
                              ParticipantType type,
                              String appBundleId,
-                             String appPath,
-                             String meetURL)
+                             String app,
+                             String meetServerURL)
     {
-        super(name, driver, type, meetURL, null);
+        super(name, driver, type, meetServerURL, null);
         this.driver = Objects.requireNonNull(driver, "driver");
         this.appBundleId = Objects.requireNonNull(appBundleId, "appBundleId");
-        this.appPath = Objects.requireNonNull(appPath, "appPath");
+        this.app = Objects.requireNonNull(app, "app");
     }
 
     /**
@@ -83,6 +117,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         return type.isAndroid() ? (AndroidDriver<WebElement>) driver : null;
     }
 
+    /**
+     * @return {@link ConferenceView} for this participant.
+     */
     public ConferenceView getConferenceView()
     {
         if (conferenceView == null)
@@ -93,6 +130,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         return conferenceView;
     }
 
+    /**
+     * @return {@link ToolbarView} for this participant.
+     */
     public ToolbarView getToolbarView()
     {
         return getConferenceView().getToolbarView();
@@ -127,6 +167,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         logger.info("Overlay permissions granted !");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void doJoinConference(JitsiMeetUrl conferenceUrl)
     {
@@ -144,7 +187,6 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
 
         MobileElement roomNameInput = welcomePageView.getRoomNameInput();
 
-        // FIXME: check how this works...
         roomNameInput.sendKeys(conferenceUrl.toString());
 
         if (type.isAndroid())
@@ -210,6 +252,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public AppiumDriver<WebElement> getDriver()
     {
         return driver;
@@ -227,7 +272,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
             Logger.getGlobal().log(Level.INFO, "Removing app...");
             driver.removeApp(appBundleId);
             Logger.getGlobal().log(Level.INFO, "Installing app...");
-            driver.installApp(appPath);
+            driver.installApp(app);
             Logger.getGlobal().log(Level.INFO, "Launching app...");
             driver.launchApp();
         }
@@ -239,6 +284,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         return "MobileParticipant[" + name + "]@" + hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void doHangUp()
     {

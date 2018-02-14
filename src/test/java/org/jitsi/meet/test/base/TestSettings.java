@@ -34,6 +34,10 @@ public class TestSettings
     /**
      * Initialize the settings by loading the properties file and use all
      * its values as system properties.
+     *
+     * @return a properties set containing all the stuff from
+     * {@link #SETTINGS_PROPERTIES_LOCATION} file merged with the
+     * {@link System#getProperties()} set.
      */
     public static Properties initSettings()
     {
