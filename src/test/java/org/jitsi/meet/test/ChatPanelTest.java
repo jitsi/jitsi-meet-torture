@@ -31,7 +31,7 @@ import static org.testng.Assert.*;
  * @author Boris Grozev
  */
 public class ChatPanelTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The single participant which will be used in this test.
@@ -42,9 +42,9 @@ public class ChatPanelTest
      * {@inheritDoc}
      */
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
 

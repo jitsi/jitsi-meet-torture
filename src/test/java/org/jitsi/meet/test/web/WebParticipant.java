@@ -25,13 +25,12 @@ import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * The web specific participant implementation.
- * @param <T>
  */
-public class WebParticipant<T extends WebDriver>
-    extends Participant
+public class WebParticipant extends Participant<WebDriver>
 {
     /**
      * The javascript code which returns {@code true} if we are joined in
@@ -47,6 +46,19 @@ public class WebParticipant<T extends WebDriver>
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
 
+    /**
+     * Default config for Web participants.
+     */
+    public static final String DEFAULT_CONFIG
+        = "config.requireDisplayName=false"
+            + "&config.debug=true"
+            + "&config.disableAEC=true"
+            + "&config.disableNS=true"
+            + "&config.callStatsID=false"
+            + "&config.alwaysVisibleToolbar=true"
+            + "&config.p2p.enabled=false"
+            + "&config.disable1On1Mode=true";
+
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
@@ -59,10 +71,91 @@ public class WebParticipant<T extends WebDriver>
      * @param type    the type (type of browser).
      * @param meetURL the url to use when joining room.
      */
-    public WebParticipant(String name, WebDriver driver,
-        ParticipantFactory.ParticipantType type, String meetURL)
+    public WebParticipant(
+            String name, WebDriver driver, ParticipantType type, String meetURL)
     {
-        super(name, driver, type, meetURL);
+        super(name, driver, type, meetURL, DEFAULT_CONFIG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doJoinConference(JitsiMeetUrl conferenceUrl)
+    {
+        // with chrome v52 we start getting error:
+        // "Timed out receiving message from renderer" and
+        // "Navigate timeout: cannot determine loading status"
+        // seems its a bug or rare problem, maybe concerns async loading
+        // of resources ...
+        // https://bugs.chromium.org/p/chromedriver/issues/detail?id=402
+        // even there is a TimeoutException the page is loaded correctly
+        // and driver is operating, we just lower the page load timeout
+        // default is 3 minutes and we log and skip this exception
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        try
+        {
+            driver.get(conferenceUrl.toString());
+        }
+        catch (org.openqa.selenium.TimeoutException ex)
+        {
+            ex.printStackTrace();
+            TestUtils.print("TimeoutException while loading page, "
+                + "will skip it and continue:" + ex.getMessage());
+        }
+
+        MeetUtils.waitForPageToLoad(driver);
+
+        // disables animations
+        executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+
+        executeScript("APP.UI.dockToolbar(true);");
+
+        // disable keyframe animations (.fadeIn and .fadeOut classes)
+        executeScript("$('<style>.notransition * { "
+            + "animation-duration: 0s !important; "
+            + "-webkit-animation-duration: 0s !important; transition:none; }"
+            + " </style>').appendTo(document.head);");
+        executeScript("$('body').toggleClass('notransition');");
+
+        // disable the blur effect in firefox as it has some performance issues
+        if (this.type.isFirefox())
+        {
+            executeScript(
+                "try { var blur "
+                    + "= document.querySelector('.video_blurred_container'); "
+                    + "if (blur) { "
+                    + "document.querySelector('.video_blurred_container')"
+                    + ".style.display = 'none' "
+                    + "} } catch(e) {}");
+        }
+
+        // Hack-in disabling of callstats (old versions of jitsi-meet don't
+        // handle URL parameters)
+        executeScript("config.callStatsID=false;");
+
+        String version
+            = TestUtils.executeScriptAndReturnString(driver,
+            "return JitsiMeetJS.version;");
+        TestUtils.print(name + " lib-jitsi-meet version: " + version);
+
+        executeScript("document.title='" + name + "'");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doHangUp()
+    {
+        MeetUIUtils.clickOnButton(driver, "toolbar_button_hangup", false);
+
+        TestUtils.waitMillis(500);
+        // open a blank page after hanging up, to make sure
+        // we will successfully navigate to the new link containing the
+        // parameters, which change during testing
+        driver.get("about:blank");
+        MeetUtils.waitForPageToLoad(driver);
     }
 
     /**

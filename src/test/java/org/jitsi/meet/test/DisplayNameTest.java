@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
@@ -31,7 +32,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class DisplayNameTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The default display name.
@@ -39,9 +40,9 @@ public class DisplayNameTest
     private final static String DEFAULT_DISPLAY_NAME = "me";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }
@@ -160,9 +161,7 @@ public class DisplayNameTest
                     "']//span[@id='participant_" +
                     remoteParticipantResourceJid + "_name']"));
 
-        boolean isFF
-            = remoteParticipant.getType()
-                    == ParticipantFactory.ParticipantType.firefox;
+        boolean isFF = remoteParticipant.getType().isFirefox();
         if (!isFF)
         {
             assertTrue(
@@ -214,8 +213,7 @@ public class DisplayNameTest
         action.build().perform();
 
         boolean isFF
-            = getParticipant2().getType()
-                    == ParticipantFactory.ParticipantType.firefox;
+            = getParticipant2().getType().isFirefox();
         if (!isFF)
         {
             assertTrue(

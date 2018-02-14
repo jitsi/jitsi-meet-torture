@@ -3,7 +3,7 @@
     <test name="MobileTesting">
 
         <classes>
-            <class name="org.jitsi.meet.test.mobile.WelcomePage" />
+            <class name="org.jitsi.meet.test.mobile.WelcomePageTest" />
         </classes>
 
     </test>

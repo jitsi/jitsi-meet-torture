@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.TimeoutException;
@@ -33,7 +34,7 @@ import static org.testng.Assert.*;
  * the conference and that participant will be sharing its screen.
  */
 public class DesktopSharingTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * A property to specified the external script that will be used to
@@ -82,17 +83,19 @@ public class DesktopSharingTest
         new Thread(() -> {
             try
             {
-                String URL =
-                    System.getProperty(
-                        ParticipantFactory.JITSI_MEET_URL_PROP) + "/"
-                        + currentRoomName
-                        + "#config.requireDisplayName=false"
-                        + "&config.firefox_fake_device=true"
-                        + "&config.autoEnableDesktopSharing=true";
-                String[] cmd =
-                    { hookScript, URL};
+                JitsiMeetUrl url = ParticipantFactory.getJitsiMeetUrl();
 
-                print("Start the script with param:"+ URL);
+                url.setRoomName(currentRoomName);
+                // FIXME the config part may need to by synced up with
+                // WebParticipant#DEFAULT_CONFIG
+                url.setHashConfigPart(
+                    "config.requireDisplayName=false"
+                        + "&config.firefox_fake_device=true"
+                        + "&config.autoEnableDesktopSharing=true");
+
+                String[] cmd = { hookScript, url.toString()};
+
+                print("Start the script with param:"+ url);
                 ProcessBuilder pb = new ProcessBuilder(cmd);
 
                 pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);

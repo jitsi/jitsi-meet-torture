@@ -1,0 +1,228 @@
+/*
+ * Copyright @ 2015 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jitsi.meet.test.base;
+
+import org.apache.commons.lang3.*;
+
+import java.net.*;
+
+/**
+ * Convenience class for dealing with Jitsi Meet conference URL components.
+ *
+ * @author Pawel Domas
+ */
+public class JitsiMeetUrl
+    implements Cloneable
+{
+    /**
+     * In the example URL:
+     * "https://server.com/room1?login=true#config.debug=true" it's
+     * "config.debug=true". Note that the "#" sign is not stored in the field,
+     * but added when the URL string is being constructed. At the same time any
+     * sub parameters should be joined with the "&" sign when passed to
+     * {@link #setHashConfigPart(String)}. For convenience
+     * {@link #appendConfig(String)} will do that automatically.
+     */
+    private String hashConfigPart;
+
+    /**
+     * In the example URL:
+     * "https://server.com/room1?login=true#config.debug=true" it's "room1".
+     */
+    private String roomName;
+
+    /**
+     * In the example URL:
+     * "https://server.com/room1?login=true#config.debug=true"
+     * it's "login=true". Note that "?" sign is added automatically when the URL
+     * string is being constructed, but at the same time any sub parameters
+     * should be joined with the "&" sign.
+     */
+    private String roomParameters;
+
+    /**
+     * In the example URL:
+     * "https://server.com/room1?login=true#config.debug=true"
+     * it's "https://server.com".
+     */
+    private String serverUrl;
+
+    /**
+     * Adds extra config parameters.
+     *
+     * @param extraConfig extra config params to be added at the end of the
+     * current {@link #hashConfigPart}, without "?" nor "&" at the beginning.
+     */
+    public void appendConfig(String extraConfig)
+    {
+        if (StringUtils.isBlank(extraConfig))
+        {
+            return;
+        }
+
+        if (StringUtils.isNotBlank(hashConfigPart))
+        {
+            hashConfigPart += "&" + extraConfig;
+        }
+        else
+        {
+            hashConfigPart = extraConfig;
+        }
+    }
+
+    /**
+     * Overriding this method will make a field-to-field copy of the URL.
+     *
+     * @return a field-to-field copy of this instance.
+     */
+    @Override
+    protected Object clone()
+    {
+        try
+        {
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e)
+        {
+            // We don't want to handle that it all places, because we claim
+            // to support it.
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return obtains {@link #hashConfigPart} of the conference URL.
+     */
+    public String getHashConfigPart()
+    {
+        return hashConfigPart;
+    }
+
+    /**
+     * A {@link URL} constructed from the result of {@link #toString()}
+     *
+     * @return a full Jitsi Meet conference <tt>URL</tt>.
+     * @throws MalformedURLException all the fields to not combine into a valid
+     * URL.
+     */
+    public URL toUrl()
+        throws MalformedURLException
+    {
+        return new URL(toString());
+    }
+
+    /**
+     * @return a host part of the URL returned by {@link #toUrl()}.
+     * @throws MalformedURLException the same as in {@link #toUrl()}.
+     */
+    public String getHost()
+        throws MalformedURLException
+    {
+        return toUrl().getHost();
+    }
+
+    /**
+     * @return obtains {@link #roomName} part of the conference URL.
+     */
+    public String getRoomName()
+    {
+        return roomName;
+    }
+
+    /**
+     * @return obtains {@link #roomParameters} part of the conference URL.
+     */
+    public String getRoomParameters()
+    {
+        return roomParameters;
+    }
+
+    /**
+     * @return obtains {@link #serverUrl} part of the conference  URL.
+     */
+    public String getServerUrl()
+    {
+        return serverUrl;
+    }
+
+    /**
+     * Sets {@link #hashConfigPart} of the conference URL.
+     *
+     * @param hashConfigPart a string without "#" sign at the beginning, but
+     * with "&" between config params.
+     */
+    public void setHashConfigPart(String hashConfigPart)
+    {
+        this.hashConfigPart = hashConfigPart;
+    }
+
+    /**
+     * Sets the {@link #roomName} part of the conference URL.
+     *
+     * @param roomName a room name without any special characters.
+     */
+    public void setRoomName(String roomName)
+    {
+        this.roomName = roomName;
+    }
+
+    /**
+     * Sets the {@link #roomParameters} part of the conference URL.
+     *
+     * @param roomParameters the conference room parameters without "?" sign at
+     * the beginning, but with "&" between each of the params which are part of
+     * a single string passed here as an argument.
+     */
+    public void setRoomParameters(String roomParameters)
+    {
+        this.roomParameters = roomParameters;
+    }
+
+    /**
+     * Sets the {@link #serverUrl} part of the conference URL.
+     *
+     * @param serverUrl a Jitsi Meet server URL (see {@link #serverUrl} for more
+     * details).
+     */
+    public void setServerUrl(String serverUrl)
+    {
+        this.serverUrl = serverUrl;
+    }
+
+    /**
+     * This will put all of the URL components together and print them as
+     * a string.
+     *
+     * @return a string which represents a full Jitsi Meet conference URL.
+     */
+    @Override
+    public String toString()
+    {
+        String url = serverUrl + "/" + roomName;
+
+        if (StringUtils.isNotBlank(roomParameters))
+        {
+            url += "?" + roomParameters;
+        }
+
+        if (StringUtils.isNotBlank(hashConfigPart))
+        {
+            url += "#" + hashConfigPart;
+        }
+
+        return url;
+    }
+}

@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -32,7 +33,7 @@ import static org.testng.Assert.*;
  * @author Hristo Terezov
  */
 public class MaxUsersTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Number of participants in the call.
@@ -51,9 +52,9 @@ public class MaxUsersTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }
@@ -74,6 +75,7 @@ public class MaxUsersTest
         if (MAX_USERS > 2)
         {
             boolean failed = false;
+            // FIXME simplify index logic by removing setupClass
             // Assuming we have 2 participants already started we have to
             // start MAX_USERS - 2 participants more to have MAX_USERS
             // participants in the call in order to exceed the limit.
@@ -83,7 +85,7 @@ public class MaxUsersTest
                 for(int i = 0; i < participants.length; i++)
                 {
                     participants[i] =
-                        ParticipantFactory.getInstance()
+                        this.participants
                             .createParticipant("web.participant" + (i + 4));
                     participants[i].joinConference(currentRoomName);
                 }

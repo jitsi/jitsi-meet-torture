@@ -17,9 +17,13 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.Test;
+
+import java.net.*;
 
 /**
  * Test that loads a page using the iframe API to load a meeting.
@@ -29,7 +33,7 @@ import org.testng.annotations.Test;
  * @author Damian Minkov
  */
 public class IFrameAPITest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * A url for a page that loads the iframe API.
@@ -38,7 +42,8 @@ public class IFrameAPITest
         = "https://cdn.jitsi.net/jitsi-meet-torture/v1/iframeAPITest.html"
             + "?domain=%s"
             + "&room=%s"
-            // default settings, used in Participant join function.
+            // default settings, used in Participant join function
+            // FIXME: this must be in sync with WebParticiapnt#DEFAULT_CONFIG
             + "&config={"
                 + "\"debug\":true,"
                 + "\"disableAEC\":true,"
@@ -72,16 +77,23 @@ public class IFrameAPITest
     /**
      * Private implementation of joining a participants, where we load a page
      * which loads the conference using iframe API.
-     * @param roomName the roomname
-     * @param fragment extra params that can be passed.
+     * @param conferenceUrl the full conference URL.
      */
-    private void joinConference(String roomName, String fragment)
+    private void joinConference(JitsiMeetUrl conferenceUrl)
     {
         WebDriver participant = getParticipant1().getDriver();
 
-        String domain = System.getProperty("jitsi-meet.instance.url")
-            .replace("https://", "");
+        String domain;
+        try
+        {
+            domain = conferenceUrl.getHost();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new RuntimeException(e);
+        }
 
+        String roomName = conferenceUrl.getRoomName();
         String pageToLoad
             = String.format(IFRAME_API_LOAD_PAGE, domain, roomName);
 

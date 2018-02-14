@@ -19,6 +19,7 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.capture.*;
 import org.jitsi.meet.test.tasks.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.json.simple.*;
 import org.openqa.selenium.*;
@@ -39,7 +40,7 @@ import java.util.concurrent.*;
  * @author Ivan Symchych
  */
 public class PSNRTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Defines the directory in which the psnr output file should be written
@@ -99,9 +100,9 @@ public class PSNRTest
     private static final float MIN_PSNR = 22f;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         File inputFrameDir = new File(INPUT_FRAME_DIR);
         if (!inputFrameDir.exists()
@@ -112,18 +113,11 @@ public class PSNRTest
             throw new SkipException("Skip the PSNR tests, no resources");
         }
 
-        ParticipantFactory.getInstance()
+        participants
+            .getFactoryConfig()
             .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
         ensureTwoParticipants();
-    }
-
-    @Override
-    public void cleanup()
-    {
-        super.cleanup();
-
-        ParticipantFactory.getInstance().setFakeStreamVideoFile(null);
     }
 
     @Override

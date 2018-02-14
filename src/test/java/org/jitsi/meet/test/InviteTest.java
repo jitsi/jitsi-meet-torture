@@ -1,13 +1,12 @@
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.AbstractBaseTest;
 import org.jitsi.meet.test.base.Participant;
 import org.jitsi.meet.test.util.MeetUtils;
 import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
 import org.jitsi.meet.test.pageobjects.web.InfoDialog;
-import org.jitsi.meet.test.web.WebParticipant;
+import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.SkipException;
+import org.testng.*;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import static org.testng.Assert.assertTrue;
  *
  * @author Leonard Kim
  */
-public class InviteTest extends AbstractBaseTest
+public class InviteTest extends WebTestBase
 {
     /**
      * The single participant which will be used in this test.
@@ -35,9 +34,9 @@ public class InviteTest extends AbstractBaseTest
 
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant();
 

@@ -17,8 +17,8 @@ package org.jitsi.meet.test;
 
 import java.util.*;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -35,7 +35,7 @@ import static org.testng.Assert.*;
  * @author Hristo Terezov
  */
 public class ConnectionTimeTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Number of conferences that are going to be started and closed to 
@@ -215,9 +215,9 @@ public class ConnectionTimeTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }
@@ -225,13 +225,9 @@ public class ConnectionTimeTest
     @DataProvider(name = "dp")
     public Object[][] createData()
     {
-        // a workaround where if the tests is no in the list of tests
-        // to be executed, to skip executing the DataProvider
-        try
-        {
-            super.checkForSkip();
-        }
-        catch (SkipException e)
+        // If the tests is not in the list of tests to be executed,
+        // skip executing the DataProvider.
+        if (isSkipped())
         {
             return new Object[0][0];
         }

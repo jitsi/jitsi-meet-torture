@@ -24,14 +24,20 @@ import org.testng.*;
 import java.io.*;
 import java.lang.management.*;
 import java.util.*;
+import java.util.logging.*;
 
 public class FailureListener
     implements ITestListener
 {
     /**
+     * The folder where the logs will be saved.
+     */
+    private static File outputLogsParentFolder = null;
+
+    /**
      * The folder where the screenshost will be saved.
      */
-    private File outputScreenshotsParentFolder = null;
+    private static File outputScreenshotsParentFolder = null;
 
     /**
      * The folder where the htmls will be saved.
@@ -48,10 +54,36 @@ public class FailureListener
         return System.getProperty(
             "test.report.directory", "target/surefire-reports");
     }
+
     /**
-     * The folder where the logs will be saved.
+     * Gets the screenshots parent output folder.
+     *
+     * @return a <tt>File</tt> instance.
      */
-    private static File outputLogsParentFolder = null;
+    synchronized public static File getScreenshotsOutputFolder()
+    {
+        if (outputScreenshotsParentFolder == null)
+        {
+            // This property will be defined when the test are running on
+            // AWS mobile device farm for example. If it's not we go with
+            // the tests results location.
+            String appiumScreenshotDir
+                = System.getProperty("appium.screenshots.dir");
+
+            if (appiumScreenshotDir != null)
+            {
+                outputScreenshotsParentFolder = new File(appiumScreenshotDir);
+            }
+            else
+            {
+                outputScreenshotsParentFolder
+                    = new File(getReportFolder() + "/screenshots");
+            }
+
+            outputScreenshotsParentFolder.mkdirs();
+        }
+        return outputScreenshotsParentFolder;
+    }
 
     @Override
     public void onTestStart(ITestResult iTestResult)
@@ -73,8 +105,6 @@ public class FailureListener
     public void onStart(ITestContext iTestContext)
     {
         // default reports folder
-        outputScreenshotsParentFolder
-            = new File(getReportFolder() + "/screenshots");
         outputHtmlSourceParentFolder
             = new File(getReportFolder() + "/html-sources");
         outputHtmlSourceParentFolder.mkdirs();
@@ -118,16 +148,19 @@ public class FailureListener
             AbstractBaseTest testInstance
                 = (AbstractBaseTest)testResult.getInstance();
 
+            List<Participant<? extends WebDriver>> participants
+                = testInstance.getAllParticipants();
+
             String fileNamePrefix
                 = testResult.getTestClass().getRealClass().getCanonicalName();
 
-            takeScreenshots(fileNamePrefix, testInstance);
+            takeScreenshots(fileNamePrefix, participants);
 
-            saveHtmlSources(fileNamePrefix, testInstance);
+            saveHtmlSources(fileNamePrefix, participants);
 
-            saveMeetDebugLog(fileNamePrefix, testInstance);
+            saveMeetDebugLog(fileNamePrefix, participants);
 
-            saveBrowserLogs(fileNamePrefix, testInstance);
+            saveBrowserLogs(fileNamePrefix, participants);
 
             saveThreadDump(fileNamePrefix);
         }
@@ -138,103 +171,39 @@ public class FailureListener
     }
 
     /**
-     * Takes screenshot of owner and participant.
+     * Takes screenshot of all participants.
      *
      * @param fileName the filename to use.
+     * @param participants the participants for whom the screenshots will be
+     * taken.
      */
     private void takeScreenshots(
-        String fileName, AbstractBaseTest testInstance)
+            String fileName,
+            List<Participant<? extends WebDriver>> participants)
     {
-        if (testInstance.getParticipant1() != null)
-        {
-            takeScreenshot(testInstance.getParticipant1().getDriver(),
-                fileName + "-owner.png");
-        }
-
-        if (testInstance.getParticipant2() != null)
-        {
-            takeScreenshot(testInstance.getParticipant2().getDriver(),
-                fileName + "-participant.png");
-        }
-
-        if (testInstance.getParticipant3() != null)
-        {
-            takeScreenshot(testInstance.getParticipant3().getDriver(),
-                fileName + "-third.png");
-        }
-    }
-
-    /**
-     * Takes screenshot for the supplied page.
-     * @param driver the driver controlling the page.
-     * @param fileName the destination screenshot file name.
-     */
-    private void takeScreenshot(WebDriver driver, String fileName)
-    {
-        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-
-        if (takesScreenshot == null)
-        {
-            TestUtils.print("No driver to take screenshot from! FileName:"
-                + fileName);
-            return;
-        }
-
-        File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        File destFile = new File(outputScreenshotsParentFolder, fileName);
-        try
-        {
-            FileUtils.copyFile(scrFile, destFile);
-        }
-        catch (IOException ioe)
-        {
-            throw new RuntimeException(ioe);
-        }
+        participants
+            .forEach(
+                p -> p.takeScreenshot(
+                        getScreenshotsOutputFolder(),
+                        fileName + "-" + p.getName() + ".png"));
     }
 
     /**
      * Saves html sources of owner and participant in the moment of failure.
      *
      * @param fileName the filename to use.
+     * @param participants the participants for whom the HTML sources will be
+     * saved.
      */
-    private void saveHtmlSources(String fileName, AbstractBaseTest testInstance)
+    private void saveHtmlSources(
+            String fileName,
+            List<Participant<? extends WebDriver>> participants)
     {
-        if (testInstance.getParticipant1() != null)
-        {
-            saveHtmlSource(testInstance.getParticipant1().getDriver(),
-                fileName + "-owner.html");
-        }
-
-        if (testInstance.getParticipant2() != null)
-        {
-            saveHtmlSource(testInstance.getParticipant2().getDriver(),
-                fileName + "-participant.html");
-        }
-
-        if (testInstance.getParticipant3() != null)
-        {
-            saveHtmlSource(testInstance.getParticipant3().getDriver(),
-                fileName + "-third.html");
-        }
-    }
-
-    /**
-     * Saves the html source of the supplied page.
-     * @param driver the driver controlling the page.
-     * @param fileName the destination html file name.
-     */
-    private void saveHtmlSource(WebDriver driver, String fileName)
-    {
-        try
-        {
-            FileUtils.openOutputStream(
-                new File(outputHtmlSourceParentFolder, fileName))
-                .write(driver.getPageSource().getBytes());
-        }
-        catch(Throwable t)
-        {
-            t.printStackTrace();
-        }
+        participants
+            .forEach(
+                p -> p.saveHtmlSource(
+                        outputHtmlSourceParentFolder,
+                        fileName + "-" + p.getName() + ".html"));
     }
 
     /**
@@ -242,51 +211,38 @@ public class FailureListener
      * if we do not find it we skip it.
      */
     private void saveMeetDebugLog(
-        String fileNamePrefix, AbstractBaseTest testInstance)
+            String fileNamePrefix,
+            List<Participant<? extends WebDriver>> participants)
     {
-        if (testInstance.getParticipant1() != null)
-        {
-            saveMeetDebugLog(testInstance.getParticipant1().getDriver(),
-                fileNamePrefix + "-meetlog-owner.json");
-        }
-
-        if (testInstance.getParticipant2() != null)
-        {
-            saveMeetDebugLog(testInstance.getParticipant2().getDriver(),
-                fileNamePrefix + "-meetlog-participant.json");
-        }
-
-        if (testInstance.getParticipant3() != null)
-        {
-            saveMeetDebugLog(testInstance.getParticipant3().getDriver(),
-                fileNamePrefix + "-meetlog-third.json");
-        }
+        participants
+            .forEach(
+                p -> saveMeetDebugLog(
+                        p,
+                        fileNamePrefix + "-meetlog-" + p.getName() + ".json"));
     }
 
     /**
      * Saves the log from meet. Normally when clicked it is saved in Downloads
      * if we do not find it we skip it.
      */
-    private void saveMeetDebugLog(WebDriver driver, String fileName)
+    private void saveMeetDebugLog(Participant participant, String fileName)
     {
         try
         {
-            Object log = ((JavascriptExecutor) driver)
-                .executeScript(
-                    "try{ "
-                        + "return JSON.stringify(APP.conference.getLogs(), null, '    ');"
-                        + "}catch (e) {}");
-
-            if (log == null)
-                return;
-
-            FileUtils.write(
-                new File(outputLogsParentFolder, fileName),
-                (String)log);
+            String log = participant.getMeetDebugLog();
+            if (log != null)
+            {
+                FileUtils.write(
+                    new File(outputLogsParentFolder, fileName), log);
+            }
         }
         catch (Exception e)
         {
-            //e.printStackTrace();
+            Logger.getGlobal()
+                .log(
+                    Level.SEVERE,
+                    "Failed to write meet logs for " + participant.getName(),
+                    e);
         }
     }
 
@@ -294,31 +250,16 @@ public class FailureListener
      * Saves browser console logs.
      */
     private void saveBrowserLogs(
-        String fileNamePrefix, AbstractBaseTest testInstance)
+            String fileNamePrefix,
+            List<Participant<? extends WebDriver>> participants)
     {
-        if (testInstance.getParticipant1() != null)
-        {
-            saveBrowserLogs(
-                testInstance.getParticipant1().getDriver(),
-                fileNamePrefix, "-console-owner", ".log",
-                testInstance.getParticipant1().getType());
-        }
-
-        if (testInstance.getParticipant2() != null)
-        {
-            saveBrowserLogs(
-                testInstance.getParticipant2().getDriver(),
-                fileNamePrefix, "-console-secondParticipant", ".log",
-                testInstance.getParticipant2().getType());
-        }
-
-        if (testInstance.getParticipant3() != null)
-        {
-            saveBrowserLogs(
-                testInstance.getParticipant3().getDriver(),
-                fileNamePrefix, "-console-thirdParticipant", ".log",
-                testInstance.getParticipant3().getType());
-        }
+        participants
+            .forEach(
+                p -> saveBrowserLogs(
+                    p,
+                    fileNamePrefix,
+                    "-console-" + p.getName(),
+                    ".log"));
     }
 
     /**
@@ -354,49 +295,34 @@ public class FailureListener
     /**
      * Saves browser console logs.
      */
-    private void saveBrowserLogs(WebDriver driver,
-        String fileNamePrefix, String suffix, String extension,
-        ParticipantFactory.ParticipantType type)
+    private void saveBrowserLogs(
+            Participant p, String fileNamePrefix,
+            String suffix, String extension)
     {
         try
         {
-            if (type == ParticipantFactory.ParticipantType.firefox)
+            LogEntries logs = p.getBrowserLogs();
+
+            if (logs != null)
             {
-                // not currently supported in FF
-                // https://github.com/SeleniumHQ/selenium/issues/2910
-                return;
-            }
+                File outputFile
+                    = new File(
+                            outputLogsParentFolder,
+                            fileNamePrefix + suffix + "-driver" + extension);
 
-            LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-
-            BufferedWriter out = new BufferedWriter(new FileWriter(
-                new File(outputLogsParentFolder,
-                    fileNamePrefix + suffix + "-driver" + extension)));
-
-            Iterator<LogEntry> iter = logs.iterator();
-            while (iter.hasNext())
-            {
-                LogEntry e = iter.next();
-
-                out.write(e.toString());
-                out.newLine();
-                out.newLine();
-            }
-            out.flush();
-            out.close();
-
-            if (type == ParticipantFactory.ParticipantType.chrome)
-            {
-                File srcFile = new File(outputLogsParentFolder,
-                    "chrome" + suffix + ".log");
-                // in case of remote driver the file does not exist
-                if (!srcFile.exists())
-                    return;
-                FileUtils.copyFile(
-                    srcFile,
-                    new File(outputLogsParentFolder,
-                        fileNamePrefix + suffix + "-chrome" + extension)
-                );
+                try (BufferedWriter out
+                         = new BufferedWriter(
+                                new FileWriter(outputFile)))
+                {
+                    for (LogEntry e : logs)
+                    {
+                        out.write(e.toString());
+                        out.newLine();
+                        out.newLine();
+                    }
+                    out.flush();
+                    out.close();
+                }
             }
         }
         catch (IOException e)

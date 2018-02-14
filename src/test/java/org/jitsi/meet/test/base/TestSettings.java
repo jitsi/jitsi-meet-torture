@@ -34,8 +34,12 @@ public class TestSettings
     /**
      * Initialize the settings by loading the properties file and use all
      * its values as system properties.
+     *
+     * @return a properties set containing all the stuff from
+     * {@link #SETTINGS_PROPERTIES_LOCATION} file merged with the
+     * {@link System#getProperties()} set.
      */
-    public static void initSettings()
+    public static Properties initSettings()
     {
         // will load properties from settings.properties files
         try (
@@ -58,6 +62,8 @@ public class TestSettings
             System.setProperties(p);
 
             initFolders();
+
+            return p;
         }
         catch (IOException e)
         {

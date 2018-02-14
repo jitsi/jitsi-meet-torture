@@ -15,12 +15,16 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.apache.commons.io.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.testng.annotations.*;
+import org.openqa.selenium.logging.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.logging.*;
 
 /**
  * The participant instance holding the {@link WebDriver}.
@@ -32,33 +36,33 @@ public abstract class Participant<T extends WebDriver>
     /**
      * The driver.
      */
-    private final T driver;
+    protected final T driver;
 
     /**
      * The participant type chrome, firefox etc.
      */
-    private final ParticipantFactory.ParticipantType type;
+    protected final ParticipantType type;
 
     /**
      * The name of the participant.
      */
-    private final String name;
+    protected final String name;
 
     /**
      * The url to join conferences.
      */
-    private final String meetURL;
+    private final JitsiMeetUrl meetURL = new JitsiMeetUrl();
 
     /**
      * Is hung up.
      */
-    boolean hungUp = true;
+    private boolean hungUp = true;
 
     /**
      * We store the room name we joined as if someone calls joinConference twice
      * to be able to detect that there is no need to load anything.
      */
-    String joinedRoomName = null;
+    private String joinedRoomName = null;
 
     /**
      * Executor that is responsible for keeping the participant session alive.
@@ -84,17 +88,25 @@ public abstract class Participant<T extends WebDriver>
      * @param driver its driver instance.
      * @param type the type (type of browser).
      * @param meetURL the url to use when joining room.
+     * @param defaultConfigPart the hash part of the URL which specifies default
+     * config overrides. For example:
+     * "config.requireDisplayName=false&config.debug=true"
+     * This will be added for every conference URL joined by this
+     * <tt>Participant</tt> instance. Note that the hash sign ("#") is added
+     * automagically, so it should be omitted.
      */
     public Participant(
         String name,
         T driver,
-        ParticipantFactory.ParticipantType type,
-        String meetURL)
+        ParticipantType type,
+        String meetURL,
+        String defaultConfigPart)
     {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name");
         this.driver = Objects.requireNonNull(driver, "driver");
-        this.type = type;
-        this.meetURL = meetURL;
+        this.type = Objects.requireNonNull(type, "type");
+        this.meetURL.setServerUrl(meetURL);
+        this.meetURL.appendConfig(defaultConfigPart);
     }
 
     /**
@@ -103,17 +115,33 @@ public abstract class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName)
     {
-        this.joinConference(roomName, null);
+        this.joinConference(roomName, null, null, null);
     }
 
     /**
      * Joins a conference.
+     *
      * @param roomName the room name to join.
-     * @param fragment adds the given string to the fragment part of the URL.
+     * @param roomParameter the {@link JitsiMeetUrl#roomParameters} part of
+     * the Jitsi Meet URL.
+     * @param config the {@link JitsiMeetUrl#hashConfigPart} which will be
+     * appended at the end of the default config part (if any) specified in the
+     * {@link Participant}'s constructor.
      */
-    public void joinConference(String roomName, String fragment)
+    public void joinConference(
+        String roomName, String roomParameter, String config,
+        Consumer<JitsiMeetUrl> customJoinImpl)
     {
+        JitsiMeetUrl conferenceUrl = (JitsiMeetUrl) this.meetURL.clone();
+
+        conferenceUrl.setRoomName(roomName);
+        conferenceUrl.setRoomParameters(roomParameter);
+        conferenceUrl.appendConfig(config);
+
+        TestUtils.print(getName() + " is opening URL: " + conferenceUrl);
+
         // not hungup, so not joining
+        // FIXME this should also check for room parameters, config etc.
         if (!this.hungUp
             && this.joinedRoomName != null
             && this.joinedRoomName.equals(roomName))
@@ -123,87 +151,29 @@ public abstract class Participant<T extends WebDriver>
             return;
         }
 
+        if (customJoinImpl != null)
+        {
+            customJoinImpl.accept(conferenceUrl);
+        }
+        else
+        {
+            doJoinConference(conferenceUrl);
+        }
+
         this.joinedRoomName = roomName;
-
-        String URL = this.meetURL + "/" + roomName;
-        URL += "#config.requireDisplayName=false";
-        URL += "&config.debug=true";
-        URL += "&config.disableAEC=true";
-        URL += "&config.disableNS=true";
-        URL += "&config.callStatsID=false";
-        URL += "&config.alwaysVisibleToolbar=true";
-        URL += "&config.p2p.enabled=false";
-        URL += "&config.disable1On1Mode=true";
-
-        if (fragment != null)
-            URL += "&" + fragment;
-
-        TestUtils.print(name + " is opening URL: " + URL);
-
-        {
-            // with chrome v52 we start getting error:
-            // "Timed out receiving message from renderer" and
-            // "Navigate timeout: cannot determine loading status"
-            // seems its a bug or rare problem, maybe concerns async loading
-            // of resources ...
-            // https://bugs.chromium.org/p/chromedriver/issues/detail?id=402
-            // even there is a TimeoutException the page is loaded correctly
-            // and driver is operating, we just lower the page load timeout
-            // default is 3 minutes and we log and skip this exception
-            driver.manage().timeouts()
-                .pageLoadTimeout(30, TimeUnit.SECONDS);
-            try
-            {
-                driver.get(URL);
-            }
-            catch (org.openqa.selenium.TimeoutException ex)
-            {
-                ex.printStackTrace();
-                TestUtils.print("TimeoutException while loading page, "
-                    + "will skip it and continue:" + ex.getMessage());
-            }
-        }
-        MeetUtils.waitForPageToLoad(driver);
-
-        // disables animations
-        executeScript("try { jQuery.fx.off = true; } catch(e) {}");
-
-        executeScript("APP.UI.dockToolbar(true);");
-
-        // disable keyframe animations (.fadeIn and .fadeOut classes)
-        executeScript("$('<style>.notransition * { "
-            + "animation-duration: 0s !important; "
-            + "-webkit-animation-duration: 0s !important; transition:none; }"
-            + " </style>').appendTo(document.head);");
-        executeScript("$('body').toggleClass('notransition');");
-
-        // disable the blur effect in firefox as it has some performance issues
-        if (this.type == ParticipantFactory.ParticipantType.firefox)
-        {
-            executeScript(
-                "try { var blur "
-                    + "= document.querySelector('.video_blurred_container'); "
-                    + "if (blur) { "
-                    + "document.querySelector('.video_blurred_container')"
-                    + ".style.display = 'none' "
-                    + "} } catch(e) {}");
-        }
-
-        // Hack-in disabling of callstats (old versions of jitsi-meet don't
-        // handle URL parameters)
-        executeScript("config.callStatsID=false;");
-
-        String version
-            = TestUtils.executeScriptAndReturnString(driver,
-                "return JitsiMeetJS.version;");
-        TestUtils.print(name + " lib-jitsi-meet version: " + version);
-
-        executeScript("document.title='" + name + "'");
-
         this.hungUp = false;
 
         startKeepAliveExecution();
     }
+
+    /**
+     * Implements the logic of joining a conference.
+     * @param conferenceUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
+     */
+    protected abstract void doJoinConference(JitsiMeetUrl conferenceUrl);
 
     /**
      * Starts the keep-alive execution.
@@ -214,7 +184,7 @@ public abstract class Participant<T extends WebDriver>
         {
             this.keepAliveExecution = this.executor
                 .scheduleAtFixedRate(
-                    () -> driver.getCurrentUrl(),
+                    driver::getCurrentUrl,
                     KEEP_ALIVE_SESSION_INTERVAL,
                     KEEP_ALIVE_SESSION_INTERVAL,
                     TimeUnit.SECONDS);
@@ -238,19 +208,30 @@ public abstract class Participant<T extends WebDriver>
      */
     public void quit()
     {
+        TestUtils.print("Quiting " + name);
+
+        cancelKeepAlive();
+
+        driver.quit();
+
+        // FIXME missing comment on why this is necessary ? (if it really is...)
+        TestUtils.waitMillis(500);
+    }
+
+    /**
+     * Will call {@link #quit()}, but with catch any <tt>Throwable</tt>s.
+     */
+    public void quitSafely()
+    {
         try
         {
-            cancelKeepAlive();
-
-            driver.quit();
-
-            TestUtils.waitMillis(500);
+            this.quit();
         }
-        catch(Throwable t)
+        catch (Throwable t)
         {
+            // FIXME: use Logger ?
             t.printStackTrace();
         }
-
     }
 
     /**
@@ -261,22 +242,18 @@ public abstract class Participant<T extends WebDriver>
         if (this.hungUp)
             return;
 
-        MeetUIUtils.clickOnButton(
-            driver, "toolbar_button_hangup", false);
-
-        TestUtils.waitMillis(500);
-
-        this.hungUp = true;
-        this.joinedRoomName = null;
+        doHangUp();
 
         TestUtils.print("Hung up in " + name + ".");
 
-        // open a blank page after hanging up, to make sure
-        // we will successfully navigate to the new link containing the
-        // parameters, which change during testing
-        driver.get("about:blank");
-        MeetUtils.waitForPageToLoad(driver);
+        this.hungUp = true;
+        this.joinedRoomName = null;
     }
+
+    /**
+     * Does hang up the participant.
+     */
+    protected abstract void doHangUp();
 
     /**
      * The driver instance.
@@ -297,7 +274,7 @@ public abstract class Participant<T extends WebDriver>
      * Returns the participant type.
      * @return the participant type.
      */
-    public ParticipantFactory.ParticipantType getType()
+    public ParticipantType getType()
     {
         return type;
     }
@@ -311,6 +288,12 @@ public abstract class Participant<T extends WebDriver>
         return name;
     }
 
+    public JavascriptExecutor getJSExecutor()
+    {
+        return driver instanceof JavascriptExecutor
+            ? (JavascriptExecutor) driver : null;
+    }
+
     /**
      * Executes a script in this {@link Participant}'s {@link WebDriver}.
      * See {@link JavascriptExecutor#executeScript(String, Object...)}.
@@ -318,7 +301,10 @@ public abstract class Participant<T extends WebDriver>
     @Override
     public Object executeScript(String var1, Object... var2)
     {
-        return ((JavascriptExecutor) getDriver()).executeScript(var1, var2);
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeScript(var1, var2) : null;
     }
 
     /**
@@ -329,8 +315,10 @@ public abstract class Participant<T extends WebDriver>
     @Override
     public Object executeAsyncScript(String var1, Object... var2)
     {
-        return
-            ((JavascriptExecutor) getDriver()).executeAsyncScript(var1, var2);
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeAsyncScript(var1, var2) : null;
     }
 
     /**
@@ -376,6 +364,87 @@ public abstract class Participant<T extends WebDriver>
      * @param name the name to set.
      */
     public abstract void setDisplayName(String name);
+
+    /**
+     * Takes screenshot.
+     * @param outputDir the screenshots output directory.
+     * @param fileName the destination screenshot file name.
+     */
+    public void takeScreenshot(File outputDir, String fileName)
+    {
+        if (!(driver instanceof TakesScreenshot))
+        {
+            TestUtils.print(
+                "Driver does not support taking screenshots ! FileName:"
+                    + fileName);
+            return;
+        }
+
+        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+
+        File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
+        if (!scrFile.renameTo(new File(outputDir, fileName)))
+        {
+            throw new RuntimeException(
+                "Failed to rename screenshot file to directory name: "
+                    + outputDir.toString() + ", file name: " + fileName
+                    + ", original file: " + scrFile.toString());
+        }
+    }
+
+    /**
+     * Saves the html source of the supplied page.
+     * @param outputDir the output directory.
+     * @param fileName the destination html file name.
+     */
+    public void saveHtmlSource(File outputDir, String fileName)
+    {
+        try(FileOutputStream fOut
+                = FileUtils.openOutputStream(
+                        new File(outputDir, fileName)))
+        {
+            fOut.write(
+                    driver.getPageSource().replace(">",">\n").getBytes());
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public String getMeetDebugLog()
+    {
+        try
+        {
+            Object log
+                = executeScript(
+                    "try{ "
+                        + "return JSON.stringify("
+                        + "  APP.conference.getLogs(), null, '    ');"
+                        + "}catch (e) {}");
+
+            return log instanceof String ? (String) log : null;
+        }
+        catch (Exception e)
+        {
+            Logger.getGlobal()
+                .log(Level.SEVERE, "Failed to get meet logs from " + name, e);
+
+            return null;
+        }
+    }
+
+    public LogEntries getBrowserLogs()
+    {
+        if (type.isFirefox())
+        {
+            // not currently supported in FF
+            // https://github.com/SeleniumHQ/selenium/issues/2910
+            return null;
+        }
+
+        return driver.manage().logs().get(LogType.BROWSER);
+    }
 
     /**
      * Presses a shortcut in this {@link Participant}'s driver.

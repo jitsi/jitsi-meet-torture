@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -33,12 +34,12 @@ import static org.testng.Assert.*;
  * @author Pawel Domas
  */
 public class ActiveSpeakerTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         // This test requires a conference of three
         ensureThreeParticipants();
@@ -50,9 +51,12 @@ public class ActiveSpeakerTest
     @Test
     public void testActiveSpeaker()
     {
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        Participant participant3 = getParticipant3();
+
         // skip if we are not chrome
-        if (getParticipant1().getType()
-                != ParticipantFactory.ParticipantType.chrome)
+        if (!participant1.getType().isChrome())
         {
             throw new SkipException("skip as it is not chrome");
         }
@@ -62,16 +66,16 @@ public class ActiveSpeakerTest
 
         // Owner becomes active speaker - check from 2nd peer's perspective
         testActiveSpeaker(
-            getParticipant1(), getParticipant2(), getParticipant3());
+            participant1, participant2, participant3);
         // 3rd peer becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(getParticipant3(), getParticipant2(), getParticipant1());
+        testActiveSpeaker(participant3, participant2, participant1);
         // 2nd peer becomes active speaker - check from owner's perspective
-        testActiveSpeaker(getParticipant2(), getParticipant1(), getParticipant3());
+        testActiveSpeaker(participant2, participant1, participant3);
 
         // check the displayed speakers, there should be only one speaker
-        assertOneDominantSpeaker(getParticipant1().getDriver());
-        assertOneDominantSpeaker(getParticipant2().getDriver());
-        assertOneDominantSpeaker(getParticipant3().getDriver());
+        assertOneDominantSpeaker(participant1.getDriver());
+        assertOneDominantSpeaker(participant2.getDriver());
+        assertOneDominantSpeaker(participant3.getDriver());
     }
 
     /**
@@ -124,8 +128,7 @@ public class ActiveSpeakerTest
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
-        if (activeSpeaker.getType()
-            != ParticipantFactory.ParticipantType.chrome)
+        if (!activeSpeaker.getType().isChrome())
         {
             throw new SkipException("skip as it is not chrome");
         }

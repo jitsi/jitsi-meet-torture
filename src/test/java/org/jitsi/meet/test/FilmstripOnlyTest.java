@@ -1,7 +1,7 @@
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -14,15 +14,15 @@ import java.util.*;
  * @author Leonard Kim
  */
 public class FilmstripOnlyTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     private final String enableFilmstripOnlyMode
         = "interfaceConfig.filmStripOnly=true";
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureOneParticipant(enableFilmstripOnlyMode);
         ensureTwoParticipants();

@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import io.github.bonigarcia.wdm.*;
+import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
@@ -28,11 +29,12 @@ import org.openqa.selenium.safari.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
-public class ParticipantFactory
+public class ParticipantFactory implements ParticipantFactoryConfig
 {
     /**
      * The url of the deployment to connect to.
@@ -72,56 +74,33 @@ public class ParticipantFactory
         = "jitsi-meet.fakeStreamVideoFile";
 
     /**
+     * The test config.
+     */
+    private final Properties config;
+
+    /**
      * Full name of wav file which will be streamed through participant's fake
      * audio device.
      * TODO: make this file non static and to be passed as a parameter.
      */
-    private static String fakeStreamAudioFName;
+    private String fakeStreamAudioFName;
 
     /**
      * Full name of wav file which will be streamed through participant's fake
      * video device.
      * TODO: make this file non static and to be passed as a parameter.
      */
-    private static String fakeStreamVideoFName;
-
-    /**
-     * The available participant type value.
-     */
-    public enum ParticipantType
-    {
-        android,
-        chrome, // default one
-        edge,
-        firefox,
-        ios,
-        safari;
-
-        /**
-         * Default is chrome.
-         * @param type the participant type string
-         * @return the participant type enum item.
-         */
-        public static ParticipantType valueOfString(String type)
-        {
-            if (type == null)
-                return chrome;
-            else
-                return ParticipantType.valueOf(type);
-        }
-    }
-
-    /**
-     * The factory static instance.
-     */
-    private static ParticipantFactory instance;
+    private String fakeStreamVideoFName;
 
     /**
      * The private constructor of the factory.
+     *
+     * @param config - A <tt>Properties</tt> instance holding configuration
+     * properties required to setup new participants.
      */
-    private ParticipantFactory()
+    ParticipantFactory(Properties config)
     {
-        TestSettings.initSettings();
+        this.config = Objects.requireNonNull(config, "config");
 
         String fakeStreamAudioFile = System.getProperty(FAKE_AUDIO_FNAME_PROP);
         if (fakeStreamAudioFile == null)
@@ -139,17 +118,19 @@ public class ParticipantFactory
     }
 
     /**
-     * Returns the static factory instance.
-     * @return the factory instance.
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link #JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
      */
-    public static ParticipantFactory getInstance()
+    public static JitsiMeetUrl getJitsiMeetUrl()
     {
-        if (instance == null)
-        {
-            instance = new ParticipantFactory();
-        }
+        JitsiMeetUrl url = new JitsiMeetUrl();
 
-        return instance;
+        url.setServerUrl(System.getProperty(JITSI_MEET_URL_PROP));
+
+        return url;
     }
 
     /**
@@ -157,33 +138,52 @@ public class ParticipantFactory
      *
      * @param configPrefix the config prefix.
      */
-    public Participant createParticipant(String configPrefix)
+    public Participant<? extends WebDriver> createParticipant(
+            String configPrefix)
     {
-        if (configPrefix.startsWith("web"))
+        // It will be Chrome by default...
+        ParticipantType participantType
+            =  ParticipantType.valueOfString(
+                    System.getProperty(configPrefix + ".type"));
+
+        if (participantType == null)
         {
-            ParticipantType participantType
-                =  ParticipantType.valueOfString(
-                        System.getProperty(configPrefix + ".type"));
+            TestUtils.print(
+                    "No participant type specified for prefix: "
+                        + configPrefix+", will use Chrome...");
+            participantType = ParticipantType.chrome;
+        }
 
-            String name
-                = configPrefix.substring(configPrefix.indexOf('.') + 1);
+        String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
+        String serverUrl = getJitsiMeetUrl().getServerUrl();
 
+        if (participantType.isWeb())
+        {
             return new WebParticipant(
-                name,
-                startWebDriver(
                     name,
-                    configPrefix,
+                    startWebDriver(
+                            name,
+                            configPrefix,
+                            participantType,
+                            System.getProperty(configPrefix + ".version")),
                     participantType,
-                    System.getProperty(configPrefix + ".version")),
-                participantType,
-                System.getProperty(JITSI_MEET_URL_PROP));
+                    serverUrl);
         }
-        else if (configPrefix.startsWith("mobile"))
+        else if (participantType.isMobile())
         {
-            // TODO
-        }
+            MobileParticipantBuilder builder
+                = MobileParticipantBuilder.createBuilder(
+                        config,
+                        configPrefix,
+                        participantType);
 
-        return null;
+            return builder.startNewDriver(serverUrl);
+        }
+        else
+        {
+            throw new IllegalArgumentException(
+                    participantType + " not supported");
+        }
     }
 
     /**
@@ -205,7 +205,7 @@ public class ParticipantFactory
             = System.getProperty(configPrefix + ".binary");
 
         // by default we load chrome, but we can load safari or firefox
-        if (participantType == ParticipantType.firefox)
+        if (participantType.isFirefox())
         {
             FirefoxDriverManager.getInstance().setup();
 
@@ -268,9 +268,10 @@ public class ParticipantFactory
             ChromeDriverManager.getInstance().setup();
 
             System.setProperty("webdriver.chrome.verboseLogging", "true");
-            System.setProperty("webdriver.chrome.logfile",
-                FailureListener.createLogsFolder() +
-                    "/chrome-console-" + name + ".log");
+            System.setProperty(
+                    "webdriver.chrome.logfile",
+                    FailureListener.createLogsFolder()
+                        + "/chrome-console-" + name + ".log");
 
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);
@@ -422,13 +423,7 @@ public class ParticipantFactory
     }
 
     /**
-     * Sets the name of wav audio file which will be streamed through fake audio
-     * device by participants. The file location is relative to working folder.
-     * For remote drivers a parent folder can be set and the file will be
-     * searched in there.
-     *
-     * @param fakeStreamAudioFile full name of wav file for the fake audio
-     *                            device.
+     * {@inheritDoc}
      */
     public void setFakeStreamAudioFile(String fakeStreamAudioFile)
     {
@@ -436,13 +431,7 @@ public class ParticipantFactory
     }
 
     /**
-     * Sets the name of y4m video file which will be streamed through fake video
-     * device by participants. The file location is relative to working folder.
-     * For remote drivers a parent folder can be set and the file will be
-     * searched in there.
-     *
-     * @param fakeStreamVideoFile full name of y4m file for the fake video
-     *                            device.
+     * {@inheritDoc}
      */
     public void setFakeStreamVideoFile(String fakeStreamVideoFile)
     {

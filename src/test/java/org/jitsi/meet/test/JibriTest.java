@@ -19,6 +19,7 @@ import java.util.*;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -33,7 +34,7 @@ import static org.testng.Assert.*;
  * @author Hristo Terezov
  */
 public class JibriTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * The youtube stream key
@@ -65,9 +66,9 @@ public class JibriTest
     }
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         streamKey = System.getProperty(STREAM_KEY_PROP);
         publicURL = System.getProperty(PUBLIC_URL_PROP);
@@ -289,13 +290,13 @@ public class JibriTest
      * @param URL the URL to be opened
      * @return the {@code Participant} which was created.
      */
-    private static Participant openURL(String URL)
+    private Participant openURL(String URL)
     {
         print("Opening URL: " + URL);
 
         Participant pageParticipant
-            = ParticipantFactory.getInstance()
-                .createParticipant("web.participantOther");
+            = participants.createParticipant("web.participantOther");
+
         WebDriver driver = pageParticipant.getDriver();
 
         driver.get(URL);

@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
@@ -28,7 +29,7 @@ import static org.testng.Assert.*;
  * Tests for users' avatars.
  */
 public class AvatarTest
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     public static String EMAIL = "example@jitsi.org";
     public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
@@ -42,9 +43,9 @@ public class AvatarTest
     private static String secondParticipantAvatarSrc = null;
 
     @Override
-    public void setup()
+    public void setupClass()
     {
-        super.setup();
+        super.setupClass();
 
         ensureTwoParticipants();
     }

@@ -23,6 +23,8 @@ import org.apache.http.util.*;
 import com.google.gson.*;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.web.*;
+
 import org.testng.annotations.*;
 
 import java.net.*;
@@ -40,7 +42,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class JVBConferencesCheck
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * List used to save the list of available conferences on the first run
@@ -70,8 +72,8 @@ public class JVBConferencesCheck
 
         if (jvbAddress == null)
         {
-            String meetAddress =
-                System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP);
+            String meetAddress
+                = ParticipantFactory.getJitsiMeetUrl().getServerUrl();
             try
             {
                 String host = new URL(meetAddress).getHost();
@@ -80,6 +82,7 @@ public class JVBConferencesCheck
             }
             catch(Throwable t)
             {
+                // FIXME: shouldn't the test fail here ?
                 t.printStackTrace();
             }
         }
@@ -93,6 +96,7 @@ public class JVBConferencesCheck
             }
             catch(Throwable t)
             {
+                // FIXME: shouldn't the test fail here ?
                 t.printStackTrace();
             }
         }
@@ -125,6 +129,7 @@ public class JVBConferencesCheck
         }
         catch(Throwable t)
         {
+            // FIXME: shouldn't the test fail here ?
             t.printStackTrace();
         }
         finally

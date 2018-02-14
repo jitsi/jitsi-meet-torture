@@ -23,6 +23,8 @@ import org.apache.http.impl.client.*;
 import org.apache.http.util.*;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.web.*;
+
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -37,7 +39,7 @@ import static org.testng.Assert.*;
  * @author Damian Minkov
  */
 public class RestTests
-    extends AbstractBaseTest
+    extends WebTestBase
 {
     /**
      * Property to enable/disable rest tests.
@@ -57,9 +59,7 @@ public class RestTests
     public void testRestAPI()
         throws MalformedURLException
     {
-        serverAddress = new URL(
-            System.getProperty(ParticipantFactory.JITSI_MEET_URL_PROP))
-                .getHost();
+        serverAddress = ParticipantFactory.getJitsiMeetUrl().getHost();
 
         checkJicofoHealth();
         checkJVBHealth();
