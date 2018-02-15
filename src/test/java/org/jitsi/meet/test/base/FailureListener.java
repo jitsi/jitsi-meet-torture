@@ -80,7 +80,12 @@ public class FailureListener
                     = new File(getReportFolder() + "/screenshots");
             }
 
-            outputScreenshotsParentFolder.mkdirs();
+            if (!outputScreenshotsParentFolder.mkdirs())
+            {
+                TestUtils.print(
+                    "Failed to create output screenshots parent folder: "
+                        + outputScreenshotsParentFolder.toString());
+            }
         }
         return outputScreenshotsParentFolder;
     }
@@ -107,7 +112,12 @@ public class FailureListener
         // default reports folder
         outputHtmlSourceParentFolder
             = new File(getReportFolder() + "/html-sources");
-        outputHtmlSourceParentFolder.mkdirs();
+        if (!outputHtmlSourceParentFolder.mkdirs())
+        {
+            TestUtils.print(
+                "Failed to create output HTML source parent folder: "
+                    + outputHtmlSourceParentFolder);
+        }
 
         createLogsFolder();
     }
@@ -339,8 +349,15 @@ public class FailureListener
     {
         if (outputLogsParentFolder == null)
         {
-            outputLogsParentFolder = new File(getReportFolder() + "/logs");
-            outputLogsParentFolder.mkdirs();
+            outputLogsParentFolder
+                = new File(getReportFolder() + "/logs");
+
+            if (!outputLogsParentFolder.mkdirs())
+            {
+                TestUtils.print(
+                    "Failed to create output logs parent folder: "
+                        + outputLogsParentFolder.toString());
+            }
         }
 
         return outputLogsParentFolder.getAbsolutePath();

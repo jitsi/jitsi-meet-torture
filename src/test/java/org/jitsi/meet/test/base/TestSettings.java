@@ -77,6 +77,8 @@ public class TestSettings
      */
     private static void initFolders()
     {
+        // FIXME Remove. This directory is created on lazy access to screenshots
+        // output dir.
         String shotsDirStr = System.getProperty("appium.screenshots.dir");
         if (shotsDirStr != null)
         {
