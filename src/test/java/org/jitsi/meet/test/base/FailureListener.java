@@ -81,7 +81,8 @@ public class FailureListener
                     = new File(getReportFolder() + "/screenshots");
             }
 
-            if (!outputScreenshotsParentFolder.mkdirs())
+            if (!outputScreenshotsParentFolder.exists()
+                    && !outputScreenshotsParentFolder.mkdirs())
             {
                 TestUtils.print(
                     "Failed to create output screenshots parent folder: "
@@ -113,7 +114,8 @@ public class FailureListener
         // default reports folder
         outputHtmlSourceParentFolder
             = new File(getReportFolder() + "/html-sources");
-        if (!outputHtmlSourceParentFolder.mkdirs())
+        if (!outputHtmlSourceParentFolder.exists()
+            && !outputHtmlSourceParentFolder.mkdirs())
         {
             TestUtils.print(
                 "Failed to create output HTML source parent folder: "
@@ -389,7 +391,8 @@ public class FailureListener
             outputLogsParentFolder
                 = new File(getReportFolder() + "/logs");
 
-            if (!outputLogsParentFolder.mkdirs())
+            if (!outputLogsParentFolder.exists()
+                    && !outputLogsParentFolder.mkdirs())
             {
                 TestUtils.print(
                     "Failed to create output logs parent folder: "
