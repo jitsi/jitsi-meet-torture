@@ -198,8 +198,7 @@ public class PSNRTest
         ownerVideoOperator.stopRecording();
 
         print("REAL FPS: " + ownerVideoOperator.getRealFPS());
-        print(
-                "RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
+        print("RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
         getParticipant2().hangUp();

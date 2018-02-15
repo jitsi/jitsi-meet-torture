@@ -117,22 +117,22 @@ public class VideoOperator
 
     /**
      * Returns raw data size of all frames in MB.
-     * @return a <tt>Double</tt> value in MB.
+     * @return a <tt>Number</tt> or <tt>Long</tt> value in MB.
      */
-    public Double getRawDataSize()
+    public Number getRawDataSize()
     {
-        return (Double) getJSExecutor().executeScript(
+        return (Number) getJSExecutor().executeScript(
                 "return window._operator.getRawDataSize() / 1024 / 1024");
     }
 
     /**
      * Returns "real FPS" as defined in PSNRVideoOperator.js
-     * @return a <tt>Double</tt> with the FPS value calculated in
+     * @return a <tt>Number</tt> with the FPS value calculated in
      * PSNRVideoOperator.js
      */
-    public Double getRealFPS()
+    public Number getRealFPS()
     {
-        return (Double) getJSExecutor().executeScript(
+        return (Number) getJSExecutor().executeScript(
                 "return window._operator.getRealFPS()");
     }
 
