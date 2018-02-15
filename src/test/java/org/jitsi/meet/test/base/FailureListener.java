@@ -186,8 +186,12 @@ public class FailureListener
     @Override
     public void onConfigurationFailure(ITestResult itr)
     {
+        // we want to catch failures to configure a test, so we can record
+        // logs, screenshots and any information as we do as normal test fails
+        // and we skip any other configuration failures as @AfterClass
         Object testInstance = itr.getInstance();
-        if (testInstance instanceof AbstractBaseTest)
+        if (testInstance instanceof AbstractBaseTest
+            && itr.getMethod().isBeforeClassConfiguration())
         {
             // record whatever we can
             onTestFailure(itr);

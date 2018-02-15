@@ -134,6 +134,9 @@ public abstract class AbstractBaseTest
 
         participants = new ParticipantHelper(new ParticipantFactory(config));
 
+        // if this one fails, the failure will be registered in the
+        // FailureListener to gather information and it will call
+        // the cleanupClass() to clean up any leftovers
         setupClass();
     }
 
