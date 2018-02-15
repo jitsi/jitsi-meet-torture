@@ -27,7 +27,8 @@ import java.util.*;
 import java.util.logging.*;
 
 public class FailureListener
-    implements ITestListener
+    implements ITestListener,
+               IConfigurationListener
 {
     /**
      * The folder where the logs will be saved.
@@ -114,7 +115,15 @@ public class FailureListener
 
     @Override
     public void onFinish(ITestContext iTestContext)
-    {}
+    {
+        // move all failed configurations to the failed tests set
+        // in order to easily spot them in the html report
+        for(ITestResult r
+            : iTestContext.getFailedConfigurations().getAllResults())
+        {
+            iTestContext.getFailedTests().addResult(r, r.getMethod());
+        }
+    }
 
     @Override
     public void onTestFailure(ITestResult testResult)
@@ -169,6 +178,34 @@ public class FailureListener
             ex.printStackTrace();
         }
     }
+
+    @Override
+    public void onConfigurationSuccess(ITestResult itr)
+    {}
+
+    @Override
+    public void onConfigurationFailure(ITestResult itr)
+    {
+        // we want to catch failures to configure a test, so we can record
+        // logs, screenshots and any information as we do as normal test fails
+        // and we skip any other configuration failures as @AfterClass
+        Object testInstance = itr.getInstance();
+        if (testInstance instanceof AbstractBaseTest
+            && itr.getMethod().isBeforeClassConfiguration())
+        {
+            // record whatever we can
+            onTestFailure(itr);
+
+            // make sure if setup fails we will cleanup
+            // when configure method @BeforeClass fails @AfterClass is not
+            // executed
+            ((AbstractBaseTest)testInstance).cleanupClass();
+        }
+    }
+
+    @Override
+    public void onConfigurationSkip(ITestResult itr)
+    {}
 
     /**
      * Takes screenshot of all participants.
