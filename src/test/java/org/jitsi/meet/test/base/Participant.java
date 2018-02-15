@@ -381,14 +381,17 @@ public abstract class Participant<T extends WebDriver>
         }
 
         TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-
         File scrFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        if (!scrFile.renameTo(new File(outputDir, fileName)))
+        File dstFile = new File(outputDir, fileName);
+        try
+        {
+            FileUtils.moveFile(scrFile, dstFile);
+        }
+        catch (IOException ioe)
         {
             throw new RuntimeException(
-                "Failed to rename screenshot file to directory name: "
-                    + outputDir.toString() + ", file name: " + fileName
-                    + ", original file: " + scrFile.toString());
+                "Failed to move the screenshot file, from: "
+                    + scrFile.toString() + " to: " + dstFile.toString(), ioe);
         }
     }
 
