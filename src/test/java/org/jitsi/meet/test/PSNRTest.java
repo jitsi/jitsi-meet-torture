@@ -105,12 +105,20 @@ public class PSNRTest
         super.setupClass();
 
         File inputFrameDir = new File(INPUT_FRAME_DIR);
-        if (!inputFrameDir.exists()
-            || !new File(INPUT_VIDEO_FILE).exists())
+        boolean inputFrameDirExists = inputFrameDir.exists();
+        boolean inputVideoFileExists = new File(INPUT_VIDEO_FILE).exists();
+
+        if (!inputFrameDirExists || !inputVideoFileExists)
         {
-            // Skip the PSNR tests because we don't have any PSNR
-            // resources.
-            throw new SkipException("Skip the PSNR tests, no resources");
+            // Fail the PSNR tests because we don't have any PSNR
+            // resources, but out intention is to have them executed (since it's
+            // being skipped by default).
+            throw new RuntimeException(
+                "Unable to run PSNR tests:"
+                    + (inputFrameDirExists
+                        ? "" : " INPUT_FRAME_DIR does not exist")
+                    + (inputVideoFileExists
+                        ? "" : " INPUT_VIDEO_FILE does not exist"));
         }
 
         participants
