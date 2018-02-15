@@ -61,29 +61,11 @@ public class TestSettings
             // setting system properties
             System.setProperties(p);
 
-            initFolders();
-
             return p;
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Init folders. Like creating custom screen shot folders if they are not
-     * created.
-     */
-    private static void initFolders()
-    {
-        // FIXME Remove. This directory is created on lazy access to screenshots
-        // output dir.
-        String shotsDirStr = System.getProperty("appium.screenshots.dir");
-        if (shotsDirStr != null)
-        {
-            File shotsDir = new File(shotsDirStr);
-            shotsDir.mkdirs();
         }
     }
 }
