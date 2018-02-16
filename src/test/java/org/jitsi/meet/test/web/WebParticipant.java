@@ -294,6 +294,7 @@ public class WebParticipant extends Participant<WebDriver>
         WebDriver driver = getDriver();
         WebElement largeVideo = driver.findElement(By.id("largeVideo"));
         Actions actions = new Actions(driver);
+        actions.moveToElement(largeVideo);
         actions.sendKeys(largeVideo, shortcut.toString());
         actions.perform();
     }
