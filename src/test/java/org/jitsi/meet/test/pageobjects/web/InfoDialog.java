@@ -35,7 +35,7 @@ public class InfoDialog
     private final String LOCAL_LOCK = "info-password-local";
     private final String MORE_NUMBERS = "more-numbers";
     private final String PHONE_NUMBER = "phone-number";
-    private final String PIN_NUMBER = "pin-number";
+    private final String CONFERENCE_ID = "conference-id";
     private final String REMOTE_LOCK = "info-password-remote";
     private final String REMOVE_PASSWORD
         = "remove-password";
@@ -151,7 +151,7 @@ public class InfoDialog
      * @return {@code String} for the current conference's pin number.
      */
     public String getPinNumber() {
-        return this.getValueAfterColon(PIN_NUMBER);
+        return this.getValueAfterColon(CONFERENCE_ID);
     }
 
     /**
