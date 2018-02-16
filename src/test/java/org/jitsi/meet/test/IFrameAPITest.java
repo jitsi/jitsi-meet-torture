@@ -35,29 +35,53 @@ import java.net.*;
 public class IFrameAPITest
     extends WebTestBase
 {
+    private static final String IFRAME_SERVER_URL
+        = "https://cdn.jitsi.net";
+
+    private static final String IFRAME_ROOM_NAME
+        = "jitsi-meet-torture/v1/iframeAPITest.html";
+
     /**
      * A url for a page that loads the iframe API.
      */
-    private static final String IFRAME_API_LOAD_PAGE
-        = "https://cdn.jitsi.net/jitsi-meet-torture/v1/iframeAPITest.html"
-            + "?domain=%s"
-            + "&room=%s"
-            // default settings, used in Participant join function
-            // FIXME: this must be in sync with WebParticiapnt#DEFAULT_CONFIG
-            + "&config={"
-                + "\"debug\":true,"
-                + "\"disableAEC\":true,"
-                + "\"callStatsID\":false,"
-                + "\"alwaysVisibleToolbar\":true,"
-                + "\"p2p.enabled\":false,"
-                + "\"disable1On1Mode\":true"
-            + "}";
+    private static final String IFRAME_ROOM_PARAMS
+        = "domain=%s&room=%s"
+        // default settings, used in Participant join function
+        // FIXME: this must be in sync with WebParticiapnt#DEFAULT_CONFIG
+        + "&config={"
+        + "\"debug\":true,"
+        + "\"disableAEC\":true,"
+        + "\"callStatsID\":false,"
+        + "\"alwaysVisibleToolbar\":true,"
+        + "\"p2p.enabled\":false,"
+        + "\"disable1On1Mode\":true"
+        + "}";
 
     @Test
     public void testIFrameAPI()
     {
         // uses a custom join, so we can load the page with iframe api
-        ensureOneParticipant(this::joinConference);
+        JitsiMeetUrl iFrameUrl = getJitsiMeetUrl();
+        String domain;
+        try
+        {
+            domain = iFrameUrl.getHost();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        String roomParams
+            = String.format(IFRAME_ROOM_PARAMS, domain, currentRoomName);
+
+        // Override the server and the path part(which is s room name)
+        iFrameUrl.setServerUrl(IFRAME_SERVER_URL);
+        iFrameUrl.setRoomName(IFRAME_ROOM_NAME);
+        iFrameUrl.setRoomParameters(roomParams);
+        iFrameUrl.setIframeToNavigateTo("jitsiConferenceFrame0");
+
+        ensureOneParticipant(iFrameUrl);
         ensureThreeParticipants();
 
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
@@ -72,42 +96,5 @@ public class IFrameAPITest
         muteTest.muteOwnerAndCheck();
         muteTest.muteParticipantAndCheck();
         muteTest.muteThirdParticipantAndCheck();
-    }
-
-    /**
-     * Private implementation of joining a participants, where we load a page
-     * which loads the conference using iframe API.
-     * @param conferenceUrl the full conference URL.
-     */
-    private void joinConference(JitsiMeetUrl conferenceUrl)
-    {
-        WebDriver participant = getParticipant1().getDriver();
-
-        String domain;
-        try
-        {
-            domain = conferenceUrl.getHost();
-        }
-        catch (MalformedURLException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        String roomName = conferenceUrl.getRoomName();
-        String pageToLoad
-            = String.format(IFRAME_API_LOAD_PAGE, domain, roomName);
-
-        TestUtils.print(
-            getParticipant1().getName() + " is opening URL: " + pageToLoad);
-
-        participant.navigate().to(pageToLoad);
-
-        // let's wait for loading and switch to that iframe so we can continue
-        // with regular tests
-        WebDriverWait wait = new WebDriverWait(participant, 10);
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-            By.id("jitsiConferenceFrame0")));
-
-        getParticipant1().startKeepAliveExecution();
     }
 }

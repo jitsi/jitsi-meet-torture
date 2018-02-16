@@ -18,13 +18,16 @@ package org.jitsi.meet.test.mobile.base;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
 
+import java.util.*;
+
 /**
  * Base class of mobile test cases.
  *
  * @author Damian Minkov
  * @author Pawel Domas
  */
-public class MobileTestBase extends AbstractBaseTest
+public class MobileTestBase
+    extends AbstractBaseTest
 {
     /**
      * This prefix is used to configure properties consumed by
@@ -72,5 +75,11 @@ public class MobileTestBase extends AbstractBaseTest
         return
             (MobileParticipant) participants
                 .createParticipant(getParticipant1Prefix());
+    }
+
+    @Override
+    public ParticipantFactory getFactory(Properties config)
+    {
+        return new MobileParticipantFactory(config);
     }
 }

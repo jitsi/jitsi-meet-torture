@@ -24,8 +24,9 @@ public class FilmstripOnlyTest
     {
         super.setupClass();
 
-        ensureOneParticipant(enableFilmstripOnlyMode);
-        ensureTwoParticipants();
+        ensureTwoParticipants(
+            getJitsiMeetUrl().appendConfig(enableFilmstripOnlyMode),
+            null);
     }
 
     /**

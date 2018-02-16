@@ -279,15 +279,12 @@ public abstract class MobileParticipantBuilder
      * Start new Appium driver and return {@link MobileParticipant} wrapped
      * around it for given <tt>meetServerURL</tt>.
      *
-     * @param meetServerURL - The server address part of the
-     * {@link JitsiMeetUrl} which will be automatically appended to every
-     * conference joined by the new {@link MobileParticipant} created.
      *
      * @return new {@link MobileParticipant} for given server URL, constructed
      * based on the config information contained in this
      * {@link MobileParticipantBuilder}.
      */
-    public MobileParticipant startNewDriver(String meetServerURL)
+    public MobileParticipant startNewDriver()
     {
         AppiumDriver<WebElement> driver;
 
@@ -308,8 +305,7 @@ public abstract class MobileParticipantBuilder
                     prefix,
                     type,
                     bundleId,
-                    app,
-                    meetServerURL);
+                    app);
 
         TestUtils.print(
                 "Started " + type + " driver for config prefix: " + prefix);

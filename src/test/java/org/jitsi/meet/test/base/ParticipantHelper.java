@@ -64,12 +64,33 @@ public class ParticipantHelper
      */
     public Participant createParticipant(String configPrefix)
     {
+        return this.createParticipant(configPrefix, participantFactory.getDefaultParticipantOptions());
+    }
+
+    /**
+     * Joins a participant, created if does not exists.
+     *
+     * @param configPrefix  the config prefix which is used to identify
+     * the config properties which describe the new participant.
+     * @return the participant which was created
+     */
+    public Participant createParticipant(
+        String configPrefix, ParticipantOptions options)
+    {
+        options = Objects.requireNonNull(options, "options");
+        options.load(configPrefix);
+
         Participant<? extends WebDriver> participant
-            = participantFactory.createParticipant(configPrefix);
+            = participantFactory.createParticipant(options);
 
         participants.add(participant);
 
         return participant;
+    }
+
+    public ParticipantOptions getDefaultParticipantOptions()
+    {
+        return participantFactory.getDefaultParticipantOptions();
     }
 
     /**
@@ -89,15 +110,6 @@ public class ParticipantHelper
     {
         participants.stream().forEach(Participant::quitSafely);
         participants.clear();
-    }
-
-    /**
-     * @return the {@link ParticipantFactoryConfig} instance used by the
-     * underlying {@link ParticipantFactory} to create new participants.
-     */
-    public ParticipantFactoryConfig getFactoryConfig()
-    {
-        return participantFactory;
     }
 
     /**

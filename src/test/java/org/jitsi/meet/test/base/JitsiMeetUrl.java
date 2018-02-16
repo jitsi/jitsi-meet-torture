@@ -60,17 +60,30 @@ public class JitsiMeetUrl
      */
     private String serverUrl;
 
+    private String iframeToNavigateTo;
+
+    public String getIframeToNavigateTo()
+    {
+        return iframeToNavigateTo;
+    }
+
+    public JitsiMeetUrl setIframeToNavigateTo(String iframeToNavigateTo)
+    {
+        this.iframeToNavigateTo = iframeToNavigateTo;
+        return this;
+    }
+
     /**
      * Adds extra config parameters.
      *
      * @param extraConfig extra config params to be added at the end of the
      * current {@link #hashConfigPart}, without "?" nor "&" at the beginning.
      */
-    public void appendConfig(String extraConfig)
+    public JitsiMeetUrl appendConfig(String extraConfig)
     {
         if (StringUtils.isBlank(extraConfig))
         {
-            return;
+            return this;
         }
 
         if (StringUtils.isNotBlank(hashConfigPart))
@@ -81,6 +94,8 @@ public class JitsiMeetUrl
         {
             hashConfigPart = extraConfig;
         }
+
+        return this;
     }
 
     /**
@@ -186,9 +201,10 @@ public class JitsiMeetUrl
      * the beginning, but with "&" between each of the params which are part of
      * a single string passed here as an argument.
      */
-    public void setRoomParameters(String roomParameters)
+    public JitsiMeetUrl setRoomParameters(String roomParameters)
     {
         this.roomParameters = roomParameters;
+        return this;
     }
 
     /**

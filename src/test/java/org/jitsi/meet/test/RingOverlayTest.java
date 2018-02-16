@@ -85,7 +85,7 @@ public class RingOverlayTest
     @Test
     public void testRingOverlay()
     {
-        ensureOneParticipant(JWT_TOKEN, null);
+        ensureOneParticipant(getJitsiMeetUrl().setRoomParameters(JWT_TOKEN));
 
         WebDriver owner = getParticipant1().getDriver();
 

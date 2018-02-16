@@ -18,13 +18,28 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
+import java.util.*;
 import java.util.function.*;
 
 /**
  * Base class for web tests.
  */
-public class WebTestBase extends AbstractBaseTest
+public class WebTestBase
+    extends AbstractBaseTest
 {
+    /**
+     * Default config for Web participants.
+     */
+    public static final String DEFAULT_CONFIG
+        = "config.requireDisplayName=false"
+        + "&config.debug=true"
+        + "&config.disableAEC=true"
+        + "&config.disableNS=true"
+        + "&config.callStatsID=false"
+        + "&config.alwaysVisibleToolbar=true"
+        + "&config.p2p.enabled=false"
+        + "&config.disable1On1Mode=true";
+
     /**
      * Default
      */
@@ -41,49 +56,36 @@ public class WebTestBase extends AbstractBaseTest
         super(baseTest);
     }
 
+    @Override
+    public ParticipantFactory getFactory(Properties config)
+    {
+        return new WebParticipantFactory(config);
+    }
+
     /**
      * Starts the owner, if it is not started.
      */
     public void ensureOneParticipant()
     {
-        ensureOneParticipant((String)null);
+        ensureOneParticipant(null, null);
     }
 
     /**
      * Starts the owner, if it is not started.
-     * @param fragment adds the given string to the fragment part of the URL
      */
-    public void ensureOneParticipant(String fragment)
+    public void ensureOneParticipant(JitsiMeetUrl meetURL)
     {
-        this.ensureOneParticipant(null, fragment);
+        ensureOneParticipant(meetURL, null);
     }
 
     /**
      * Starts the owner, if it is not started.
-     * @param roomParameter an extra parameter to the url. The fragment adds
-     * parameters as # where roomParameter actually changes query parameters
-     * adding ?something=value.
-     * @param fragment adds the given string to the fragment part of the URL
+     * @param options
      */
-    public void ensureOneParticipant(String roomParameter, String fragment)
+    public void ensureOneParticipant(
+        JitsiMeetUrl meetURL, ParticipantOptions options)
     {
-        Participant participant
-            = joinParticipant(0, roomParameter, fragment, null);
-
-        participant.waitToJoinMUC(10);
-    }
-
-    /**
-     * Starts owner, if not started. Uses the custom method to join the
-     * participant, by skipping the Participant implementation.
-     *
-     * @param joinRef a custom implementation of
-     * the {@link Participant#doJoinConference(JitsiMeetUrl)} method.
-     */
-    public void ensureOneParticipant(Consumer<JitsiMeetUrl> joinRef)
-    {
-        Participant participant
-            = joinParticipant(0, null, null, joinRef);
+        Participant participant = joinParticipant(0, meetURL, options);
 
         participant.waitToJoinMUC(10);
     }
@@ -95,18 +97,39 @@ public class WebTestBase extends AbstractBaseTest
      */
     public void ensureTwoParticipants()
     {
-        ensureTwoParticipants(null);
+        ensureTwoParticipants(null, null, null, null);
     }
 
     /**
      * Starts the owner and the seconds participant, if they are not started,
      * and stops the third participant, if it is not stopped.
      * participants(owner and 'second participant').
-     * @param fragment adds the given string to the fragment part of the URL
      */
-    public void ensureTwoParticipants(String fragment)
+    public void ensureTwoParticipants(
+        JitsiMeetUrl participantOneMeetURL,
+        JitsiMeetUrl participantTwoMeetURL)
     {
-        ensureTwoParticipantsInternal(fragment);
+        ensureTwoParticipants(
+            participantOneMeetURL, participantTwoMeetURL, null, null);
+    }
+
+    /**
+     * Starts the owner and the seconds participant, if they are not started,
+     * and stops the third participant, if it is not stopped.
+     * participants(owner and 'second participant').
+     * @param participantOneOptions
+     * @param participantTwoOptions
+     */
+    public void ensureTwoParticipants(
+        JitsiMeetUrl participantOneMeetURL,
+        JitsiMeetUrl participantTwoMeetURL,
+        ParticipantOptions participantOneOptions,
+        ParticipantOptions participantTwoOptions)
+    {
+        ensureTwoParticipantsInternal(
+            participantOneMeetURL,
+            participantTwoMeetURL,
+            participantOneOptions, participantTwoOptions);
 
         participants.hangUpByIndex(2);
     }
@@ -114,13 +137,19 @@ public class WebTestBase extends AbstractBaseTest
     /**
      * Starts the owner and the seconds participant, if they are not started.
      * participants(owner and 'second participant').
-     * @param fragment adds the given string to the fragment part of the URL
+     * @param participantOneOptions
+     * @param participantTwoOptions
      */
-    private void ensureTwoParticipantsInternal(String fragment)
+    private void ensureTwoParticipantsInternal(
+        JitsiMeetUrl participantOneMeetURL,
+        JitsiMeetUrl participantTwoMeetURL,
+        ParticipantOptions participantOneOptions,
+        ParticipantOptions participantTwoOptions)
     {
-        ensureOneParticipant();
+        ensureOneParticipant(participantOneMeetURL, participantOneOptions);
 
-        Participant participant = joinParticipant(1, null, fragment, null);
+        Participant participant
+            = joinParticipant(1, participantTwoMeetURL, participantTwoOptions);
 
         participant.waitToJoinMUC(10);
 
@@ -133,13 +162,20 @@ public class WebTestBase extends AbstractBaseTest
     /**
      * Starts the owner, second participant and third participant if they aren't
      * started.
-     * @param fragment adds the given string to the fragment part of the URL
      */
-    public void ensureThreeParticipants(String fragment)
+    public void ensureThreeParticipants(
+        JitsiMeetUrl participantOneMeetURL,
+        JitsiMeetUrl participantTwoMeetURL,
+        JitsiMeetUrl participantThreeMeetURL)
     {
-        ensureTwoParticipantsInternal(null);
+        ensureTwoParticipantsInternal(
+            participantOneMeetURL,
+            participantTwoMeetURL,
+            null, null);
 
-        Participant participant = joinParticipant(2, null, fragment, null);
+        Participant participant
+            = joinParticipant(
+                2, participantThreeMeetURL, null);
 
         participant.waitToJoinMUC(15);
 
@@ -154,7 +190,7 @@ public class WebTestBase extends AbstractBaseTest
      */
     public void ensureThreeParticipants()
     {
-        ensureThreeParticipants(null);
+        ensureThreeParticipants(null, null, null);
     }
 
     /**
@@ -207,16 +243,13 @@ public class WebTestBase extends AbstractBaseTest
      * Joins a participant, created if does not exists.
      *
      * @param index the participant index.
-     * @param roomParameter a room parameter to add, if any.
-     * @param fragment adds the given string to the fragment part of the URL
-     * @param joinRef custom join method (optional).
+     * @param options
      * @return the participant which was created
      */
     private Participant joinParticipant(
-        int                        index,
-        String                     roomParameter,
-        String                     fragment,
-        Consumer<JitsiMeetUrl>     joinRef)
+        int                     index,
+        JitsiMeetUrl            meetURL,
+        ParticipantOptions      options)
     {
         Participant p = participants.get(index);
 
@@ -238,7 +271,12 @@ public class WebTestBase extends AbstractBaseTest
 
             String configPrefix = "web.participant" + (index + 1);
 
-            p = participants.createParticipant(configPrefix);
+            if (options == null)
+            {
+                options = participants.getDefaultParticipantOptions();
+            }
+
+            p = participants.createParticipant(configPrefix, options);
 
             // Adds a print in the console/selenium-node logs
             // useful when checking crashes or failures in node logs
@@ -247,7 +285,12 @@ public class WebTestBase extends AbstractBaseTest
                         + getClass().getSimpleName() + "')");
         }
 
-        p.joinConference(currentRoomName, roomParameter, fragment, joinRef);
+        if (meetURL == null)
+        {
+            meetURL = getJitsiMeetUrl();
+        }
+
+        p.joinConference(currentRoomName, meetURL);
 
         return p;
     }
@@ -258,6 +301,23 @@ public class WebTestBase extends AbstractBaseTest
      */
     public Participant joinFirstParticipant()
     {
-        return joinParticipant(0, null, null, null);
+        return joinParticipant(0, null, null);
+    }
+
+    /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link #JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    @Override
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        JitsiMeetUrl url = super.getJitsiMeetUrl();
+
+        url.appendConfig(DEFAULT_CONFIG);
+
+        return url;
     }
 }

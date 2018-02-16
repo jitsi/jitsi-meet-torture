@@ -77,12 +77,15 @@ public class StartMutedTest
     {
         hangUpAllParticipants();
 
-        ensureOneParticipant("config.startAudioMuted=1&" +
-            "config.debugAudioLevels=true&" +
-            "config.startVideoMuted=1");
+        ensureTwoParticipants(
+            getJitsiMeetUrl().appendConfig(
+                "config.startAudioMuted=1&" +
+                "config.debugAudioLevels=true&" +
+                "config.startVideoMuted=1"),
+            null);
+
         Participant owner = getParticipant1();
 
-        ensureTwoParticipants();
         final WebDriver secondParticipantDriver = getParticipant2().getDriver();
         owner.executeScript(
             "console.log('Start configOptionsTest, second participant: "

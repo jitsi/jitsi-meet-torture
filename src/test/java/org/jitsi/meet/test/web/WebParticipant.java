@@ -22,6 +22,7 @@ import org.jitsi.meet.test.pageobjects.web.InfoDialog;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.remote.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -46,19 +47,6 @@ public class WebParticipant extends Participant<WebDriver>
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
 
-    /**
-     * Default config for Web participants.
-     */
-    public static final String DEFAULT_CONFIG
-        = "config.requireDisplayName=false"
-            + "&config.debug=true"
-            + "&config.disableAEC=true"
-            + "&config.disableNS=true"
-            + "&config.callStatsID=false"
-            + "&config.alwaysVisibleToolbar=true"
-            + "&config.p2p.enabled=false"
-            + "&config.disable1On1Mode=true";
-
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
@@ -69,12 +57,11 @@ public class WebParticipant extends Participant<WebDriver>
      * @param name    the name.
      * @param driver  its driver instance.
      * @param type    the type (type of browser).
-     * @param meetURL the url to use when joining room.
      */
     public WebParticipant(
-            String name, WebDriver driver, ParticipantType type, String meetURL)
+            String name, WebDriver driver, ParticipantType type)
     {
-        super(name, driver, type, meetURL, DEFAULT_CONFIG);
+        super(name, driver, type);
     }
 
     /**
@@ -104,7 +91,18 @@ public class WebParticipant extends Participant<WebDriver>
                 + "will skip it and continue:" + ex.getMessage());
         }
 
-        MeetUtils.waitForPageToLoad(driver);
+        if (conferenceUrl.getIframeToNavigateTo() != null)
+        {
+            // let's wait for loading and switch to that iframe so we can continue
+            // with regular tests
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.id(conferenceUrl.getIframeToNavigateTo())));
+        }
+        else
+        {
+            MeetUtils.waitForPageToLoad(driver);
+        }
 
         // disables animations
         executeScript("try { jQuery.fx.off = true; } catch(e) {}");
@@ -134,10 +132,12 @@ public class WebParticipant extends Participant<WebDriver>
         // handle URL parameters)
         executeScript("config.callStatsID=false;");
 
-        String version
-            = TestUtils.executeScriptAndReturnString(driver,
+        String version = TestUtils.executeScriptAndReturnString(driver,
             "return JitsiMeetJS.version;");
-        TestUtils.print(name + " lib-jitsi-meet version: " + version);
+        TestUtils.print(name + " lib-jitsi-meet version: " + version
+            + (driver instanceof RemoteWebDriver ?
+                " sessionID: "
+                    + ((RemoteWebDriver)driver).getSessionId() : ""));
 
         executeScript("document.title='" + name + "'");
     }

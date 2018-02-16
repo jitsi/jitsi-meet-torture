@@ -72,8 +72,7 @@ public class JVBConferencesCheck
 
         if (jvbAddress == null)
         {
-            String meetAddress
-                = ParticipantFactory.getJitsiMeetUrl().getServerUrl();
+            String meetAddress = getJitsiMeetUrl().getServerUrl();
             try
             {
                 String host = new URL(meetAddress).getHost();

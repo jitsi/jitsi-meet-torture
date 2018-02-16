@@ -71,7 +71,9 @@ public class TCPTest
 
         getParticipant2().hangUp();
 
-        ensureTwoParticipants(DISABLE_UDP_URL_FRAGMENT);
+        ensureTwoParticipants(
+            null,
+            getJitsiMeetUrl().appendConfig(DISABLE_UDP_URL_FRAGMENT));
         WebDriver secondParticipant = getParticipant2().getDriver();
 
         assertEquals(

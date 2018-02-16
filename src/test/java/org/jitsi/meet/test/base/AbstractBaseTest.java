@@ -70,6 +70,11 @@ public abstract class AbstractBaseTest
     private static List<String> testsToInclude = null;
 
     /**
+     * The url of the deployment to connect to.
+     */
+    public static final String JITSI_MEET_URL_PROP = "jitsi-meet.instance.url";
+
+    /**
      * The current room name used.
      */
     protected final String currentRoomName;
@@ -107,6 +112,8 @@ public abstract class AbstractBaseTest
         participants = new ParticipantHelper(baseTest.participants);
     }
 
+    public abstract ParticipantFactory getFactory(Properties config);
+
     /**
      * NOTE: We don't want this method to be overridden in subclasses, because
      * it contains TestNG specific ITestContext. Use {@link #setupClass()} to do
@@ -132,7 +139,7 @@ public abstract class AbstractBaseTest
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
-        participants = new ParticipantHelper(new ParticipantFactory(config));
+        participants = new ParticipantHelper(getFactory(config));
 
         // if this one fails, the failure will be registered in the
         // FailureListener to gather information and it will call
@@ -176,6 +183,23 @@ public abstract class AbstractBaseTest
     {
         return participants.getAll();
     }
+
+    /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link #JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        JitsiMeetUrl url = new JitsiMeetUrl();
+
+        url.setServerUrl(System.getProperty(JITSI_MEET_URL_PROP));
+
+        return url;
+    }
+
 
     /**
      * Method is called "before class". {@link AbstractBaseTest} will figure out

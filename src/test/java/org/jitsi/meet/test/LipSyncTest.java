@@ -86,16 +86,6 @@ public class LipSyncTest
     public void setupClass()
     {
         super.setupClass();
-
-        // We need special config to be passed and audio
-        // video streams reset, because the audio does not loop in Chrome and we
-        // don't want to end up with silence being streamed
-
-        // this file is required in order to run this test
-        ParticipantFactoryConfig factory = participants.getFactoryConfig();
-
-        factory.setFakeStreamVideoFile("resources/fakeVideoStream.y4m");
-        factory.setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");
     }
 
     /**
@@ -108,15 +98,27 @@ public class LipSyncTest
     {
         debug = System.getProperty("lipsync.debug") != null;
 
+        // We need special config to be passed and audio
+        // video streams reset, because the audio does not loop in Chrome and we
+        // don't want to end up with silence being streamed
+
+        // this file is required in order to run this test
+        ParticipantOptions options
+            = ((WebParticipantOptions)participants.getDefaultParticipantOptions())
+                .setFakeStreamVideoFile("resources/fakeVideoStream.y4m")
+                .setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");
+
         // Start owner with lip-sync enabled, audio packet delay and shorter
         // audio levels interval
-        ensureOneParticipant(
-            "config.enableLipSync=true&config.audioPacketDelay=15" +
-                "&config.audioLevelsInterval=100");
+        ensureTwoParticipants(
+            getJitsiMeetUrl().appendConfig(
+                "config.enableLipSync=true&config.audioPacketDelay=15" +
+                    "&config.audioLevelsInterval=100"),
+            getJitsiMeetUrl().appendConfig(
+                "config.disableSuspendVideo=true"),
+            options, options);
+
         WebDriver owner = getParticipant1().getDriver();
-
-        ensureTwoParticipants("config.disableSuspendVideo=true");
-
         WebDriver participant = getParticipant2().getDriver();
 
         // Wait for the conference to start
