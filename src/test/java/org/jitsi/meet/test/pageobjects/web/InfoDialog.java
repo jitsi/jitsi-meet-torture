@@ -60,16 +60,14 @@ public class InfoDialog
 
         this.open();
 
-        WebElement dialog = this.get();
-
-        dialog.findElement(By.className(ADD_PASSWORD_LINK)).click();
+        participantDriver.findElement(By.className(ADD_PASSWORD_LINK)).click();
 
         TestUtils.waitForElementBy(
             participantDriver,
             By.className(ADD_PASSWORD_FIELD),
             5);
         WebElement passwordEntry
-            = dialog.findElement(By.className(ADD_PASSWORD_FIELD));
+            = participantDriver.findElement(By.className(ADD_PASSWORD_FIELD));
 
         passwordEntry.sendKeys(password);
         passwordEntry.sendKeys(Keys.RETURN);
@@ -81,10 +79,9 @@ public class InfoDialog
     public void openDialInNumbersPage() {
         this.open();
 
-        WebElement dialog = this.get();
-
+        WebDriver driver = participant.getDriver();
         WebElement moreNumbersElement
-            = dialog.findElement(By.className(MORE_NUMBERS));
+            = driver.findElement(By.className(MORE_NUMBERS));
 
         moreNumbersElement.click();
     }
@@ -221,9 +218,9 @@ public class InfoDialog
 
         this.open();
 
-        WebElement dialog = this.get();
+        WebDriver driver = participant.getDriver();
         WebElement removePasswordElement
-            = dialog.findElement(By.className(REMOVE_PASSWORD));
+            = driver.findElement(By.className(REMOVE_PASSWORD));
 
         if (removePasswordElement != null) {
             removePasswordElement.click();
@@ -243,9 +240,8 @@ public class InfoDialog
     private boolean getLockStateByClass(String className) {
         this.open();
 
-        WebElement dialog = this.get();
-
-        return dialog.findElements(By.className(className)).size() != 0;
+        WebDriver driver = participant.getDriver();
+        return driver.findElements(By.className(className)).size() != 0;
     }
 
     /**
@@ -260,9 +256,8 @@ public class InfoDialog
     private String getValueAfterColon(String className) {
         this.open();
 
-        WebElement dialog = this.get();
-
-        String fullText = dialog.findElement(By.className(className))
+        WebDriver driver = participant.getDriver();
+        String fullText = driver.findElement(By.className(className))
             .getText();
 
         return fullText.split(":")[1].trim();
