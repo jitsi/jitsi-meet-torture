@@ -19,7 +19,6 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import java.util.*;
-import java.util.function.*;
 
 /**
  * Base class for web tests.
@@ -288,9 +287,10 @@ public class WebTestBase
         if (meetURL == null)
         {
             meetURL = getJitsiMeetUrl();
+            meetURL.setRoomName(currentRoomName);
         }
 
-        p.joinConference(currentRoomName, meetURL);
+        p.joinConference(meetURL);
 
         return p;
     }

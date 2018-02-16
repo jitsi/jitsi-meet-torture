@@ -189,9 +189,10 @@ public class JitsiMeetUrl
      *
      * @param roomName a room name without any special characters.
      */
-    public void setRoomName(String roomName)
+    public JitsiMeetUrl setRoomName(String roomName)
     {
         this.roomName = roomName;
+        return this;
     }
 
     /**

@@ -99,24 +99,19 @@ public abstract class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName)
     {
-        this.joinConference(roomName, new JitsiMeetUrl());
+        this.joinConference(new JitsiMeetUrl().setRoomName(roomName));
     }
 
     /**
      * Joins a conference.
      *
-     * @param roomName the room name to join.
+//     * @param roomName the room name to join.
      * {@link Participant}'s constructor.
      */
     public void joinConference(
-        String roomName,
         JitsiMeetUrl meetURL)
     {
         meetURL = Objects.requireNonNull(meetURL, "meetURL");
-        if (meetURL.getRoomName() == null)
-        {
-            meetURL.setRoomName(roomName);
-        }
 
         TestUtils.print(getName() + " is opening URL: " + meetURL);
 
@@ -124,16 +119,16 @@ public abstract class Participant<T extends WebDriver>
         // FIXME this should also check for room parameters, config etc.
         if (!this.hungUp
             && this.joinedRoomName != null
-            && this.joinedRoomName.equals(roomName))
+            && this.joinedRoomName.equals(meetURL.getRoomName()))
         {
-            TestUtils.print("Not joining " + this.name + " in " + roomName
+            TestUtils.print("Not joining " + this.name + " in " + meetURL.getRoomName()
                 + ", already joined.");
             return;
         }
 
         doJoinConference(meetURL);
 
-        this.joinedRoomName = roomName;
+        this.joinedRoomName = meetURL.getRoomName();
         this.hungUp = false;
 
         startKeepAliveExecution();
