@@ -267,7 +267,7 @@ public abstract class MobileParticipantBuilder
         {
             // When the value is set to the capabilities object, the "caps."
             // property prefix needs to be stripped out.
-            key = key.substring(0, _CAPS_PROP_PREFIX.length());
+            key = key.substring(_CAPS_PROP_PREFIX.length());
 
             capabilities.setCapability(key, propValue);
         }
