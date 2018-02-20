@@ -63,12 +63,13 @@ public class WebParticipantFactory
         String configPrefix,
         ParticipantOptions options)
     {
-        options.load(config, configPrefix);
+        WebParticipantOptions webOptions = new WebParticipantOptions();
+        webOptions.load(config, configPrefix, options);
 
         return new WebParticipant(
-                options.getName(),
-                startWebDriver((WebParticipantOptions) options),
-                options.getParticipantType());
+            webOptions.getName(),
+                startWebDriver(webOptions),
+                webOptions.getParticipantType());
     }
 
     /**

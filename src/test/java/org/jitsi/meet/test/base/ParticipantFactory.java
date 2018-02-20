@@ -53,20 +53,20 @@ public class ParticipantFactory<T extends ParticipantOptions>
         ParticipantOptions options)
     {
         ParticipantType type
-            = ParticipantOptions.getParticipantType(configPrefix, config);
+            = ParticipantOptions.getParticipantType(config, configPrefix);
         if (type.isWeb())
         {
             return new WebParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
-                    new WebParticipantOptions(options, type));
+                    options);
         }
         else if (type.isMobile())
         {
             return new MobileParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
-                    new MobileParticipantOptions(options, type));
+                    options);
         }
         else
         {

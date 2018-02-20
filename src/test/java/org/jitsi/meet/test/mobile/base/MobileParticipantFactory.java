@@ -25,11 +25,15 @@ public class MobileParticipantFactory
         String configPrefix,
         ParticipantOptions options)
     {
+        MobileParticipantOptions mobileOptions
+            = new MobileParticipantOptions();
+        mobileOptions.load(config, configPrefix, options);
+
         MobileParticipantBuilder builder
             = MobileParticipantBuilder.createBuilder(
                 config,
-                options.getConfigPrefix(),
-                options.getParticipantType());
+                configPrefix,
+                mobileOptions.getParticipantType());
 
         return builder.startNewDriver();
     }

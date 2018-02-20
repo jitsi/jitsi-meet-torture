@@ -10,28 +10,7 @@ public class ParticipantOptions
     public static final String TYPE_PROP = "TYPE";
     public static final String NAME_PROP = "NAME";
 
-    private String configPrefix;
-
-    private final Properties backend;
-
-    public ParticipantOptions()
-    {
-        this.backend = new Properties();
-    }
-
-    public ParticipantOptions(
-        ParticipantOptions options, ParticipantType participantType)
-    {
-        if (options != null)
-        {
-            this.backend = options.backend;
-        }
-        else
-        {
-            this.backend = new Properties();
-        }
-        this.setProperty(TYPE_PROP, participantType);
-    }
+    private final Properties backend = new Properties();
 
     static ParticipantType getParticipantType(
         Properties config, String configPrefix)
@@ -55,12 +34,18 @@ public class ParticipantOptions
     /**
      *
      */
-    public void load(Properties config, String configPrefix)
+    public void load(
+        Properties config,
+        String configPrefix,
+        ParticipantOptions overrides)
     {
-        this.configPrefix = configPrefix;
+        this.setProperty(TYPE_PROP, getParticipantType(config, configPrefix));
 
         String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
         this.setProperty(NAME_PROP, name);
+
+        if (overrides != null)
+            this.backend.putAll(overrides.backend);
     }
 
     public ParticipantType getParticipantType()
@@ -71,11 +56,6 @@ public class ParticipantOptions
     public String getName()
     {
         return (String)this.getProperty(NAME_PROP);
-    }
-
-    public String getConfigPrefix()
-    {
-        return this.configPrefix;
     }
 
     public boolean getBooleanProperty(String key)
