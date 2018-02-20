@@ -1,5 +1,6 @@
 package org.jitsi.meet.test.web;
 
+import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.base.*;
 
 import java.util.*;
@@ -7,18 +8,13 @@ import java.util.*;
 public class WebParticipantOptions
     extends ParticipantOptions
 {
-    public static final String FAKE_AUDIO_PROP = "FAKE_AUDIO";
-    public static final String FAKE_VIDEO_PROP = "FAKE_VIDEO";
-    public static final String REMOTE_PROP = "REMOTE";
-    public static final String BINARY_PROP = "BINARY";
-    public static final String VERSION_PROP = "VERSION";
+    private static final String FAKE_AUDIO_PROP = "fakeStreamAudioFile";
+    private static final String FAKE_VIDEO_PROP = "fakeStreamVideoFile";
+    private static final String REMOTE_PROP = "isRemote";
+    private static final String BINARY_PROP = "binary";
+    private static final String VERSION_PROP = "version";
 
-
-    private static final String FAKE_AUDIO_FNAME_PROP
-        = "jitsi-meet.fakeStreamAudioFile";
-
-    private static final String FAKE_VIDEO_FNAME_PROP
-        = "jitsi-meet.fakeStreamVideoFile";
+    private static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
 
     public WebParticipantOptions(Properties config)
     {
@@ -29,19 +25,12 @@ public class WebParticipantOptions
 
     private void initDefaults()
     {
-        String fakeStreamAudioFile = config.getProperty(FAKE_AUDIO_FNAME_PROP);
-        if (fakeStreamAudioFile == null)
-        {
-            fakeStreamAudioFile = "resources/fakeAudioStream.wav";
-        }
-        this.put(FAKE_AUDIO_PROP, fakeStreamAudioFile);
+        this.loadConfigProperty(
+            GLOBAL_PROP_PREFIX,
+            FAKE_AUDIO_PROP,
+            "resources/fakeAudioStream.wav");
 
-        String fakeStreamVideoFile = config.getProperty(FAKE_VIDEO_FNAME_PROP);
-        if (fakeStreamVideoFile != null
-            && fakeStreamVideoFile.trim().length() > 0)
-        {
-            this.put(FAKE_VIDEO_PROP, fakeStreamVideoFile.trim());
-        }
+        this.loadConfigProperty(GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
     }
 
     @Override
@@ -49,17 +38,9 @@ public class WebParticipantOptions
     {
         super.load(configPrefix);
 
-        String isRemote = config.getProperty(configPrefix + ".isRemote");
-        if (isRemote != null)
-            this.put(REMOTE_PROP, Boolean.valueOf(isRemote));
-
-        String browserBinary = config.getProperty(configPrefix + ".binary");
-        if (browserBinary != null)
-            this.put(BINARY_PROP, browserBinary);
-
-        String version = config.getProperty(configPrefix + ".version");
-        if (version != null)
-        this.put(VERSION_PROP, version);
+        this.loadConfigProperty(configPrefix, REMOTE_PROP);
+        this.loadConfigProperty(configPrefix, BINARY_PROP);
+        this.loadConfigProperty(configPrefix, VERSION_PROP);
     }
 
     /**
@@ -74,7 +55,7 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamAudioFile(
         String fakeStreamAudioFile)
     {
-        this.put(FAKE_AUDIO_PROP, fakeStreamAudioFile);
+        this.setProperty(FAKE_AUDIO_PROP, fakeStreamAudioFile);
 
         return this;
     }
@@ -91,8 +72,35 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamVideoFile(
         String fakeStreamVideoFile)
     {
-        this.put(FAKE_VIDEO_PROP, fakeStreamVideoFile);
+        this.setProperty(FAKE_VIDEO_PROP, fakeStreamVideoFile);
 
         return this;
     }
+
+    public String getVersion()
+    {
+        return (String)this.getProperty(VERSION_PROP);
+    }
+
+    public String getBinary()
+    {
+        return (String)this.getProperty(BINARY_PROP);
+    }
+
+    public boolean isRemote()
+    {
+        return this.getBooleanProperty(REMOTE_PROP);
+    }
+
+    public String getFakeStreamAudioFile()
+    {
+        return (String)this.getProperty(FAKE_AUDIO_PROP);
+    }
+
+    public String getFakeStreamVideoFile()
+    {
+        return (String)this.getProperty(FAKE_VIDEO_PROP);
+    }
+
+
 }

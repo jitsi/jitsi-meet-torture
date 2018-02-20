@@ -84,11 +84,9 @@ public class WebParticipantFactory
         WebParticipantOptions options)
     {
         ParticipantType participantType = options.getParticipantType();
-        String version = (String)options.get(WebParticipantOptions.VERSION_PROP);
-        String browserBinary
-            = (String)options.get(WebParticipantOptions.BINARY_PROP);
-        boolean isRemote
-            = options.getBoolean(WebParticipantOptions.REMOTE_PROP);
+        String version = options.getVersion();
+        String browserBinary = options.getBinary();
+        boolean isRemote = options.isRemote();
 
         // by default we load chrome, but we can load safari or firefox
         if (participantType.isFirefox())
@@ -201,8 +199,7 @@ public class WebParticipantFactory
             String remoteResourcePath = config.getProperty(
                 REMOTE_RESOURCE_PARENT_PATH_NAME_PROP);
 
-            String fakeStreamAudioFName = (String)options.get(
-                WebParticipantOptions.FAKE_AUDIO_PROP);
+            String fakeStreamAudioFName = options.getFakeStreamAudioFile();
             if (fakeStreamAudioFName != null)
             {
                 String fileAbsolutePath = new File(
@@ -214,8 +211,7 @@ public class WebParticipantFactory
                     "use-file-for-fake-audio-capture=" + fileAbsolutePath);
             }
 
-            String fakeStreamVideoFName = (String)options.get(
-                WebParticipantOptions.FAKE_VIDEO_PROP);
+            String fakeStreamVideoFName = options.getFakeStreamVideoFile();
             if (fakeStreamVideoFName != null)
             {
                 String fileAbsolutePath = new File(
