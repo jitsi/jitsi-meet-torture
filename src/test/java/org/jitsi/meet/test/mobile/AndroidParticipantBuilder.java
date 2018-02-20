@@ -38,12 +38,14 @@ public class AndroidParticipantBuilder extends MobileParticipantBuilder
      * The name of Appium capability which tells the Appium driver which
      * activity should it expect when the app starts.
      */
-    private static final String CAPS_WAIT_ACTIVITY = "appWaitActivity";
+    private static final String CAPS_WAIT_ACTIVITY
+        = _CAPS_PROP_PREFIX + "appWaitActivity";
 
     /**
      * The package name of the wait activity. See {@link #CAPS_WAIT_ACTIVITY}.
      */
-    private static final String CAPS_WAIT_PACKAGE = "appWaitPackage";
+    private static final String CAPS_WAIT_PACKAGE
+        = _CAPS_PROP_PREFIX + "appWaitPackage";
 
     /**
      * Holds default config properties set for all Android participant builders.
