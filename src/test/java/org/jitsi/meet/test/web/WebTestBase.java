@@ -307,7 +307,7 @@ public class WebTestBase
     /**
      * Return new {@link JitsiMeetUrl} instance which has only
      * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link #JITSI_MEET_URL_PROP} system property.
+     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
      *
      * @return a new instance of {@link JitsiMeetUrl}.
      */

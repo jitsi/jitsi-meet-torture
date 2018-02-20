@@ -70,11 +70,6 @@ public abstract class AbstractBaseTest
     private static List<String> testsToInclude = null;
 
     /**
-     * The url of the deployment to connect to.
-     */
-    public static final String JITSI_MEET_URL_PROP = "jitsi-meet.instance.url";
-
-    /**
      * The current room name used.
      */
     protected final String currentRoomName;
@@ -187,17 +182,13 @@ public abstract class AbstractBaseTest
     /**
      * Return new {@link JitsiMeetUrl} instance which has only
      * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link #JITSI_MEET_URL_PROP} system property.
+     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
      *
      * @return a new instance of {@link JitsiMeetUrl}.
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        JitsiMeetUrl url = new JitsiMeetUrl();
-
-        url.setServerUrl(System.getProperty(JITSI_MEET_URL_PROP));
-
-        return url;
+        return participants.getJitsiMeetUrl();
     }
 
 

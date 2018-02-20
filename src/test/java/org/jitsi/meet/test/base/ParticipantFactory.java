@@ -22,6 +22,11 @@ import java.util.*;
 public abstract class ParticipantFactory<T extends ParticipantOptions>
 {
     /**
+     * The url of the deployment to connect to.
+     */
+    public static final String JITSI_MEET_URL_PROP = "jitsi-meet.instance.url";
+
+    /**
      * The test config.
      */
     protected final Properties config;
@@ -45,4 +50,20 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
         T options);
 
     public abstract T getDefaultParticipantOptions();
+
+    /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link #JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        JitsiMeetUrl url = new JitsiMeetUrl();
+
+        url.setServerUrl(config.getProperty(JITSI_MEET_URL_PROP));
+
+        return url;
+    }
 }
