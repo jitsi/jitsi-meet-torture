@@ -270,11 +270,6 @@ public class WebTestBase
 
             String configPrefix = "web.participant" + (index + 1);
 
-            if (options == null)
-            {
-                options = participants.getDefaultParticipantOptions();
-            }
-
             p = participants.createParticipant(configPrefix, options);
 
             // Adds a print in the console/selenium-node logs

@@ -64,7 +64,7 @@ public class ParticipantHelper
      */
     public Participant createParticipant(String configPrefix)
     {
-        return this.createParticipant(configPrefix, participantFactory.getDefaultParticipantOptions());
+        return this.createParticipant(configPrefix, null);
     }
 
     /**
@@ -77,7 +77,10 @@ public class ParticipantHelper
     public Participant createParticipant(
         String configPrefix, ParticipantOptions options)
     {
-        options = Objects.requireNonNull(options, "options");
+        if (options == null)
+        {
+            options = getDefaultParticipantOptions();
+        }
         options.load(configPrefix);
 
         Participant<? extends WebDriver> participant
