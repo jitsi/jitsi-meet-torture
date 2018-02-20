@@ -28,7 +28,7 @@ public class ParticipantOptions
         // It will be Chrome by default...
         ParticipantType participantType
             =  ParticipantType.valueOfString(
-                    System.getProperty(configPrefix + ".type"));
+                    config.getProperty(configPrefix + ".type"));
 
         if (participantType == null)
         {

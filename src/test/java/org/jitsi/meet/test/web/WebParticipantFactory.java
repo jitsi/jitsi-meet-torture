@@ -198,7 +198,7 @@ public class WebParticipantFactory
                     ops.setBinary(binaryFile);
             }
 
-            String remoteResourcePath = System.getProperty(
+            String remoteResourcePath = config.getProperty(
                 REMOTE_RESOURCE_PARENT_PATH_NAME_PROP);
 
             String fakeStreamAudioFName = (String)options.get(
@@ -294,11 +294,11 @@ public class WebParticipantFactory
      * Returns the remote driver address or the default one.
      * @return the remote driver address or the default one.
      */
-    private static URL getRemoteDriverAddress()
+    private URL getRemoteDriverAddress()
     {
         try
         {
-            String remoteAddress = System.getProperty(
+            String remoteAddress = config.getProperty(
                 REMOTE_ADDRESS_NAME_PROP,
                 "http://localhost:4444/wd/hub");
 
