@@ -53,26 +53,22 @@ public class WebParticipantFactory
      * @param config - A <tt>Properties</tt> instance holding configuration
      *               properties required to setup new participants.
      */
-    WebParticipantFactory(Properties config)
+    public WebParticipantFactory(Properties config)
     {
         super(config);
     }
 
     @Override
     public Participant<? extends WebDriver> createParticipant(
-        WebParticipantOptions options)
+        String configPrefix,
+        ParticipantOptions options)
     {
+        options.load(config, configPrefix);
+
         return new WebParticipant(
                 options.getName(),
-                startWebDriver(
-                    options),
+                startWebDriver((WebParticipantOptions) options),
                 options.getParticipantType());
-    }
-
-    @Override
-    public WebParticipantOptions getDefaultParticipantOptions()
-    {
-        return new WebParticipantOptions(config);
     }
 
     /**

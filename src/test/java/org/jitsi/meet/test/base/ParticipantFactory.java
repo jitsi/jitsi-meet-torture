@@ -15,11 +15,13 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.jitsi.meet.test.mobile.base.*;
+import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
 
-public abstract class ParticipantFactory<T extends ParticipantOptions>
+public class ParticipantFactory<T extends ParticipantOptions>
 {
     /**
      * The url of the deployment to connect to.
@@ -46,10 +48,31 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
      * The configuration prefix to use for initializing the participant.
      *
      */
-    public abstract Participant<? extends WebDriver> createParticipant(
-        T options);
-
-    public abstract T getDefaultParticipantOptions();
+    public Participant<? extends WebDriver> createParticipant(
+        String configPrefix,
+        ParticipantOptions options)
+    {
+        ParticipantType type
+            = ParticipantOptions.getParticipantType(configPrefix, config);
+        if (type.isWeb())
+        {
+            return new WebParticipantFactory(config)
+                .createParticipant(
+                    configPrefix,
+                    new WebParticipantOptions(options, type));
+        }
+        else if (type.isMobile())
+        {
+            return new MobileParticipantFactory(config)
+                .createParticipant(
+                    configPrefix,
+                    new MobileParticipantOptions(options, type));
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unknown participant type");
+        }
+    }
 
     /**
      * Return new {@link JitsiMeetUrl} instance which has only

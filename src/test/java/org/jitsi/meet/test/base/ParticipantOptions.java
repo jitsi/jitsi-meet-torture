@@ -11,26 +11,35 @@ public class ParticipantOptions
     public static final String NAME_PROP = "NAME";
 
     private String configPrefix;
-    protected Properties config;
 
-    private final Properties backend = new Properties();
+    private final Properties backend;
 
-    public ParticipantOptions(Properties config)
+    public ParticipantOptions()
     {
-        this.config = config;
+        this.backend = new Properties();
     }
 
-    /**
-     *
-     */
-    public void load(String configPrefix)
+    public ParticipantOptions(
+        ParticipantOptions options, ParticipantType participantType)
     {
-        this.configPrefix = configPrefix;
+        if (options != null)
+        {
+            this.backend = options.backend;
+        }
+        else
+        {
+            this.backend = new Properties();
+        }
+        this.setProperty(TYPE_PROP, participantType);
+    }
 
+    static ParticipantType getParticipantType(
+        Properties config, String configPrefix)
+    {
         // It will be Chrome by default...
         ParticipantType participantType
             =  ParticipantType.valueOfString(
-                    config.getProperty(configPrefix + ".type"));
+            config.getProperty(configPrefix + ".type"));
 
         if (participantType == null)
         {
@@ -39,7 +48,16 @@ public class ParticipantOptions
                     + configPrefix+", will use Chrome...");
             participantType = ParticipantType.chrome;
         }
-        this.setProperty(TYPE_PROP, participantType);
+
+        return participantType;
+    }
+
+    /**
+     *
+     */
+    public void load(Properties config, String configPrefix)
+    {
+        this.configPrefix = configPrefix;
 
         String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
         this.setProperty(NAME_PROP, name);
@@ -69,7 +87,7 @@ public class ParticipantOptions
         }
         else
         {
-            return (boolean)v;
+            return new Boolean((String)v);
         }
     }
 
@@ -84,12 +102,14 @@ public class ParticipantOptions
         return this;
     }
 
-    protected void loadConfigProperty(String configPrefix, String key)
+    protected void loadConfigProperty(
+        Properties config, String configPrefix, String key)
     {
-        this.loadConfigProperty(configPrefix, key, null);
+        this.loadConfigProperty(config, configPrefix, key, null);
     }
 
     protected void loadConfigProperty(
+        Properties config,
         String configPrefix, String key, String defaultValue)
     {
         String configValue = config.getProperty(configPrefix + "." + key);

@@ -104,7 +104,7 @@ public class LipSyncTest
 
         // this file is required in order to run this test
         ParticipantOptions options
-            = ((WebParticipantOptions)participants.getDefaultParticipantOptions())
+            = new WebParticipantOptions()
                 .setFakeStreamVideoFile("resources/fakeVideoStream.y4m")
                 .setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");
 

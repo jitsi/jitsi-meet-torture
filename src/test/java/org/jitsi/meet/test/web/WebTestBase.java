@@ -55,12 +55,6 @@ public class WebTestBase
         super(baseTest);
     }
 
-    @Override
-    public ParticipantFactory getFactory(Properties config)
-    {
-        return new WebParticipantFactory(config);
-    }
-
     /**
      * Starts the owner, if it is not started.
      */
@@ -282,7 +276,6 @@ public class WebTestBase
         if (meetURL == null)
         {
             meetURL = getJitsiMeetUrl();
-            meetURL.setRoomName(currentRoomName);
         }
 
         p.joinConference(meetURL);

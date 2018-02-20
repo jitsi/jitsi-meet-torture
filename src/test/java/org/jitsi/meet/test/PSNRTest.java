@@ -122,8 +122,8 @@ public class PSNRTest
         }
 
         ParticipantOptions options
-            = ((WebParticipantOptions)participants.getDefaultParticipantOptions())
-            .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+            = new WebParticipantOptions()
+                .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
         ensureTwoParticipants(
             null, null, options, options);

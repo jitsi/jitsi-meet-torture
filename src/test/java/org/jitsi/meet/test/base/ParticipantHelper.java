@@ -77,23 +77,12 @@ public class ParticipantHelper
     public Participant createParticipant(
         String configPrefix, ParticipantOptions options)
     {
-        if (options == null)
-        {
-            options = getDefaultParticipantOptions();
-        }
-        options.load(configPrefix);
-
         Participant<? extends WebDriver> participant
-            = participantFactory.createParticipant(options);
+            = participantFactory.createParticipant(configPrefix, options);
 
         participants.add(participant);
 
         return participant;
-    }
-
-    public ParticipantOptions getDefaultParticipantOptions()
-    {
-        return participantFactory.getDefaultParticipantOptions();
     }
 
     /**

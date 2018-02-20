@@ -15,14 +15,15 @@ public class MobileParticipantFactory
      * @param config - A <tt>Properties</tt> instance holding configuration
      *               properties required to setup new participants.
      */
-    protected MobileParticipantFactory(Properties config)
+    public MobileParticipantFactory(Properties config)
     {
         super(config);
     }
 
     @Override
     public Participant<? extends WebDriver> createParticipant(
-        MobileParticipantOptions options)
+        String configPrefix,
+        ParticipantOptions options)
     {
         MobileParticipantBuilder builder
             = MobileParticipantBuilder.createBuilder(
@@ -31,11 +32,5 @@ public class MobileParticipantFactory
                 options.getParticipantType());
 
         return builder.startNewDriver();
-    }
-
-    @Override
-    public MobileParticipantOptions getDefaultParticipantOptions()
-    {
-        return new MobileParticipantOptions(config);
     }
 }

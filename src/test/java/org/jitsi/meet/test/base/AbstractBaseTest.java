@@ -107,8 +107,6 @@ public abstract class AbstractBaseTest
         participants = new ParticipantHelper(baseTest.participants);
     }
 
-    public abstract ParticipantFactory getFactory(Properties config);
-
     /**
      * NOTE: We don't want this method to be overridden in subclasses, because
      * it contains TestNG specific ITestContext. Use {@link #setupClass()} to do
@@ -134,7 +132,7 @@ public abstract class AbstractBaseTest
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
-        participants = new ParticipantHelper(getFactory(config));
+        participants = new ParticipantHelper(new ParticipantFactory(config));
 
         // if this one fails, the failure will be registered in the
         // FailureListener to gather information and it will call
@@ -188,9 +186,8 @@ public abstract class AbstractBaseTest
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        return participants.getJitsiMeetUrl();
+        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
     }
-
 
     /**
      * Method is called "before class". {@link AbstractBaseTest} will figure out

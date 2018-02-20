@@ -76,10 +76,4 @@ public class MobileTestBase
             (MobileParticipant) participants
                 .createParticipant(getParticipant1Prefix());
     }
-
-    @Override
-    public ParticipantFactory getFactory(Properties config)
-    {
-        return new MobileParticipantFactory(config);
-    }
 }

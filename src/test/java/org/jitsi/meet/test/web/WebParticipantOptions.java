@@ -16,31 +16,35 @@ public class WebParticipantOptions
 
     private static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
 
-    public WebParticipantOptions(Properties config)
+    public WebParticipantOptions()
     {
-        super(config);
+        this.initDefaults();
+    }
+
+    public WebParticipantOptions(
+        ParticipantOptions participantOptions, ParticipantType type)
+    {
+        super(participantOptions, type);
 
         initDefaults();
     }
 
     private void initDefaults()
     {
-        this.loadConfigProperty(
-            GLOBAL_PROP_PREFIX,
-            FAKE_AUDIO_PROP,
-            "resources/fakeAudioStream.wav");
-
-        this.loadConfigProperty(GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
+        this.setProperty(FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
     }
 
     @Override
-    public void load(String configPrefix)
+    public void load(Properties config, String configPrefix)
     {
-        super.load(configPrefix);
+        super.load(config, configPrefix);
 
-        this.loadConfigProperty(configPrefix, REMOTE_PROP);
-        this.loadConfigProperty(configPrefix, BINARY_PROP);
-        this.loadConfigProperty(configPrefix, VERSION_PROP);
+        this.loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_AUDIO_PROP);
+        this.loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
+
+        this.loadConfigProperty(config, configPrefix, REMOTE_PROP);
+        this.loadConfigProperty(config, configPrefix, BINARY_PROP);
+        this.loadConfigProperty(config, configPrefix, VERSION_PROP);
     }
 
     /**

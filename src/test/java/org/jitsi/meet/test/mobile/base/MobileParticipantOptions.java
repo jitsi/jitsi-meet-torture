@@ -7,8 +7,9 @@ import java.util.*;
 public class MobileParticipantOptions
     extends ParticipantOptions
 {
-    public MobileParticipantOptions(Properties config)
+    public MobileParticipantOptions(
+        ParticipantOptions participantOptions, ParticipantType type)
     {
-        super(config);
+        super(participantOptions, type);
     }
 }
