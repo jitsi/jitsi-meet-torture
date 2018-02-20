@@ -95,17 +95,4 @@ public class WebParticipantOptions
 
         return this;
     }
-
-    public boolean getBoolean(Object key)
-    {
-        Object v = this.get(key);
-        if (v == null)
-        {
-            return false;
-        }
-        else
-        {
-            return (boolean)v;
-        }
-    }
 }

@@ -57,4 +57,17 @@ public class ParticipantOptions
     {
         return this.configPrefix;
     }
+
+    public boolean getBoolean(Object key)
+    {
+        Object v = this.get(key);
+        if (v == null)
+        {
+            return false;
+        }
+        else
+        {
+            return (boolean)v;
+        }
+    }
 }
