@@ -30,21 +30,21 @@ public class WebParticipantOptions
      */
     static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
 
-    private static final String BINARY_PROP = "binary";
-
-    private static final String FAKE_AUDIO_PROP = "fakeStreamAudioFile";
-
-    private static final String FAKE_VIDEO_PROP = "fakeStreamVideoFile";
-
-    private static final String REMOTE_PROP = "isRemote";
-
-    private static final String VERSION_PROP = "version";
+    private static final String PROP_BINARY = "binary";
 
     /**
      * The id of the chrome extension that will be loaded
      * on opening participant driver.
      */
-    private static final String CHROME_EXTENSION_ID = "chromeExtensionID";
+    private static final String PROP_CHROME_EXTENSION_ID = "chromeExtensionID";
+
+    private static final String PROP_FAKE_AUDIO = "fakeStreamAudioFile";
+
+    private static final String PROP_FAKE_VIDEO = "fakeStreamVideoFile";
+
+    private static final String PROP_REMOTE = "isRemote";
+
+    private static final String PROP_VERSION = "version";
 
     /**
      * {@inheritDoc}
@@ -55,7 +55,7 @@ public class WebParticipantOptions
         Properties defaults = super.initDefaults();
 
         defaults.setProperty(
-            FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
+            PROP_FAKE_AUDIO, "resources/fakeAudioStream.wav");
 
         return defaults;
     }
@@ -73,7 +73,7 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamAudioFile(
         String fakeStreamAudioFile)
     {
-        setProperty(FAKE_AUDIO_PROP, fakeStreamAudioFile);
+        setProperty(PROP_FAKE_AUDIO, fakeStreamAudioFile);
 
         return this;
     }
@@ -91,7 +91,7 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamVideoFile(
         String fakeStreamVideoFile)
     {
-        setProperty(FAKE_VIDEO_PROP, fakeStreamVideoFile);
+        setProperty(PROP_FAKE_VIDEO, fakeStreamVideoFile);
 
         return this;
     }
@@ -103,7 +103,7 @@ public class WebParticipantOptions
      */
     public WebParticipantOptions setChromeExtensionId(String extensionId)
     {
-        setProperty(CHROME_EXTENSION_ID, extensionId);
+        setProperty(PROP_CHROME_EXTENSION_ID, extensionId);
 
         return this;
     }
@@ -114,7 +114,7 @@ public class WebParticipantOptions
      */
     public String getVersion()
     {
-        return getProperty(VERSION_PROP);
+        return getProperty(PROP_VERSION);
     }
 
     /**
@@ -123,7 +123,7 @@ public class WebParticipantOptions
      */
     public String getBinary()
     {
-        return getProperty(BINARY_PROP);
+        return getProperty(PROP_BINARY);
     }
 
     /**
@@ -132,7 +132,7 @@ public class WebParticipantOptions
      */
     public boolean isRemote()
     {
-        return getBooleanProperty(REMOTE_PROP);
+        return getBooleanProperty(PROP_REMOTE);
     }
 
     /**
@@ -142,7 +142,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamAudioFile()
     {
-        return getProperty(FAKE_AUDIO_PROP);
+        return getProperty(PROP_FAKE_AUDIO);
     }
 
     /**
@@ -152,7 +152,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamVideoFile()
     {
-        return getProperty(FAKE_VIDEO_PROP);
+        return getProperty(PROP_FAKE_VIDEO);
     }
 
     /**
@@ -161,6 +161,6 @@ public class WebParticipantOptions
      */
     public String getChromeExtensionId()
     {
-        return getProperty(CHROME_EXTENSION_ID);
+        return getProperty(PROP_CHROME_EXTENSION_ID);
     }
 }

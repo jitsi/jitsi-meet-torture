@@ -41,29 +41,28 @@ public class WebParticipantFactory
     extends ParticipantFactory<WebParticipantOptions>
 {
     /**
-     * The property to change remote selenium grid URL, defaults to
-     * http://localhost:4444/wd/hub if requiring remote browser and property
-     * is not set.
-     */
-    private static final String REMOTE_ADDRESS_NAME_PROP = "remote.address";
-
-    /**
      * The property to disable no-sandbox parameter for chrome.
      */
-    private static final String DISABLE_NOSANBOX_PARAM
+    private static final String PROP_DISABLE_NOSANBOX
         = "chrome.disable.nosanbox";
 
     /**
      * The property to enable headless parameter for chrome.
      */
-    private static final String ENABLE_HEADLESS_PARAM
-        = "chrome.enable.headless";
+    private static final String PROP_ENABLE_HEADLESS = "chrome.enable.headless";
+
+    /**
+     * The property to change remote selenium grid URL, defaults to
+     * http://localhost:4444/wd/hub if requiring remote browser and property
+     * is not set.
+     */
+    private static final String PROP_REMOTE_ADDRESS_NAME = "remote.address";
 
     /**
      * The property to evaluate for parent path of the resources used when
      * loading chrome remotely like audio/video files.
      */
-    private static final String REMOTE_RESOURCE_PARENT_PATH_NAME_PROP
+    private static final String PROP_REMOTE_RESOURCE_PARENT_PATH_NAME
         = "remote.resource.path";
 
     /**
@@ -222,13 +221,13 @@ public class WebParticipantFactory
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-            if (!Boolean.getBoolean(DISABLE_NOSANBOX_PARAM))
+            if (!Boolean.getBoolean(PROP_DISABLE_NOSANBOX))
             {
                 ops.addArguments("no-sandbox");
                 ops.addArguments("disable-setuid-sandbox");
             }
 
-            if (Boolean.getBoolean(ENABLE_HEADLESS_PARAM))
+            if (Boolean.getBoolean(PROP_ENABLE_HEADLESS))
             {
                 ops.addArguments("headless");
                 ops.addArguments("window-size=1200x600");
@@ -249,7 +248,7 @@ public class WebParticipantFactory
             }
 
             String remoteResourcePath = config.getProperty(
-                REMOTE_RESOURCE_PARENT_PATH_NAME_PROP);
+                PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
 
             String fakeStreamAudioFName = options.getFakeStreamAudioFile();
             if (fakeStreamAudioFName != null)
@@ -347,7 +346,7 @@ public class WebParticipantFactory
         try
         {
             String remoteAddress = config.getProperty(
-                REMOTE_ADDRESS_NAME_PROP,
+                PROP_REMOTE_ADDRESS_NAME,
                 "http://localhost:4444/wd/hub");
 
             return new URL(remoteAddress);
