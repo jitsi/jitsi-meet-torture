@@ -94,10 +94,12 @@ public class ConferenceMigrationTest
             "Migrated bridge: " + migratedBridge +
             ", REST endpoint: " + jvbRESTEndpoint);
 
-        ensureOneParticipant("config.enforcedBridge=\"" + migratedBridge +"\"");
-        Participant owner = getParticipant1();
+        ensureTwoParticipants(
+            getJitsiMeetUrl().appendConfig(
+                "config.enforcedBridge=\"" + migratedBridge +"\""),
+            null);
 
-        ensureTwoParticipants();
+        Participant owner = getParticipant1();
         WebDriver secondParticipant = getParticipant2().getDriver();
 
         getParticipant1().waitForIceConnected();

@@ -64,8 +64,22 @@ public class ParticipantHelper
      */
     public Participant createParticipant(String configPrefix)
     {
+        return this.createParticipant(configPrefix, null);
+    }
+
+    /**
+     * Joins a participant, created if does not exists.
+     *
+     * @param configPrefix the config prefix which is used to identify
+     * the config properties which describe the new participant.
+     * @param options custom options to be used for the participant.
+     * @return the participant which was created
+     */
+    public Participant createParticipant(
+        String configPrefix, ParticipantOptions options)
+    {
         Participant<? extends WebDriver> participant
-            = participantFactory.createParticipant(configPrefix);
+            = participantFactory.createParticipant(configPrefix, options);
 
         participants.add(participant);
 
@@ -89,15 +103,6 @@ public class ParticipantHelper
     {
         participants.stream().forEach(Participant::quitSafely);
         participants.clear();
-    }
-
-    /**
-     * @return the {@link ParticipantFactoryConfig} instance used by the
-     * underlying {@link ParticipantFactory} to create new participants.
-     */
-    public ParticipantFactoryConfig getFactoryConfig()
-    {
-        return participantFactory;
     }
 
     /**
@@ -126,5 +131,17 @@ public class ParticipantHelper
     public List<Participant<? extends WebDriver>> getAll()
     {
         return new LinkedList<>(participants);
+    }
+
+    /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        return participantFactory.getJitsiMeetUrl();
     }
 }

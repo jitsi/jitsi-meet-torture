@@ -38,10 +38,12 @@ public class LastNTest
     @Test
     public void testLastN()
     {
-        ensureOneParticipant("config.startAudioMuted=0&config.channelLastN=1");
-        WebDriver owner = getParticipant1().getDriver();
+        ensureThreeParticipants(
+            getJitsiMeetUrl().appendConfig(
+                "config.startAudioMuted=0&config.channelLastN=1"),
+            null, null);
 
-        ensureThreeParticipants();
+        WebDriver owner = getParticipant1().getDriver();
 
         WebDriver secondParticipant = getParticipant2().getDriver();
         WebDriver thirdParticipant = getParticipant3().getDriver();

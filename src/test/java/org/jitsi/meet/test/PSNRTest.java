@@ -121,11 +121,12 @@ public class PSNRTest
                         ? "" : " INPUT_VIDEO_FILE does not exist"));
         }
 
-        participants
-            .getFactoryConfig()
-            .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+        ParticipantOptions options
+            = new WebParticipantOptions()
+                .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
-        ensureTwoParticipants();
+        ensureTwoParticipants(
+            null, null, options, options);
     }
 
     @Override

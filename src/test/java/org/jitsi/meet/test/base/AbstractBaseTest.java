@@ -178,6 +178,18 @@ public abstract class AbstractBaseTest
     }
 
     /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+    }
+
+    /**
      * Method is called "before class". {@link AbstractBaseTest} will figure out
      * if the test should be skipped in which case this method will not be
      * called.

@@ -75,17 +75,14 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
      * start/uninstall the app.
      * @param app - A full path to the app binary file which can be used to
      * install the app on the device.
-     * @param meetServerURL - The server part of {@link JitsiMeetUrl}. See
-     * {@link JitsiMeetUrl#serverUrl} for more details.
      */
     public MobileParticipant(AppiumDriver<WebElement> driver,
                              String name,
                              ParticipantType type,
                              String appBundleId,
-                             String app,
-                             String meetServerURL)
+                             String app)
     {
-        super(name, driver, type, meetServerURL, null);
+        super(name, driver, type);
         this.driver = Objects.requireNonNull(driver, "driver");
         this.appBundleId = Objects.requireNonNull(appBundleId, "appBundleId");
         this.app = Objects.requireNonNull(app, "app");

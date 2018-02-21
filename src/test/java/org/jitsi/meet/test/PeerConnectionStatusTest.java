@@ -170,7 +170,10 @@ public class PeerConnectionStatusTest
     {
         // Start the second participant with TCP disabled, so that we can
         // force it to disconnect just by blocking the UDP port.
-        ensureTwoParticipants(TCPTest.DISABLE_TCP_URL_FRAGMENT);
+        ensureTwoParticipants(
+            null,
+            getJitsiMeetUrl()
+                .appendConfig(TCPTest.DISABLE_TCP_URL_FRAGMENT));
     }
 
     /**
@@ -334,7 +337,8 @@ public class PeerConnectionStatusTest
 
         // Close 2nd and join with failICE=true
         getParticipant2().hangUp();
-        ensureTwoParticipants("config.failICE=true");
+        ensureTwoParticipants(null,
+            getJitsiMeetUrl().appendConfig("config.failICE=true"));
 
         secondPeer = getParticipant2().getDriver();
         assertNotNull(secondPeer);

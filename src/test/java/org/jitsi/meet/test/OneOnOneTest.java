@@ -54,8 +54,9 @@ public class OneOnOneTest
     @Test
     public void testFilmstripHiddenInOneOnOne()
     {
-        ensureOneParticipant(oneOnOneConfigOverrides);
-        ensureTwoParticipants(oneOnOneConfigOverrides);
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig(oneOnOneConfigOverrides);
+        ensureTwoParticipants(url, url);
 
         Participant owner =  getParticipant1();
         Participant secondParticipant = getParticipant2();
@@ -75,7 +76,9 @@ public class OneOnOneTest
      */
     @Test(dependsOnMethods = { "testFilmstripHiddenInOneOnOne" })
     public void testFilmstripVisibleWithMoreThanTwo() {
-        ensureThreeParticipants(oneOnOneConfigOverrides);
+        ensureThreeParticipants(
+            null, null,
+            getJitsiMeetUrl().appendConfig(oneOnOneConfigOverrides));
 
         Participant thirdParticipant = getParticipant3();
         stopDockingToolbar(thirdParticipant);

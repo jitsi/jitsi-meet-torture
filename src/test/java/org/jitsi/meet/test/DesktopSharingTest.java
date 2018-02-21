@@ -83,9 +83,8 @@ public class DesktopSharingTest
         new Thread(() -> {
             try
             {
-                JitsiMeetUrl url = ParticipantFactory.getJitsiMeetUrl();
+                JitsiMeetUrl url = getJitsiMeetUrl();
 
-                url.setRoomName(currentRoomName);
                 // FIXME the config part may need to by synced up with
                 // WebParticipant#DEFAULT_CONFIG
                 url.setHashConfigPart(

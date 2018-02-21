@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -43,8 +44,9 @@ public class Peer2PeerTest
     @Test
     public void testSwitchToP2P()
     {
-        ensureOneParticipant("config.p2p.enabled=true");
-        ensureTwoParticipants("config.p2p.enabled=true");
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig("config.p2p.enabled=true");
+        ensureTwoParticipants(url, url);
 
         WebDriver owner = getParticipant1().getDriver();
         WebDriver participant = getParticipant2().getDriver();
@@ -124,8 +126,10 @@ public class Peer2PeerTest
     public void testManualP2PSwitch()
     {
         hangUpAllParticipants();
-        ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
-        ensureTwoParticipants(MANUAL_P2P_MODE_FRAGMENT);
+
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig(MANUAL_P2P_MODE_FRAGMENT);
+        ensureTwoParticipants(url, url);
 
         WebDriver owner = getParticipant1().getDriver();
         WebDriver participant = getParticipant2().getDriver();
@@ -204,8 +208,10 @@ public class Peer2PeerTest
     public void testP2PSwitchWhenMuted()
     {
         hangUpAllParticipants();
-        ensureOneParticipant(MANUAL_P2P_MODE_FRAGMENT);
-        ensureTwoParticipants(MANUAL_P2P_MODE_FRAGMENT);
+
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig(MANUAL_P2P_MODE_FRAGMENT);
+        ensureTwoParticipants(url, url);
 
         WebDriver owner = getParticipant1().getDriver();
         WebDriver participant = getParticipant2().getDriver();

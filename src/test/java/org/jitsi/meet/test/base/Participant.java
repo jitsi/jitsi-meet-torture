@@ -49,11 +49,6 @@ public abstract class Participant<T extends WebDriver>
     protected final String name;
 
     /**
-     * The url to join conferences.
-     */
-    private final JitsiMeetUrl meetURL = new JitsiMeetUrl();
-
-    /**
      * Is hung up.
      */
     private boolean hungUp = true;
@@ -87,26 +82,15 @@ public abstract class Participant<T extends WebDriver>
      * @param name the name.
      * @param driver its driver instance.
      * @param type the type (type of browser).
-     * @param meetURL the url to use when joining room.
-     * @param defaultConfigPart the hash part of the URL which specifies default
-     * config overrides. For example:
-     * "config.requireDisplayName=false&config.debug=true"
-     * This will be added for every conference URL joined by this
-     * <tt>Participant</tt> instance. Note that the hash sign ("#") is added
-     * automagically, so it should be omitted.
      */
     public Participant(
         String name,
         T driver,
-        ParticipantType type,
-        String meetURL,
-        String defaultConfigPart)
+        ParticipantType type)
     {
         this.name = Objects.requireNonNull(name, "name");
         this.driver = Objects.requireNonNull(driver, "driver");
         this.type = Objects.requireNonNull(type, "type");
-        this.meetURL.setServerUrl(meetURL);
-        this.meetURL.appendConfig(defaultConfigPart);
     }
 
     /**
@@ -115,52 +99,38 @@ public abstract class Participant<T extends WebDriver>
      */
     public void joinConference(String roomName)
     {
-        this.joinConference(roomName, null, null, null);
+        this.joinConference(new JitsiMeetUrl().setRoomName(roomName));
     }
 
     /**
      * Joins a conference.
      *
-     * @param roomName the room name to join.
-     * @param roomParameter the {@link JitsiMeetUrl#roomParameters} part of
-     * the Jitsi Meet URL.
-     * @param config the {@link JitsiMeetUrl#hashConfigPart} which will be
-     * appended at the end of the default config part (if any) specified in the
-     * {@link Participant}'s constructor.
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
      */
     public void joinConference(
-        String roomName, String roomParameter, String config,
-        Consumer<JitsiMeetUrl> customJoinImpl)
+        JitsiMeetUrl meetURL)
     {
-        JitsiMeetUrl conferenceUrl = (JitsiMeetUrl) this.meetURL.clone();
+        meetURL = Objects.requireNonNull(meetURL, "meetURL");
 
-        conferenceUrl.setRoomName(roomName);
-        conferenceUrl.setRoomParameters(roomParameter);
-        conferenceUrl.appendConfig(config);
-
-        TestUtils.print(getName() + " is opening URL: " + conferenceUrl);
+        TestUtils.print(getName() + " is opening URL: " + meetURL);
 
         // not hungup, so not joining
         // FIXME this should also check for room parameters, config etc.
         if (!this.hungUp
             && this.joinedRoomName != null
-            && this.joinedRoomName.equals(roomName))
+            && this.joinedRoomName.equals(meetURL.getRoomName()))
         {
-            TestUtils.print("Not joining " + this.name + " in " + roomName
+            TestUtils.print("Not joining " + this.name + " in " + meetURL.getRoomName()
                 + ", already joined.");
             return;
         }
 
-        if (customJoinImpl != null)
-        {
-            customJoinImpl.accept(conferenceUrl);
-        }
-        else
-        {
-            doJoinConference(conferenceUrl);
-        }
+        doJoinConference(meetURL);
 
-        this.joinedRoomName = roomName;
+        this.joinedRoomName = meetURL.getRoomName();
         this.hungUp = false;
 
         startKeepAliveExecution();
