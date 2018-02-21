@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import org.jitsi.meet.test.mobile.base.*;
+import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 
@@ -60,21 +61,45 @@ public class ParticipantFactory<T extends ParticipantOptions>
         String configPrefix,
         ParticipantOptions options)
     {
-        ParticipantType type
-            = ParticipantOptions.getParticipantType(config, configPrefix);
-        if (type.isWeb())
+        ParticipantOptions targetOptions = new ParticipantOptions();
+        targetOptions.load(config, configPrefix);
+
+        // FIXME At some point it was decided that a name will be the substring
+        // of the config prefix after the first dot. Maybe make just use
+        // the config prefix instead ?
+        // This way there will be no requirement for the prefix to contain
+        // the dot (this requirement is not described anywhere).
+        String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
+        targetOptions.setName(name);
+
+        // Put explicit options on top of whatever has been loaded from
+        // the config
+        targetOptions.merge(options);
+
+        // It will be Chrome by default...
+        ParticipantType participantType = targetOptions.getParticipantType();
+        if (participantType == null)
+        {
+            TestUtils.print(
+                "No participant type specified for prefix: "
+                    + configPrefix + ", will use Chrome...");
+            targetOptions.setParticipantType(
+                participantType = ParticipantType.chrome);
+        }
+
+        if (participantType.isWeb())
         {
             return new WebParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
-                    options);
+                    targetOptions);
         }
-        else if (type.isMobile())
+        else if (participantType.isMobile())
         {
             return new MobileParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
-                    options);
+                    targetOptions);
         }
         else
         {
