@@ -105,8 +105,10 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Joins a conference.
      *
-//     * @param roomName the room name to join.
-     * {@link Participant}'s constructor.
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
      */
     public void joinConference(
         JitsiMeetUrl meetURL)

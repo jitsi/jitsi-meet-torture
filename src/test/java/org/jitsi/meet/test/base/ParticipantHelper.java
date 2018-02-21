@@ -70,8 +70,9 @@ public class ParticipantHelper
     /**
      * Joins a participant, created if does not exists.
      *
-     * @param configPrefix  the config prefix which is used to identify
+     * @param configPrefix the config prefix which is used to identify
      * the config properties which describe the new participant.
+     * @param options custom options to be used for the participant.
      * @return the participant which was created
      */
     public Participant createParticipant(

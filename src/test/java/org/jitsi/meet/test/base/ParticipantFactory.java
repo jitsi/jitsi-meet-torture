@@ -21,6 +21,11 @@ import org.openqa.selenium.*;
 
 import java.util.*;
 
+/**
+ * Used to create participants. Based on the type of the participant we choose
+ * to use WebParticipantFactory or MobileParticipantFactory.
+ * @param <T> the type of the options (web or mobile).
+ */
 public class ParticipantFactory<T extends ParticipantOptions>
 {
     /**
@@ -45,8 +50,11 @@ public class ParticipantFactory<T extends ParticipantOptions>
     }
 
     /**
-     * The configuration prefix to use for initializing the participant.
-     *
+     * Creates participant the type is extracted from the configuration
+     * using the supplied configPrefix.
+     * @param configPrefix the configuration prefix to use for initializing
+     * the participant.
+     * @param options custom options to be used when creating the participant.
      */
     public Participant<? extends WebDriver> createParticipant(
         String configPrefix,

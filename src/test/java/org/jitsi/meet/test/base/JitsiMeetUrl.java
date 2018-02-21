@@ -60,13 +60,26 @@ public class JitsiMeetUrl
      */
     private String serverUrl;
 
+    /**
+     * If set, this should instruct the driver opening the page, that there is
+     * an iframe loaded and we need to navigate to it, once it is loaded.
+     */
     private String iframeToNavigateTo;
 
+    /**
+     * Returns the iframeToNavigateTo value.
+     * @return the iframeToNavigateTo value.
+     */
     public String getIframeToNavigateTo()
     {
         return iframeToNavigateTo;
     }
 
+    /**
+     * Sets the iframeToNavigateTo value.
+     * @param iframeToNavigateTo the new value.
+     * @return a reference to this object.
+     */
     public JitsiMeetUrl setIframeToNavigateTo(String iframeToNavigateTo)
     {
         this.iframeToNavigateTo = iframeToNavigateTo;
@@ -78,6 +91,7 @@ public class JitsiMeetUrl
      *
      * @param extraConfig extra config params to be added at the end of the
      * current {@link #hashConfigPart}, without "?" nor "&" at the beginning.
+     * @return a reference to this object.
      */
     public JitsiMeetUrl appendConfig(String extraConfig)
     {
@@ -188,6 +202,7 @@ public class JitsiMeetUrl
      * Sets the {@link #roomName} part of the conference URL.
      *
      * @param roomName a room name without any special characters.
+     * @return a reference to this object.
      */
     public JitsiMeetUrl setRoomName(String roomName)
     {
@@ -201,6 +216,7 @@ public class JitsiMeetUrl
      * @param roomParameters the conference room parameters without "?" sign at
      * the beginning, but with "&" between each of the params which are part of
      * a single string passed here as an argument.
+     * @return a reference to this object.
      */
     public JitsiMeetUrl setRoomParameters(String roomParameters)
     {

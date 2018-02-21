@@ -65,6 +65,10 @@ public class WebTestBase
 
     /**
      * Starts the owner, if it is not started.
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
      */
     public void ensureOneParticipant(JitsiMeetUrl meetURL)
     {
@@ -73,7 +77,11 @@ public class WebTestBase
 
     /**
      * Starts the owner, if it is not started.
-     * @param options
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
+     * @param options custom options to be used for the new participant.
      */
     public void ensureOneParticipant(
         JitsiMeetUrl meetURL, ParticipantOptions options)
@@ -97,6 +105,8 @@ public class WebTestBase
      * Starts the owner and the seconds participant, if they are not started,
      * and stops the third participant, if it is not stopped.
      * participants(owner and 'second participant').
+     * @param participantOneMeetURL the url for the first participant.
+     * @param participantTwoMeetURL the url for the second participant.
      */
     public void ensureTwoParticipants(
         JitsiMeetUrl participantOneMeetURL,
@@ -110,8 +120,14 @@ public class WebTestBase
      * Starts the owner and the seconds participant, if they are not started,
      * and stops the third participant, if it is not stopped.
      * participants(owner and 'second participant').
-     * @param participantOneOptions
-     * @param participantTwoOptions
+     * @param participantOneMeetURL the url for the first participant,
+     * if it does'n exist already.
+     * @param participantTwoMeetURL the url for the second participant,
+     * if it does'n exist already.
+     * @param participantOneOptions custom options to be used
+     * for the first participant, if it does'n exist already.
+     * @param participantTwoOptions custom options to be used
+     * for the second participant, if it does'n exist already.
      */
     public void ensureTwoParticipants(
         JitsiMeetUrl participantOneMeetURL,
@@ -130,8 +146,14 @@ public class WebTestBase
     /**
      * Starts the owner and the seconds participant, if they are not started.
      * participants(owner and 'second participant').
-     * @param participantOneOptions
-     * @param participantTwoOptions
+     * @param participantOneMeetURL the url for the first participant,
+     * if it does'n exist already.
+     * @param participantTwoMeetURL the url for the second participant,
+     * if it does'n exist already.
+     * @param participantOneOptions custom options to be used
+     * for the first participant, if it does'n exist already.
+     * @param participantTwoOptions custom options to be used
+     * for the second participant, if it does'n exist already.
      */
     private void ensureTwoParticipantsInternal(
         JitsiMeetUrl participantOneMeetURL,
@@ -155,6 +177,12 @@ public class WebTestBase
     /**
      * Starts the owner, second participant and third participant if they aren't
      * started.
+     * @param participantOneMeetURL the url for the first participant,
+     * if it does'n exist already.
+     * @param participantTwoMeetURL the url for the second participant,
+     * if it does'n exist already.
+     * @param participantThreeMeetURL the url for the third participant,
+     * if it does'n exist already.
      */
     public void ensureThreeParticipants(
         JitsiMeetUrl participantOneMeetURL,
@@ -236,7 +264,11 @@ public class WebTestBase
      * Joins a participant, created if does not exists.
      *
      * @param index the participant index.
-     * @param options
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
+     * @param options the options to be used when creating the participant.
      * @return the participant which was created
      */
     private Participant joinParticipant(
