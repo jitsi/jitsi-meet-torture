@@ -25,10 +25,19 @@ import java.util.*;
 public class WebParticipantOptions
     extends ParticipantOptions
 {
-    private static final String FAKE_AUDIO_PROP = "fakeStreamAudioFile";
-    private static final String FAKE_VIDEO_PROP = "fakeStreamVideoFile";
-    private static final String REMOTE_PROP = "isRemote";
+    /**
+     * A prefix for global options (not per participant).
+     */
+    static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
+
     private static final String BINARY_PROP = "binary";
+
+    private static final String FAKE_AUDIO_PROP = "fakeStreamAudioFile";
+
+    private static final String FAKE_VIDEO_PROP = "fakeStreamVideoFile";
+
+    private static final String REMOTE_PROP = "isRemote";
+
     private static final String VERSION_PROP = "version";
 
     /**
@@ -38,32 +47,17 @@ public class WebParticipantOptions
     private static final String CHROME_EXTENSION_ID = "chromeExtensionID";
 
     /**
-     * A prefix for global options (not per participant).
+     * {@inheritDoc}
      */
-    private static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
-
-    /**
-     * Constructs new WebParticipantOptions, filling it with default values.
-     */
-    public WebParticipantOptions()
-    {
-        setProperty(FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
-    }
-
     @Override
-    public void load(
-        Properties config,
-        String configPrefix,
-        ParticipantOptions overrides)
+    protected Properties initDefaults()
     {
-        loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_AUDIO_PROP);
-        loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
+        Properties defaults = super.initDefaults();
 
-        loadConfigProperty(config, configPrefix, REMOTE_PROP);
-        loadConfigProperty(config, configPrefix, BINARY_PROP);
-        loadConfigProperty(config, configPrefix, VERSION_PROP);
+        defaults.setProperty(
+            FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
 
-        super.load(config, configPrefix, overrides);
+        return defaults;
     }
 
     /**
@@ -120,7 +114,7 @@ public class WebParticipantOptions
      */
     public String getVersion()
     {
-        return (String) getProperty(VERSION_PROP);
+        return getProperty(VERSION_PROP);
     }
 
     /**
@@ -129,7 +123,7 @@ public class WebParticipantOptions
      */
     public String getBinary()
     {
-        return (String) getProperty(BINARY_PROP);
+        return getProperty(BINARY_PROP);
     }
 
     /**
@@ -148,7 +142,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamAudioFile()
     {
-        return (String) getProperty(FAKE_AUDIO_PROP);
+        return getProperty(FAKE_AUDIO_PROP);
     }
 
     /**
@@ -158,7 +152,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamVideoFile()
     {
-        return (String) getProperty(FAKE_VIDEO_PROP);
+        return getProperty(FAKE_VIDEO_PROP);
     }
 
     /**
@@ -167,6 +161,6 @@ public class WebParticipantOptions
      */
     public String getChromeExtensionId()
     {
-        return (String) getProperty(CHROME_EXTENSION_ID);
+        return getProperty(CHROME_EXTENSION_ID);
     }
 }

@@ -16,7 +16,6 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.lang3.*;
-import org.jitsi.meet.test.util.*;
 
 import java.util.*;
 
@@ -28,12 +27,12 @@ public class ParticipantOptions
     /**
      * The property name for the type of the participant option.
      */
-    public static final String TYPE_PROP = "TYPE";
+    private static final String TYPE_PROP = "TYPE";
 
     /**
      * The property name for the name of the participant option.
      */
-    public static final String NAME_PROP = "NAME";
+    private static final String NAME_PROP = "NAME";
 
     /**
      * The backend map of properties for the participant options.
@@ -41,63 +40,60 @@ public class ParticipantOptions
     private final Properties backend = new Properties();
 
     /**
-     * Parses the configuration to extract participant tyep.
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     * properties required to setup new participants.
-     * @param configPrefix the config prefix which is used to identify
-     * the config properties which describe the new participant.
-     * @return the participant type.
+     * The map is used as a fallback in {@link #getProperty(String)} in case
+     * a value for a key does not exist in {@link #backend}.
      */
-    static ParticipantType getParticipantType(
-        Properties config, String configPrefix)
+    private final Properties defaults;
+
+    /**
+     * Loads values from the configuration into the participant options backend.
+     * @param config - A <tt>Properties</tt> instance holding configuration
+     * properties.
+     * @param configPrefix the configuration prefix which is used to identify
+     * the config properties which describe the new {@link ParticipantOptions}
+     * set.
+     */
+    public void load(Properties config, String configPrefix)
     {
-        // It will be Chrome by default...
-        ParticipantType participantType
-            =  ParticipantType.valueOfString(
-            config.getProperty(configPrefix + ".type"));
-
-        if (participantType == null)
+        for (String key : config.stringPropertyNames())
         {
-            TestUtils.print(
-                "No participant type specified for prefix: "
-                    + configPrefix+", will use Chrome...");
-            participantType = ParticipantType.chrome;
-        }
+            if (key.startsWith(configPrefix + "."))
+            {
+                // Only strings are allowed in the backend, so if config
+                // contains object it will throw class cast exception.
+                String value = config.getProperty(key);
 
-        return participantType;
+                backend.setProperty(
+                    key.substring(configPrefix.length() + 1), value);
+            }
+        }
     }
 
     /**
-     * Loads value from the configuration into the participant options backend.
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     * properties required to setup new participants.
-     * @param configPrefix the config prefix which is used to identify
-     * the config properties which describe the new participant.
-     * @param overrides custom options to be used for the participant.
+     * Creates emtpy {@link ParticipantOptions}.
      */
-    public void load(
-        Properties config,
-        String configPrefix,
-        ParticipantOptions overrides)
+    protected ParticipantOptions()
     {
-        this.setProperty(TYPE_PROP, getParticipantType(config, configPrefix));
-
-        String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
-        this.setProperty(NAME_PROP, name);
-
-        this.merge(overrides);
+        this.defaults = initDefaults();
     }
 
     /**
      * Overrides backend properties with the values from supplied map.
      * @param overrides the options to use for overriding.
      */
-    private void merge(ParticipantOptions overrides)
+    public ParticipantOptions merge(ParticipantOptions overrides)
     {
         if (overrides != null)
         {
-            this.backend.putAll(overrides.backend);
+            Properties srcBackend = overrides.backend;
+
+            for (String key : srcBackend.stringPropertyNames())
+            {
+                setProperty(key, srcBackend.getProperty(key));
+            }
         }
+
+        return this;
     }
 
     /**
@@ -106,7 +102,7 @@ public class ParticipantOptions
      */
     public ParticipantType getParticipantType()
     {
-        return (ParticipantType)this.getProperty(TYPE_PROP);
+        return ParticipantType.valueOfString(this.getProperty(TYPE_PROP));
     }
 
     /**
@@ -115,7 +111,7 @@ public class ParticipantOptions
      */
     public String getName()
     {
-        return (String)this.getProperty(NAME_PROP);
+        return this.getProperty(NAME_PROP);
     }
 
     /**
@@ -125,15 +121,7 @@ public class ParticipantOptions
      */
     public boolean getBooleanProperty(String key)
     {
-        Object v = this.getProperty(key);
-        if (v == null)
-        {
-            return false;
-        }
-        else
-        {
-            return new Boolean((String)v);
-        }
+        return Boolean.valueOf(this.getProperty(key));
     }
 
     /**
@@ -141,59 +129,70 @@ public class ParticipantOptions
      * @param key the key to search for.
      * @return
      */
-    protected Object getProperty(String key)
+    protected String getProperty(String key)
     {
-        return this.backend.get(key);
+        String value = (String) this.backend.get(key);
+
+        return value != null ? value : (String) defaults.get(key);
     }
 
     /**
-     * Changes a property.
-     * @param key the key to search for.
-     * @param value the value to use.
-     * @return a reference to this object.
+     * Initializes the default set of properties. Subclasses should override
+     * this method to provide custom defaults.
+     *
+     * @return a <tt>Properties</tt> instance which will serve as a source for
+     * the default values.
      */
-    protected ParticipantOptions setProperty(String key, Object value)
+    protected Properties initDefaults()
     {
-        this.backend.put(key, value);
+        return new Properties();
+    }
+
+    /**
+     * Sets the name option.
+     * @param name a string to be set as name.
+     */
+    public void setName(String name)
+    {
+        setProperty(NAME_PROP, name);
+    }
+
+    /**
+     * Sets new {@link ParticipantType} on this options instance.
+     * @param participantType the new {@link ParticipantType} to set, or
+     * <tt>null</tt> to clear the value.
+     *
+     * @return this instance.
+     */
+    public ParticipantOptions setParticipantType(
+            ParticipantType participantType)
+    {
+        setProperty(
+            TYPE_PROP,
+            participantType != null
+                ? participantType.toString()
+                : null /* remove key */);
+
         return this;
     }
 
     /**
-     * Loads a config property.
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     * properties required to setup new participants.
-     * @param configPrefix the config prefix which is used to identify
-     * the config properties which describe the new participant.
-     * @param key the key to load.
+     * Changes a property. If a <tt>null</tt> value is passed then the given
+     * <tt>key</tt> will be removed from the properties set.
+     * @param key the key to search for.
+     * @param value the value to use. Only String can be used here, as all
+     * properties have to be converted to String when set and eventually to
+     * the target type when read through the getter.
      */
-    protected void loadConfigProperty(
-        Properties config, String configPrefix, String key)
+    protected void setProperty(String key, String value)
     {
-        this.loadConfigProperty(config, configPrefix, key, null);
-    }
-
-    /**
-     * Loads a config property.
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     * properties required to setup new participants.
-     * @param configPrefix the config prefix which is used to identify
-     * the config properties which describe the new participant.
-     * @param key the key to load.
-     * @param defaultValue a default value to use for the key if none is found
-     * in the config.
-     */
-    protected void loadConfigProperty(
-        Properties config,
-        String configPrefix, String key, String defaultValue)
-    {
-        String configValue = config.getProperty(configPrefix + "." + key);
-        if (StringUtils.isNotBlank(configValue))
+        if (StringUtils.isNotBlank(value))
         {
-            this.setProperty(key, configValue.trim());
+            this.backend.put(key, value.trim());
         }
-        else if (defaultValue != null)
+        else
         {
-            this.setProperty(key, defaultValue);
+            this.backend.remove(key);
         }
     }
 }

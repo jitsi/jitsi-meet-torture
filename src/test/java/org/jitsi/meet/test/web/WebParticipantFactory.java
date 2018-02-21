@@ -91,10 +91,15 @@ public class WebParticipantFactory
         ParticipantOptions options)
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();
-        webOptions.load(config, configPrefix, options);
+
+        webOptions.load(
+                config, WebParticipantOptions.GLOBAL_PROP_PREFIX);
+
+        // Explicitly passed options go on top of "global prefix" options.
+        webOptions.merge(options);
 
         return new WebParticipant(
-            webOptions.getName(),
+                webOptions.getName(),
                 startWebDriver(webOptions),
                 webOptions.getParticipantType());
     }

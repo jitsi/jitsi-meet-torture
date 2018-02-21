@@ -43,15 +43,13 @@ public class MobileParticipantFactory
         String configPrefix,
         ParticipantOptions options)
     {
-        MobileParticipantOptions mobileOptions
-            = new MobileParticipantOptions();
-        mobileOptions.load(config, configPrefix, options);
-
+        // FIXME fix builder to be the same way as in web and operate on
+        // MobileParticipantOptions
         MobileParticipantBuilder builder
             = MobileParticipantBuilder.createBuilder(
-                config,
-                configPrefix,
-                mobileOptions.getParticipantType());
+                    config,
+                    configPrefix,
+                    options.getParticipantType());
 
         return builder.startNewDriver();
     }
