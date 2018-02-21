@@ -27,12 +27,12 @@ public class ParticipantOptions
     /**
      * The property name for the type of the participant option.
      */
-    private static final String TYPE_PROP = "TYPE";
+    private static final String PROP_TYPE = "TYPE";
 
     /**
      * The property name for the name of the participant option.
      */
-    private static final String NAME_PROP = "NAME";
+    private static final String PROP_NAME = "NAME";
 
     /**
      * The backend map of properties for the participant options.
@@ -102,7 +102,7 @@ public class ParticipantOptions
      */
     public ParticipantType getParticipantType()
     {
-        return ParticipantType.valueOfString(this.getProperty(TYPE_PROP));
+        return ParticipantType.valueOfString(this.getProperty(PROP_TYPE));
     }
 
     /**
@@ -111,7 +111,7 @@ public class ParticipantOptions
      */
     public String getName()
     {
-        return this.getProperty(NAME_PROP);
+        return this.getProperty(PROP_NAME);
     }
 
     /**
@@ -154,7 +154,7 @@ public class ParticipantOptions
      */
     public void setName(String name)
     {
-        setProperty(NAME_PROP, name);
+        setProperty(PROP_NAME, name);
     }
 
     /**
@@ -168,7 +168,7 @@ public class ParticipantOptions
             ParticipantType participantType)
     {
         setProperty(
-            TYPE_PROP,
+            PROP_TYPE,
             participantType != null
                 ? participantType.toString()
                 : null /* remove key */);
