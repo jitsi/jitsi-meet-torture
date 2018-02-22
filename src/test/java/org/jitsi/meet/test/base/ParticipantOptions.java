@@ -27,12 +27,12 @@ public class ParticipantOptions
     /**
      * The property name for the type of the participant option.
      */
-    private static final String PROP_TYPE = "TYPE";
+    private static final String PROP_TYPE = "type";
 
     /**
      * The property name for the name of the participant option.
      */
-    private static final String PROP_NAME = "NAME";
+    private static final String PROP_NAME = "name";
 
     /**
      * The backend map of properties for the participant options.
