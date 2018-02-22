@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.ChatPanel;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
@@ -34,11 +33,6 @@ public class ChatPanelTest
     extends WebTestBase
 {
     /**
-     * The single participant which will be used in this test.
-     */
-    private WebParticipant participant;
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -47,16 +41,6 @@ public class ChatPanelTest
         super.setupClass();
 
         ensureOneParticipant();
-
-        Participant p = getParticipant1();
-        if (!(p instanceof WebParticipant))
-        {
-            throw new IllegalStateException(
-                "This test only supports web and shouldn't be run on other "
-                    + "platforms.");
-        }
-
-        participant = (WebParticipant) p;
     }
 
     /**
@@ -66,6 +50,8 @@ public class ChatPanelTest
     @Test
     public void testChatPanel()
     {
+        WebParticipant participant = getParticipant1();
+
         // The chat panel requires a display name to be set.
         participant.setDisplayName("bla");
 

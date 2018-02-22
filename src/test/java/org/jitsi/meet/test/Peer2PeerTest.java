@@ -131,77 +131,81 @@ public class Peer2PeerTest
             = getJitsiMeetUrl().appendConfig(MANUAL_P2P_MODE_FRAGMENT);
         ensureTwoParticipants(url, url);
 
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver participant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        WebDriver participant1Driver = participant1.getDriver();
+        WebDriver participant2Driver = getParticipant2().getDriver();
 
         // Start P2P once JVB connection is established
-        getParticipant1().waitForIceConnected();
-        getParticipant1().waitForSendReceiveData();
+        participant1.waitForIceConnected();
+        participant1.waitForSendReceiveData();
 
         // Check if not in P2P
-        assertFalse(MeetUtils.isP2PConnected(owner));
-        assertFalse(MeetUtils.isP2PConnected(owner));
+        assertFalse(MeetUtils.isP2PConnected(participant1Driver));
+        assertFalse(MeetUtils.isP2PConnected(participant1Driver));
         // Start P2P
         //FIXME make throw error if 3 persons in the room
-        MeetUtils.startP2P(owner);
+        MeetUtils.startP2P(participant1Driver);
 
-        MeetUtils.waitForP2PIceConnected(owner);
-        MeetUtils.waitForP2PIceConnected(participant);
+        MeetUtils.waitForP2PIceConnected(participant1Driver);
+        MeetUtils.waitForP2PIceConnected(participant2Driver);
 
         // This kind of verifies stats
         // FIXME also verify resolutions that are not N/A
-        getParticipant1().waitForSendReceiveData();
+        participant1.waitForSendReceiveData();
         getParticipant2().waitForSendReceiveData();
 
         // FIXME verify if video is displayed on the thumbnails ?
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            participant, owner , true);
+            participant2Driver, participant1Driver , true);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            owner, participant, true);
+            participant1Driver, participant2Driver, true);
 
         // Verify that the audio is coming through
-        MeetUIUtils.waitForAudioMuted(owner, participant, "2nd peer", false);
-        MeetUIUtils.waitForAudioMuted(participant, owner, "owner", false);
+        MeetUIUtils.waitForAudioMuted(
+            participant1Driver, participant2Driver, "2nd participant", false);
+        MeetUIUtils.waitForAudioMuted(
+            participant2Driver, participant1Driver, "owner", false);
 
         // Now stop the P2P and see if it goes back to P2P
-        MeetUtils.stopP2P(owner);
+        MeetUtils.stopP2P(participant1Driver);
 
-        MeetUtils.waitForP2PIceDisconnected(owner);
-        MeetUtils.waitForP2PIceDisconnected(participant);
+        MeetUtils.waitForP2PIceDisconnected(participant1Driver);
+        MeetUtils.waitForP2PIceDisconnected(participant2Driver);
 
-        getParticipant1().waitForIceConnected();
+        participant1.waitForIceConnected();
         getParticipant2().waitForIceConnected();
 
         // FIXME verify if video is displayed on the thumbnails ?
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            participant, owner , true);
+            participant2Driver, participant1Driver , true);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            owner, participant, true);
+            participant1Driver, participant2Driver, true);
 
         // Verify video mute feature
         // Check owner mute
-        MeetUIUtils.muteVideoAndCheck(owner, participant);
+        MeetUIUtils.muteVideoAndCheck(participant1Driver, participant2Driver);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            participant, owner , true);
+            participant2Driver, participant1Driver , true);
 
-        MeetUIUtils.unmuteVideoAndCheck(owner, participant);
+        MeetUIUtils.unmuteVideoAndCheck(participant1Driver, participant2Driver);
         // Wait for connection to restore
         MeetUIUtils.verifyUserConnStatusIndication(
-            participant, owner, true);
+            participant2Driver, participant1Driver, true);
         // Participant conn status kind of tells if video is playing
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            participant, owner , true);
+            participant2Driver, participant1Driver , true);
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
-        MeetUIUtils.muteVideoAndCheck(participant, owner);
+        MeetUIUtils.muteVideoAndCheck(participant2Driver, participant1Driver);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            owner, participant, true);
+            participant1Driver, participant2Driver, true);
 
-        MeetUIUtils.unmuteVideoAndCheck(participant, owner);
-        MeetUIUtils.verifyUserConnStatusIndication(owner, participant, true);
+        MeetUIUtils.unmuteVideoAndCheck(participant2Driver, participant1Driver);
+        MeetUIUtils.verifyUserConnStatusIndication(
+            participant1Driver, participant2Driver, true);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
-            owner, participant, true);
+            participant1Driver, participant2Driver, true);
     }
 
     @Test(dependsOnMethods = { "testManualP2PSwitch" })

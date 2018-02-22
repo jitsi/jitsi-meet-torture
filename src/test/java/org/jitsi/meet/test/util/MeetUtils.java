@@ -360,7 +360,8 @@ public class MeetUtils
      * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
      * @return returns {@code true} if dial in is enabled.
      */
-    public static boolean isDialInEnabled(WebDriver driver) {
+    public static boolean isDialInEnabled(WebDriver driver)
+    {
         return TestUtils.executeScriptAndReturnBoolean(
             driver, DIAL_IN_ENABLED_CHECK_SCRIPT);
     }

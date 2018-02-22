@@ -17,7 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.util.*;
 
-import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -27,9 +27,8 @@ import static org.testng.Assert.*;
 /**
  * ALERT: This is a copy of LockRoomTest. NewLockRoomTest exists while
  * transitioning the lock feature from the invite modal to the info dialog.
- */
-
-/**
+ *
+ *
  * 1. Lock the room (make sure the image changes to locked)
  * 2. Join with a second browser/tab
  * 3. Make sure we are required to enter a password.
@@ -45,7 +44,7 @@ import static org.testng.Assert.*;
 public class NewLockRoomTest
     extends WebTestBase
 {
-    public static String ROOM_KEY = null;
+    private static String ROOM_KEY = null;
 
     @Override
     public void setupClass()
@@ -74,7 +73,7 @@ public class NewLockRoomTest
     {
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
 
-        WebParticipant participant = (WebParticipant) getParticipant1();
+        WebParticipant participant = getParticipant1();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -94,7 +93,7 @@ public class NewLockRoomTest
     @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        WebParticipant ownerParticipant = getParticipant1();
         InfoDialog ownerInfoDialog = ownerParticipant.getInfoDialog();
         ownerInfoDialog.open();
         assertTrue(ownerInfoDialog.isLocked());
@@ -106,7 +105,8 @@ public class NewLockRoomTest
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
-        {}
+        {
+        }
 
         WebDriver secondParticipant = getParticipant2().getDriver();
 
@@ -122,7 +122,8 @@ public class NewLockRoomTest
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
-        {}
+        {
+        }
 
         secondParticipant.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
@@ -131,17 +132,15 @@ public class NewLockRoomTest
 
         getParticipant2().waitToJoinMUC(5);
 
-
-        WebParticipant secondWebParticipant
-            = (WebParticipant) getParticipant2();
+        WebParticipant secondWebParticipant = getParticipant2();
         InfoDialog secondInfoDialog = secondWebParticipant.getInfoDialog();
         secondInfoDialog.open();
         assertTrue(secondInfoDialog.isLocked());
     }
 
     /**
-     * Unlock room. Check wheter room is still
-     * locked. Click remove and check whether it is unlocked.
+     * Unlock room. Check whether room is still locked. Click remove and check
+     * whether it is unlocked.
      */
     @Test(dependsOnMethods = { "enterParticipantInLockedRoom" })
     public void unlockRoom()
@@ -151,7 +150,7 @@ public class NewLockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        WebParticipant ownerParticipant = getParticipant1();
         InfoDialog infoDialog = ownerParticipant.getInfoDialog();
         infoDialog.removePassword();
     }
@@ -161,7 +160,7 @@ public class NewLockRoomTest
      */
     private void ownerUnlockRoom()
     {
-        WebParticipant participant = (WebParticipant) getParticipant1();
+        WebParticipant participant = getParticipant1();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         infoDialog.removePassword();
@@ -182,7 +181,7 @@ public class NewLockRoomTest
         // as participant will fail joining
         ensureTwoParticipants();
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -198,7 +197,7 @@ public class NewLockRoomTest
     {
         ownerLockRoom();
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         assertTrue(infoDialog.isLocked());
@@ -230,7 +229,8 @@ public class NewLockRoomTest
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
-        {}
+        {
+        }
 
         WebDriver secondParticipant = getParticipant2().getDriver();
 
@@ -246,7 +246,8 @@ public class NewLockRoomTest
             fail("The second participant must not be able to join the room.");
         }
         catch(TimeoutException e)
-        {}
+        {
+        }
 
         ownerUnlockRoom();
 
@@ -258,7 +259,7 @@ public class NewLockRoomTest
 
         getParticipant2().waitToJoinMUC(5);
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         assertFalse(infoDialog.isLocked());

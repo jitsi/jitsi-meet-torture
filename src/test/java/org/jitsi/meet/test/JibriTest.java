@@ -208,11 +208,13 @@ public class JibriTest
     {
         WebDriver owner = getParticipant1().getDriver();
         assertEquals(
-            2, MeetUIUtils.getVisibleThumbnails(owner).size(),
+            2,
+            MeetUIUtils.getVisibleThumbnails(owner).size(),
             "number of visible thumbnails for owner");
-        WebDriver sencondParticipant = getParticipant2().getDriver();
+        WebDriver secondParticipant = getParticipant2().getDriver();
         assertEquals(
-            2, MeetUIUtils.getVisibleThumbnails(sencondParticipant).size(),
+            2,
+            MeetUIUtils.getVisibleThumbnails(secondParticipant).size(),
             "number of visible thumbnails for second participant");
     }
 

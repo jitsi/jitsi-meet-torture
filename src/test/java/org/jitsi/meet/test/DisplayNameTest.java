@@ -136,7 +136,7 @@ public class DisplayNameTest
         // check on second browser
         checkRemoteVideoForName(
             getParticipant2(),
-            getParticipant1(),
+            owner,
             defaultDisplayName);
     }
 

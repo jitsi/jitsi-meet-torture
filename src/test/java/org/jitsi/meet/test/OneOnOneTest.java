@@ -20,7 +20,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.*;
 import org.testng.annotations.*;
 
 /**
@@ -94,7 +94,8 @@ public class OneOnOneTest
      * focused on self and transitioning back to 1-on-1 mode.
      */
     @Test(dependsOnMethods = { "testFilmstripVisibleWithMoreThanTwo" })
-    public void testFilmstripDisplayWhenReturningToOneOnOne() {
+    public void testFilmstripDisplayWhenReturningToOneOnOne()
+    {
         MeetUIUtils.clickOnLocalVideo(getParticipant2().getDriver());
 
         getParticipant3().hangUp();
@@ -108,12 +109,14 @@ public class OneOnOneTest
      * while in a 1-on-1 call.
      */
     @Test(dependsOnMethods = { "testFilmstripDisplayWhenReturningToOneOnOne" })
-    public void testFilmstripVisibleOnSelfViewFocus() {
-        MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
-        verifyRemoteVideosDisplay(getParticipant1(), true);
+    public void testFilmstripVisibleOnSelfViewFocus()
+    {
+        Participant participant = getParticipant1();
+        MeetUIUtils.clickOnLocalVideo(participant.getDriver());
+        verifyRemoteVideosDisplay(participant, true);
 
-        MeetUIUtils.clickOnLocalVideo(getParticipant1().getDriver());
-        verifyRemoteVideosDisplay(getParticipant1(), false);
+        MeetUIUtils.clickOnLocalVideo(participant.getDriver());
+        verifyRemoteVideosDisplay(participant, false);
     }
 
     /**
@@ -121,7 +124,8 @@ public class OneOnOneTest
      * filmstrip is hovered over.
      */
     @Test(dependsOnMethods = { "testFilmstripVisibleOnSelfViewFocus" })
-    public void testFilmstripHoverShowsVideos() {
+    public void testFilmstripHoverShowsVideos()
+    {
         Participant owner = getParticipant1();
         WebDriver ownerDriver = owner.getDriver();
 
@@ -163,7 +167,8 @@ public class OneOnOneTest
      *               no longer want to dock toolbars.
 
      */
-    private void stopDockingToolbar(Participant testee) {
+    private void stopDockingToolbar(Participant testee)
+    {
         testee.executeScript("APP.UI.dockToolbar(false);");
     }
 
@@ -173,7 +178,8 @@ public class OneOnOneTest
      * @param testee the <tt>WebDriver</tt> of the participant for whom we're
      *               waiting to no longer see toolbars.
      */
-    private void waitForToolbarsHidden(Participant testee) {
+    private void waitForToolbarsHidden(Participant testee)
+    {
         // Wait for the visible filmstrip to no longer be displayed.
         String visibleToolbarXpath
             = "//*[contains(@class, 'toolbar_secondary')"

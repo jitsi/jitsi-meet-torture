@@ -1,15 +1,25 @@
+/*
+ * Copyright @ 2015-2018 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jitsi.meet.test.pageobjects.web;
 
-import org.jitsi.meet.test.util.MeetUIUtils;
-import org.jitsi.meet.test.util.TestUtils;
-import org.jitsi.meet.test.web.WebParticipant;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import java.util.*;
 
-import java.util.List;
-import java.util.Objects;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 
 /**
  * Represents the info dialog in a particular {@link WebParticipant}.
@@ -19,26 +29,25 @@ import java.util.Objects;
 public class InfoDialog
 {
     /**
+     * Class names to be used as selectors for finding WebElements within the
+     * {@link InfoDialog}.
+     */
+    private final static String ADD_PASSWORD_LINK = "add-password";
+    private final static String ADD_PASSWORD_FIELD = "info-password-input";
+    private final static String CONFERENCE_URL = "info-dialog-conference-url";
+    private final static String INFO_DIALOG_BUTTON = "toolbar_button_info";
+    private final static String INFO_DIALOG_CONTAINER = "info-dialog";
+    private final static String LOCAL_LOCK = "info-password-local";
+    private final static String MORE_NUMBERS = "more-numbers";
+    private final static String PHONE_NUMBER = "phone-number";
+    private final static String CONFERENCE_ID = "conference-id";
+    private final static String REMOTE_LOCK = "info-password-remote";
+    private final static String REMOVE_PASSWORD = "remove-password";
+
+    /**
      * The participant used to interact with the info dialog.
      */
     private final WebParticipant participant;
-
-    /**
-     * Classnames to be used as selectors for finding WebElements within the
-     * {@link InfoDialog}.
-     */
-    private final String ADD_PASSWORD_LINK = "add-password";
-    private final String ADD_PASSWORD_FIELD = "info-password-input";
-    private final String CONFERENCE_URL = "info-dialog-conference-url";
-    private final String INFO_DIALOG_BUTTON = "toolbar_button_info";
-    private final String INFO_DIALOG_CONTAINER = "info-dialog";
-    private final String LOCAL_LOCK = "info-password-local";
-    private final String MORE_NUMBERS = "more-numbers";
-    private final String PHONE_NUMBER = "phone-number";
-    private final String CONFERENCE_ID = "conference-id";
-    private final String REMOTE_LOCK = "info-password-remote";
-    private final String REMOVE_PASSWORD
-        = "remove-password";
 
     /**
      * Initializes a new {@link InfoDialog} instance.
@@ -55,10 +64,11 @@ public class InfoDialog
      *
      * @param password - The password to use to lock the conference.
      */
-    public void addPassword(String password) {
+    public void addPassword(String password)
+    {
         WebDriver participantDriver = participant.getDriver();
 
-        this.open();
+        open();
 
         participantDriver.findElement(By.className(ADD_PASSWORD_LINK)).click();
 
@@ -76,8 +86,9 @@ public class InfoDialog
     /**
      * Clicks the link to open a page to show all available dial in numbers.
      */
-    public void openDialInNumbersPage() {
-        this.open();
+    public void openDialInNumbersPage()
+    {
+        open();
 
         WebDriver driver = participant.getDriver();
         WebElement moreNumbersElement
@@ -89,7 +100,7 @@ public class InfoDialog
     /**
      * Clicks the "info" toolbar button which opens or closes the info dialog.
      */
-    public void clickToolbarButton()
+    private void clickToolbarButton()
     {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
@@ -101,12 +112,14 @@ public class InfoDialog
      * Clicks the "info" toolbar button to close the info dialog, if the info
      * dialog is open.
      */
-    public void close() {
-        if (this.isOpen() == false) {
+    public void close()
+    {
+        if (!isOpen())
+        {
             return;
         }
 
-        this.clickToolbarButton();
+        clickToolbarButton();
     }
 
     /**
@@ -115,11 +128,13 @@ public class InfoDialog
      * @return The {@code WebElement} for the info dialog or null if it cannot
      * be found.
      */
-    public WebElement get() {
-        List<WebElement> elements = participant.getDriver().findElements(
-            By.className(INFO_DIALOG_CONTAINER));
+    public WebElement get()
+    {
+        List<WebElement> elements
+            = participant.getDriver().findElements(
+                By.className(INFO_DIALOG_CONTAINER));
 
-        return elements.size() > 0 ? elements.get(0) : null;
+        return elements.isEmpty() ? null : elements.get(0);
     }
 
     /**
@@ -127,7 +142,8 @@ public class InfoDialog
      *
      * @return {@code String} for the current conference's url.
      */
-    public String getMeetingURL() {
+    public String getMeetingURL()
+    {
         return this.getValueAfterColon(CONFERENCE_URL);
     }
 
@@ -137,7 +153,8 @@ public class InfoDialog
      *
      * @return {@code String} for the current conference's dial in number.
      */
-    public String getDialInNumber() {
+    public String getDialInNumber()
+    {
         return this.getValueAfterColon(PHONE_NUMBER);
     }
 
@@ -147,7 +164,8 @@ public class InfoDialog
      *
      * @return {@code String} for the current conference's pin number.
      */
-    public String getPinNumber() {
+    public String getPinNumber()
+    {
         return this.getValueAfterColon(CONFERENCE_ID);
     }
 
@@ -158,8 +176,9 @@ public class InfoDialog
      * @return {@code true} if the conference is displayed as locked in the
      * info dialog, {@code false} otherwise.
      */
-    public boolean isLocked() {
-        return this.isLockedLocally() || this.isLockedRemotely();
+    public boolean isLocked()
+    {
+        return isLockedLocally() || isLockedRemotely();
     }
 
     /**
@@ -168,7 +187,8 @@ public class InfoDialog
      * @return {@code true} if the conference is displayed as locked locally in
      * the info dialog, {@code false} otherwise.
      */
-    public boolean isLockedLocally() {
+    private boolean isLockedLocally()
+    {
         return getLockStateByClass(LOCAL_LOCK);
     }
 
@@ -178,7 +198,8 @@ public class InfoDialog
      * @return {@code true}  if the conference is displayed as locked remotely
      * in the info dialog, {@code false} otherwise.
      */
-    public boolean isLockedRemotely() {
+    private boolean isLockedRemotely()
+    {
         return getLockStateByClass(REMOTE_LOCK);
     }
 
@@ -190,7 +211,7 @@ public class InfoDialog
      */
     public boolean isOpen()
     {
-        WebElement dialog = this.get();
+        WebElement dialog = get();
 
         return dialog != null;
     }
@@ -199,8 +220,10 @@ public class InfoDialog
      * Clicks the "info" toolbar button to open the info dialog, if the info
      * dialog is closed.
      */
-    public void open() {
-        if (this.isOpen()) {
+    public void open()
+    {
+        if (isOpen())
+        {
             return;
         }
 
@@ -211,8 +234,10 @@ public class InfoDialog
      * Removes the password from the current conference through the info dialog,
      * if a password is set.
      */
-    public void removePassword() {
-        if (!this.isLocked()) {
+    public void removePassword()
+    {
+        if (!isLocked())
+        {
             return;
         }
 
@@ -222,7 +247,8 @@ public class InfoDialog
         WebElement removePasswordElement
             = driver.findElement(By.className(REMOVE_PASSWORD));
 
-        if (removePasswordElement != null) {
+        if (removePasswordElement != null)
+        {
             removePasswordElement.click();
         }
     }
@@ -237,8 +263,9 @@ public class InfoDialog
      * @return {@code true} if the info dialog has the passed in class,
      * {@code false} otherwise.
      */
-    private boolean getLockStateByClass(String className) {
-        this.open();
+    private boolean getLockStateByClass(String className)
+    {
+        open();
 
         WebDriver driver = participant.getDriver();
         return driver.findElements(By.className(className)).size() != 0;
@@ -253,12 +280,13 @@ public class InfoDialog
      * @return {@code true} if the info dialog has the passed in class,
      * {@code false} otherwise.
      */
-    private String getValueAfterColon(String className) {
-        this.open();
+    private String getValueAfterColon(String className)
+    {
+        open();
 
         WebDriver driver = participant.getDriver();
-        String fullText = driver.findElement(By.className(className))
-            .getText();
+        String fullText
+            = driver.findElement(By.className(className)).getText();
 
         return fullText.split(":")[1].trim();
     }

@@ -34,7 +34,7 @@ public class FilmstripOnlyTest
      */
     @Test
     public void testLoadsOnlyTheFilmstrip() {
-        WebDriver owner =  getParticipant1().getDriver();
+        WebDriver owner = getParticipant1().getDriver();
         WebDriver remote = getParticipant2().getDriver();
         String remoteResourceJid = MeetUtils.getResourceJid(remote);
 
@@ -59,7 +59,7 @@ public class FilmstripOnlyTest
      */
     @Test(dependsOnMethods = { "testLoadsOnlyTheFilmstrip" })
     public void testDisplaysDeviceSelection() {
-        WebDriver owner =  getParticipant1().getDriver();
+        WebDriver owner = getParticipant1().getDriver();
 
         MeetUIUtils.clickOnToolbarButton(
             owner,

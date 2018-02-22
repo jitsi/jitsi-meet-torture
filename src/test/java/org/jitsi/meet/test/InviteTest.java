@@ -1,17 +1,30 @@
+/*
+ * Copyright @ 2015-2018 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.Participant;
-import org.jitsi.meet.test.util.MeetUtils;
-import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
-import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import java.util.*;
+
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.testng.*;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-import java.util.ArrayList;
-
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * Test for conference invite information.
@@ -25,30 +38,13 @@ public class InviteTest extends WebTestBase
      */
     private WebParticipant participant;
 
-    /**
-     * Whether the test is enabled. The test will be dynamically disabled,
-     * unless dial in is detected as enabled for the jitsi-meet instance (by
-     * inspecting window.config values).
-     */
-    private static boolean enabled = true;
-
-
     @Override
     public void setupClass()
     {
         super.setupClass();
 
         ensureOneParticipant();
-
-        Participant p = getParticipant1();
-        if (!(p instanceof WebParticipant))
-        {
-            throw new IllegalStateException(
-                "This test only supports web and shouldn't be run on other "
-                    + "platforms.");
-        }
-
-        participant = (WebParticipant) p;
+        participant = getParticipant1();
     }
 
 
@@ -74,8 +70,6 @@ public class InviteTest extends WebTestBase
     public void testDialInDisplays() {
         if (!MeetUtils.isDialInEnabled(participant.getDriver()))
         {
-            InviteTest.enabled = false;
-
             throw new SkipException(
                 "No dial in configuration detected. Disabling test.");
         }
@@ -94,7 +88,8 @@ public class InviteTest extends WebTestBase
      * page.
      */
     @Test(dependsOnMethods = { "testDialInDisplays" })
-    public void testViewMoreNumbers() {
+    public void testViewMoreNumbers()
+    {
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 

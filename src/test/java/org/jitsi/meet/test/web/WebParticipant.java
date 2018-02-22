@@ -16,9 +16,7 @@
 package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.pageobjects.web.ChatPanel;
-import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
-import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
@@ -316,7 +314,8 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * @return a representation of the dial in page of this participant.
      */
-    public DialInNumbersPage getDialInNumbersPage() {
+    public DialInNumbersPage getDialInNumbersPage()
+    {
         if (dialInNumbersPage == null)
         {
             dialInNumbersPage = new DialInNumbersPage(this);
@@ -328,7 +327,8 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * @return a representation of the info dialog of this participant.
      */
-    public InfoDialog getInfoDialog() {
+    public InfoDialog getInfoDialog()
+    {
         if (infoDialog == null)
         {
             infoDialog = new InfoDialog(this);

@@ -215,30 +215,46 @@ public class WebTestBase
     }
 
     /**
+     * @return the {@code id}-th participant as a {@link WebParticipant}.
+     * @param id 1-based index of the participant.
+     */
+    public WebParticipant getParticipant(int id)
+    {
+        Participant participant = participants.get(id - 1);
+        if (participant != null && !(participant instanceof WebParticipant))
+        {
+            throw new IllegalStateException(
+                "WebTestBase expects participants of type WebParticipant.");
+        }
+
+        return (WebParticipant) participant;
+    }
+
+    /**
      * Returns the first participant.
      * @return the first participant.
      */
-    public Participant getParticipant1()
+    public WebParticipant getParticipant1()
     {
-        return participants.get(0);
+        return getParticipant(1);
     }
 
     /**
      * Returns the second participant.
      * @return the second participant.
      */
-    public Participant getParticipant2()
+    public WebParticipant getParticipant2()
     {
-        return participants.get(1);
+        return getParticipant(2);
     }
 
     /**
      * Returns the third participant.
      * @return the third participant.
      */
-    public Participant getParticipant3()
+    public WebParticipant getParticipant3()
     {
-        return participants.get(2);
+        return getParticipant(3);
     }
 
     /**

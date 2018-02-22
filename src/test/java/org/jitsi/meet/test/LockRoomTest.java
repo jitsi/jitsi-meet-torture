@@ -69,7 +69,7 @@ public class LockRoomTest
     {
         ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
 
-        WebParticipant participant = (WebParticipant) getParticipant1();
+        WebParticipant participant = getParticipant1();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -89,7 +89,7 @@ public class LockRoomTest
     @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        WebParticipant ownerParticipant = getParticipant1();
         InfoDialog ownerInfoDialog = ownerParticipant.getInfoDialog();
         ownerInfoDialog.open();
         assertTrue(ownerInfoDialog.isLocked());
@@ -127,8 +127,7 @@ public class LockRoomTest
         getParticipant2().waitToJoinMUC(5);
 
 
-        WebParticipant secondWebParticipant
-            = (WebParticipant) getParticipant2();
+        WebParticipant secondWebParticipant = getParticipant2();
         InfoDialog secondInfoDialog = secondWebParticipant.getInfoDialog();
         secondInfoDialog.open();
         assertTrue(secondInfoDialog.isLocked());
@@ -146,7 +145,7 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        WebParticipant ownerParticipant = (WebParticipant) getParticipant1();
+        WebParticipant ownerParticipant = getParticipant1();
         InfoDialog infoDialog = ownerParticipant.getInfoDialog();
         infoDialog.removePassword();
     }
@@ -156,7 +155,7 @@ public class LockRoomTest
      */
     private void ownerUnlockRoom()
     {
-        WebParticipant participant = (WebParticipant) getParticipant1();
+        WebParticipant participant = getParticipant1();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         infoDialog.removePassword();
@@ -177,7 +176,7 @@ public class LockRoomTest
         // as participant will fail joining
         ensureTwoParticipants();
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
 
@@ -193,7 +192,7 @@ public class LockRoomTest
     {
         ownerLockRoom();
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         assertTrue(infoDialog.isLocked());
@@ -253,7 +252,7 @@ public class LockRoomTest
 
         getParticipant2().waitToJoinMUC(5);
 
-        WebParticipant participant = (WebParticipant) getParticipant2();
+        WebParticipant participant = getParticipant2();
         InfoDialog infoDialog = participant.getInfoDialog();
         infoDialog.open();
         assertFalse(infoDialog.isLocked());
