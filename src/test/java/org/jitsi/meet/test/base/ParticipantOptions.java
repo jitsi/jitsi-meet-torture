@@ -78,22 +78,20 @@ public class ParticipantOptions
     }
 
     /**
-     * Overrides backend properties with the values from supplied map.
-     * @param overrides the options to use for overriding.
+     * Copies all of the mapping from given {@link ParticipantOptions} to this
+     * instance. It will result in an overwrite of any matching properties.
+     *
+     * @param toAdd the options to be merged into this instance.
      */
-    public ParticipantOptions merge(ParticipantOptions overrides)
+    public void putAll(ParticipantOptions toAdd)
     {
-        if (overrides != null)
+        // It was a conscious decision
+        Properties srcBackend = toAdd.backend;
+
+        for (String key : srcBackend.stringPropertyNames())
         {
-            Properties srcBackend = overrides.backend;
-
-            for (String key : srcBackend.stringPropertyNames())
-            {
-                setProperty(key, srcBackend.getProperty(key));
-            }
+            setProperty(key, srcBackend.getProperty(key));
         }
-
-        return this;
     }
 
     /**

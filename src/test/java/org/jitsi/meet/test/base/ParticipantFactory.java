@@ -63,11 +63,16 @@ public class ParticipantFactory<T extends ParticipantOptions>
         ParticipantOptions options)
     {
         ParticipantOptions targetOptions = new ParticipantOptions();
+
+        // Load the config options
         targetOptions.load(config, configPrefix);
 
         // Put explicit options on top of whatever has been loaded from
         // the config
-        targetOptions.merge(options);
+        if (options != null)
+        {
+            targetOptions.putAll(options);
+        }
 
         // It will be Chrome by default...
         ParticipantType participantType = targetOptions.getParticipantType();
