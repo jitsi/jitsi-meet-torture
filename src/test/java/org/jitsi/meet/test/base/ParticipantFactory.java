@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.mobile.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -64,14 +65,6 @@ public class ParticipantFactory<T extends ParticipantOptions>
         ParticipantOptions targetOptions = new ParticipantOptions();
         targetOptions.load(config, configPrefix);
 
-        // FIXME At some point it was decided that a name will be the substring
-        // of the config prefix after the first dot. Maybe make just use
-        // the config prefix instead ?
-        // This way there will be no requirement for the prefix to contain
-        // the dot (this requirement is not described anywhere).
-        String name = configPrefix.substring(configPrefix.indexOf('.') + 1);
-        targetOptions.setName(name);
-
         // Put explicit options on top of whatever has been loaded from
         // the config
         targetOptions.merge(options);
@@ -85,6 +78,13 @@ public class ParticipantFactory<T extends ParticipantOptions>
                     + configPrefix + ", will use Chrome...");
             targetOptions.setParticipantType(
                 participantType = ParticipantType.chrome);
+        }
+
+        // Provide some default name if wasn't specified neither in
+        // the arguments nor in the config.
+        if (StringUtils.isBlank(targetOptions.getName()))
+        {
+            targetOptions.setName(configPrefix);
         }
 
         if (participantType.isWeb())
