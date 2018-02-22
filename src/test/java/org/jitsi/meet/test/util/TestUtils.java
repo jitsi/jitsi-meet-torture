@@ -66,13 +66,13 @@ public class TestUtils
 
     /**
      * Injects JS script into given <tt>participant</tt> <tt>WebDriver</tt>.
-     * @param participant the <tt>WebDriver</tt> where the script will be
+     * @param driver the <tt>WebDriver</tt> where the script will be
      * injected.
      * @param scriptPath the path of the JS script to be injected.
      */
-    public static void injectScript(WebDriver participant, String scriptPath)
+    public static void injectScript(WebDriver driver, String scriptPath)
     {
-        JavascriptExecutor js = ((JavascriptExecutor) participant);
+        JavascriptExecutor js = ((JavascriptExecutor) driver);
 
         // read and inject helper script
         try
@@ -89,135 +89,121 @@ public class TestUtils
             e.printStackTrace();
 
             fail("Failed to inject JS script: " + scriptPath + " into "
-                    + participant);
+                    + driver);
         }
     }
 
     /**
      * Waits until a javascript expression evaluates to {@code true}.
-     * @param participant where we check (poll)
+     * @param driver where we check (poll)
      * @param scriptToExecute the javascript to execute and expect a boolean
      * value from.
      * @param timeout time to wait in seconds
      */
     public static void waitForBoolean(
-        final WebDriver participant,
+        final WebDriver driver,
         final String scriptToExecute,
         long timeout)
     {
-        (new WebDriverWait(participant, timeout))
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Object res = ((JavascriptExecutor) participant)
-                        .executeScript(scriptToExecute);
-                    return res != null && res.equals(Boolean.TRUE);
-                }
+        (new WebDriverWait(driver, timeout))
+            .until((ExpectedCondition<Boolean>) d -> {
+                Object res = ((JavascriptExecutor) driver)
+                    .executeScript(scriptToExecute);
+                return res != null && res.equals(Boolean.TRUE);
             });
     }
 
     /**
      * Waits until a javascript expression evaluates to a String equal to
      * <tt>expectedResult</tt>.
-     * @param participant the {@code WebDriver} instance.
+     * @param driver the {@code WebDriver} instance.
      * @param scriptToExecute the javascript code to execute.
      * @param expectedResult the expected value.
      * @param timeout timeout in seconds.
      */
     public static void waitForStrings(
-        final WebDriver participant,
+        final WebDriver driver,
         final String scriptToExecute,
         final String expectedResult,
         long timeout)
     {
-        (new WebDriverWait(participant, timeout))
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    Object res =
-                        ((JavascriptExecutor) participant)
+        (new WebDriverWait(driver, timeout))
+            .until((ExpectedCondition<Boolean>) d -> {
+                Object res =
+                    ((JavascriptExecutor) driver)
                         .executeScript(scriptToExecute);
 
-                    return res != null && res.equals(expectedResult);
-                }
+                return res != null && res.equals(expectedResult);
             });
     }
 
     /**
      * Waits until an element becomes available.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
     public static WebElement waitForElementByXPath(
-        WebDriver       participant,
-        final String    xpath,
-        long            timeout)
+        WebDriver driver,
+        final String xpath,
+        long timeout)
     {
-        return waitForElementByXPath(participant, xpath, timeout, null);
+        return waitForElementByXPath(driver, xpath, timeout, null);
     }
 
     /**
      * Waits until an element becomes available.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      * @param errorMessage the error message which should be displayed by
      * the exception thrown when the check fails.
      */
     public static WebElement waitForElementByXPath(
-        WebDriver       participant,
-        final String    xpath,
-        long            timeout,
-        String          errorMessage)
+        WebDriver driver,
+        final String xpath,
+        long timeout,
+        String errorMessage)
     {
         FluentWait<WebDriver> waitImpl
-            = new WebDriverWait(participant, timeout);
+            = new WebDriverWait(driver, timeout);
 
         if (errorMessage != null)
-            waitImpl = waitImpl.withMessage(errorMessage);
-
-        return  waitImpl.until(new ExpectedCondition<WebElement>()
         {
-            public WebElement apply(WebDriver d)
-            {
-                List<WebElement> elements
-                    = d.findElements(By.xpath(xpath));
-                return elements.isEmpty() ? null : elements.get(0);
-            }
+            waitImpl = waitImpl.withMessage(errorMessage);
+        }
+
+        return  waitImpl.until((ExpectedCondition<WebElement>) d -> {
+            List<WebElement> elements
+                = d.findElements(By.xpath(xpath));
+            return elements.isEmpty() ? null : elements.get(0);
         });
     }
 
     /**
      * Waits until an element becomes available and return it.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param by the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      * @return WebElement the found element
      */
     public static WebElement waitForElementBy(
-        WebDriver participant,
+        WebDriver driver,
         final By by,
         long timeout)
     {
         final WebElement[] foundElement = new WebElement[1];
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    List<WebElement> elements = d.findElements(by);
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                List<WebElement> elements = d.findElements(by);
 
-                    if (!elements.isEmpty())
-                    {
-                        foundElement[0] = elements.get(0);
-                        return true;
-                    }
-                    else
-                        return false;
+                if (!elements.isEmpty())
+                {
+                    foundElement[0] = elements.get(0);
+                    return true;
                 }
+                else
+                    return false;
             });
 
         return foundElement[0];
@@ -225,52 +211,47 @@ public class TestUtils
 
     /**
      * Waits until an element becomes unavailable.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element to disappear in seconds.
      */
     public static void waitForElementNotPresentByXPath(
-        WebDriver participant,
+        WebDriver driver,
         final String xpath,
         long timeout)
     {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    return d.findElements(By.xpath(xpath))
-                        .isEmpty();
-                }
-            });
+        new WebDriverWait(driver, timeout)
+            .until(
+                (ExpectedCondition<Boolean>) d -> d.findElements(By.xpath(xpath))
+                    .isEmpty());
     }
 
     /**
      * Waits until an element becomes unavailable or not displayed.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element to disappear in seconds.
      */
     public static void waitForElementNotPresentOrNotDisplayedByXPath(
-        WebDriver participant,
+        WebDriver driver,
         final String xpath,
         long timeout)
     {
-        waitForDisplayedOrNotByXPath(participant, xpath, timeout, false);
+        waitForDisplayedOrNotByXPath(driver, xpath, timeout, false);
     }
 
     /**
      * Waits until an element becomes available and displayed.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForDisplayedElementByXPath(
-        WebDriver participant,
+        WebDriver driver,
         final String xpath,
         long timeout)
     {
-        waitForDisplayedOrNotByXPath(participant, xpath, timeout, true);
+        waitForDisplayedOrNotByXPath(driver, xpath, timeout, true);
     }
 
     /**
@@ -278,7 +259,7 @@ public class TestUtils
      * element becomes either unavailable or not displayed depending on
      * the <tt>isDisplayed</tt> flag value.
      *
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      * @param isDisplayed determines type of the check. <tt>true</tt> means
@@ -286,191 +267,167 @@ public class TestUtils
      * means the element must either be hidden or unavailable.
      */
     public static void waitForDisplayedOrNotByXPath(
-        WebDriver        participant,
+        WebDriver        driver,
         final String     xpath,
         long             timeout,
         final boolean    isDisplayed)
     {
-        new WebDriverWait(participant, timeout)
+        new WebDriverWait(driver, timeout)
             .withMessage(
                 "Is " + (isDisplayed ? "" : "not") + "displayed: " + xpath)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
+            .until((ExpectedCondition<Boolean>) d -> {
+                List<WebElement> elList = d.findElements(By.xpath(xpath));
+
+                WebElement el = elList.isEmpty() ? null : elList.get(0);
+
+                boolean expectedConditionMet = false;
+
+                try
                 {
-                    List<WebElement> elList = d.findElements(By.xpath(xpath));
-
-                    WebElement el = elList.isEmpty() ? null : elList.get(0);
-
-                    boolean expectedConditionMet = false;
-
-                    try
-                    {
-                        expectedConditionMet = isDisplayed
-                            ? el != null && el.isDisplayed()
-                            : el == null || !el.isDisplayed();
-                    }
-                    catch (StaleElementReferenceException e)
-                    {
-                        // if the element is detached in a process of checking
-                        // its display status, means its not visible anymore
-                    }
-
-                    return expectedConditionMet;
+                    expectedConditionMet = isDisplayed
+                        ? el != null && el.isDisplayed()
+                        : el == null || !el.isDisplayed();
                 }
+                catch (StaleElementReferenceException e)
+                {
+                    // if the element is detached in a process of checking
+                    // its display status, means its not visible anymore
+                }
+
+                return expectedConditionMet;
             });
     }
 
     /**
      * Waits until an element has attribute equal to specified value.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param attributeName name of the the element's attribute
      * @param attributeValue expected value of the the element's attribute
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForElementAttributeValueByXPath(
-            WebDriver participant,
+            WebDriver driver,
             final String xpath,
             final String attributeName,
             final Object attributeValue,
             long timeout)
     {
-        new WebDriverWait(participant, timeout)
-                .until(new ExpectedCondition<Boolean>()
-                {
-                    public Boolean apply(WebDriver d)
-                    {
-                        WebElement el = d.findElement(By.xpath(xpath));
+        new WebDriverWait(driver, timeout)
+                .until((ExpectedCondition<Boolean>) d -> {
+                    WebElement el = d.findElement(By.xpath(xpath));
 
-                        return el != null &&
-                                el.getAttribute(attributeName)
-                                        .equals(attributeValue);
-                    }
+                    return el != null &&
+                            el.getAttribute(attributeName)
+                                    .equals(attributeValue);
                 });
     }
 
     /**
      * Waits until element will contain class name
      * passed with parameter
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element.
      * @param className expected class value of the element.
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForElementContainsClassByXPath(
-            WebDriver participant,
+            WebDriver driver,
             final String xpath,
             final String className,
             long timeout
     )
     {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    WebElement el = d.findElement(By.xpath(xpath));
-                    String classNames = el.getAttribute("class");
-                    return classNames.contains(className);
-                }
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                WebElement el = d.findElement(By.xpath(xpath));
+                String classNames = el.getAttribute("class");
+                return classNames.contains(className);
             });
     }
 
     /**
      * Waits until an element is not displayed.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForNotDisplayedElementByXPath(
-        WebDriver participant,
+        WebDriver driver,
         final String xpath,
         long timeout)
     {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    WebElement el = d.findElement(By.xpath(xpath));
-                    return el == null || !el.isDisplayed();
-                }
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                WebElement el = d.findElement(By.xpath(xpath));
+                return el == null || !el.isDisplayed();
             });
     }
 
     /**
      * Waits until an element becomes available and displayed.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param id the id to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForNotDisplayedElementByID(
-        WebDriver participant,
+        WebDriver driver,
         final String id,
         long timeout)
     {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    WebElement el = d.findElement(By.id(id));
-                    return el == null || !el.isDisplayed();
-                }
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                WebElement el = d.findElement(By.id(id));
+                return el == null || !el.isDisplayed();
             });
     }
 
     /**
      * Waits until an element becomes available and displayed.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param id the id to search for the element
      * @param timeout the time to wait for the element in seconds.
      */
     public static void waitForDisplayedElementByID(
-        WebDriver participant,
+        WebDriver driver,
         final String id,
         long timeout)
     {
-        new WebDriverWait(participant, timeout)
-            .until(new ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver d)
-                {
-                    WebElement el = d.findElement(By.id(id));
-                    return el != null && el.isDisplayed();
-                }
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                WebElement el = d.findElement(By.id(id));
+                return el != null && el.isDisplayed();
             });
     }
 
     /**
      * Waits until the given condition is fulfilled and fails the currently
      * running test if this doesn't happen within {@code timeoutSeconds} seconds.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param timeoutSeconds the time to wait for the element in seconds.
      * @param condition the condition to be met.
      */
-    public static void waitForCondition(WebDriver participant,
+    public static void waitForCondition(WebDriver driver,
                                         int timeoutSeconds,
                                         ExpectedCondition<?> condition)
     {
-        (new WebDriverWait(participant, timeoutSeconds)).until(condition);
+        (new WebDriverWait(driver, timeoutSeconds)).until(condition);
     }
 
     /**
      * Waits until the given condition is fulfilled and fails the currently
      * running test if this doesn't happen within {@code timeoutSeconds} seconds.
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param timeoutSeconds the time to wait for the element in seconds.
      * @param condition the condition to be met.
      * @param pollWaitTime configure waits between checks
      */
-    public static void waitForCondition(WebDriver participant,
+    public static void waitForCondition(WebDriver driver,
                                         int timeoutSeconds,
                                         ExpectedCondition<?> condition,
                                         long pollWaitTime)
     {
-        (new WebDriverWait(participant, timeoutSeconds, pollWaitTime))
+        (new WebDriverWait(driver, timeoutSeconds, pollWaitTime))
             .until(condition);
     }
 
@@ -493,29 +450,11 @@ public class TestUtils
     }
 
     /**
-     * Returns the resource for the jid or null if missing.
-     * @param jid the full jid.
-     * @return the resource for the jid or null if missing.
-     */
-    public static String getResourceFromJid(String jid)
-    {
-        if (jid == null)
-            return null;
-
-        int ix = jid.lastIndexOf("/");
-
-        if (ix == -1)
-            return null;
-
-        return jid.substring(ix + 1, jid.length());
-    }
-
-    /**
      * Executes a specific (piece of) JavaScript script in the browser
      * controlled by a specific {@code WebDriver} and returns the result of its
      * execution as a {@code Boolean} value.
      *
-     * @param webDriver the {@code WebDriver} which controls the browser in
+     * @param driver the {@code WebDriver} which controls the browser in
      * which the specified {@code script} is to be executed
      * @param script the script to execute in the browser controlled by
      * {@code webDriver}
@@ -523,10 +462,10 @@ public class TestUtils
      * controlled by {@code webDriver} as a {@code Boolean} value
      */
     public static Boolean executeScriptAndReturnBoolean(
-        WebDriver webDriver,
+        WebDriver driver,
         String script)
     {
-        Object o = ((JavascriptExecutor) webDriver).executeScript(script);
+        Object o = ((JavascriptExecutor) driver).executeScript(script);
 
         return (o instanceof Boolean) ? (Boolean) o : Boolean.FALSE;
     }
@@ -536,7 +475,7 @@ public class TestUtils
      * controlled by a specific {@code WebDriver} and returns the result of its
      * execution as a {@code String} value.
      *
-     * @param webDriver the {@code WebDriver} which controls the browser in
+     * @param driver the {@code WebDriver} which controls the browser in
      * which the specified {@code script} is to be executed
      * @param script the script to execute in the browser controlled by
      * {@code webDriver}
@@ -544,10 +483,10 @@ public class TestUtils
      * controlled by {@code webDriver} as a {@code String} value
      */
     public static String executeScriptAndReturnString(
-        WebDriver webDriver,
+        WebDriver driver,
         String script)
     {
-        Object o = ((JavascriptExecutor) webDriver).executeScript(script);
+        Object o = ((JavascriptExecutor) driver).executeScript(script);
 
         return (o instanceof String) ? (String) o : null;
     }
@@ -556,16 +495,16 @@ public class TestUtils
      * Executes a specific (piece of) JavaScript script in the browser
      * controlled by a specific {@code WebDriver} 
      *
-     * @param webDriver the {@code WebDriver} which controls the browser in
+     * @param driver the {@code WebDriver} which controls the browser in
      * which the specified {@code script} is to be executed
      * @param script the script to execute in the browser controlled by
      * {@code webDriver}
      */
     public static void executeScript(
-        WebDriver webDriver,
+        WebDriver driver,
         String script)
     {
-        ((JavascriptExecutor) webDriver).executeScript(script);
+        ((JavascriptExecutor) driver).executeScript(script);
     }
 
     /**

@@ -169,11 +169,12 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     * Checks whether a participant is in the MUC.
+     * Checks whether this participant is in the MUC.
      *
      * @return {@code true} if the this participant has joined the
      * room; otherwise, {@code false}
      */
+    @Override
     public boolean isInMuc()
     {
         Object res = executeScript(IS_MUC_JOINED);

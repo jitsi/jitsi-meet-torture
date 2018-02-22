@@ -55,7 +55,7 @@ public class NewLockRoomTest
     }
 
     /**
-     * Stops the participant. And locks the room from the owner.
+     * Stops the participant. And locks the room from participant1.
      */
     @Test
     public void lockRoom()
@@ -63,18 +63,18 @@ public class NewLockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        ownerLockRoom();
+        participant1LockRoom();
     }
 
     /**
-     * Owner locks the room.
+     * Participant1 locks the room.
      */
-    private void ownerLockRoom()
+    private void participant1LockRoom()
     {
-        ROOM_KEY = String.valueOf((int)(Math.random()*1000000));
+        ROOM_KEY = String.valueOf((int) (Math.random() * 1_000_000));
 
-        WebParticipant participant = getParticipant1();
-        InfoDialog infoDialog = participant.getInfoDialog();
+        WebParticipant participant1 = getParticipant1();
+        InfoDialog infoDialog = participant1.getInfoDialog();
         infoDialog.open();
 
         assertFalse(infoDialog.isLocked());
@@ -93,10 +93,10 @@ public class NewLockRoomTest
     @Test(dependsOnMethods = { "lockRoom" })
     public void enterParticipantInLockedRoom()
     {
-        WebParticipant ownerParticipant = getParticipant1();
-        InfoDialog ownerInfoDialog = ownerParticipant.getInfoDialog();
-        ownerInfoDialog.open();
-        assertTrue(ownerInfoDialog.isLocked());
+        WebParticipant participant1 = getParticipant1();
+        InfoDialog infoDialog = participant1.getInfoDialog();
+        infoDialog.open();
+        assertTrue(infoDialog.isLocked());
 
         try
         {
@@ -108,16 +108,17 @@ public class NewLockRoomTest
         {
         }
 
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
 
-        secondParticipant.findElement(
+        driver2.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
-        secondParticipant.findElement(
+        driver2.findElement(
             By.id("modal-dialog-ok-button")).click();
 
         try
         {
-            getParticipant2().waitToJoinMUC(5);
+            participant2.waitToJoinMUC(5);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -125,17 +126,16 @@ public class NewLockRoomTest
         {
         }
 
-        secondParticipant.findElement(
+        driver2.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
-        secondParticipant.findElement(
+        driver2.findElement(
             By.id("modal-dialog-ok-button")).click();
 
-        getParticipant2().waitToJoinMUC(5);
+        participant2.waitToJoinMUC(5);
 
-        WebParticipant secondWebParticipant = getParticipant2();
-        InfoDialog secondInfoDialog = secondWebParticipant.getInfoDialog();
-        secondInfoDialog.open();
-        assertTrue(secondInfoDialog.isLocked());
+        InfoDialog infoDialog2 = participant2.getInfoDialog();
+        infoDialog2.open();
+        assertTrue(infoDialog2.isLocked());
     }
 
     /**
@@ -150,18 +150,17 @@ public class NewLockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        WebParticipant ownerParticipant = getParticipant1();
-        InfoDialog infoDialog = ownerParticipant.getInfoDialog();
+        InfoDialog infoDialog = getParticipant1().getInfoDialog();
         infoDialog.removePassword();
     }
 
     /**
-     * Owner unlocks the room.
+     * Participant1 unlocks the room.
      */
-    private void ownerUnlockRoom()
+    private void participant1UnlockRoom()
     {
-        WebParticipant participant = getParticipant1();
-        InfoDialog infoDialog = participant.getInfoDialog();
+        WebParticipant participant1 = getParticipant1();
+        InfoDialog infoDialog = participant1.getInfoDialog();
         infoDialog.open();
         infoDialog.removePassword();
 
@@ -181,8 +180,8 @@ public class NewLockRoomTest
         // as participant will fail joining
         ensureTwoParticipants();
 
-        WebParticipant participant = getParticipant2();
-        InfoDialog infoDialog = participant.getInfoDialog();
+        WebParticipant participant2 = getParticipant2();
+        InfoDialog infoDialog = participant2.getInfoDialog();
         infoDialog.open();
 
         assertFalse(infoDialog.isLocked());
@@ -195,22 +194,23 @@ public class NewLockRoomTest
     @Test(dependsOnMethods = { "enterParticipantInUnlockedRoom" })
     public void updateLockedStateWhileParticipantInRoom()
     {
-        ownerLockRoom();
+        participant1LockRoom();
 
-        WebParticipant participant = getParticipant2();
-        InfoDialog infoDialog = participant.getInfoDialog();
+        WebParticipant participant2 = getParticipant2();
+        InfoDialog infoDialog = participant2.getInfoDialog();
         infoDialog.open();
         assertTrue(infoDialog.isLocked());
 
-        ownerUnlockRoom();
+        participant1UnlockRoom();
 
         assertFalse(infoDialog.isLocked());
     }
 
     /**
-     * Owner locks the room. Participant tries to enter using wrong password.
-     * Owner unlocks the room and Participant submits the password prompt with
-     * no password entered and he should enter of unlocked room.
+     * Participant1 locks the room. Participant tries to enter using wrong
+     * password. Participant1 unlocks the room and Participant submits the
+     * password prompt with no password entered and he should enter of unlocked
+     * room.
      */
     @Test(dependsOnMethods = { "updateLockedStateWhileParticipantInRoom" })
     public void unlockAfterParticipantEnterWrongPassword()
@@ -220,7 +220,7 @@ public class NewLockRoomTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        ownerLockRoom();
+        participant1LockRoom();
 
         try
         {
@@ -232,16 +232,17 @@ public class NewLockRoomTest
         {
         }
 
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
 
-        secondParticipant.findElement(
+        driver2.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
-        secondParticipant.findElement(
+        driver2.findElement(
             By.id("modal-dialog-ok-button")).click();
 
         try
         {
-            getParticipant2().waitToJoinMUC(5);
+            participant2.waitToJoinMUC(5);
 
             fail("The second participant must not be able to join the room.");
         }
@@ -249,18 +250,17 @@ public class NewLockRoomTest
         {
         }
 
-        ownerUnlockRoom();
+        participant1UnlockRoom();
 
         // just in case wait
         TestUtils.waitMillis(500);
 
-        secondParticipant.findElement(
+        driver2.findElement(
             By.id("modal-dialog-ok-button")).click();
 
-        getParticipant2().waitToJoinMUC(5);
+        participant2.waitToJoinMUC(5);
 
-        WebParticipant participant = getParticipant2();
-        InfoDialog infoDialog = participant.getInfoDialog();
+        InfoDialog infoDialog = participant2.getInfoDialog();
         infoDialog.open();
         assertFalse(infoDialog.isLocked());
     }

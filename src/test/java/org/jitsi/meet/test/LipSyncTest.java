@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * A test for WebRTC audio and video synchronisation feature. Works with Chrome
@@ -108,8 +109,8 @@ public class LipSyncTest
                 .setFakeStreamVideoFile("resources/fakeVideoStream.y4m")
                 .setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");
 
-        // Start owner with lip-sync enabled, audio packet delay and shorter
-        // audio levels interval
+        // Start participant1 with lip-sync enabled, audio packet delay and
+        // shorter audio levels interval
         ensureTwoParticipants(
             getJitsiMeetUrl().appendConfig(
                 "config.enableLipSync=true&config.audioPacketDelay=15" +
@@ -118,51 +119,58 @@ public class LipSyncTest
                 "config.disableSuspendVideo=true"),
             options, options);
 
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver participant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
 
         // Wait for the conference to start
-        getParticipant1().waitForIceConnected();
+        participant1.waitForIceConnected();
 
-        // Stops audio and video on the owner to improve performance
-        new MuteTest(this).muteOwnerAndCheck();
-        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
+        // Stops audio and video on participant1 to improve performance
+        new MuteTest(this).muteParticipant1AndCheck();
+        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
 
         // Read and inject helper script
-        VideoOperator ownerOperator = new VideoOperator(owner);
-        ownerOperator.init();
+        VideoOperator operator1 = new VideoOperator(participant1);
+        operator1.init();
 
-        VideoOperator participantOperator = new VideoOperator(participant);
-        participantOperator.init();
+        VideoOperator operator2 = new VideoOperator(participant2);
+        operator2.init();
 
         int fps = 20; // frame every 50ms
 
-        // Record remote video and audio levels from owner's perspective
-        List<String> ownerIDs = MeetUIUtils.getRemoteVideoIDs(owner);
-        List<String> ownerResources = new ArrayList<>();
-        ownerResources.add(MeetUtils.getResourceJid(participant));
+        // Record remote video and audio levels from the perspective of
+        // participant1
+        List<String> participant1Ids = MeetUIUtils.getRemoteVideoIDs(driver1);
+        List<String> participant1EndpointIds = new ArrayList<>();
+        participant1EndpointIds.add(participant2.getEndpointId());
 
-        ownerOperator.recordAll(ownerIDs, fps, ownerResources);
+        operator1.recordAll(
+            participant1Ids, fps, participant1EndpointIds);
 
-        // Record local audio and video from 2nd participant's perspective
-        List<String> peerIDs = new ArrayList<>();
-        peerIDs.add(MeetUIUtils.getLocalVideoID(participant));
+        // Record local audio and video from participant2's perspective
+        List<String> participant2Ids = new ArrayList<>();
+        participant2Ids.add(MeetUIUtils.getLocalVideoID(driver2));
 
-        participantOperator.recordAll(peerIDs, fps, ownerResources);
+        operator2.recordAll(
+            participant2Ids, fps, participant1EndpointIds);
 
         String timeToRunInSeconds = System.getProperty("lipsync.duration");
 
         // default is 30 seconds
         if (timeToRunInSeconds == null || timeToRunInSeconds.length() == 0)
+        {
             timeToRunInSeconds = "30";
+        }
 
         final int seconds = Integer.valueOf(timeToRunInSeconds);
         int millsToRun = seconds * 1000;
 
         HeartbeatTask heartbeatTask
             = new HeartbeatTask(
-                getParticipant1(),
-                getParticipant2(),
+                participant1,
+                participant2,
                 millsToRun,
                 false);
 
@@ -173,28 +181,28 @@ public class LipSyncTest
         heartbeatTask.await(seconds, TimeUnit.SECONDS);
 
         // Stop recorders
-        ownerOperator.stopRecording();
-        participantOperator.stopRecording();
+        operator1.stopRecording();
+        operator2.stopRecording();
 
         // Retrieve recorder data
-        Series ownerSeries
-            = new Series(ownerOperator, ownerIDs.get(0));
-        Series participantSeries
-            = new Series(participantOperator, peerIDs.get(0));
+        Series participant1Series
+            = new Series(operator1, participant1Ids.get(0));
+        Series participant2Series
+            = new Series(operator2, participant2Ids.get(0));
 
         // Compare sent to received timestamps
         SeriesComparison comparison
-            = new SeriesComparison(participantSeries, ownerSeries);
+            = new SeriesComparison(participant2Series, participant1Series);
         comparison.process();
 
         // Debug dump to files
         if (System.getProperty("lipsync.debug") != null)
         {
-            print("Printing from owner perspective:");
-            dumpLipSyncInfo("owner.log", ownerSeries);
+            print("Printing from the perspective of participant1:");
+            dumpLipSyncInfo("participant1.log", participant1Series);
 
-            print("Printing from peer perspective:");
-            dumpLipSyncInfo("peer.log", participantSeries);
+            print("Printing from the perspective of participant2:");
+            dumpLipSyncInfo("participant2.log", participant2Series);
         }
 
         print("BEEP diffs: " + comparison.beepDifferences);
@@ -215,8 +223,8 @@ public class LipSyncTest
         double syncRatio = lastGreenAvg / beepAvg;
         print("A/V sync ratio: " + syncRatio);
 
-        ownerOperator.dispose();
-        participantOperator.dispose();
+        operator1.dispose();
+        operator2.dispose();
 
         assertTrue(
             syncRatio > MIN_SYNC_RATIO,
@@ -375,7 +383,9 @@ public class LipSyncTest
             {
                 beepIdx = findBeep(beepIdx);
                 if (beepIdx != -1)
+                {
                     beepStarts.add(beepIdx);
+                }
             } while (beepIdx > 0);
 
             int greenIdx = 0;
@@ -383,7 +393,9 @@ public class LipSyncTest
             {
                 greenIdx = findGreen(greenIdx);
                 if (greenIdx != -1)
+                {
                     greenStarts.add(greenIdx);
+                }
             } while (greenIdx > 0);
         }
 
@@ -417,14 +429,18 @@ public class LipSyncTest
 
         int findBeep(int startIdx)
         {
-            return findSignalIdx(frames,
-                (o1, o2) -> (!o1.beep && o2.beep) ? 1 : 0, startIdx);
+            return findSignalIdx(
+                frames,
+                (o1, o2) -> (!o1.beep && o2.beep) ? 1 : 0,
+                startIdx);
         }
 
         int findGreen(int startIdx)
         {
-            return findSignalIdx(frames,
-                (e0, e1) -> (!e0.isGreen() && e1.isGreen()) ? 1 : 0, startIdx);
+            return findSignalIdx(
+                frames,
+                (e0, e1) -> (!e0.isGreen() && e1.isGreen()) ? 1 : 0,
+                startIdx);
         }
 
         String getVideoId()
@@ -492,7 +508,9 @@ public class LipSyncTest
                     // Remove first element
                     Integer removed = receiverTimes.remove(0);
                     if (debug)
+                    {
                         print("ADJUSTING! removed: " + removed);
+                    }
                 }
             }
 

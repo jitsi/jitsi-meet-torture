@@ -40,23 +40,23 @@ public class StartMutedTest
 
     /**
      * Restarts the second participant tab and checks start muted checkboxes.
-     * Test if the second participant is muted and the owner is unmuted.
+     * Test if the second participant is muted and participant1 is unmuted.
      */
     @Test
     public void checkboxesTest()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
 
         // Make sure settings panel is displayed
-        MeetUIUtils.displaySettingsPanel(owner);
+        MeetUIUtils.displaySettingsPanel(driver1);
         // Wait for 'start muted' checkboxes
         TestUtils.waitForDisplayedElementByXPath(
-            owner, "//input[@id='startAudioMuted']", 5);
+            driver1, "//input[@id='startAudioMuted']", 5);
         TestUtils.waitForDisplayedElementByXPath(
-                owner, "//input[@id='startVideoMuted']", 5);
+                driver1, "//input[@id='startVideoMuted']", 5);
 
-        owner.findElement(By.id("startAudioMuted")).click();
-        owner.findElement(By.id("startVideoMuted")).click();
+        driver1.findElement(By.id("startAudioMuted")).click();
+        driver1.findElement(By.id("startVideoMuted")).click();
 
         ensureTwoParticipants();
 
@@ -65,12 +65,12 @@ public class StartMutedTest
         // seems like a bit of sound goes through in random cases. Let's wait
         // here a bit, before checking the audio levels.
         TestUtils.waitMillis(500);
-        checkSecondParticipantForMute();
+        checkParticipant2ForMute();
     }
 
     /**
      * Opens new room and sets start muted config parameters trough the URL.
-     * Test if the second participant is muted and the owner is unmuted.
+     * Test if the second participant is muted and participant1 is unmuted.
      */
     @Test(dependsOnMethods = { "checkboxesTest" })
     public void configOptionsTest()
@@ -84,14 +84,14 @@ public class StartMutedTest
                 "config.startVideoMuted=1"),
             null);
 
-        Participant owner = getParticipant1();
+        Participant participant1 = getParticipant1();
 
-        final WebDriver secondParticipantDriver = getParticipant2().getDriver();
-        owner.executeScript(
+        final WebDriver driver2 = getParticipant2().getDriver();
+        participant1.executeScript(
             "console.log('Start configOptionsTest, second participant: "
-                + MeetUtils.getResourceJid(secondParticipantDriver) + "');");
+                + getParticipant2().getEndpointId() + "');");
 
-        owner.waitForIceConnected();
+        participant1.waitForIceConnected();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -99,17 +99,16 @@ public class StartMutedTest
         // here a bit, before checking the audio levels.
         TestUtils.waitMillis(500);
 
-        checkSecondParticipantForMute();
+        checkParticipant2ForMute();
 
         // Unmute and see if the audio works
-        MeetUIUtils.clickOnToolbarButton(
-            secondParticipantDriver, "toolbar_button_mute");
-        owner.executeScript(
+        MeetUIUtils.clickOnToolbarButton(driver2, "toolbar_button_mute");
+        participant1.executeScript(
             "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(
-            owner.getDriver(),
-            secondParticipantDriver,
-            "second peer",
+            participant1.getDriver(),
+            driver2,
+            "participant2",
             false /* unmuted */);
     }
 
@@ -117,40 +116,40 @@ public class StartMutedTest
      * Tests if the second participant is muted and the first participant is
      * unmuted.
      */
-    private void checkSecondParticipantForMute()
+    private void checkParticipant2ForMute()
     {
-        WebDriver secondParticipant = getParticipant2().getDriver();
-        WebDriver owner = getParticipant1().getDriver();
-
-        final String ownerResourceJid = MeetUtils.getResourceJid(owner);
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
         TestUtils.waitForElementByXPath(
-            secondParticipant,
+            driver2,
             "//span[@id='localVideoContainer']"
                 + TestUtils.getXPathStringForClassName("//span", "audioMuted")
                 + "/i[@class='icon-mic-disabled']", 25);
 
         TestUtils.waitForElementByXPath(
-            secondParticipant,
+            driver2,
             "//span[@id='localVideoContainer']"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 25);
 
         MeetUIUtils.waitForAudioMuted(
-            owner,
-            secondParticipant,
-            "secondParticipant",
+            driver1,
+            driver2,
+            "participant2",
             true);
 
+        String participant1EndpointId = getParticipant1().getEndpointId();
         TestUtils.waitForElementNotPresentByXPath(
-            secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']"
+            driver2,
+            "//span[@id='participant_" + participant1EndpointId + "']"
                 + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
+                + "/i[@class='icon-mic-disabled']",
+            25);
 
         TestUtils.waitForElementNotPresentByXPath(
-            secondParticipant,
-            "//span[@id='participant_" + ownerResourceJid + "']"
+            driver2,
+            "//span[@id='participant_" + participant1EndpointId + "']"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']",
             25);

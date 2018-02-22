@@ -27,6 +27,7 @@ import org.testng.annotations.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * The tests for active speaker detection feature.
@@ -64,12 +65,14 @@ public class ActiveSpeakerTest
         // Mute all
         muteAllParticipants();
 
-        // Owner becomes active speaker - check from 2nd peer's perspective
-        testActiveSpeaker(
-            participant1, participant2, participant3);
-        // 3rd peer becomes active speaker - check from 2nd peer's perspective
+        // participant1 becomes active speaker - check from participant2's
+        // perspective
+        testActiveSpeaker(participant1, participant2, participant3);
+        // participant3 becomes active speaker - check from participant2's
+        // perspective
         testActiveSpeaker(participant3, participant2, participant1);
-        // 2nd peer becomes active speaker - check from owner's perspective
+        // participant2 becomes active speaker - check from participant1's
+        // perspective
         testActiveSpeaker(participant2, participant1, participant3);
 
         // check the displayed speakers, there should be only one speaker
@@ -94,37 +97,40 @@ public class ActiveSpeakerTest
         for (WebElement el : dominantSpeakerIndicators)
         {
             if (el.isDisplayed())
+            {
                 speakers++;
+            }
         }
 
         assertEquals(
-            1, speakers,
+            1,
+            speakers,
             "Wrong number of dominant speaker indicators.");
     }
 
     private void muteAllParticipants()
     {
         MuteTest muteTest = new MuteTest(this);
-        muteTest.muteOwnerAndCheck();
-        muteTest.muteParticipantAndCheck();
-        muteTest.muteThirdParticipantAndCheck();
+        muteTest.muteParticipant1AndCheck();
+        muteTest.muteParticipant2AndCheck();
+        muteTest.muteParticipant3AndCheck();
     }
 
     /**
-     * Tries to make given participant an active speaker by un-muting him.
-     * Verifies from <tt>peer2</tt> perspective if he has been displayed on
-     * the large video area. Mutes him back.
+     * Tries to make given participant an active speaker by un-muting it.
+     * Verifies from {@code participant2}'s perspective that the active speaker
+     * has been displayed on the large video area. Mutes him back.
      *
      * @param activeSpeaker <tt>Participant</tt> instance of the
      * participant who will be testes as an active speaker.
-     * @param peer2 <tt>Participant</tt> of the participant who will
+     * @param participant2 <tt>Participant</tt> of the participant who will
      * be observing and verifying active speaker change.
-     * @param peer3 used only to print some debugging info
+     * @param participant3 used only to print some debugging info
      */
     private void testActiveSpeaker(
         Participant activeSpeaker,
-        Participant peer2,
-        Participant peer3)
+        Participant participant2,
+        Participant participant3)
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech
@@ -136,10 +142,8 @@ public class ActiveSpeakerTest
         print("Start testActiveSpeaker for participant: "
             + activeSpeaker.getName());
 
-        WebDriver peer2driver = peer2.getDriver();
-
-        final String speakerEndpoint
-            = MeetUtils.getResourceJid(activeSpeaker.getDriver());
+        WebDriver driver2 = participant2.getDriver();
+        final String speakerEndpoint = activeSpeaker.getEndpointId();
 
         // just a debug print to go in logs
         activeSpeaker.executeScript(
@@ -149,31 +153,33 @@ public class ActiveSpeakerTest
             activeSpeaker.getDriver(),
             "toolbar_button_mute");
         // just a debug print to go in logs
-        peer2.executeScript(
+        participant2.executeScript(
                 "console.log('Participant unmuted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         // just a debug print to go in logs
-        peer3.executeScript(
+        participant3.executeScript(
                 "console.log('Participant unmuted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         MeetUIUtils.assertMuteIconIsDisplayed(
-                peer2.getDriver(),
+                driver2,
                 activeSpeaker.getDriver(),
                 false,
                 false, //audio
                 speakerEndpoint);
 
-        // Verify that the user is now an active speaker from peer2 perspective
+        // Verify that the user is now an active speaker from participant2's
+        // perspective
         try
         {
-            new WebDriverWait(peer2driver, 10).until(
+            new WebDriverWait(driver2, 10).until(
                 (ExpectedCondition<Boolean>) d -> speakerEndpoint.equals(
                     MeetUIUtils.getLargeVideoResource(d)));
         }
         catch (TimeoutException exc)
         {
             assertEquals(
-                speakerEndpoint, MeetUIUtils.getLargeVideoResource(peer2driver),
+                speakerEndpoint,
+                MeetUIUtils.getLargeVideoResource(driver2),
                 "Active speaker not displayed on large video " + new Date());
         }
 
@@ -185,15 +191,15 @@ public class ActiveSpeakerTest
             activeSpeaker.getDriver(),
             "toolbar_button_mute");
         // just a debug print to go in logs
-        peer2.executeScript(
+        participant2.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         // just a debug print to go in logs
-        peer3.executeScript(
+        participant3.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "
                     + speakerEndpoint + "');");
         MeetUIUtils.assertMuteIconIsDisplayed(
-                peer2driver,
+                driver2,
                 activeSpeaker.getDriver(),
                 true,
                 false, //audio

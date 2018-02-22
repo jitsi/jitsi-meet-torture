@@ -22,7 +22,6 @@ import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.*;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
@@ -36,17 +35,12 @@ import static org.testng.Assert.*;
  * This test will assume for now jicofo and videobridge are on the same machine
  * will query both for health. And as the tests had allocated one conference
  * will check whether such is reported by the jvb rest api.
+ *
  * @author Damian Minkov
  */
 public class RestTests
     extends WebTestBase
 {
-    /**
-     * Property to enable/disable rest tests.
-     */
-    public static final String ENABLE_REST_API_TESTS
-        = "jitsi-meet.tests.rest.enabled";
-
     private String serverAddress = null;
 
     @Override
@@ -138,5 +132,4 @@ public class RestTests
 
         return null;
     }
-
 }

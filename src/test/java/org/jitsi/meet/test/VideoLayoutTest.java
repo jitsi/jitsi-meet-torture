@@ -58,8 +58,8 @@ public class VideoLayoutTest
     }
 
     /**
-     * The webdriver to test.
-     * @param participant to test.
+     * TODO: document
+     * @param participant the participant.
      */
     void driverVideoLayoutTest(Participant participant)
     {
@@ -85,8 +85,8 @@ public class VideoLayoutTest
     /**
      * Checks if the video container fits the inner window width and height.
      *
-     * @param participant <tt>WebDriver</tt> instance of the participant for whom
-     *                  we'll try to check the video size
+     * @param participant The the participant for whom we'll try to check the
+     * video size.
      */
     private void doLargeVideoSizeCheck(Participant participant)
     {

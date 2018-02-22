@@ -38,7 +38,7 @@ public class WelcomePageTest
 
         testJoinConference(mobile);
 
-        mobile.quit();
+        mobile.close();
     }
 
     /**

@@ -24,6 +24,7 @@ import org.testng.annotations.*;
 
 import java.io.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
 
 /**
@@ -99,12 +100,13 @@ public class ConferenceMigrationTest
                 "config.enforcedBridge=\"" + migratedBridge +"\""),
             null);
 
-        Participant owner = getParticipant1();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
 
-        getParticipant1().waitForIceConnected();
+        participant1.waitForIceConnected();
 
-        owner.executeScript(
+        participant1.executeScript(
                 "window.location.hash=" +
                     "window.location.hash" +
                     ".replace(/\\&?config.enforcedBridge=\".+\"/,\"\");" +
@@ -128,17 +130,16 @@ public class ConferenceMigrationTest
         }).start();
 
         print("Wait for disconnected...");
-        MeetUtils.waitForIceDisconnected(owner.getDriver(), 15);
-        print("Owner - ICE disconnected!");
-        MeetUtils.waitForIceDisconnected(secondParticipant, 15);
-        print("Second peer - ICE disconnected!");
+        MeetUtils.waitForIceDisconnected(participant1.getDriver(), 15);
+        print("Participant1 - ICE disconnected!");
+        MeetUtils.waitForIceDisconnected(driver2, 15);
+        print("Participant2 - ICE disconnected!");
 
         // Wait for conference restart
         print("Wait for ICE reconnected...");
-        getParticipant1().waitForIceConnected(60);
-        print("Owner - ICE reconnected!");
-        getParticipant2().waitForIceConnected(60);
-        print("Second peer - ICE reconnected!");
-
+        participant1.waitForIceConnected(60);
+        print("Participant1 - ICE reconnected!");
+        participant2.waitForIceConnected(60);
+        print("Participant2 - ICE reconnected!");
     }
 }

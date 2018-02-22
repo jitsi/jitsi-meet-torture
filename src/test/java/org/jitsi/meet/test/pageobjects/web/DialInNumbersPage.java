@@ -32,7 +32,7 @@ public class DialInNumbersPage
      * Class names to be used as selectors for finding WebElements within the
      * {@link DialInNumbersPage}.
      */
-    private final static String CONFERNCE_ID_MESSAGE = "dial-in-conference-id";
+    private final static String CONFERENCE_ID_MESSAGE = "dial-in-conference-id";
     private final static String NUMBERS = "dial-in-numbers-table";
     private final static String NUMBER = "dial-in-number";
 
@@ -61,7 +61,7 @@ public class DialInNumbersPage
     public String getConferenceIdMessage() {
         WebDriver driver = participant.getDriver();
         WebElement conferenceIDMessage
-            = driver.findElement(By.className(CONFERNCE_ID_MESSAGE));
+            = driver.findElement(By.className(CONFERENCE_ID_MESSAGE));
 
         return conferenceIDMessage.getText();
     }

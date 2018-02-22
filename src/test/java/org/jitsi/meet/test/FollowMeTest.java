@@ -22,6 +22,7 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
 
 /**
@@ -49,17 +50,18 @@ public class FollowMeTest
         oneTimeSetUp();
     }
 
-    private void oneTimeSetUp() {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+    private void oneTimeSetUp()
+    {
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
-        MeetUIUtils.displaySettingsPanel(owner);
-        MeetUIUtils.displaySettingsPanel(secondParticipant);
+        MeetUIUtils.displaySettingsPanel(driver1);
+        MeetUIUtils.displaySettingsPanel(driver2);
 
         TestUtils.waitForDisplayedElementByXPath(
-                owner, followMeCheckboxXPath, 5);
+                driver1, followMeCheckboxXPath, 5);
 
-        owner.findElement(By.id("followMeCheckBox")).click();
+        driver1.findElement(By.id("followMeCheckBox")).click();
 
         // give time for follow me to be enabled on all participants
         TestUtils.waitMillis(5000);
@@ -72,10 +74,10 @@ public class FollowMeTest
     @Test
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
-        Participant secondParticipant = getParticipant2();
+        Participant participant2 = getParticipant2();
 
         Boolean allModeratorsEnabled = (Boolean)(
-            secondParticipant.executeScript(
+            participant2.executeScript(
                 "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;"));
         // if all are moderators skip this check
         if (allModeratorsEnabled) {
@@ -84,7 +86,7 @@ public class FollowMeTest
         }
 
         TestUtils.waitForElementNotPresentByXPath(
-                secondParticipant.getDriver(), followMeCheckboxXPath, 5);
+                participant2.getDriver(), followMeCheckboxXPath, 5);
     }
 
     /**
@@ -94,28 +96,27 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFollowMeCheckboxVisibleOnlyForModerator" })
     public void testShareDocumentCommandsAreFollowed()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
-        if (!MeetUtils.isEtherpadEnabled(owner))
+        if (!MeetUtils.isEtherpadEnabled(driver1))
         {
-            print(
-                "No etherpad configuration detected. Disabling test.");
+            print("No etherpad configuration detected. Disabling test.");
             return;
         }
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_etherpad");
 
-        TestUtils.waitForDisplayedElementByXPath(owner, etherpadXPath, 5);
-        TestUtils.waitForDisplayedElementByXPath(
-                secondParticipant, etherpadXPath, 5);
+        TestUtils.waitForDisplayedElementByXPath(driver1, etherpadXPath, 5);
+        TestUtils.waitForDisplayedElementByXPath(driver2, etherpadXPath, 5);
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
+        MeetUIUtils.clickOnToolbarButton(
+            driver1, "toolbar_button_etherpad");
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-                owner, etherpadXPath, 5);
+            driver1, etherpadXPath, 5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-                secondParticipant, etherpadXPath, 5);
+            driver2, etherpadXPath, 5);
     }
 
     /**
@@ -125,25 +126,33 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testShareDocumentCommandsAreFollowed" })
     public void testFilmstripCommandsAreFollowed()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
-        MeetUIUtils.displayFilmstripPanel(owner);
-        MeetUIUtils.displayFilmstripPanel(secondParticipant);
+        MeetUIUtils.displayFilmstripPanel(driver1);
+        MeetUIUtils.displayFilmstripPanel(driver2);
 
-        owner.findElement(By.id("toggleFilmstripButton")).click();
+        driver1.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementContainsClassByXPath(
-                owner, filmstripXPath, "hidden", 10);
+                driver1, filmstripXPath, "hidden", 10);
         TestUtils.waitForElementContainsClassByXPath(
-                secondParticipant, filmstripXPath, "hidden", 10);
+                driver2, filmstripXPath, "hidden", 10);
 
-        owner.findElement(By.id("toggleFilmstripButton")).click();
+        driver1.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementAttributeValueByXPath(
-                owner, filmstripXPath, "class", "filmstrip__videos", 10);
+                driver1,
+                filmstripXPath,
+                "class",
+                "filmstrip__videos",
+                10);
         TestUtils.waitForElementAttributeValueByXPath(
-                secondParticipant, filmstripXPath, "class", "filmstrip__videos", 10);
+                driver2,
+                filmstripXPath,
+                "class",
+                "filmstrip__videos",
+                10);
     }
 
     /**
@@ -153,25 +162,23 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
     public void testNextOnStageCommandsAreFollowed()
     {
-        Participant owner = getParticipant1();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
+        String participant2EndpointId = participant2.getEndpointId();
 
-        String secondParticipantResource
-            = MeetUtils.getResourceJid(secondParticipant);
-
-        // let's make video of second participant active
-        owner.executeScript(
+        // let's make video of the second participant active
+        participant1.executeScript(
             "$(\"span[id='participant_"
-                + secondParticipantResource + "']\").click()");
+                + participant2EndpointId + "']\").click()");
 
         TestUtils.waitMillis(5000);
 
         // and now check that it's active for second participant too
-        WebElement localVideoThumb =
-                MeetUIUtils.getLocalVideo(secondParticipant);
+        WebElement localVideoThumb = MeetUIUtils.getLocalVideo(driver2);
 
         assertEquals(
-            MeetUIUtils.getVideoElementID(secondParticipant, localVideoThumb),
-            MeetUIUtils.getLargeVideoID(secondParticipant));
+            MeetUIUtils.getVideoElementID(driver2, localVideoThumb),
+            MeetUIUtils.getLargeVideoID(driver2));
     }
 }

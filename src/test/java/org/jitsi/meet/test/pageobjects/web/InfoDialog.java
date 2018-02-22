@@ -66,18 +66,18 @@ public class InfoDialog
      */
     public void addPassword(String password)
     {
-        WebDriver participantDriver = participant.getDriver();
+        WebDriver driver = participant.getDriver();
 
         open();
 
-        participantDriver.findElement(By.className(ADD_PASSWORD_LINK)).click();
+        driver.findElement(By.className(ADD_PASSWORD_LINK)).click();
 
         TestUtils.waitForElementBy(
-            participantDriver,
+            driver,
             By.className(ADD_PASSWORD_FIELD),
             5);
         WebElement passwordEntry
-            = participantDriver.findElement(By.className(ADD_PASSWORD_FIELD));
+            = driver.findElement(By.className(ADD_PASSWORD_FIELD));
 
         passwordEntry.sendKeys(password);
         passwordEntry.sendKeys(Keys.RETURN);

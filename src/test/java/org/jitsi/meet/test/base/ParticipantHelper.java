@@ -97,11 +97,11 @@ public class ParticipantHelper
     }
 
     /**
-     * Cleans up by quiting all participants.
+     * Cleans up by closing all participants.
      */
     public void cleanup()
     {
-        participants.stream().forEach(Participant::quitSafely);
+        participants.stream().forEach(Participant::closeSafely);
         participants.clear();
     }
 

@@ -27,6 +27,7 @@ import org.testng.annotations.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * Launches a hook script that will restart prosody and jicofo and checks
@@ -37,15 +38,13 @@ public class ReloadTest
     extends WebTestBase
 {
     /**
-     * 
-     * A property to specified the external script that will be used to
+     * A property to specify the external script that will be used to
      * restart prosody or jicofo.
      */
     public final static String HOOK_SCRIPT = "reloads.hook.script";
     
     /**
-     * A property to specified the external script that will be used to
-     * restart prosody or jicofo.
+     * TODO document
      */
     public final static String HOST = "reloads.host";
     
@@ -92,7 +91,7 @@ public class ReloadTest
      * checks that all participant have joined successfully the conference 
      * and audio/video data is transmitted.
      */
-    @Test(dependsOnMethods = { "ownerSetDisplayNameAndCheck" })
+    @Test(dependsOnMethods = {"participant1SetDisplayNameAndCheck"})
     public void testJicofoRestart()
     {
         setupListeners();
@@ -101,79 +100,81 @@ public class ReloadTest
     }
     
     /**
-     * Executes {@link StopVideoTest#stopVideoOnOwnerAndCheck()}.
+     * Executes {@link StopVideoTest#stopVideoOnParticipant1AndCheck()}.
      */
     @Test(dependsOnMethods = { "testProsodyRestart" })
-    public void ownerVideoMuteAndCheck()
+    public void participant1VideoMuteAndCheck()
     {
-        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
+        MeetUIUtils.muteVideoAndCheck(
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
     }
     
     /**
-     * Executes {@link MuteTest#muteOwnerAndCheck()}.
+     * Executes {@link MuteTest#muteParticipant1AndCheck()}.
      */
-    @Test(dependsOnMethods = { "ownerVideoMuteAndCheck" })
-    public void ownerAudioMuteAndCheck()
+    @Test(dependsOnMethods = {"participant1VideoMuteAndCheck"})
+    public void participant1AudioMuteAndCheck()
     {
-        new MuteTest(this).muteOwnerAndCheck();
+        new MuteTest(this).muteParticipant1AndCheck();
     }
     
     /**
      * Executes {@link DisplayNameTest#checkDisplayNameChange}.
      */
-    @Test(dependsOnMethods = { "ownerAudioMuteAndCheck" })
-    public void ownerSetDisplayNameAndCheck()
+    @Test(dependsOnMethods = {"participant1AudioMuteAndCheck"})
+    public void participant1SetDisplayNameAndCheck()
     {
         new DisplayNameTest(this).checkDisplayNameChange(DISPLAY_NAME);
     }
     
     /**
-     * Checks video mute status for the local video for the owner and 
-     * the remote video for second participant.
+     * Checks video mute status for the local video for participant1 and the
+     * remote video for participant2.
      */
     @Test(dependsOnMethods = { "testJicofoRestart" })
-    public void ownerCheckVideoMuted()
+    public void participant1CheckVideoMuted()
     {
         MeetUIUtils.assertMuteIconIsDisplayed(
             getParticipant1().getDriver(),
             getParticipant1().getDriver(),
             true,
             true,
-            "owner");
+            "participant1");
         MeetUIUtils.assertMuteIconIsDisplayed(
             getParticipant2().getDriver(),
             getParticipant1().getDriver(),
             true,
             true,
-            "owner");
+            "participant1");
     }
     
     /**
-     * Checks audio mute status for the local video for the owner and 
-     * the remote video for second participant.
+     * Checks audio mute status for the local video for participant1 and the
+     * remote video for participant2.
      */
-    @Test(dependsOnMethods = { "ownerCheckVideoMuted" })
-    public void ownerCheckAudioMuted()
+    @Test(dependsOnMethods = {"participant1CheckVideoMuted"})
+    public void participant1CheckAudioMuted()
     {
         MeetUIUtils.assertMuteIconIsDisplayed(
             getParticipant1().getDriver(),
             getParticipant1().getDriver(),
             true,
             false,
-            "owner");
+            "participant1");
         MeetUIUtils.assertMuteIconIsDisplayed(
             getParticipant2().getDriver(),
             getParticipant1().getDriver(),
             true,
             false,
-            "owner");
+            "participant1");
     }
     
     /**
-     * Checks the display name of the owner.
+     * Checks the display name of participant1.
      */
-    @Test(dependsOnMethods = { "ownerCheckAudioMuted" })
-    public void ownerCheckDisplayName()
+    @Test(dependsOnMethods = {"participant1CheckAudioMuted"})
+    public void participant1CheckDisplayName()
     {
         DisplayNameTest test = new DisplayNameTest();
         test.doLocalDisplayNameCheck(DISPLAY_NAME);
@@ -182,22 +183,25 @@ public class ReloadTest
     
     /**
      * Dismisses Video Bridge not available error dialog for a participant
-     * @param participant the participant
+     * @param driver the participant
      */
-    private void dismissBridgeNotAvailableDialog(WebDriver participant)
+    private void dismissBridgeNotAvailableDialog(WebDriver driver)
     {
         WebElement element;
 
         try
         {
-            element = participant.findElement(By.name("jqi_state0_buttonOk"));
-        } catch (org.openqa.selenium.NoSuchElementException ex)
+            element = driver.findElement(By.name("jqi_state0_buttonOk"));
+        }
+        catch (org.openqa.selenium.NoSuchElementException ex)
         {
             element = null;
         }
          
         if (element != null)
+        {
             element.click();
+        }
     }
     
     /**
@@ -210,7 +214,9 @@ public class ReloadTest
         final String host = System.getProperty(HOST);
 
         if (hookScript == null || host == null)
+        {
             return;
+        }
 
         CmdExecutor exec = new CmdExecutor();
         try
@@ -265,45 +271,36 @@ public class ReloadTest
     /**
      * Detects reload, waits for ice connected state event and verifies that 
      * audio/video data is transmitted. 
-     * @param isOwnerMuted <tt>true</tt> if owner is muted, false otherwise.
+     * @param isParticipant1Muted <tt>true</tt> if participant1 is muted, false
+     * otherwise.
      */
-    private void waitForReloadAndTest(boolean isOwnerMuted)
+    private void waitForReloadAndTest(boolean isParticipant1Muted)
     {
-        Participant[] participants =
-            {
-                getParticipant1(),
-                getParticipant2()
-            };
+        List<Participant> participants
+            = Arrays.asList(getParticipant1(), getParticipant2());
+
         final String checkForConferenceLeftScript = "return "
             + "APP.conference._room.conference_left_event;";
-        for (Participant p : participants)
-        {
-            (new WebDriverWait(p.getDriver(), 200))
-                .until((ExpectedCondition<Boolean>) d -> {
-                    Object res
-                        = p.executeScript(checkForConferenceLeftScript);
-                    return res != null && res.equals(Boolean.TRUE);
-                });
-        }
+        participants.forEach(p -> (new WebDriverWait(p.getDriver(), 200))
+            .until((ExpectedCondition<Boolean>) d -> {
+                Object res
+                    = p.executeScript(checkForConferenceLeftScript);
+                return res != null && res.equals(Boolean.TRUE);
+            }));
         
         print("Reload detected");
 
-        for (Participant p : participants)
-        {
-            TestUtils.executeScript(p.getDriver(),
-                "APP.conference._room.conference_left_event = false;");
-        }
+        participants.forEach(
+            p -> p.executeScript(
+                "APP.conference._room.conference_left_event = false;"));
         
         print("Wait for ice connected.");
-        for (Participant p : participants)
-        {
-            p.waitForIceConnected(60);
-        }
+        participants.forEach(p -> p.waitForIceConnected(60));
         
-        print("Wait for send receive data on the owner side.");
+        print("Wait for send receive data on the side of participant1.");
         getParticipant1().waitForSendReceiveData();
 
-        if (isOwnerMuted)
+        if (isParticipant1Muted)
         {
             print("Wait for send data on the second "
                 + "participant side.");

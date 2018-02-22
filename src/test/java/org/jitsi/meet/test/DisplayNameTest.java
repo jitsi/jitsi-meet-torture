@@ -71,8 +71,8 @@ public class DisplayNameTest
     @Test
     public void testChangingDisplayName()
     {
-        String randomName = "Name"
-            + String.valueOf((int)(Math.random()*1000000));
+        String randomName
+            = "Name" + String.valueOf((int) (Math.random() * 1_000_000));
 
         checkDisplayNameChange(randomName);
 
@@ -88,7 +88,7 @@ public class DisplayNameTest
     public void testDisplayNamePersistence()
     {
         String randomName = "Name"
-            + String.valueOf((int)(Math.random()*1000000));
+            + String.valueOf((int) (Math.random() * 1_000_000));
 
         getParticipant2().setDisplayName(randomName);
 
@@ -118,48 +118,48 @@ public class DisplayNameTest
 
     /**
      * Checks whether default display names are set and shown, when
-     * both sides still miss the displayname.
+     * both sides still miss the display name.
      */
     private void checkForDefaultDisplayNames()
     {
-        // default remote displayname
-        Participant owner = getParticipant1();
+        // default remote display name
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
         String defaultDisplayName =
-            (String) owner.executeScript(
+            (String) participant1.executeScript(
                     "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");
 
         // check on first browser
         checkRemoteVideoForName(
-            owner,
-            getParticipant2(),
+            participant1,
+            participant2,
             defaultDisplayName);
         // check on second browser
         checkRemoteVideoForName(
-            getParticipant2(),
-            owner,
+            participant2,
+            participant1,
             defaultDisplayName);
     }
 
     /**
      * Checks a remote video for a display name.
-     * @param local the local participant
-     * @param remoteParticipant teh remote one
+     * @param localParticipant the local participant.
+     * @param remoteParticipant the remote one.
      * @param nameToCheck the name to check.
      */
     public void checkRemoteVideoForName(
-        Participant local,
+        Participant localParticipant,
         Participant remoteParticipant,
         String nameToCheck)
     {
-        String remoteParticipantResourceJid
-            = MeetUtils.getResourceJid(remoteParticipant.getDriver());
+        String remoteParticipantEndpointId = remoteParticipant.getEndpointId();
 
         // check on local participant remote video
         WebElement displayNameElem =
-            local.getDriver().findElement(By.xpath(
-                "//span[@id='participant_" + remoteParticipantResourceJid +
+            localParticipant.getDriver().findElement(By.xpath(
+                "//span[@id='participant_" + remoteParticipantEndpointId +
                     "']//span[@id='participant_" +
-                    remoteParticipantResourceJid + "_name']"));
+                    remoteParticipantEndpointId + "_name']"));
 
         boolean isFF = remoteParticipant.getType().isFirefox();
         if (!isFF)
@@ -186,34 +186,34 @@ public class DisplayNameTest
      */
     public void doLocalDisplayNameCheck(String newName)
     {
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        WebDriver driver2 = getParticipant2().getDriver();
 
         // make sure we hover over other element first, cause when hovering
         // local element we may not out of it when editing
         WebElement remoteVideoElem =
-            secondParticipant.findElement(By.xpath(
-                "//span[@id='participant_" + MeetUtils
-                    .getResourceJid(getParticipant1().getDriver()) + "']"));
-        Actions action0 = new Actions(secondParticipant);
+            driver2.findElement(By.xpath(
+                "//span[@id='participant_"
+                    + participant1.getEndpointId() + "']"));
+        Actions action0 = new Actions(driver2);
         action0.moveToElement(remoteVideoElem);
         action0.perform();
 
         // now lets check whether display name is set locally
         WebElement displayNameElem
-            = secondParticipant.findElement(By.xpath(
+            = driver2.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"
-                + "//span[@id='localDisplayName']"));
+                    + "//span[@id='localDisplayName']"));
 
         // hover over local display name
         WebElement localVideoContainerElem
-            = secondParticipant.findElement(By.xpath(
+            = driver2.findElement(By.xpath(
                 "//span[@id='localVideoContainer']"));
-        Actions action = new Actions(secondParticipant);
+        Actions action = new Actions(driver2);
         action.moveToElement(localVideoContainerElem);
         action.build().perform();
 
-        boolean isFF
-            = getParticipant2().getType().isFirefox();
+        boolean isFF = getParticipant2().getType().isFirefox();
         if (!isFF)
         {
             assertTrue(
@@ -250,28 +250,25 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        Participant owner = getParticipant1();
-        WebDriver ownerDriver = owner.getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        final String participant2EndpointId = participant2.getEndpointId();
 
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
         MeetUIUtils.clickOnRemoteVideo(
-            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
-
-        final String secondParticipantResourceJid = MeetUtils
-            .getResourceJid(secondParticipant);
+            driver1, participant2EndpointId);
 
         WebElement localVideoWrapperElem =
-            ownerDriver.findElement(By.xpath(
-                "//span[@id='participant_" + secondParticipantResourceJid + "']"));
-        Actions action = new Actions(ownerDriver);
+            driver1.findElement(By.xpath(
+                "//span[@id='participant_" + participant2EndpointId + "']"));
+        Actions action = new Actions(driver1);
         action.moveToElement(localVideoWrapperElem);
         action.perform();
 
-        checkRemoteVideoForName(owner, getParticipant2(), newName);
+        checkRemoteVideoForName(participant1, participant2, newName);
 
-        MeetUIUtils.clickOnRemoteVideo(
-            ownerDriver, MeetUtils.getResourceJid(secondParticipant));
+        MeetUIUtils.clickOnRemoteVideo(driver1, participant2EndpointId);
     }
 }

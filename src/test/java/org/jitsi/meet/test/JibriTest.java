@@ -27,6 +27,7 @@ import org.testng.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * Test for Jibri recorder.
@@ -44,23 +45,23 @@ public class JibriTest
     /**
      * The property to get streamKey variable.
      */
-    public static String STREAM_KEY_PROP = "jibri.stream_key";
+    public static final String STREAM_KEY_PROP = "jibri.stream_key";
 
     /**
      * The youtube public URL
      */
-    public static String publicURL = null;
+    public static String publicUrl = null;
 
     /**
-     * The property to change publicURL variable.
+     * The property to change publicUrl variable.
      */
-    public static String PUBLIC_URL_PROP = "jibri.public_url";
+    public static final String PUBLIC_URL_PROP = "jibri.public_url";
 
     /**
      * Lists the possible statuses for the youtube stream.
      *
      */
-    enum YT_STATUS
+    enum YOUTUBE_STATUS
     {
         ONLINE, OFFLINE
     }
@@ -71,11 +72,11 @@ public class JibriTest
         super.setupClass();
 
         streamKey = System.getProperty(STREAM_KEY_PROP);
-        publicURL = System.getProperty(PUBLIC_URL_PROP);
-        if (streamKey == null || publicURL == null)
+        publicUrl = System.getProperty(PUBLIC_URL_PROP);
+        if (streamKey == null || publicUrl == null)
         {
             throw new SkipException(
-                "no streamKey or publicURL");
+                "no streamKey or publicUrl");
         }
 
         ensureTwoParticipants();
@@ -87,11 +88,11 @@ public class JibriTest
     @Test
     public void checkJibriEnabled()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        List<WebElement> elems = owner.findElements(
+        WebDriver driver1 = getParticipant1().getDriver();
+        List<WebElement> elements = driver1.findElements(
             By.xpath("//a[@class='button fa " + "fa-play-circle']"));
 
-        assertFalse(elems.isEmpty(), "Jibri button is missing");
+        assertFalse(elements.isEmpty(), "Jibri button is missing");
     }
 
     /**
@@ -100,15 +101,16 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriEnabled" })
     public void startLiveStreaming()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
+        WebDriver driver1 = getParticipant1().getDriver();
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_record");
 
         // fill in the dialog
-        TestUtils.waitForElementByXPath(owner, "//input[@name='streamId']", 5);
-        owner.findElement(By.xpath("//input[@name='streamId']"))
+        TestUtils.waitForElementByXPath(
+            driver1, "//input[@name='streamId']", 5);
+        driver1.findElement(By.xpath("//input[@name='streamId']"))
             .sendKeys(streamKey);
 
-        owner
+        driver1
             .findElement(By
                 .xpath("//button[span/@data-i18n='dialog.startLiveStreaming']"))
             .click();
@@ -121,50 +123,54 @@ public class JibriTest
     @Test(dependsOnMethods = { "startLiveStreaming" })
     public void checkJibriStatusOn()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
         try
         {
-            TestUtils.waitForElementByXPath(owner,
+            TestUtils.waitForElementByXPath(
+                driver1,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.pending']",
                 10);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label pending is missing for the owner!");
+            fail("Status label pending is missing for participant1");
         }
 
         try
         {
-            TestUtils.waitForElementByXPath(secondParticipant,
+            TestUtils.waitForElementByXPath(
+                driver2,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.pending']",
                 5);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label pending is missing for the second participant!");
+            fail("Status label pending is missing for participant1");
         }
 
         try
         {
-            TestUtils.waitForElementByXPath(owner,
+            TestUtils.waitForElementByXPath(
+                driver1,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.on']",
                 300);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label on is missing for the owner!");
+            fail("Status label on is missing for participant1");
         }
 
         try
         {
-            TestUtils.waitForElementByXPath(secondParticipant,
+            TestUtils.waitForElementByXPath(
+                driver2,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.on']",
                 5);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label on is missing for the second participant!");
+            fail("Status label on is missing for participant1");
         }
     }
 
@@ -175,28 +181,30 @@ public class JibriTest
     @Test(dependsOnMethods = { "stopLiveStreaming" })
     public void checkJibriStatusOff()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
         try
         {
-            TestUtils.waitForElementByXPath(owner,
+            TestUtils.waitForElementByXPath(
+                driver1,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.off']",
                 10);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label off is missing for the owner!");
+            fail("Status label off is missing for participant1");
         }
 
         try
         {
-            TestUtils.waitForElementByXPath(secondParticipant,
+            TestUtils.waitForElementByXPath(
+                driver2,
                 "//span[@id='recordingLabelText' and @data-i18n='liveStreaming.off']",
                 5);
         }
         catch (org.openqa.selenium.TimeoutException e)
         {
-            fail("Status label off is missing for the second participant!");
+            fail("Status label off is missing for participant1");
         }
     }
 
@@ -206,16 +214,17 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriStatusOn" })
     public void checkForJibriParticipant()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
         assertEquals(
             2,
-            MeetUIUtils.getVisibleThumbnails(owner).size(),
-            "number of visible thumbnails for owner");
-        WebDriver secondParticipant = getParticipant2().getDriver();
+            MeetUIUtils.getVisibleThumbnails(driver1).size(),
+            "number of visible thumbnails for participant1");
+
+        WebDriver driver2 = getParticipant2().getDriver();
         assertEquals(
             2,
-            MeetUIUtils.getVisibleThumbnails(secondParticipant).size(),
-            "number of visible thumbnails for second participant");
+            MeetUIUtils.getVisibleThumbnails(driver2).size(),
+            "number of visible thumbnails for participant2");
     }
 
     /**
@@ -226,7 +235,7 @@ public class JibriTest
     {
         try
         {
-            testYTStatus(YT_STATUS.ONLINE);
+            testYoutubeStatus(YOUTUBE_STATUS.ONLINE);
         }
         catch (Throwable error)
         {
@@ -240,13 +249,16 @@ public class JibriTest
     @Test(dependsOnMethods = { "testOnlineYoutubeStream" })
     public void stopLiveStreaming()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_record");
+        WebDriver driver1 = getParticipant1().getDriver();
+        MeetUIUtils.clickOnToolbarButton(
+            driver1, "toolbar_button_record");
 
         // fill in the dialog
-        TestUtils.waitForElementByXPath(owner,
-            "//button[span/@data-i18n='dialog.stopLiveStreaming']", 5);
-        owner
+        TestUtils.waitForElementByXPath(
+            driver1,
+            "//button[span/@data-i18n='dialog.stopLiveStreaming']",
+            5);
+        driver1
             .findElement(By
                 .xpath("//button[span/@data-i18n='dialog.stopLiveStreaming']"))
             .click();
@@ -260,7 +272,7 @@ public class JibriTest
     {
         try
         {
-            testYTStatus(YT_STATUS.OFFLINE);
+            testYoutubeStatus(YOUTUBE_STATUS.OFFLINE);
         }
         catch (Throwable error)
         {
@@ -274,40 +286,40 @@ public class JibriTest
      * 
      * @param expectedStatus the expected status.
      */
-    private void testYTStatus(final YT_STATUS expectedStatus)
+    private void testYoutubeStatus(final YOUTUBE_STATUS expectedStatus)
     {
-        Participant p = openURL(publicURL);
-        WebDriver driver = p.getDriver();
-        print("testYTStatus wait for the status");
+        Participant participant = createParticipant(publicUrl);
+        WebDriver driver = participant.getDriver();
+        print("testYoutubeStatus wait for the status");
         TestUtils.waitForCondition(driver, 300,
             (ExpectedCondition<Boolean>) w ->
-                getYTStatus(driver) == expectedStatus);
-        print("testYTStatus quit");
-        p.quit();
-        print("testYTStatus done");
+                getYoutubeStatus(driver) == expectedStatus);
+        print("testYoutubeStatus close");
+        participant.close();
+        print("testYoutubeStatus done");
     }
 
     /**
-     * Opens URL using new WebDriver.
-     * @param URL the URL to be opened
+     * Creates a {@link Participant} and opens a specific URL.
+     * @param url the URL to be opened.
      * @return the {@code Participant} which was created.
      */
-    private Participant openURL(String URL)
+    private Participant createParticipant(String url)
     {
-        print("Opening URL: " + URL);
+        print("Opening URL: " + url);
 
-        Participant pageParticipant
+        Participant participant
             = participants.createParticipant("web.participantOther");
 
-        WebDriver driver = pageParticipant.getDriver();
+        WebDriver driver = participant.getDriver();
 
-        driver.get(URL);
+        driver.get(url);
         MeetUtils.waitForPageToLoad(driver);
 
-        pageParticipant.executeScript(
-                "document.title='" + pageParticipant.getName() + "'");
+        participant.executeScript(
+                "document.title='" + participant.getName() + "'");
 
-        return pageParticipant;
+        return participant;
     }
 
     /**
@@ -316,12 +328,12 @@ public class JibriTest
      * @param driver the driver for the public URL of the youtube stream
      * @return returns the status of the youtube stream.
      */
-    private YT_STATUS getYTStatus(WebDriver driver)
+    private YOUTUBE_STATUS getYoutubeStatus(WebDriver driver)
     {
         String statusText =
             driver.findElement(By.xpath("//h3[@class='ytp-fresca-countdown']"))
                 .getText();
-        return statusText.equalsIgnoreCase("offline") ? YT_STATUS.OFFLINE
-            : YT_STATUS.ONLINE;
+        return statusText.equalsIgnoreCase("offline") ? YOUTUBE_STATUS.OFFLINE
+            : YOUTUBE_STATUS.ONLINE;
     }
 }

@@ -27,6 +27,7 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.util.concurrent.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
 
 /**
@@ -54,7 +55,7 @@ public class DesktopSharingTest
     }
 
     /**
-     * Ensure we have only one participant available in the room - the owner.
+     * Ensure we have only one participant available in the room - participant1.
      * Starts the new participants using the external script and check whether
      * the stream we are receiving from him is screen.
      * Returns at the end the state we found tests - with 2 participants.
@@ -65,7 +66,9 @@ public class DesktopSharingTest
         final String hookScript = System.getProperty(HOOK_SCRIPT);
 
         if (hookScript == null)
+        {
             return;
+        }
 
         print("Start testDesktopSharingInPresence.");
 
@@ -114,7 +117,7 @@ public class DesktopSharingTest
             }
         }).start();
 
-        final Participant owner = getParticipant1();
+        final Participant participant1 = getParticipant1();
 
         // now lets wait starting or error on startup
         try
@@ -134,18 +137,20 @@ public class DesktopSharingTest
 
         // let's wait some time the user to joins
         TestUtils.waitForBoolean(
-            owner.getDriver(),
+            participant1.getDriver(),
             "return (APP.conference.membersCount == 2);",
             25);
-        Participant ownerParticipant = getParticipant1();
-        ownerParticipant.waitForIceConnected();
-        ownerParticipant.waitForSendReceiveData();
-        ownerParticipant.waitForRemoteStreams(1);
+        participant1.waitForIceConnected();
+        participant1.waitForSendReceiveData();
+        participant1.waitForRemoteStreams(1);
 
         // now lets check whether his stream is screen
-        String remoteParticipantID = owner.getDriver()
-            .findElement(By.xpath("//span[starts-with(@id, 'participant_') " +
-                " and contains(@class,'videocontainer')]")).getAttribute("id");
+        String remoteParticipantID
+            = participant1.getDriver()
+                .findElement(
+                    By.xpath("//span[starts-with(@id, 'participant_') " +
+                        " and contains(@class,'videocontainer')]"))
+                .getAttribute("id");
         remoteParticipantID
             = remoteParticipantID.replaceAll("participant_", "");
 
@@ -156,9 +161,9 @@ public class DesktopSharingTest
         {
             final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
                 + remoteParticipantID + "');";
-            (new WebDriverWait(owner.getDriver(), 5))
+            (new WebDriverWait(participant1.getDriver(), 5))
                 .until((ExpectedCondition<Boolean>) d -> {
-                    Object res = owner.executeScript(scriptToExecute);
+                    Object res = participant1.executeScript(scriptToExecute);
                     remoteVideoType[0] = res;
 
                     return res != null && res.equals(expectedResult);

@@ -23,7 +23,6 @@ import org.openqa.selenium.logging.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
 import java.util.logging.*;
 
 /**
@@ -33,6 +32,12 @@ import java.util.logging.*;
 public abstract class Participant<T extends WebDriver>
     implements JavascriptExecutor
 {
+    /**
+     * The seconds between calls that will make sure we keep alive the
+     * webdriver session.
+     */
+    private static final int KEEP_ALIVE_SESSION_INTERVAL = 20;
+
     /**
      * The driver.
      */
@@ -70,12 +75,6 @@ public abstract class Participant<T extends WebDriver>
      * it is not started.
      */
     private ScheduledFuture<?> keepAliveExecution = null;
-
-    /**
-     * The seconds between calls that will make sure we keep alive the
-     * webdriver session.
-     */
-    private static final int KEEP_ALIVE_SESSION_INTERVAL = 20;
 
     /**
      * Constructs a Participant.
@@ -148,7 +147,7 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Starts the keep-alive execution.
      */
-    public void startKeepAliveExecution()
+    private void startKeepAliveExecution()
     {
         if (this.keepAliveExecution == null)
         {
@@ -174,11 +173,11 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
-     * Quits the driver.
+     * Closes this {@link Participant}'s driver.
      */
-    public void quit()
+    public void close()
     {
-        TestUtils.print("Quiting " + name);
+        TestUtils.print("Closing " + name);
 
         cancelKeepAlive();
 
@@ -189,13 +188,13 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
-     * Will call {@link #quit()}, but with catch any <tt>Throwable</tt>s.
+     * Will call {@link #close()}, but catching any {@link Throwable}s.
      */
-    public void quitSafely()
+    public void closeSafely()
     {
         try
         {
-            this.quit();
+            this.close();
         }
         catch (Throwable t)
         {
@@ -210,7 +209,9 @@ public abstract class Participant<T extends WebDriver>
     public void hangUp()
     {
         if (this.hungUp)
+        {
             return;
+        }
 
         doHangUp();
 
@@ -250,15 +251,14 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
-     * Returns participant's name.
-     * @return
+     * @return this participant's name.
      */
     public String getName()
     {
         return name;
     }
 
-    public JavascriptExecutor getJSExecutor()
+    private JavascriptExecutor getJSExecutor()
     {
         return driver instanceof JavascriptExecutor
             ? (JavascriptExecutor) driver : null;
@@ -425,4 +425,58 @@ public abstract class Participant<T extends WebDriver>
      * press.
      */
     public abstract void pressShortcut(Character shortcut);
+
+    /**
+     * @return the endpoint ID of this participant (i.e. the resource part of
+     * the occupant JID in the MUC).
+     */
+    public String getEndpointId()
+    {
+        Object o = executeScript("return APP.conference.getMyUserId();");
+        return o == null ? null : o.toString();
+    }
+
+    /**
+     * @return {@code true} if the ICE connection for P2P is in state
+     * 'connected' and {@code false} otherwise.
+     */
+    public boolean isP2pConnected()
+    {
+        Object result = executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT);
+
+        return Boolean.valueOf(result.toString());
+    }
+
+    /**
+     * @return the transport protocol used by the jitsi-videobridge connection
+     * for this {@link Participant}, or {@code null}.
+     */
+    public String getProtocol()
+    {
+        WebDriver driver = getDriver();
+
+        if (driver == null)
+        {
+            return null;
+        }
+        Object protocol
+            = executeScript(
+                "try {" +
+                    "return APP.conference.getStats().transport[0].type;" +
+                "} catch (err) { return 'error: '+err; }");
+
+        return (protocol == null) ? null : protocol.toString().toLowerCase();
+    }
+
+    /**
+     * Checks whether the strophe connection is connected.
+     * @return {@code true} iff the XMPP connection is connected.
+     */
+    public boolean isXmppConnected()
+    {
+        Object res
+            = executeScript(
+                "return APP.conference._room.xmpp.connection.connected;");
+        return res != null && res.equals(Boolean.TRUE);
+    }
 }

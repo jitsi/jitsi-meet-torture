@@ -26,6 +26,7 @@ import static org.testng.Assert.*;
 
 /**
  * Tests switching video of participants.
+ *
  * @author Damian Minkov
  * @author Pawel Domas
  */
@@ -59,115 +60,90 @@ public class SwitchVideoTest
      * is the local one.
      */
     @Test
-    public void ownerClickOnLocalVideoAndTest()
+    public void participant1ClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(getParticipant1().getDriver());
-    }
-
-    /**
-     * Click on local video thumbnail and checks whether the large video
-     * is the local one.
-     */
-    private void clickOnLocalVideoAndTest(WebDriver driver)
-    {
-        MeetUIUtils.selectLocalVideo(driver);
+        MeetUIUtils.selectLocalVideo(getParticipant1().getDriver());
     }
 
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
-    @Test(dependsOnMethods = { "ownerClickOnLocalVideoAndTest" })
-    public void ownerClickOnRemoteVideoAndTest()
+    @Test(dependsOnMethods = {"participant1ClickOnLocalVideoAndTest"})
+    public void participant1ClickOnRemoteVideoAndTest()
     {
-        clickOnRemoteVideoAndTest(
+        MeetUIUtils.selectRemoteVideo(
             getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+            getParticipant2().getEndpointId());
     }
 
     /**
-     * Unpins remote video in owner and verifies if the operation has succeeded.
+     * Unpins remote video in participant1 and verifies that the operation
+     * succeeded.
      */
-    @Test(dependsOnMethods = { "ownerClickOnRemoteVideoAndTest" })
-    public void ownerUnpinRemoteVideoAndTest()
+    @Test(dependsOnMethods = {"participant1ClickOnRemoteVideoAndTest"})
+    public void participant1UnpinRemoteVideoAndTest()
     {
         unpinRemoteVideoAndTest(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+            getParticipant1(),
+            getParticipant2().getEndpointId());
     }
 
     /**
-     * Unpins remote video in the 2nd participant and verifies if the operation
-     * has succeeded.
+     * Unpins remote video in participant2 and verifies that the operation
+     * succeeded.
      */
     @Test(dependsOnMethods = { "participantClickOnRemoteVideoAndTest" })
-    public void participantUnpinRemoteVideo()
+    public void participant2UnpinRemoteVideo()
     {
         unpinRemoteVideoAndTest(
-            getParticipant2().getDriver(),
-            getParticipant1().getDriver());
+            getParticipant2(),
+            getParticipant1().getEndpointId());
     }
 
     /**
-     * Unpins remote video of given <tt>peer</tt> from given <tt>host</tt>
-     * perspective.
+     * Unpins the remote video with a given endpoint ID.
      *
-     * @param host the <tt>WebDriver</tt> instance where unpinning operation
-     *             will be performed
-     * @param peer the <tt>WebDriver</tt> instance to whom remote video to be
-     *             unpinned belongs to.
+     * @param participant the {@link Participant} which will do the unpinning.
+     * @param endpointId the endpoint ID to unpin.
      */
-    private void unpinRemoteVideoAndTest(WebDriver host, WebDriver peer)
+    private void unpinRemoteVideoAndTest(Participant participant, String endpointId)
     {
-        // Peer's endpoint ID
-        String peerEndpointId = MeetUtils.getResourceJid(peer);
-
         // Remote video with 'videoContainerFocused' is the pinned one
         String pinnedThumbXpath
-            = "//span[ @id='participant_" + peerEndpointId + "'" +
+            = "//span[ @id='participant_" + endpointId + "'" +
               "        and contains(@class,'videoContainerFocused') ]";
 
-        WebElement pinnedThumb = host.findElement(By.xpath(pinnedThumbXpath));
+        WebElement pinnedThumb
+            = participant.getDriver().findElement(By.xpath(pinnedThumbXpath));
 
         assertNotNull(
             pinnedThumb,
-            "Pinned remote video not found for " + peerEndpointId);
+            "Pinned remote video not found for " + endpointId);
 
         // click on remote
-        host.findElement(By.xpath(pinnedThumbXpath))
-            .click();
+        participant.getDriver().findElement(By.xpath(pinnedThumbXpath)).click();
 
         // Wait for the video to unpin
         try
         {
             TestUtils.waitForElementNotPresentByXPath(
-                host, pinnedThumbXpath, 2);
+                participant.getDriver(), pinnedThumbXpath, 2);
         }
         catch (TimeoutException exc)
         {
-            fail("Failed to unpin video for " + peerEndpointId);
+            fail("Failed to unpin video for " + endpointId);
         }
-    }
-
-    /**
-     * Clicks on the remote video thumbnail and checks whether the large video
-     * is the remote one.
-     *
-     * @param where the driver to operate over.
-     */
-    public static void clickOnRemoteVideoAndTest(WebDriver where, WebDriver who)
-    {
-        MeetUIUtils.selectRemoteVideo(where, who);
     }
 
     /**
      * Click on local video thumbnail and checks whether the large video
      * is the local one.
      */
-    @Test(dependsOnMethods = { "ownerUnpinRemoteVideoAndTest" })
+    @Test(dependsOnMethods = {"participant1UnpinRemoteVideoAndTest"})
     public void participantClickOnLocalVideoAndTest()
     {
-        clickOnLocalVideoAndTest(getParticipant2().getDriver());
+        MeetUIUtils.selectLocalVideo(getParticipant2().getDriver());
     }
 
     /**
@@ -177,9 +153,8 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = { "participantClickOnLocalVideoAndTest" })
     public void participantClickOnRemoteVideoAndTest()
     {
-        clickOnRemoteVideoAndTest(
+        MeetUIUtils.selectRemoteVideo(
             getParticipant2().getDriver(),
-            getParticipant1().getDriver());
+            getParticipant1().getEndpointId());
     }
-
 }

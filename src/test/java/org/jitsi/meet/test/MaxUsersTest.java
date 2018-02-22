@@ -23,6 +23,8 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
+import java.util.*;
+
 import static org.testng.Assert.*;
 
 /**
@@ -60,7 +62,7 @@ public class MaxUsersTest
     }
 
     /**
-     * Scenario tests wether an error dialog is displayed when MAX_USERSth
+     * Scenario tests whether an error dialog is displayed when MAX_USERSth
      * participant join the conference.
      */
     @Test
@@ -102,7 +104,7 @@ public class MaxUsersTest
             finally
             {
                 // Clean up the participants in participants array
-                quitParticipants(participants);
+                Arrays.stream(participants).forEach(Participant::close);
             }
 
             if (failed)
@@ -117,26 +119,12 @@ public class MaxUsersTest
     }
 
     /**
-     * Quits the browsers of the passed participants.
-     * @param participants array with participants that are going to quited.
-     */
-    private void quitParticipants(Participant[] participants)
-    {
-        // Clean up the participants in participants array
-        for(int i = 0; i < participants.length; i++) 
-        {
-            participants[i].quit();
-        }
-    }
-
-
-    /**
      * Check if the error dialog is displayed for participant.
-     * @param participant the participant 
+     * @param driver the participant
      */
-    private void checkDialog(WebDriver participant)
+    private void checkDialog(WebDriver driver)
     {
-        TestUtils.waitForElementByXPath(participant, 
+        TestUtils.waitForElementByXPath(driver,
             "//span[@data-i18n='dialog.maxUsersLimitReached']", 5);
     }
 

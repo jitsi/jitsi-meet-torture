@@ -23,7 +23,6 @@ import org.jitsi.meet.test.web.*;
 
 import org.json.simple.*;
 import org.openqa.selenium.*;
-import org.testng.*;
 import org.testng.annotations.*;
 import static org.testng.Assert.*;
 
@@ -31,6 +30,8 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * A test that will run 1 minute (configurable) and will perform a PSNR test
@@ -45,7 +46,6 @@ public class PSNRTest
     /**
      * Defines the directory in which the psnr output file should be written
      */
-
     public static final String PSNR_OUTPUT_DIR_PROP = "psnr.output.dir";
 
     /**
@@ -154,9 +154,11 @@ public class PSNRTest
 
         // stop everything to maximize performance
         MuteTest muteTest = new MuteTest(this);
-        muteTest.muteOwnerAndCheck();
-        muteTest.muteParticipantAndCheck();
-        new StopVideoTest(this).stopVideoOnOwnerAndCheck();
+        muteTest.muteParticipant1AndCheck();
+        muteTest.muteParticipant2AndCheck();
+        MeetUIUtils.muteVideoAndCheck(
+            getParticipant1().getDriver(),
+            getParticipant2().getDriver());
 
         // Sleep 30 seconds to allow the clients to ramp up
         int rampUpDurationSeconds = 30;
@@ -165,19 +167,22 @@ public class PSNRTest
         try
         {
             Thread.sleep(rampUpDurationSeconds * 1000);
-        } catch (InterruptedException e) {}
+        }
+        catch (InterruptedException e)
+        {}
+
         print("Wait for ramp up done");
 
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
 
-        VideoOperator ownerVideoOperator = new VideoOperator(owner);
+        VideoOperator operator1 = new VideoOperator(getParticipant1());
 
         // read and inject helper script
-        ownerVideoOperator.init();
+        operator1.init();
 
-        List<String> ids = MeetUIUtils.getRemoteVideoIDs(owner);
+        List<String> ids = MeetUIUtils.getRemoteVideoIDs(driver1);
 
-        ownerVideoOperator.recordAll(ids);
+        operator1.recordAll(ids);
 
         String timeToRunInMillisVal = System.getProperty(PSNR_DURATION_MILLIS_PROP);
 
@@ -204,18 +209,18 @@ public class PSNRTest
 
         heartbeatTask.await(timeToRunInMillis, TimeUnit.MILLISECONDS);
 
-        ownerVideoOperator.stopRecording();
+        operator1.stopRecording();
 
-        print("REAL FPS: " + ownerVideoOperator.getRealFPS());
-        print("RAW DATA SIZE: " + ownerVideoOperator.getRawDataSize() + "MB");
+        print("REAL FPS: " + operator1.getRealFPS());
+        print("RAW DATA SIZE: " + operator1.getRawDataSize() + "MB");
 
         // now close second participant to maximize performance
         getParticipant2().hangUp();
 
         for (String id : ids)
         {
-            Long framesCount = ownerVideoOperator.getFramesCount(id);
-            System.err.printf("frames count for %s: %s\n", id, framesCount);
+            Long framesCount = operator1.getFramesCount(id);
+            print(String.format("frames count for %s: %s\n", id, framesCount));
 
             float totalPsnr = 0f;
             int numFrozenFrames = 0;
@@ -223,7 +228,7 @@ public class PSNRTest
             int prevFrameNumber = -1;
             for (int i = 0; i < framesCount; i += 1)
             {
-                byte[] data = ownerVideoOperator.getFrame(id, i);
+                byte[] data = operator1.getFrame(id, i);
 
                 String outputFrame = OUTPUT_FRAME_DIR + id + "-" + i + ".png";
 
@@ -276,17 +281,21 @@ public class PSNRTest
                                 // roll-over case, frameNum should be '1', so
                                 // calculate anything more than that as skipped
                                 // frames
-                                System.out.println("roll over: previous frame was " + prevFrameNumber +
-                                    "current frame is " + frameNum + ", skipped " +
+                                System.out.println(
+                                    "roll over: previous frame was " +
+                                    prevFrameNumber + "current frame is "
+                                    + frameNum + ", skipped " +
                                     (frameNum - 1) + " frames");
                                 numSkippedFrames += (frameNum - 1);
                             }
                             else
                             {
-                                System.out.println("previous frame was " + prevFrameNumber +
+                                System.out.println(
+                                    "previous frame was " + prevFrameNumber +
                                     "current frame is " + frameNum + ", skipped " +
                                     (frameNum - (prevFrameNumber + 1)) + " frames");
-                                numSkippedFrames += (frameNum - (prevFrameNumber + 1));
+                                numSkippedFrames +=
+                                    (frameNum - (prevFrameNumber + 1));
                             }
                         }
                         prevFrameNumber = frameNum;
@@ -306,8 +315,9 @@ public class PSNRTest
                     e.printStackTrace();
                 }
 
-                assertTrue(
-                    proc.waitFor() == 0,
+                assertEquals(
+                    0,
+                    proc.waitFor(),
                     "The psnr-test.sh failed.");
 
                 // If the test has passed for a specific frame, delete
@@ -341,6 +351,6 @@ public class PSNRTest
             }
         }
 
-        ownerVideoOperator.dispose();
+        operator1.dispose();
     }
 }

@@ -22,15 +22,14 @@ import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
-import org.testng.*;
 import org.testng.annotations.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
 
 /**
  * This test is going to get the connection times measurements from Jitsi Meet
  * and fail if they are too slow.
- * 
  *
  * @author Hristo Terezov
  */
@@ -41,7 +40,7 @@ public class ConnectionTimeTest
      * Number of conferences that are going to be started and closed to 
      * gather the data.
      */
-    private int NUMBER_OF_CONFERENCES = 10;
+    private static int NUMBER_OF_CONFERENCES = 10;
     
     /**
      * Script that checks if the mandatory objects that are going to be used to
@@ -174,21 +173,28 @@ public class ConnectionTimeTest
         }
         
         /**
-         * Executes the script property for passed WebDriver and returns
-         * time measurement
-         * @param w participant
+         * Executes the script property for the given {@link WebDriver}
+         * and returns a time measurement. (?)
+         * @param driver the {@link WebDriver}
          * @return time in ms for the measurement.
          */
-        public Double execute(WebDriver w)
+        public Double execute(WebDriver driver)
         {
-            Object res = ((JavascriptExecutor) w).executeScript(script);
+            Object res = ((JavascriptExecutor) driver).executeScript(script);
 
             if (res instanceof Number)
-                return ((Number)res).doubleValue();
+            {
+                return ((Number) res).doubleValue();
+            }
             else if (res == null)
+            {
                 return null;
+            }
             else
+            {
                 fail("Wrong type returned from selenium!");
+            }
+
             return null;
         }
         
@@ -196,18 +202,22 @@ public class ConnectionTimeTest
          * Executes CHECK_OBJECTS_CREATED_SCRIPT for passed WebDriver and
          * returns the result. That way we can check if all objects that are
          * used to get the time measurements are created or not.
-         * @param w participant
+         * @param driver the {@link WebDriver}.
          * @return true if ready and false if not.
          */
-        public static Boolean isReadyToStart(WebDriver w)
+        public static Boolean isReadyToStart(WebDriver driver)
         {
-            Object res = ((JavascriptExecutor) w).executeScript(
+            Object res = ((JavascriptExecutor) driver).executeScript(
                 CHECK_OBJECTS_CREATED_SCRIPT);
 
             if (res instanceof Boolean)
-                return (Boolean)res;
+            {
+                return (Boolean) res;
+            }
             else
+            {
                 fail("Wrong type returned from selenium!");
+            }
             return null;
         }
         
@@ -248,8 +258,8 @@ public class ConnectionTimeTest
             {
                 data,
                 isUsingAttach
-                ? TimeMeasurements.CONNECTION_ATTACHING
-                :  TimeMeasurements.CONNECTION_CONNECTING,
+                    ? TimeMeasurements.CONNECTION_ATTACHING
+                    :  TimeMeasurements.CONNECTION_CONNECTING,
                 null
             },
 
@@ -260,8 +270,8 @@ public class ConnectionTimeTest
             {
                 data,
                 isUsingAttach
-                ? TimeMeasurements.CONNECTION_ATTACHED
-                :  TimeMeasurements.CONNECTION_CONNECTED,
+                    ? TimeMeasurements.CONNECTION_ATTACHED
+                    :  TimeMeasurements.CONNECTION_CONNECTED,
                 null
             },
 
@@ -303,7 +313,7 @@ public class ConnectionTimeTest
         {
             Double[] prevStepData
                 = s.getPrevStep() == null
-                ? null : data[s.getPrevStep().ordinal()];
+                    ? null : data[s.getPrevStep().ordinal()];
             checkThreshold(data, prevStepData, s);
         }
     }
@@ -347,7 +357,7 @@ public class ConnectionTimeTest
 
         for(int i = 0; i < NUMBER_OF_CONFERENCES; i++)
         {
-            refreshSecondParticipant();
+            refreshParticipant2();
 
             waitForMeasurements();
 
@@ -370,7 +380,7 @@ public class ConnectionTimeTest
     /**
      * Refreshes the second participant.
      */
-    private void refreshSecondParticipant()
+    private void refreshParticipant2()
     {
         // initially the second participant is not connected
         if (getParticipant2() != null)

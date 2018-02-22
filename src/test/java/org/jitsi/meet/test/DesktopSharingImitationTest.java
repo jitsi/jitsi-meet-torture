@@ -96,9 +96,13 @@ public class DesktopSharingImitationTest
     {
         String videoType;
         if (desktopImitated)
+        {
             videoType = "camera";
+        }
         else
+        {
             videoType = "screen";
+        }
 
         // change the type of video that we will report
         getParticipant1().executeScript(

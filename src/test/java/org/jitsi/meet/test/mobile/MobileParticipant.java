@@ -237,7 +237,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     /**
      * {@inheritDoc}
      */
-    public void quit()
+    public void close()
     {
         try
         {
@@ -245,7 +245,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         }
         catch (Exception e)
         {
-            logger.log(Level.SEVERE, "Failed to quit driver", e);
+            logger.log(Level.SEVERE, "Failed to close driver", e);
         }
     }
 

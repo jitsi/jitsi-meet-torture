@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.capture;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
@@ -23,8 +24,6 @@ import java.util.*;
 
 /**
  * Java wrapper for PSNRVideoOperator.js script used to capture video frames.
- *
- * TODO: Use Participant instead of WebDriver directly.
  *
  * @author Pawel Domas
  */
@@ -39,16 +38,16 @@ public class VideoOperator
     /**
      * <tt>WebDriver</tt> used by this instance.
      */
-    private final WebDriver participant;
+    private final Participant participant;
 
     /**
      * Creates new instance of <tt>VideoOperator</tt>.
      * @param participant the <tt>WebDriver</tt> instance where recorder script
      * will be running.
      */
-    public VideoOperator(WebDriver participant)
+    public VideoOperator(Participant participant)
     {
-        this.participant = participant;
+        this.participant = Objects.requireNonNull(participant);
     }
 
     /**
@@ -56,7 +55,7 @@ public class VideoOperator
      */
     public void dispose()
     {
-        getJSExecutor().executeScript(
+        participant.executeScript(
                 "window._operator.cleanup();" +
                 "window._operator = null;");
     }
@@ -71,10 +70,11 @@ public class VideoOperator
     public Double getAudioLevel(String videoId, int frameIdx)
     {
         Object levelObj
-            = getJSExecutor().executeScript(
+            = participant.executeScript(
                     "return window._operator.getAudioLevel(" +
                         "arguments[0], arguments[1])",
-                    videoId, frameIdx);
+                    videoId,
+                    frameIdx);
 
         return Double.valueOf(String.valueOf(levelObj));
     }
@@ -89,7 +89,7 @@ public class VideoOperator
      */
     public byte[] getFrame(String videoId, int frameIdx)
     {
-        String frameBase64 = (String) getJSExecutor().executeScript(
+        String frameBase64 = (String) participant.executeScript(
                 "return window._operator.getFrame(arguments[0], arguments[1])",
                 videoId, frameIdx);
 
@@ -105,14 +105,9 @@ public class VideoOperator
      */
     public Long getFramesCount(String videoId)
     {
-        return (Long) getJSExecutor().executeScript(
+        return (Long) participant.executeScript(
                 "return window._operator.getFramesCount(arguments[0])",
                 videoId);
-    }
-
-    private JavascriptExecutor getJSExecutor()
-    {
-        return (JavascriptExecutor) participant;
     }
 
     /**
@@ -121,7 +116,7 @@ public class VideoOperator
      */
     public Number getRawDataSize()
     {
-        return (Number) getJSExecutor().executeScript(
+        return (Number) participant.executeScript(
                 "return window._operator.getRawDataSize() / 1024 / 1024");
     }
 
@@ -132,7 +127,7 @@ public class VideoOperator
      */
     public Number getRealFPS()
     {
-        return (Number) getJSExecutor().executeScript(
+        return (Number) participant.executeScript(
                 "return window._operator.getRealFPS()");
     }
 
@@ -146,10 +141,11 @@ public class VideoOperator
     @SuppressWarnings("unchecked") // ok to fail the tests with cast exception
     public List<Long> getRGBAatTheCenter(String videoId, int frameIdx)
     {
-        Object rgbaObj = getJSExecutor().executeScript(
+        Object rgbaObj = participant.executeScript(
                 "return window._operator.getRGBAatTheCenter(" +
                     "arguments[0], arguments[1])",
-                videoId, frameIdx);
+                videoId,
+                frameIdx);
 
         return (List<Long>) rgbaObj;
     }
@@ -163,10 +159,11 @@ public class VideoOperator
      */
     public Long getTimestamp(String videoId, int frameIdx)
     {
-        Object tsObj = getJSExecutor().executeScript(
+        Object tsObj = participant.executeScript(
                 "return window._operator.getTimestamp(" +
                     "arguments[0], arguments[1])",
-                videoId, frameIdx);
+                videoId,
+                frameIdx);
         return (Long) tsObj;
     }
 
@@ -175,7 +172,7 @@ public class VideoOperator
      */
     public void init()
     {
-        TestUtils.injectScript(participant, PSNR_JS_SCRIPT);
+        TestUtils.injectScript(participant.getDriver(), PSNR_JS_SCRIPT);
     }
 
     /**
@@ -185,7 +182,7 @@ public class VideoOperator
      */
     public void recordAll(List<String> videoIDs)
     {
-        getJSExecutor().executeScript(
+        participant.executeScript(
                 "window._operator = new window.VideoOperator();" +
                     "window._operator.recordAll(arguments[0]);",
                 videoIDs);
@@ -205,7 +202,7 @@ public class VideoOperator
                           int             fps,
                           List<String>    aLvlResources)
     {
-        getJSExecutor().executeScript(
+        participant.executeScript(
                 "window._operator = new window.VideoOperator();" +
                     "window._operator.recordAll(" +
                     "arguments[0], arguments[1], arguments[2]);",
@@ -217,6 +214,6 @@ public class VideoOperator
      */
     public void stopRecording()
     {
-        getJSExecutor().executeScript("window._operator.stop()");
+        participant.executeScript("window._operator.stop()");
     }
 }

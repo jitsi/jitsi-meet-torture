@@ -56,7 +56,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, if it is not started.
+     * Starts participant1, if it is not started.
      */
     public void ensureOneParticipant()
     {
@@ -64,7 +64,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, if it is not started.
+     * Starts participant1, if it is not started.
      * @param meetURL a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
      * the config part. For example:
@@ -76,7 +76,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, if it is not started.
+     * Starts participant1, if it is not started.
      * @param meetURL a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
      * the config part. For example:
@@ -92,9 +92,8 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner and the seconds participant, if they are not started,
-     * and stops the third participant, if it is not stopped.
-     * participants(owner and 'second participant').
+     * Starts participant1 and participant2, if they are not started, and stops
+     * participant3, if it is not stopped.
      */
     public void ensureTwoParticipants()
     {
@@ -102,9 +101,8 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner and the seconds participant, if they are not started,
-     * and stops the third participant, if it is not stopped.
-     * participants(owner and 'second participant').
+     * Starts participant1 and participant2, if they are not started,
+     * and stops participant3, if it is not stopped.
      * @param participantOneMeetURL the url for the first participant.
      * @param participantTwoMeetURL the url for the second participant.
      */
@@ -117,9 +115,8 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner and the seconds participant, if they are not started,
-     * and stops the third participant, if it is not stopped.
-     * participants(owner and 'second participant').
+     * Starts participant1 and participant2, if they are not started,
+     * and stops participant3, if it is not stopped.
      * @param participantOneMeetURL the url for the first participant,
      * if it does'n exist already.
      * @param participantTwoMeetURL the url for the second participant,
@@ -144,8 +141,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner and the seconds participant, if they are not started.
-     * participants(owner and 'second participant').
+     * Starts participant1 and participant2, if they are not started.
      * @param participantOneMeetURL the url for the first participant,
      * if it does'n exist already.
      * @param participantTwoMeetURL the url for the second participant,
@@ -175,7 +171,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, second participant and third participant if they aren't
+     * Starts participant1, participant2 and participant3 if they aren't
      * started.
      * @param participantOneMeetURL the url for the first participant,
      * if it does'n exist already.
@@ -206,7 +202,7 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, second participant and third participant if they aren't
+     * Starts participant1, participant2 and participant3 if they aren't
      * started.
      */
     public void ensureThreeParticipants()
@@ -266,9 +262,10 @@ public class WebTestBase
     }
 
     /**
-     * Starts the owner, if it isn't started and hangups all other participants.
+     * Starts participant1, if it isn't started and closes all other
+     * participants.
      */
-    public void hangUpAllParticipantsExceptTheOwner()
+    protected void hangUpAllExceptParticipant1()
     {
         ensureOneParticipant();
 
