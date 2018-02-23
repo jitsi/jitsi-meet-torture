@@ -108,6 +108,18 @@ public abstract class AbstractBaseTest
     }
 
     /**
+     * Create {@link ParticipantFactory} which will be used by the test to
+     * create new participants.
+     *
+     * @param config the config which will be the source of all properties
+     * required to create {@link Participant}s.
+     *
+     * @return a new factory initialized with the given config.
+     */
+    protected abstract ParticipantFactory createParticipantFactory(
+            Properties config);
+
+    /**
      * NOTE: We don't want this method to be overridden in subclasses, because
      * it contains TestNG specific ITestContext. Use {@link #setupClass()} to do
      * any per class setup.
@@ -132,7 +144,9 @@ public abstract class AbstractBaseTest
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
-        participants = new ParticipantHelper(new ParticipantFactory(config));
+        ParticipantFactory factory = createParticipantFactory(config);
+
+        participants = new ParticipantHelper(factory);
 
         // if this one fails, the failure will be registered in the
         // FailureListener to gather information and it will call

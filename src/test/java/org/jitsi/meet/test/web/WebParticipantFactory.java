@@ -59,9 +59,11 @@ public class WebParticipantFactory
         super(WebParticipantOptions.moveLegacyGlobalProperties(config));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Participant<? extends WebDriver> createParticipant(
-        String configPrefix,
+    protected Participant<? extends WebDriver> doCreateParticipant(
         ParticipantOptions options)
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();

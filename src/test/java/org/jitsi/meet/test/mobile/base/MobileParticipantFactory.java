@@ -47,8 +47,8 @@ public class MobileParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    public Participant<? extends WebDriver> createParticipant(
-            String configPrefix, ParticipantOptions options)
+    protected Participant<? extends WebDriver> doCreateParticipant(
+            ParticipantOptions options)
     {
         ParticipantType type = options.getParticipantType();
 
