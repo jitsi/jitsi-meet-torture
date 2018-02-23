@@ -92,16 +92,20 @@ public class ParticipantFactory<T extends ParticipantOptions>
             targetOptions.setName(configPrefix);
         }
 
+        Participant<? extends WebDriver> participant;
+
         if (participantType.isWeb())
         {
-            return new WebParticipantFactory(config)
+            participant
+                = new WebParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
                     targetOptions);
         }
         else if (participantType.isMobile())
         {
-            return new MobileParticipantFactory(config)
+            participant
+                = new MobileParticipantFactory(config)
                 .createParticipant(
                     configPrefix,
                     targetOptions);
@@ -110,6 +114,12 @@ public class ParticipantFactory<T extends ParticipantOptions>
         {
             throw new IllegalArgumentException("Unknown participant type");
         }
+
+        TestUtils.print(
+            "Started " + participantType
+                + " driver for prefix: " + configPrefix);
+
+        return participant;
     }
 
     /**

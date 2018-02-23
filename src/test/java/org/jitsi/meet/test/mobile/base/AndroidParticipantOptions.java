@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jitsi.meet.test.mobile;
+package org.jitsi.meet.test.mobile.base;
 
-import org.jitsi.meet.test.base.*;
+import org.openqa.selenium.remote.*;
 
 import java.util.*;
 
 /**
- * The Android version of {@link MobileParticipantBuilder}. Holds all the stuff
- * specific to Android {@link MobileParticipant}.
+ * The set of options which configures an Android
+ * {@link org.jitsi.meet.test.mobile.MobileParticipant}.
  *
  * @author Pawel Domas
  */
-public class AndroidParticipantBuilder extends MobileParticipantBuilder
+public class AndroidParticipantOptions
+    extends MobileParticipantOptions
 {
-
     /**
-     * Default Android's value for
-     * {@link MobileParticipantBuilder#CAPS_PLATFORM_NAME}.
+     * The Android's default value for
+     * {@link MobileParticipantOptions#CAPS_PLATFORM_NAME}.
      */
     private static final String ANDROID_PLATFORM_NAME = "android";
 
@@ -46,12 +46,6 @@ public class AndroidParticipantBuilder extends MobileParticipantBuilder
      */
     private static final String CAPS_WAIT_PACKAGE
         = _CAPS_PROP_PREFIX + "appWaitPackage";
-
-    /**
-     * Holds default config properties set for all Android participant builders.
-     */
-    private static final Properties DEFAULT_ANDROID_PROPERTIES
-        = new Properties();
 
     /**
      * Default Android bundle ID of the app being tested.
@@ -74,43 +68,37 @@ public class AndroidParticipantBuilder extends MobileParticipantBuilder
         = "com.android.settings,org.jitsi.meet";
 
     /**
-     * Initialize default Android properties
+     * {@inheritDoc}
      */
-    static
+    @Override
+    public DesiredCapabilities createCapabilities()
     {
-        DEFAULT_ANDROID_PROPERTIES.setProperty(
-                CAPS_PLATFORM_NAME, ANDROID_PLATFORM_NAME);
-        DEFAULT_ANDROID_PROPERTIES.setProperty(
-                CAPS_WAIT_ACTIVITY, DEFAULT_CAPS_WAIT_ACTIVITY);
-        DEFAULT_ANDROID_PROPERTIES.setProperty(
-                CAPS_WAIT_PACKAGE, DEFAULT_CAPS_WAIT_PACKAGE);
-        DEFAULT_ANDROID_PROPERTIES.setProperty(
-                PROP_BUNDLE_ID, DEFAULT_BUNDLE_ID);
-    }
+        DesiredCapabilities capabilities = super.createCapabilities();
 
-    /**
-     * Initializes {@link AndroidParticipantBuilder}.
-     *
-     * @param config - The config holding participant's properties.
-     * @param prefix - The config prefix added to each property name in order to
-     * get participant's property key.
-     */
-    public AndroidParticipantBuilder(Properties config, String prefix)
-    {
-        super(
-            config,
-            DEFAULT_ANDROID_PROPERTIES,
-            prefix,
-            ParticipantType.android);
+        readAndSetCapability(capabilities, CAPS_WAIT_ACTIVITY);
+        readAndSetCapability(capabilities, CAPS_WAIT_PACKAGE);
+
+        return capabilities;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void configureOsSpecificCapabilities()
+    protected Properties initDefaults()
     {
-        readAndSetCapability(CAPS_WAIT_ACTIVITY);
-        readAndSetCapability(CAPS_WAIT_PACKAGE);
+        Properties defaults = super.initDefaults();
+
+        defaults.setProperty(
+                CAPS_PLATFORM_NAME, ANDROID_PLATFORM_NAME);
+        defaults.setProperty(
+                CAPS_WAIT_ACTIVITY, DEFAULT_CAPS_WAIT_ACTIVITY);
+        defaults.setProperty(
+                CAPS_WAIT_PACKAGE, DEFAULT_CAPS_WAIT_PACKAGE);
+
+        defaults.setProperty(
+                PROP_BUNDLE_ID, DEFAULT_BUNDLE_ID);
+
+        return defaults;
     }
 }

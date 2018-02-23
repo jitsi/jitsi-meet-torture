@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jitsi.meet.test.mobile;
+package org.jitsi.meet.test.mobile.base;
 
-import org.jitsi.meet.test.base.*;
+import org.openqa.selenium.remote.*;
 
 import java.util.*;
 
 /**
- * The iOS version of {@link MobileParticipantBuilder} which holds all the iOS
- * specific stuff.
+ * The set of options which configures an iOS
+ * {@link org.jitsi.meet.test.mobile.MobileParticipant}.
  *
  * @author Pawel Domas
  */
-public class iOsParticipantBuilder extends MobileParticipantBuilder
+public class iOSParticipantOptions
+    extends MobileParticipantOptions
 {
     /**
      * The property for Appium's automation's name capability.
@@ -47,7 +48,7 @@ public class iOsParticipantBuilder extends MobileParticipantBuilder
         = _CAPS_PROP_PREFIX + "udid";
 
     /**
-     * Default iOS value for {@link MobileParticipantBuilder#PROP_BUNDLE_ID}.
+     * Default iOS value for {@link MobileParticipantOptions#PROP_BUNDLE_ID}.
      */
     private static final String DEFAULT_BUNDLE_ID = "org.jitsi.JitsiMeet.ios";
 
@@ -64,51 +65,40 @@ public class iOsParticipantBuilder extends MobileParticipantBuilder
     private static final String DEFAULT_CAPS_AUTOMATION = "XCUITest";
 
     /**
-     * Default iOS config properties passed over to
-     * {@link MobileParticipantBuilder}.
-     */
-    private static final Properties DEFAULT_IOS_PROPERTIES = new Properties();
-
-    /**
      * The iOS default {@link #CAPS_PLATFORM_NAME}.
      */
     private static final String IOS_PLATFORM_NAME = "ios";
 
     /**
-     * Initializes default iOS config properties.
+     * {@inheritDoc}
      */
-    static
+    @Override
+    public DesiredCapabilities createCapabilities()
     {
-        DEFAULT_IOS_PROPERTIES.setProperty(CAPS_APP, DEFAULT_CAPS_APP);
-        DEFAULT_IOS_PROPERTIES.setProperty(
-            CAPS_AUTOMATION, DEFAULT_CAPS_AUTOMATION);
-        DEFAULT_IOS_PROPERTIES.setProperty(PROP_BUNDLE_ID, DEFAULT_BUNDLE_ID);
-        DEFAULT_IOS_PROPERTIES.setProperty(
-            CAPS_PLATFORM_NAME, IOS_PLATFORM_NAME);
-    }
+        DesiredCapabilities capabilities = super.createCapabilities();
 
-    /**
-     * Initializes new {@link iOsParticipantBuilder}.
-     *
-     * @param config - The config from which participant's properties will be
-     * retrieved.
-     * @param prefix - The prefix which will be added to properties keys in
-     * order to figure out participant's property names.
-     */
-    public iOsParticipantBuilder(Properties config, String prefix)
-    {
-        super(config, DEFAULT_IOS_PROPERTIES, prefix, ParticipantType.ios);
+        readAndSetCapability(capabilities, CAPS_AUTOMATION);
+        // FIXME must be of type boolean...
+        readAndSetCapability(capabilities, CAPS_SHOW_XCODE_LOG);
+        readAndSetCapability(capabilities, CAPS_UDID);
+
+        return capabilities;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void configureOsSpecificCapabilities()
+    protected Properties initDefaults()
     {
-        readAndSetCapability(CAPS_AUTOMATION);
-        readAndSetCapability(CAPS_UDID);
-        // FIXME must be of type boolean...
-        readAndSetCapability(CAPS_SHOW_XCODE_LOG);
+        Properties defaults = super.initDefaults();
+
+        defaults.setProperty(CAPS_APP, DEFAULT_CAPS_APP);
+        defaults.setProperty(CAPS_AUTOMATION, DEFAULT_CAPS_AUTOMATION);
+        defaults.setProperty(CAPS_PLATFORM_NAME, IOS_PLATFORM_NAME);
+
+        defaults.setProperty(PROP_BUNDLE_ID, DEFAULT_BUNDLE_ID);
+
+        return defaults;
     }
 }
