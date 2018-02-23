@@ -41,31 +41,6 @@ public class WebParticipantFactory
     extends ParticipantFactory<WebParticipantOptions>
 {
     /**
-     * The property to disable no-sandbox parameter for chrome.
-     */
-    private static final String PROP_DISABLE_NOSANBOX
-        = "chrome.disable.nosanbox";
-
-    /**
-     * The property to enable headless parameter for chrome.
-     */
-    private static final String PROP_ENABLE_HEADLESS = "chrome.enable.headless";
-
-    /**
-     * The property to change remote selenium grid URL, defaults to
-     * http://localhost:4444/wd/hub if requiring remote browser and property
-     * is not set.
-     */
-    private static final String PROP_REMOTE_ADDRESS_NAME = "remote.address";
-
-    /**
-     * The property to evaluate for parent path of the resources used when
-     * loading chrome remotely like audio/video files.
-     */
-    private static final String PROP_REMOTE_RESOURCE_PARENT_PATH_NAME
-        = "remote.resource.path";
-
-    /**
      * The format string for the URL used to download an extension.
      */
     private static String EXT_DOWNLOAD_URL_FORMAT
@@ -81,7 +56,7 @@ public class WebParticipantFactory
      */
     public WebParticipantFactory(Properties config)
     {
-        super(config);
+        super(WebParticipantOptions.moveLegacyGlobalProperties(config));
     }
 
     @Override
@@ -155,7 +130,8 @@ public class WebParticipantFactory
                     ffOptions.setCapability(CapabilityType.VERSION, version);
                 }
 
-                return new RemoteWebDriver(getRemoteDriverAddress(), ffOptions);
+                return new RemoteWebDriver(
+                        options.getRemoteDriverAddress(), ffOptions);
             }
 
             return new FirefoxDriver(new FirefoxOptions().setProfile(profile));
@@ -169,7 +145,7 @@ public class WebParticipantFactory
             if (isRemote)
             {
                 return new RemoteWebDriver(
-                    getRemoteDriverAddress(), new SafariOptions());
+                        options.getRemoteDriverAddress(), new SafariOptions());
             }
             return new SafariDriver();
         }
@@ -221,13 +197,16 @@ public class WebParticipantFactory
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-            if (!Boolean.getBoolean(PROP_DISABLE_NOSANBOX))
+            // FIXME This is hard to understand. The property is "to disable",
+            // then it's a negation here... It would be simpler if that would be
+            // just "no sandbox" with true by default.
+            if (!options.isDisableNoSandbox())
             {
                 ops.addArguments("no-sandbox");
                 ops.addArguments("disable-setuid-sandbox");
             }
 
-            if (Boolean.getBoolean(PROP_ENABLE_HEADLESS))
+            if (options.isEnabledHeadless())
             {
                 ops.addArguments("headless");
                 ops.addArguments("window-size=1200x600");
@@ -247,8 +226,7 @@ public class WebParticipantFactory
                     ops.setBinary(binaryFile);
             }
 
-            String remoteResourcePath = config.getProperty(
-                PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
+            String remoteResourcePath = options.getRemoteResourcePath();
 
             String fakeStreamAudioFName = options.getFakeStreamAudioFile();
             if (fakeStreamAudioFName != null)
@@ -285,7 +263,8 @@ public class WebParticipantFactory
                     ops.setCapability(CapabilityType.VERSION, version);
                 }
 
-                return new RemoteWebDriver(getRemoteDriverAddress(), ops);
+                return new RemoteWebDriver(
+                        options.getRemoteDriverAddress(), ops);
             }
 
             try
@@ -335,28 +314,6 @@ public class WebParticipantFactory
             TestUtils.print("Just create ChromeDriver, may hang!");
             return new ChromeDriver(ops);
         }
-    }
-
-    /**
-     * Returns the remote driver address or the default one.
-     * @return the remote driver address or the default one.
-     */
-    private URL getRemoteDriverAddress()
-    {
-        try
-        {
-            String remoteAddress = config.getProperty(
-                PROP_REMOTE_ADDRESS_NAME,
-                "http://localhost:4444/wd/hub");
-
-            return new URL(remoteAddress);
-        }
-        catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     /**
