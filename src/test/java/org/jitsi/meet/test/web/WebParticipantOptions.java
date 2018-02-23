@@ -15,8 +15,10 @@
  */
 package org.jitsi.meet.test.web;
 
+import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.base.*;
 
+import java.net.*;
 import java.util.*;
 
 /**
@@ -25,6 +27,12 @@ import java.util.*;
 public class WebParticipantOptions
     extends ParticipantOptions
 {
+    /**
+     * The default address used to connect remote selenium drivers.
+     * ...wait it's the localhost ?
+     */
+    private static final String DEFAULT_REMOTE_ADDRESS_NAME
+        = "http://localhost:4444/wd/hub";
     /**
      * A prefix for global options (not per participant).
      */
@@ -42,9 +50,79 @@ public class WebParticipantOptions
 
     private static final String PROP_FAKE_VIDEO = "fakeStreamVideoFile";
 
+    /**
+     * The property to change remote selenium grid URL, defaults to
+     * {@link #DEFAULT_REMOTE_ADDRESS_NAME} if requiring remote browser and
+     * property is not set.
+     */
+    private static final String PROP_REMOTE_ADDRESS_NAME = "remote.address";
+
     private static final String PROP_REMOTE = "isRemote";
 
+    /**
+     * The property to evaluate for parent path of the resources used when
+     * loading chrome remotely like audio/video files.
+     */
+    private static final String PROP_REMOTE_RESOURCE_PARENT_PATH_NAME
+        = "remote.resource.path";
+
+    /**
+     * The property to disable no-sandbox parameter for chrome.
+     */
+    private static final String PROP_DISABLE_NOSANBOX
+        = "chrome.disable.nosanbox";
+
+    /**
+     * The property to enable headless parameter for chrome.
+     */
+    private static final String PROP_ENABLE_HEADLESS
+        = "chrome.enable.headless";
+
     private static final String PROP_VERSION = "version";
+
+    /**
+     * This will move all global properties which used to be specified without
+     * the {@link #GLOBAL_PROP_PREFIX} under that prefix. This will allow to
+     * simplify the code which has to deal with global properties.
+     *
+     * @param properties - The config instance which will be modified in place.
+     *
+     * @return the same {@link Properties} instance which was passed as
+     * an argument.
+     */
+    static Properties moveLegacyGlobalProperties(Properties properties)
+    {
+        moveLegacyGlobalProperty(properties, PROP_DISABLE_NOSANBOX);
+        moveLegacyGlobalProperty(properties, PROP_ENABLE_HEADLESS);
+        moveLegacyGlobalProperty(
+            properties, PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
+
+        return properties;
+    }
+
+    /**
+     * A subroutine for {@link #moveLegacyGlobalProperties(Properties)}. Move
+     * specified property over to the key with added
+     * {@link #GLOBAL_PROP_PREFIX} and deletes the old key.
+     *
+     * @param props - The {@link Properties} which will be modified in place.
+     * @param key - The global property key which is to be moved under
+     * the {@link #GLOBAL_PROP_PREFIX}.
+     */
+    private static void moveLegacyGlobalProperty(Properties props, String key)
+    {
+        String value = props.getProperty(key);
+
+        if (StringUtils.isNotBlank(value))
+        {
+            props.setProperty(
+                GLOBAL_PROP_PREFIX + "." + key,
+                value);
+        }
+
+        // Clear the global one
+        props.remove(key);
+    }
 
     /**
      * {@inheritDoc}
@@ -55,9 +133,61 @@ public class WebParticipantOptions
         Properties defaults = super.initDefaults();
 
         defaults.setProperty(
-            PROP_FAKE_AUDIO, "resources/fakeAudioStream.wav");
+                PROP_FAKE_AUDIO, "resources/fakeAudioStream.wav");
+        defaults.setProperty(
+                PROP_REMOTE_ADDRESS_NAME, DEFAULT_REMOTE_ADDRESS_NAME);
 
         return defaults;
+    }
+
+    /**
+     * A getter for {@link #PROP_REMOTE_RESOURCE_PARENT_PATH_NAME}.
+     * @return a String or <tt>null</tt>.
+     */
+    public String getRemoteResourcePath()
+    {
+        return getProperty(PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
+    }
+
+    /**
+     * Returns the remote driver address.
+     *
+     * FIXME: it's very similar to Mobile's Appium URL.
+     *
+     * @return the remote driver address.
+     */
+    public URL getRemoteDriverAddress()
+    {
+        String remoteAddress = getProperty(PROP_REMOTE_ADDRESS_NAME);
+
+        try
+        {
+            return new URL(remoteAddress);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * The getter for {@link #PROP_DISABLE_NOSANBOX}.
+     *
+     * @return <tt>true</tt> or <tt>false</tt>.
+     */
+    public boolean isDisableNoSandbox()
+    {
+        return getBooleanProperty(PROP_DISABLE_NOSANBOX);
+    }
+
+    /**
+     * The getter for {@link #PROP_ENABLE_HEADLESS}.
+     *
+     * @return <tt>true</tt> or <tt>false</tt>.
+     */
+    public boolean isEnabledHeadless()
+    {
+        return getBooleanProperty(PROP_ENABLE_HEADLESS);
     }
 
     /**
