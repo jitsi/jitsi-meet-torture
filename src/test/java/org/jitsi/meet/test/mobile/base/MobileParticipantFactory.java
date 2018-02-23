@@ -15,10 +15,15 @@
  */
 package org.jitsi.meet.test.mobile.base;
 
+import io.appium.java_client.*;
+import io.appium.java_client.android.*;
+import io.appium.java_client.ios.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.remote.*;
 
+import java.net.*;
 import java.util.*;
 
 /**
@@ -38,19 +43,51 @@ public class MobileParticipantFactory
         super(config);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Participant<? extends WebDriver> createParticipant(
-        String configPrefix,
-        ParticipantOptions options)
+            String configPrefix, ParticipantOptions options)
     {
-        // FIXME fix builder to be the same way as in web and operate on
-        // MobileParticipantOptions
-        MobileParticipantBuilder builder
-            = MobileParticipantBuilder.createBuilder(
-                    config,
-                    configPrefix,
-                    options.getParticipantType());
+        ParticipantType type = options.getParticipantType();
 
-        return builder.startNewDriver();
+        if (!type.isMobile())
+        {
+            throw new IllegalArgumentException(
+                type + " is not supported by the mobile participant factory");
+        }
+
+        // The type here is important to have the right default values.
+        MobileParticipantOptions targetOptions
+            = type.isAndroid()
+                ? new AndroidParticipantOptions()
+                : new iOSParticipantOptions();
+
+        targetOptions.putAll(options);
+
+        URL appiumUrl = targetOptions.getAppiumServerUrl();
+        DesiredCapabilities capabilities = targetOptions.createCapabilities();
+
+        AppiumDriver<WebElement> driver
+            = type.isAndroid()
+                ? new AndroidDriver<>(appiumUrl, capabilities)
+                : new IOSDriver<>(appiumUrl, capabilities);
+
+        MobileParticipant participant
+            = new MobileParticipant(
+                    driver,
+                    targetOptions.getName(),
+                    targetOptions.getParticipantType(),
+                    targetOptions.getBundleId(),
+                    targetOptions.getCapabilityApp());
+
+        if (targetOptions.shouldReinstallApp()
+                && targetOptions.getBundleId() != null)
+        {
+            participant.reinstallAppIfInstalled();
+        }
+
+        return participant;
     }
 }
