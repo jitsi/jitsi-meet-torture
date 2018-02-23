@@ -76,4 +76,16 @@ public class MobileTestBase
             (MobileParticipant) participants
                 .createParticipant(getParticipant1Prefix());
     }
+
+    /**
+     * Mobile test are expected to operate only on {@link MobileParticipant}s,
+     * so create {@link MobileParticipantFactory} here.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    protected ParticipantFactory createParticipantFactory(Properties config)
+    {
+        return new MobileParticipantFactory(config);
+    }
 }

@@ -16,9 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.lang3.*;
-import org.jitsi.meet.test.mobile.base.*;
 import org.jitsi.meet.test.util.*;
-import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
@@ -28,7 +26,7 @@ import java.util.*;
  * to use WebParticipantFactory or MobileParticipantFactory.
  * @param <T> the type of the options (web or mobile).
  */
-public class ParticipantFactory<T extends ParticipantOptions>
+public abstract class ParticipantFactory<T extends ParticipantOptions>
 {
     /**
      * The url of the deployment to connect to.
@@ -92,28 +90,8 @@ public class ParticipantFactory<T extends ParticipantOptions>
             targetOptions.setName(configPrefix);
         }
 
-        Participant<? extends WebDriver> participant;
-
-        if (participantType.isWeb())
-        {
-            participant
-                = new WebParticipantFactory(config)
-                .createParticipant(
-                    configPrefix,
-                    targetOptions);
-        }
-        else if (participantType.isMobile())
-        {
-            participant
-                = new MobileParticipantFactory(config)
-                .createParticipant(
-                    configPrefix,
-                    targetOptions);
-        }
-        else
-        {
-            throw new IllegalArgumentException("Unknown participant type");
-        }
+        Participant<? extends WebDriver> participant
+            = doCreateParticipant(targetOptions);
 
         TestUtils.print(
             "Started " + participantType
@@ -121,6 +99,19 @@ public class ParticipantFactory<T extends ParticipantOptions>
 
         return participant;
     }
+
+    /**
+     * Creates a new {@link Participant} for given options.
+     *
+     * @param options the {@link ParticipantOptions} for which new participant
+     * is to be created. This set already contains any properties loaded from
+     * the config merged with the explicitly passed options to
+     * {@link #createParticipant(String, ParticipantOptions)}.
+     *
+     * @return new {@link Participant} for given set of config options.
+     */
+    protected abstract Participant<? extends WebDriver> doCreateParticipant(
+            ParticipantOptions options);
 
     /**
      * Return new {@link JitsiMeetUrl} instance which has only

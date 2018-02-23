@@ -58,6 +58,18 @@ public class WebTestBase
     }
 
     /**
+     * Web tests are expected to operate only on {@link WebParticipant}s, so
+     * create {@link WebParticipantFactory}.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    protected ParticipantFactory createParticipantFactory(Properties config)
+    {
+        return new WebParticipantFactory(config);
+    }
+
+    /**
      * Starts participant1, if it is not started.
      */
     public void ensureOneParticipant()
