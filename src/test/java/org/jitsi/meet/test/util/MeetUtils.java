@@ -66,6 +66,22 @@ public class MeetUtils
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
         "return config.etherpad_base !== undefined;";
 
+    /**
+     * Returns the webrtc stats (in JSON format) of the specific participant
+     * of the specified peer connection.
+     *
+     * @param participant
+     * @param useJVB
+     */
+    public static String getRtcStats(WebDriver participant, boolean useJVB)
+    {
+        String script = String.format(
+                "return JSON.stringify("
+                + "APP.conference._room.%s.peerconnection.stats)",
+                useJVB ? "jvbJingleSession" : "p2pJingleSession");
+
+        return TestUtils.executeScriptAndReturnString(participant, script);
+    }
 
     /**
      * Obtains the RTP bundle port used by the given <tt>participant</tt>.
@@ -79,16 +95,15 @@ public class MeetUtils
      * failed to obtain it(the intention of throwing runtime exception is
      * to fail the test).
      */
-    public static int getBundlePort(WebDriver participant)
+    public static int getBundlePort(WebDriver participant, boolean useJVB)
     {
-        String portNumberStr
-            = TestUtils.executeScriptAndReturnString(
-                participant,
-                "return APP.conference._room.jvbJingleSession.peerconnection."
-                    + "localDescription.sdp.split('\\r\\n')."
-                    + "filter(function(line){ "
-                    + "return line.indexOf('a=candidate:') !== -1 "
-                    + "&& line.indexOf(' udp ') !== -1; })[0].split(' ')[5];");
+        StringBuilder sb = new StringBuilder("return APP.conference._room.");
+        sb.append(useJVB ? "jvbJingleSession" : "p2pJingleSession");
+        sb.append(".peerconnection.stats['Conn-audio-1-0-googLocalAddress']");
+        sb.append(".values[0].split(':')[1]");
+
+        String portNumberStr = TestUtils
+            .executeScriptAndReturnString(participant, sb.toString());
 
         if (portNumberStr == null)
         {

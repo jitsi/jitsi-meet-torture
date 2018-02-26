@@ -61,6 +61,20 @@ public class CmdExecutor
     public int executeCmd(final List<String> cmd)
         throws Exception
     {
+        return executeCmd(cmd, 5, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Executes a command through the {@link ProcessBuilder}.
+     *
+     * @param cmd the <tt>List<String></tt> which will be passed to
+     * @param timeout
+     * @param unit
+     * {@link ProcessBuilder} to build and execute the process.
+     */
+    public int executeCmd(final List<String> cmd, long timeout, TimeUnit unit)
+        throws Exception
+    {
         if (executorThread != null)
             throw new IllegalStateException();
 
@@ -93,7 +107,7 @@ public class CmdExecutor
 
         executorThread.start();
 
-        if (!waitEndSignal.await(5, TimeUnit.SECONDS)
+        if (!waitEndSignal.await(timeout, unit)
                 && process != null && result == null)
         {
             TestUtils.print("Killing the process: " + cmd);
