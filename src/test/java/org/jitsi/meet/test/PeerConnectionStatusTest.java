@@ -192,7 +192,14 @@ public class PeerConnectionStatusTest
         assertNotNull(secondPeer);
 
         // 1. Block media flow on 2nd and check if is indicated as disconnected
-        peer2bundlePort = MeetUtils.getBundlePort(secondPeer);
+        // XXX getting the bundle port won't work correctly on FF because
+        // it relies on webrtc-stats collection (which is disabled in FF) and
+        // on the Conn-audio-1-0-googLocalAddress which is a goog prefixed
+        // webrtc-stat and doesn't exist on FF. The old way of getting the
+        // bundle port doesn't work on the grid because of trickle-ice: the
+        // SDP contains only host candidates, whereas the nodes connect with
+        // each other using peer reflexive candidates.
+        peer2bundlePort = MeetUtils.getBundlePort(secondPeer, true);
         print(
             "Local bundle port for 2: " + peer2bundlePort);
         blockPort(peer2bundlePort);
