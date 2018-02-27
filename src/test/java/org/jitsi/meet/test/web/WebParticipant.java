@@ -289,13 +289,14 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public void pressShortcut(Character shortcut)
     {
-        // We just need some element to which to send the shortcut (so that
-        // the focused element doesn't swallow them).
+        // We've observed intermittent failures with the keys being sent to the
+        // wrong element (e.g. the chat input field). Selecting "body" instead
+        // of another element seems to make this condition appear less often.
         WebDriver driver = getDriver();
-        WebElement largeVideo = driver.findElement(By.id("largeVideo"));
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
-        actions.moveToElement(largeVideo);
-        actions.sendKeys(largeVideo, shortcut.toString());
+        actions.moveToElement(body);
+        actions.sendKeys(body, shortcut.toString());
         actions.perform();
     }
 
