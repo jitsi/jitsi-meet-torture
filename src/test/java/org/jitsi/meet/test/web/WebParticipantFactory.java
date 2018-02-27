@@ -56,7 +56,22 @@ public class WebParticipantFactory
      */
     public WebParticipantFactory(Properties config)
     {
-        super(WebParticipantOptions.moveLegacyGlobalProperties(config));
+        super(config);
+    }
+
+    /**
+     * Include web specific globals.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> getGlobalConfigKeys()
+    {
+        List<String> globalKeys =  super.getGlobalConfigKeys();
+
+        globalKeys.addAll(WebParticipantOptions.getSystemGlobalPropNames());
+
+        return globalKeys;
     }
 
     /**
@@ -68,10 +83,6 @@ public class WebParticipantFactory
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();
 
-        webOptions.load(
-                config, WebParticipantOptions.GLOBAL_PROP_PREFIX);
-
-        // Explicitly passed options go on top of "global prefix" options.
         webOptions.putAll(options);
 
         return new WebParticipant(

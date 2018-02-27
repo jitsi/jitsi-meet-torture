@@ -44,6 +44,26 @@ public class MobileParticipantFactory
     }
 
     /**
+     * Include global properties specific to mobile.
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> getGlobalConfigKeys()
+    {
+        List<String> systemGlobalKeys = new LinkedList<>();
+
+        // If at any point Android or iOS will require to handle global
+        // properties they will have to be included here as well. The reason why
+        // it's done this way is that the ParticipantOptions type is not known
+        // until config properties are loaded and merged with the explicit
+        // options.
+        systemGlobalKeys.addAll(
+            MobileParticipantOptions.getSystemGlobalPropNames());
+
+        return systemGlobalKeys;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

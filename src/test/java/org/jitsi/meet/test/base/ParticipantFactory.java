@@ -29,9 +29,15 @@ import java.util.*;
 public abstract class ParticipantFactory<T extends ParticipantOptions>
 {
     /**
+     * A prefix for global options (not per participant).
+     */
+    private static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
+
+    /**
      * The url of the deployment to connect to.
      */
-    public static final String JITSI_MEET_URL_PROP = "jitsi-meet.instance.url";
+    private static final String JITSI_MEET_URL_PROP
+        = GLOBAL_PROP_PREFIX + ".instance.url";
 
     /**
      * The test config.
@@ -47,6 +53,8 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
     protected ParticipantFactory(Properties config)
     {
         this.config = Objects.requireNonNull(config, "config");
+
+        moveSystemGlobalProperties();
     }
 
     /**
@@ -62,17 +70,22 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
     {
         ParticipantOptions targetOptions = new ParticipantOptions();
 
-        // Load the config options
+        // Load the global properties
+        targetOptions.load(config, GLOBAL_PROP_PREFIX);
+
+        // Load the config options onto of the globals
         targetOptions.load(config, configPrefix);
 
         // Put explicit options on top of whatever has been loaded from
-        // the config
+        // the config and the globals
         if (options != null)
         {
             targetOptions.putAll(options);
         }
 
-        // It will be Chrome by default...
+        // If at this point there's no participant type we'll go with Chrome,
+        // because the web tests were first and we don't want to require changes
+        // to the old web run configs.
         ParticipantType participantType = targetOptions.getParticipantType();
         if (participantType == null)
         {
@@ -98,6 +111,21 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
                 + " driver for prefix: " + configPrefix);
 
         return participant;
+    }
+
+    /**
+     * Gathers all the participant properties which can be specified from
+     * the system global scope (are not proceeded with any prefix due to various
+     * reasons). Those properties are then moved over to the
+     * {@link #GLOBAL_PROP_PREFIX}, so that they can be loaded with global
+     * prefixed options (since they share the same global level).
+     *
+     * @return the list of key which will be moved over to
+     * the {@link #GLOBAL_PROP_PREFIX}.
+     */
+    protected List<String> getGlobalConfigKeys()
+    {
+        return new LinkedList<>();
     }
 
     /**
@@ -127,5 +155,31 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
         url.setServerUrl(config.getProperty(JITSI_MEET_URL_PROP));
 
         return url;
+    }
+
+    /**
+     * This will move all global properties (not proceeded with any prefix)
+     * under the {@link #GLOBAL_PROP_PREFIX}. This will allow to simplify
+     * the code which has to deal with global properties.
+     * Ideally we would not use global properties, but some of them are out of
+     * our control.
+     */
+    private void moveSystemGlobalProperties()
+    {
+        List<String> systemGlobalKeys = getGlobalConfigKeys();
+
+        for (String systemGlobalKey : systemGlobalKeys)
+        {
+            String value = config.getProperty(systemGlobalKey);
+
+            if (StringUtils.isNotBlank(value))
+            {
+                config.setProperty(
+                    GLOBAL_PROP_PREFIX + "." + systemGlobalKey, value);
+
+                // Clear the global one
+                config.remove(systemGlobalKey);
+            }
+        }
     }
 }

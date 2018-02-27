@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test.web;
 
-import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.base.*;
 
 import java.net.*;
@@ -33,10 +32,6 @@ public class WebParticipantOptions
      */
     private static final String DEFAULT_REMOTE_ADDRESS_NAME
         = "http://localhost:4444/wd/hub";
-    /**
-     * A prefix for global options (not per participant).
-     */
-    static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
 
     private static final String PROP_BINARY = "binary";
 
@@ -81,47 +76,19 @@ public class WebParticipantOptions
     private static final String PROP_VERSION = "version";
 
     /**
-     * This will move all global properties which used to be specified without
-     * the {@link #GLOBAL_PROP_PREFIX} under that prefix. This will allow to
-     * simplify the code which has to deal with global properties.
+     * Get web specific global property names. See
+     * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
-     * @param properties - The config instance which will be modified in place.
-     *
-     * @return the same {@link Properties} instance which was passed as
-     * an argument.
      */
-    static Properties moveLegacyGlobalProperties(Properties properties)
+    public static List<String> getSystemGlobalPropNames()
     {
-        moveLegacyGlobalProperty(properties, PROP_DISABLE_NOSANBOX);
-        moveLegacyGlobalProperty(properties, PROP_ENABLE_HEADLESS);
-        moveLegacyGlobalProperty(
-            properties, PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
+        List<String> globalKeys = new LinkedList<>();
 
-        return properties;
-    }
+        globalKeys.add(PROP_DISABLE_NOSANBOX);
+        globalKeys.add(PROP_ENABLE_HEADLESS);
+        globalKeys.add(PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
 
-    /**
-     * A subroutine for {@link #moveLegacyGlobalProperties(Properties)}. Move
-     * specified property over to the key with added
-     * {@link #GLOBAL_PROP_PREFIX} and deletes the old key.
-     *
-     * @param props - The {@link Properties} which will be modified in place.
-     * @param key - The global property key which is to be moved under
-     * the {@link #GLOBAL_PROP_PREFIX}.
-     */
-    private static void moveLegacyGlobalProperty(Properties props, String key)
-    {
-        String value = props.getProperty(key);
-
-        if (StringUtils.isNotBlank(value))
-        {
-            props.setProperty(
-                GLOBAL_PROP_PREFIX + "." + key,
-                value);
-        }
-
-        // Clear the global one
-        props.remove(key);
+        return globalKeys;
     }
 
     /**

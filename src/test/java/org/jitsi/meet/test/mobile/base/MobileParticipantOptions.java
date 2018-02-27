@@ -183,14 +183,28 @@ public class MobileParticipantOptions
     {
         Properties defaults = super.initDefaults();
 
-        // FIXME those have to be loaded from global as well, because can be
-        // specified by the Amazon device far runner.
         defaults.setProperty(
             PROP_APPIUM_SERVER_ADDRESS, DEFAULT_APPIUM_SERVER_ADDRESS);
         defaults.setProperty(
             PROP_APPIUM_SERVER_PORT, DEFAULT_APPIUM_SERVER_PORT);
 
         return defaults;
+    }
+
+    /**
+     * Enumerates mobile specific global properties.
+     */
+    public static List<String> getSystemGlobalPropNames()
+    {
+        List<String> globals = new LinkedList<>();
+
+        // Those properties are specified by the Amazon device farm runner and
+        // we can not do anything about that, so lets just have them moved over
+        // to the global prefix.
+        globals.add(PROP_APPIUM_SERVER_ADDRESS);
+        globals.add(PROP_APPIUM_SERVER_PORT);
+
+        return globals;
     }
 
     /**
