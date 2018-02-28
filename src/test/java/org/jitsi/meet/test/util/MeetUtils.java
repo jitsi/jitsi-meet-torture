@@ -124,22 +124,6 @@ public class MeetUtils
     }
 
     /**
-     * Returns the value for the given <tt>key</tt> from the config.js loaded
-     * for the given <tt>participant</tt>.
-     *
-     * @param participant the <tt>WebDriver</tt> instance which runs conference
-     *                    participant.
-     * @param key the <tt>String</tt> key from config.js.
-     * @return the value for the given <tt>key</tt> from the config.js loaded
-     * for the given <tt>participant</tt>.
-     */
-    public static Object getConfigValue(WebDriver participant, String key)
-    {
-        return ((JavascriptExecutor) participant)
-                .executeScript("return config." + key);
-    }
-
-    /**
      * Checks whether given <tt>WebDriver</tt> instance has RTP stats support.
      *
      * @param driver the <tt>WebDriver</tt> for which we're getting the info

@@ -67,17 +67,12 @@ public class WebParticipantFactory
         = "remote.resource.path";
 
     /**
-     * The prefix for the URL used to download an extension.
+     * The format string for the URL used to download an extension.
      */
-    private static String EXT_DOWNLOAD_URL_PREFIX
+    private static String EXT_DOWNLOAD_URL_FORMAT
         = "https://clients2.google.com/service/update2/crx"
-            + "?response=redirect&prodversion=38.0&x=id%3D";
-
-    /**
-     * The suffix for the URL used to download an extension.
-     */
-    private static String EXT_DOWNLOAD_URL_SUFIX
-        = "%26installsource%3Dondemand%26uc";
+            + "?response=redirect&prodversion=38.0&x=id%%3D%s"
+            + "%%26installsource%%3Dondemand%%26uc";
 
     /**
      * The private constructor of the factory.
@@ -205,7 +200,7 @@ public class WebParticipantFactory
                 }
                 catch (IOException e)
                 {
-                    e.printStackTrace();
+                   throw new RuntimeException(e);
                 }
             }
 
@@ -356,17 +351,20 @@ public class WebParticipantFactory
      * @param id - the id of the extension.
      * @returns <tt>File</tt> associated with the downloaded extension.
      */
-    private static File downloadExtension(String id)
-        throws IOException
+    private static File downloadExtension(String id) throws IOException
     {
-        URL website = new URL(
-            EXT_DOWNLOAD_URL_PREFIX + id + EXT_DOWNLOAD_URL_SUFIX);
-        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        URL website = new URL(String.format(EXT_DOWNLOAD_URL_FORMAT, id));
         File extension = File.createTempFile("jidesha", ".crx");
         extension.deleteOnExit();
 
-        FileOutputStream fos = new FileOutputStream(extension);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        try(
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            FileOutputStream fos = new FileOutputStream(extension);
+            FileChannel fc = fos.getChannel();
+        )
+        {
+            fc.transferFrom(rbc, 0, Long.MAX_VALUE);
+        }
 
         return extension;
     }

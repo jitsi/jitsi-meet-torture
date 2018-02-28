@@ -20,6 +20,7 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
+import org.testng.*;
 
 import static org.testng.Assert.*;
 
@@ -45,15 +46,7 @@ public class DesktopSharingTest
     {
         super.setupClass();
 
-        ensureOneParticipant();
 
-        ensureTwoParticipants(
-            null, null, null,
-            new WebParticipantOptions().setChromeExtensionId(
-                (String) MeetUtils.getConfigValue(
-                    getParticipant1().getDriver(),
-                    "desktopSharingChromeExtId")
-            ));
     }
 
     /**
@@ -62,6 +55,20 @@ public class DesktopSharingTest
     @Test
     public void testDesktopSharingStart()
     {
+        ensureOneParticipant();
+
+        String extId
+                = (String) getParticipant1().getConfigValue(
+                "desktopSharingChromeExtId");
+
+        if(extId == null) {
+            throw new SkipException(
+                "No Desktop sharing configuration detected. Disabling test.");
+        }
+
+        ensureTwoParticipants(
+                null, null, null,
+                new WebParticipantOptions().setChromeExtensionId(extId));
         startDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(true);
         testDesktopSharingInPresence("desktop");
@@ -71,7 +78,7 @@ public class DesktopSharingTest
     /**
      * Check desktop sharing stop.
      */
-    @Test
+    @Test(dependsOnMethods = { "testDesktopSharingStart" })
     public void testDesktopSharingStop()
     {
         stopDesktopSharing();
