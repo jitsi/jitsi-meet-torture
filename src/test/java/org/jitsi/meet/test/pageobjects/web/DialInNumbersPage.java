@@ -27,7 +27,7 @@ public class DialInNumbersPage
      * {@link DialInNumbersPage}.
      */
     private final String CONFERNCE_ID_MESSAGE = "dial-in-conference-id";
-    private final String NUMBERS = "dial-in-numbers-table";
+    private final String NUMBERS = "dial-in-numbers-list";
     private final String NUMBER = "dial-in-number";
 
     /**
