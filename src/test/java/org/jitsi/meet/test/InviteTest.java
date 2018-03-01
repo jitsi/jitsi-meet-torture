@@ -4,6 +4,7 @@ import org.jitsi.meet.test.base.Participant;
 import org.jitsi.meet.test.util.MeetUtils;
 import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
 import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.util.TestUtils;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.WebDriver;
 import org.testng.*;
@@ -102,6 +103,9 @@ public class InviteTest extends WebTestBase
         String displayedPin = infoDialog.getPinNumber();
 
         infoDialog.openDialInNumbersPage();
+
+        // give some time for the window to open and load
+        TestUtils.waitMillis(2000);
 
         WebDriver driver = participant.getDriver();
 
