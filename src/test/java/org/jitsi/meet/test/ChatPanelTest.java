@@ -17,6 +17,7 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.ChatPanel;
+import org.jitsi.meet.test.pageobjects.web.Toolbar;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 
@@ -70,13 +71,14 @@ public class ChatPanelTest
         participant.setDisplayName("bla");
 
         ChatPanel chatPanel = participant.getChatPanel();
+        Toolbar toolbar = participant.getToolbar();
 
         assertFalse(
             chatPanel.isOpen(),
             "The chat panel should be initially closed");
 
         // The chat panel should be open after clicking the button
-        chatPanel.clickToolbarButton();
+        toolbar.clickChatButton();
         chatPanel.assertOpen();
 
         // The chat panel should be closed after pressing the shortcut
@@ -88,7 +90,7 @@ public class ChatPanelTest
         chatPanel.assertOpen();
 
         // The chat panel should be closed after clicking the button
-        chatPanel.clickToolbarButton();
+        toolbar.clickChatButton();
         chatPanel.assertClosed();
     }
 }

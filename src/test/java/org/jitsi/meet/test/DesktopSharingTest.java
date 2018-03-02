@@ -17,12 +17,9 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 import org.testng.*;
 
-import static org.testng.Assert.*;
 
 /**
  * Launches a hook script that will launch a participant that will join
@@ -31,16 +28,6 @@ import static org.testng.Assert.*;
 public class DesktopSharingTest
     extends WebTestBase
 {
-    /**
-     * The id of the desktop sharing button.
-     */
-    private static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
-
-    /**
-     * The XPATH of the desktop sharing button.
-     */
-    private static String DS_BUTTON_XPATH = "//a[@id='" + DS_BUTTON_ID + "']";
-
     @Override
     public void setupClass()
     {
@@ -93,32 +80,14 @@ public class DesktopSharingTest
      */
     private void testDesktopSharingInPresence(final String  expectedResult)
     {
-        // now lets check whether his stream is screen
         String participant1Jid
             = MeetUtils.getResourceJid(getParticipant2().getDriver());
 
-        // holds the last retrieved value for the remote type
-        final Object[] remoteVideoType = new Object[1];
-        try
-        {
-            final String scriptToExecute = "return APP.UI.getRemoteVideoType('"
-                + participant1Jid + "');";
-            (new WebDriverWait(
-                    getParticipant2().getDriver(), 5))
-                .until((ExpectedCondition<Boolean>) d -> {
-                    Object res =
-                        getParticipant1().executeScript(scriptToExecute);
-                    remoteVideoType[0] = res;
-
-                    return res != null && res.equals(expectedResult);
-                });
-        }
-        catch (TimeoutException e)
-        {
-            assertEquals(
-                    expectedResult, remoteVideoType[0],
-                    "Wrong video type, maybe desktop sharing didn't work");
-        }
+        TestUtils.waitForStrings(
+            getParticipant2().getDriver(),
+                "return APP.UI.getRemoteVideoType('" + participant1Jid + "');",
+            expectedResult,
+            5);
     }
 
     /**
@@ -126,15 +95,8 @@ public class DesktopSharingTest
      */
     private void startDesktopSharing()
     {
-        TestUtils.waitForElementByXPath(
-                getParticipant2().getDriver(),
-                DS_BUTTON_XPATH,
-                5);
-        MeetUIUtils.clickOnToolbarButton(getParticipant2().getDriver(),
-                DS_BUTTON_ID);
-        TestUtils.waitForElementContainsClassByXPath(
-                getParticipant2().getDriver(), DS_BUTTON_XPATH,
-                "toggled", 2);
+        ((WebParticipant)getParticipant2())
+            .getToolbar().clickDesktopSharingButton();
     }
 
     /**
@@ -142,15 +104,8 @@ public class DesktopSharingTest
      */
     private void stopDesktopSharing()
     {
-        TestUtils.waitForElementByXPath(
-                getParticipant2().getDriver(),
-                DS_BUTTON_XPATH,
-                5);
-        MeetUIUtils.clickOnToolbarButton(getParticipant2().getDriver(),
-                DS_BUTTON_ID);
-        TestUtils.waitForElementNotContainsClassByXPath(
-                getParticipant2().getDriver(), DS_BUTTON_XPATH,
-                "toggled", 2);
+        ((WebParticipant)getParticipant2())
+            .getToolbar().clickDesktopSharingButton();
     }
 
     /**

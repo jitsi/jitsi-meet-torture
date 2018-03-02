@@ -19,6 +19,7 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.ChatPanel;
 import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
 import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.pageobjects.web.Toolbar;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
@@ -50,6 +51,7 @@ public class WebParticipant extends Participant<WebDriver>
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
+    private Toolbar toolbar;
 
     /**
      * Constructs a Participant.
@@ -348,5 +350,17 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return infoDialog;
+    }
+
+    /**
+     * @return a representation of the toolbar of this participant.
+     */
+    public Toolbar getToolbar() {
+        if (toolbar == null)
+        {
+            toolbar = new Toolbar(this);
+        }
+
+        return toolbar;
     }
 }
