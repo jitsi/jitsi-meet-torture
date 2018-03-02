@@ -65,7 +65,7 @@ public class BandwidthEstimationTest
      * Default tc script which will work only on linux.
      */
     private static final String DEFAULT_TC_SCRIPT
-        = "scripts/tc-port-sch.sh";
+        = "scripts/tc-port-schedule.sh";
 
     /**
      * Default benchmark script which will work only on linux.
