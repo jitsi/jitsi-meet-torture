@@ -28,13 +28,11 @@ import org.testng.*;
 public class DesktopSharingTest
     extends WebTestBase
 {
-    @Override
-    public void setupClass()
-    {
-        super.setupClass();
-
-
-    }
+    /**
+     * The xpath for the local video element.
+     */
+    private static final String LOCAL_VIDEO_XPATH
+        = "//span[@id='localVideoWrapper']";
 
     /**
      * Check desktop sharing start.
@@ -124,7 +122,10 @@ public class DesktopSharingTest
         MeetUIUtils.clickOnToolbarButton(
             getParticipant1().getDriver(), "toggleFilmstripButton");
 
-        TestUtils.waitMillis(5000);
+        TestUtils.waitForNotDisplayedElementByXPath(
+            getParticipant1().getDriver(),
+            LOCAL_VIDEO_XPATH,
+            5);
 
         // check layout
         new VideoLayoutTest().driverVideoLayoutTest(
@@ -134,6 +135,9 @@ public class DesktopSharingTest
         MeetUIUtils.clickOnToolbarButton(
             getParticipant1().getDriver(), "toggleFilmstripButton");
 
-        TestUtils.waitMillis(5000);
+        TestUtils.waitForDisplayedElementByXPath(
+            getParticipant1().getDriver(),
+            LOCAL_VIDEO_XPATH,
+            5);
     }
 }
