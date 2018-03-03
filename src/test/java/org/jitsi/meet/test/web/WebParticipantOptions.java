@@ -32,6 +32,12 @@ public class WebParticipantOptions
     private static final String VERSION_PROP = "version";
 
     /**
+     * The id of the chrome extension that will be loaded
+     * on opening participant driver.
+     */
+    private static final String CHROME_EXTENSION_ID = "chromeExtensionID";
+
+    /**
      * A prefix for global options (not per participant).
      */
     private static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
@@ -68,6 +74,7 @@ public class WebParticipantOptions
      *
      * @param fakeStreamAudioFile full name of wav file for the fake audio
      *                            device.
+     * @return a reference to this object.
      */
     public WebParticipantOptions setFakeStreamAudioFile(
         String fakeStreamAudioFile)
@@ -85,11 +92,24 @@ public class WebParticipantOptions
      *
      * @param fakeStreamVideoFile full name of y4m file for the fake video
      *                            device.
+     * @return a reference to this object.
      */
     public WebParticipantOptions setFakeStreamVideoFile(
         String fakeStreamVideoFile)
     {
         this.setProperty(FAKE_VIDEO_PROP, fakeStreamVideoFile);
+
+        return this;
+    }
+
+    /**
+     * Sets the chrome extension id to be used.
+     * @param extensionId the chrome extension id to be used.
+     * @return a reference to this object.
+     */
+    public WebParticipantOptions setChromeExtensionId(String extensionId)
+    {
+        this.setProperty(CHROME_EXTENSION_ID, extensionId);
 
         return this;
     }
@@ -139,5 +159,14 @@ public class WebParticipantOptions
     public String getFakeStreamVideoFile()
     {
         return (String)this.getProperty(FAKE_VIDEO_PROP);
+    }
+
+    /**
+     * Returns the chrome extension id option.
+     * @return the chrome extension id option.
+     */
+    public String getChromeExtensionId()
+    {
+        return (String)this.getProperty(CHROME_EXTENSION_ID);
     }
 }

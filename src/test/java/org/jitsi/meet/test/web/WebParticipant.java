@@ -19,6 +19,7 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.ChatPanel;
 import org.jitsi.meet.test.pageobjects.web.DialInNumbersPage;
 import org.jitsi.meet.test.pageobjects.web.InfoDialog;
+import org.jitsi.meet.test.pageobjects.web.Toolbar;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
@@ -50,6 +51,7 @@ public class WebParticipant extends Participant<WebDriver>
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
+    private Toolbar toolbar;
 
     /**
      * Constructs a Participant.
@@ -314,6 +316,20 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * Returns the value for the given <tt>key</tt> from the config.js loaded
+     * for the participant.
+     *
+     * @param key the <tt>String</tt> key from config.js.
+     * @return the value for the given <tt>key</tt> from the config.js loaded
+     * for the participant.
+     */
+    public Object getConfigValue(String key)
+    {
+        return ((JavascriptExecutor) getDriver())
+                .executeScript("return config." + key);
+    }
+
+    /**
      * @return a representation of the dial in page of this participant.
      */
     public DialInNumbersPage getDialInNumbersPage() {
@@ -335,5 +351,17 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return infoDialog;
+    }
+
+    /**
+     * @return a representation of the toolbar of this participant.
+     */
+    public Toolbar getToolbar() {
+        if (toolbar == null)
+        {
+            toolbar = new Toolbar(this);
+        }
+
+        return toolbar;
     }
 }
