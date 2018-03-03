@@ -71,12 +71,29 @@ public class MeetUtils
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
         "return config.etherpad_base !== undefined;";
 
+    /**
+     * Returns the webrtc stats (in JSON format) of the specific participant
+     * of the specified peer connection.
+     *
+     * @param driver
+     * @param useJVB TODO DOCUMENT
+     */
+    public static String getRtcStats(WebDriver driver, boolean useJVB)
+    {
+        String script = String.format(
+                "return JSON.stringify("
+                + "APP.conference._room.%s.peerconnection.stats)",
+                useJVB ? "jvbJingleSession" : "p2pJingleSession");
+
+        return TestUtils.executeScriptAndReturnString(driver, script);
+    }
 
     /**
      * Obtains the RTP bundle port used by the given <tt>participant</tt>.
      *
      * @param driver the <tt>WebDriver</tt> instance of the participant for
      * whose bundle port is to be obtained.
+     * @param useJVB TODO DOCUMENT
      *
      * @return an <tt>int</tt> with the bundle port number.
      *
@@ -84,16 +101,15 @@ public class MeetUtils
      * failed to obtain it(the intention of throwing runtime exception is
      * to fail the test).
      */
-    public static int getBundlePort(WebDriver driver)
+    public static int getBundlePort(WebDriver driver, boolean useJVB)
     {
-        String portNumberStr
-            = TestUtils.executeScriptAndReturnString(
-                driver,
-                "return APP.conference._room.jvbJingleSession.peerconnection."
-                    + "localDescription.sdp.split('\\r\\n')."
-                    + "filter(function(line){ "
-                    + "return line.indexOf('a=candidate:') !== -1 "
-                    + "&& line.indexOf(' udp ') !== -1; })[0].split(' ')[5];");
+        StringBuilder sb = new StringBuilder("return APP.conference._room.");
+        sb.append(useJVB ? "jvbJingleSession" : "p2pJingleSession");
+        sb.append(".peerconnection.stats['Conn-audio-1-0-googLocalAddress']");
+        sb.append(".values[0].split(':')[1]");
+
+        String portNumberStr = TestUtils
+            .executeScriptAndReturnString(driver, sb.toString());
 
         if (portNumberStr == null)
         {

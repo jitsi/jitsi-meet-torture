@@ -28,6 +28,7 @@ import org.openqa.selenium.safari.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
@@ -64,6 +65,14 @@ public class WebParticipantFactory
      */
     private static final String REMOTE_RESOURCE_PARENT_PATH_NAME_PROP
         = "remote.resource.path";
+
+    /**
+     * The format string for the URL used to download an extension.
+     */
+    private static String EXT_DOWNLOAD_URL_FORMAT
+        = "https://clients2.google.com/service/update2/crx"
+            + "?response=redirect&prodversion=38.0&x=id%%3D%s"
+            + "%%26installsource%%3Dondemand%%26uc";
 
     /**
      * The private constructor of the factory.
@@ -178,10 +187,24 @@ public class WebParticipantFactory
             final ChromeOptions ops = new ChromeOptions();
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
-            ops.addArguments("disable-extensions");
             ops.addArguments("disable-plugins");
             ops.addArguments("mute-audio");
             ops.addArguments("disable-infobars");
+
+            if (options.getChromeExtensionId() != null)
+            {
+                try
+                {
+                    ops.addExtensions(
+                        downloadExtension(options.getChromeExtensionId()));
+                }
+                catch (IOException e)
+                {
+                   throw new RuntimeException(e);
+                }
+            }
+
+            ops.addArguments("auto-select-desktop-capture-source=Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
@@ -321,5 +344,29 @@ public class WebParticipantFactory
         }
 
         return null;
+    }
+
+    /**
+     * Downloads an extension from the chrome webstore.
+     * @param id - the id of the extension.
+     * @returns <tt>File</tt> associated with the downloaded extension.
+     */
+    private static File downloadExtension(String id)
+        throws IOException
+    {
+        URL website = new URL(String.format(EXT_DOWNLOAD_URL_FORMAT, id));
+        File extension = File.createTempFile("jidesha", ".crx");
+        extension.deleteOnExit();
+
+        try(
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            FileOutputStream fos = new FileOutputStream(extension);
+            FileChannel fc = fos.getChannel();
+        )
+        {
+            fc.transferFrom(rbc, 0, Long.MAX_VALUE);
+        }
+
+        return extension;
     }
 }

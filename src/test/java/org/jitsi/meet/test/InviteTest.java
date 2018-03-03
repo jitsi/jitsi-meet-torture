@@ -98,6 +98,9 @@ public class InviteTest extends WebTestBase
 
         infoDialog.openDialInNumbersPage();
 
+        // give some time for the window to open and load
+        TestUtils.waitMillis(2000);
+
         WebDriver driver = participant.getDriver();
 
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());

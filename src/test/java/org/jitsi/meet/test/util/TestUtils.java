@@ -347,6 +347,28 @@ public class TestUtils
     }
 
     /**
+     * Waits until element will not contain class name
+     * passed with parameter
+     * @param driver the {@code WebDriver}.
+     * @param xpath the xpath to search for the element.
+     * @param className expected class value of the element.
+     * @param timeout the time to wait for the element in seconds.
+     */
+    public static void waitForElementNotContainsClassByXPath(
+            WebDriver driver,
+            final String xpath,
+            final String className,
+            long timeout)
+    {
+        new WebDriverWait(driver, timeout)
+                .until((ExpectedCondition<Boolean>) d -> {
+                    WebElement el = d.findElement(By.xpath(xpath));
+                    String classNames = el.getAttribute("class");
+                    return !classNames.contains(className);
+                });
+    }
+
+    /**
      * Waits until an element is not displayed.
      * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element

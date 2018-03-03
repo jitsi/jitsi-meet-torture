@@ -96,6 +96,6 @@ public class DialInNumbersPage
         TestUtils.waitForElementBy(
             driver,
             By.className(NUMBERS),
-            5);
+            10);
     }
 }

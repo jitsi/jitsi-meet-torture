@@ -420,6 +420,16 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
+     * Returns the value for the given <tt>key</tt> from the config.js loaded
+     * for the participant.
+     *
+     * @param key the <tt>String</tt> key from config.js.
+     * @return the value for the given <tt>key</tt> from the config.js loaded
+     * for the participant.
+     */
+    public abstract Object getConfigValue(String key);
+
+    /**
      * Presses a shortcut in this {@link Participant}'s driver.
      * @param shortcut the {@link Character} which represents the shortcut to
      * press.

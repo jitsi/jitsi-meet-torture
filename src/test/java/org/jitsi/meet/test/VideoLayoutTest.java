@@ -54,32 +54,18 @@ public class VideoLayoutTest
     @Test
     public void testVideoLayout()
     {
-        driverVideoLayoutTest(getParticipant1());
+        driverVideoLayoutTest(getParticipant1(), false);
     }
 
     /**
-     * TODO: document
-     * @param participant the participant.
+     * TODO DOCUMENT
+     * @param participant TODO DOCUMENT
+     * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
+     * otherwise.
      */
-    void driverVideoLayoutTest(Participant participant)
+    void driverVideoLayoutTest(Participant participant, boolean isScreenSharing)
     {
-        WebDriver driver = participant.getDriver();
-        String chatXPath = "//div[@id='chat_container']";
-        String contactListXPath = "//div[@id='contacts_container']";
-        String settingsXPath = "//div[@id='settings_container']";
-
-        WebElement chatElem = driver.findElement(By.xpath(chatXPath));
-        WebElement contactListElem
-            = driver.findElement(By.xpath(contactListXPath));
-        WebElement settingsElem
-            = driver.findElement(By.xpath(settingsXPath));
-
-        if (!chatElem.isDisplayed()
-                && !contactListElem.isDisplayed()
-                && !settingsElem.isDisplayed())
-        {
-            doLargeVideoSizeCheck(participant);
-        }
+        doLargeVideoSizeCheck(participant, isScreenSharing);
     }
 
     /**
@@ -87,30 +73,37 @@ public class VideoLayoutTest
      *
      * @param participant The the participant for whom we'll try to check the
      * video size.
+     * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
+     * otherwise.
      */
-    private void doLargeVideoSizeCheck(Participant participant)
+    private void doLargeVideoSizeCheck(
+        Participant participant,
+        boolean isScreenSharing)
     {
-        Long innerWidth
-            = (Long) participant.executeScript("return window.innerWidth;");
-
-        Long innerHeight
-            = (Long) participant.executeScript("return window.innerHeight;");
+        Integer innerWidth
+            = ((Long) participant.executeScript("return window.innerWidth;"))
+                .intValue();
+        Integer innerHeight
+            = ((Long) participant.executeScript("return window.innerHeight;"))
+                .intValue();
 
         WebElement largeVideo
             = participant.getDriver().findElement(
                 By.xpath("//div[@id='largeVideoContainer']"));
 
-        assertEquals(largeVideo.getSize().getWidth(), innerWidth.intValue());
-        assertEquals(largeVideo.getSize().getHeight(), innerHeight.intValue());
+        String filmstripXPath = "//div[contains(@class, 'filmstrip')]";
+        WebElement filmstrip
+            = participant.getDriver().findElement(By.xpath(filmstripXPath));
+        int filmstripWidth
+            = (filmstrip == null
+                || !filmstrip.isDisplayed()
+                || !isScreenSharing)
+                    ? 0 : filmstrip.getSize().getWidth();
 
-        // now let's check whether the video wrapper take all the height
-        // this should not be the case only for desktop sharing with thumbs
-        // visible
-        WebElement largeVideoWrapper
-            = participant.getDriver().findElement(
-                By.xpath("//div[@id='largeVideoWrapper']"));
 
-        assertEquals(largeVideoWrapper.getSize().getHeight(),
-            innerHeight.intValue());
+        assertTrue(
+            (largeVideo.getSize().getWidth() == innerWidth - filmstripWidth)
+                || (largeVideo.getSize().getHeight() == innerHeight),
+            "TODO: add a description of what is expected");
     }
 }

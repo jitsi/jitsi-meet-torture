@@ -15,6 +15,11 @@
             <class name="org.jitsi.meet.test.AvatarTest" />
         </classes>
     </test>
+    <test name="BandwidthEstimationTest">
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
     <test name="ChatPanelTest">
         <classes>
             <class name="org.jitsi.meet.test.ChatPanelTest" />
@@ -34,6 +39,11 @@
     <test name="DataChannelTest">
         <classes>
             <class name="org.jitsi.meet.test.DataChannelTest" />
+        </classes>
+    </test>
+    <test name="DesktopSharingTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DesktopSharingTest" />
         </classes>
     </test>
     <test name="DisplayNameTest">
@@ -167,16 +177,6 @@
     <test name="ConferenceMigrationTest">
         <classes>
             <class name="org.jitsi.meet.test.ConferenceMigrationTest" />
-        </classes>
-    </test>
-    <test name="DesktopSharingImitationTest">
-        <classes>
-            <class name="org.jitsi.meet.test.DesktopSharingImitationTest" />
-        </classes>
-    </test>
-    <test name="DesktopSharingTest">
-        <classes>
-            <class name="org.jitsi.meet.test.DesktopSharingTest" />
         </classes>
     </test>
     <test name="JVBConferencesCheck">

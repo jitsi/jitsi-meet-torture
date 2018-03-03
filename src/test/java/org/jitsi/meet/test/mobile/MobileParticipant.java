@@ -128,6 +128,13 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     }
 
     /**
+     * Not implemented yet.
+     *
+     * @return <tt>null</tt>
+     */
+    public Object getConfigValue(String key) { return null; }
+
+    /**
      * @return {@link ToolbarView} for this participant.
      */
     public ToolbarView getToolbarView()

@@ -196,13 +196,19 @@ public class PeerConnectionStatusTest
         WebDriver driver2 = getParticipant2().getDriver();
         assertNotNull(driver2);
 
-        // 1. Block media flow on participant2 and check if it is indicated
-        // as disconnected
-        bundlePort2 = MeetUtils.getBundlePort(driver2);
-        print("Local bundle port for 2: " + bundlePort2);
+        // 1. Block media flow on 2nd and check if is indicated as disconnected
+        // XXX getting the bundle port won't work correctly on FF because
+        // it relies on webrtc-stats collection (which is disabled in FF) and
+        // on the Conn-audio-1-0-googLocalAddress which is a goog prefixed
+        // webrtc-stat and doesn't exist on FF. The old way of getting the
+        // bundle port doesn't work on the grid because of trickle-ice: the
+        // SDP contains only host candidates, whereas the nodes connect with
+        // each other using peer reflexive candidates.
+        bundlePort2 = MeetUtils.getBundlePort(driver2, true);
+        print("Local bundle port for participant2: " + bundlePort2);
         blockPort(bundlePort2);
 
-        // 2. Select participant2 on participant1
+        // 2. Select 2nd participant on Owner
         MeetUIUtils.selectRemoteVideo(
             driver1, getParticipant2().getEndpointId());
         // At this point user 2 thumb should be a display name
