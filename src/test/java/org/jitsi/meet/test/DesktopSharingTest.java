@@ -85,7 +85,7 @@ public class DesktopSharingTest
         String participant2EndpointId = getParticipant2().getEndpointId();
 
         TestUtils.waitForStrings(
-            getParticipant2().getDriver(),
+            getParticipant1().getDriver(),
             "return APP.UI.getRemoteVideoType('" + participant2EndpointId +
                 "');",
             expectedResult,
