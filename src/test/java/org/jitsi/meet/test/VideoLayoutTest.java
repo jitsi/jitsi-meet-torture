@@ -58,10 +58,10 @@ public class VideoLayoutTest
     }
 
     /**
-     * The webdriver to test.
-     * @param participant to test.
+     * TODO DOCUMENT
+     * @param participant TODO DOCUMENT
      * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
-     *                        otherwise.
+     * otherwise.
      */
     void driverVideoLayoutTest(Participant participant, boolean isScreenSharing)
     {
@@ -71,20 +71,20 @@ public class VideoLayoutTest
     /**
      * Checks if the video container fits the inner window width and height.
      *
-     * @param participant <tt>WebDriver</tt> instance of the participant for whom
-     *                  we'll try to check the video size
+     * @param participant The the participant for whom we'll try to check the
+     * video size.
      * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
-     *                        otherwise.
+     * otherwise.
      */
     private void doLargeVideoSizeCheck(
         Participant participant,
         boolean isScreenSharing)
     {
-        Integer innerWidth = ((Long)
-            participant.executeScript("return window.innerWidth;"))
+        Integer innerWidth
+            = ((Long) participant.executeScript("return window.innerWidth;"))
                 .intValue();
-        Integer innerHeight = ((Long)
-            participant.executeScript("return window.innerHeight;"))
+        Integer innerHeight
+            = ((Long) participant.executeScript("return window.innerHeight;"))
                 .intValue();
 
         WebElement largeVideo
@@ -97,12 +97,13 @@ public class VideoLayoutTest
         int filmstripWidth
             = (filmstrip == null
                 || !filmstrip.isDisplayed()
-                || isScreenSharing == false)
+                || !isScreenSharing)
                     ? 0 : filmstrip.getSize().getWidth();
 
 
-        assertTrue((largeVideo.getSize().getWidth()
-                == (innerWidth - filmstripWidth))
-            || (largeVideo.getSize().getHeight() == innerHeight));
+        assertTrue(
+            (largeVideo.getSize().getWidth() == innerWidth - filmstripWidth)
+                || (largeVideo.getSize().getHeight() == innerHeight),
+            "TODO: add a description of what is expected");
     }
 }

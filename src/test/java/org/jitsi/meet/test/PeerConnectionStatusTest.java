@@ -25,21 +25,22 @@ import org.testng.annotations.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * The test checks the UI for displaying notifications about participants media
- * connectivity status(connection between the peer and the JVB).
+ * connectivity status (connection between the participant and the JVB).
  *
  * 1. Join with 2 participants {@link #testInitialize()}.
- * 2. Block media flow on 2nd and check if is indicated as disconnected
- *    {@link #test2ndPeerInterruptedDuringCall()}.
+ * 2. Block media flow on participant2 and check if is indicated as disconnected
+ *    {@link #testParticipant2InterruptedDuringCall()}.
  * 3. Unblock the ports and see if the UI updated accordingly
- *    {@link #test2ndPeerRestored()}.
- * 4. Block the 2nd peer media ports and wait until channels expire on
- *    the bridge then join with the 3rd participant and test switching between
- *    participants {@link #testJoin3rdWhile2ndExpired()}.
- * 5. Re-join 2nd with "failICE" and see if others are notified
- *    {@link #test2ndPeerInterruptedDuringCall()}. This checks if the JVB will
+ *    {@link #testParticipant2Restored()}.
+ * 4. Block participant2's media ports and wait until channels expire on
+ *    the bridge then join with participant3 and test switching between
+ *    participants {@link #testJoinParticipant3WhileParticipant2Expired()}.
+ * 5. Re-join participant2 with "failICE" and see if others are notified
+ *    {@link #testParticipant2InterruptedDuringCall()}. This checks if the JVB will
  *    send disconnected notification for the participant who has never
  *    connected, but for whom the channels have been allocated.
  *
@@ -68,7 +69,7 @@ public class PeerConnectionStatusTest
      * UDP and TCP (inbound+outbound) traffic on the given port number.
      * If the script is called twice with different ports it is not important
      * if the previously blocked port gets unblocked.
-     * MUST always drop traffic from any to JVB's TCP port(4443 by default)
+     * MUST always drop traffic from any to JVB's TCP port (4443 by default)
      * <p>
      * 2. "--unblock-port {port number}" will remove the rules blocking given
      * port(should revert "--block-port {port number}").
@@ -76,9 +77,9 @@ public class PeerConnectionStatusTest
     private static String firewallScript;
 
     /**
-     * Stores the RTP bundle port number of the 2nd participant.
+     * Stores the RTP bundle port number of participant2.
      */
-    private static int peer2bundlePort = -1;
+    private static int bundlePort2 = -1;
 
     @Override
     public boolean skipTestByDefault()
@@ -122,7 +123,9 @@ public class PeerConnectionStatusTest
         throws Exception
     {
         if (portNumber == -1)
+        {
             throw new IllegalArgumentException("Trying to block port -1");
+        }
 
         CmdExecutor cmdExecutor = new CmdExecutor();
 
@@ -147,7 +150,9 @@ public class PeerConnectionStatusTest
         throws Exception
     {
         if (portNumber == -1)
+        {
             throw new IllegalArgumentException("Trying to unblock port -1");
+        }
 
         CmdExecutor cmdExecutor = new CmdExecutor();
 
@@ -183,13 +188,13 @@ public class PeerConnectionStatusTest
      * @throws Exception if something goes wrong.
      */
     @Test(dependsOnMethods = { "testInitialize" })
-    public void test2ndPeerInterruptedDuringCall()
+    public void testParticipant2InterruptedDuringCall()
         throws Exception
     {
-        WebDriver owner = getParticipant1().getDriver();
-        assertNotNull(owner);
-        WebDriver secondPeer = getParticipant2().getDriver();
-        assertNotNull(secondPeer);
+        WebDriver driver1 = getParticipant1().getDriver();
+        assertNotNull(driver1);
+        WebDriver driver2 = getParticipant2().getDriver();
+        assertNotNull(driver2);
 
         // 1. Block media flow on 2nd and check if is indicated as disconnected
         // XXX getting the bundle port won't work correctly on FF because
@@ -199,83 +204,88 @@ public class PeerConnectionStatusTest
         // bundle port doesn't work on the grid because of trickle-ice: the
         // SDP contains only host candidates, whereas the nodes connect with
         // each other using peer reflexive candidates.
-        peer2bundlePort = MeetUtils.getBundlePort(secondPeer, true);
-        print(
-            "Local bundle port for 2: " + peer2bundlePort);
-        blockPort(peer2bundlePort);
+        bundlePort2 = MeetUtils.getBundlePort(driver2, true);
+        print("Local bundle port for participant2: " + bundlePort2);
+        blockPort(bundlePort2);
 
         // 2. Select 2nd participant on Owner
-        MeetUIUtils.selectRemoteVideo(owner, secondPeer);
+        MeetUIUtils.selectRemoteVideo(
+            driver1, getParticipant2().getEndpointId());
         // At this point user 2 thumb should be a display name
-        MeetUIUtils.assertDisplayNameVisible(owner, secondPeer);
+        MeetUIUtils.assertDisplayNameVisible(
+            driver1, getParticipant2().getEndpointId());
 
-        // Check if 2nd user is marked as "disconnected" from 1st peer view
+        // Check if participant2 is marked as "disconnected" from participant1's
+        // view
         MeetUIUtils.verifyUserConnStatusIndication(
-            owner, secondPeer, false /* disconnected */);
-        MeetUIUtils.assertLargeVideoIsGrey(owner);
+            driver1, getParticipant2().getEndpointId(), false /* disconnected */);
+        MeetUIUtils.assertLargeVideoIsGrey(driver1);
 
         // 3. Switch to local video
-        MeetUIUtils.selectLocalVideo(owner);
+        MeetUIUtils.selectLocalVideo(driver1);
         // Now we're expecting to see gray video thumbnail
-        MeetUIUtils.assertGreyVideoThumbnailDisplayed(owner, secondPeer);
+        MeetUIUtils.assertGreyVideoThumbnailDisplayed(
+            driver1, getParticipant2().getEndpointId());
 
-        // Check also 2nd participant's local UI for indication
+        // Check also participant2's local UI for indication
         MeetUIUtils.verifyLocalConnStatusIndication(
-            secondPeer, false /* disconnected */);
+            driver2, false /* disconnected */);
 
         // 4. Select remote again
-        MeetUIUtils.selectRemoteVideo(owner, secondPeer);
+        MeetUIUtils.selectRemoteVideo(
+            driver1, getParticipant2().getEndpointId());
 
         // Mute video(this is not real live scenario, but we want to make
         // sure that the grey avatar is displayed if the connection gets
         // disrupted while video muted)
         StopVideoTest stopVideoTest = new StopVideoTest(this);
         stopVideoTest.stopVideoOnParticipantAndCheck();
-        MeetUIUtils.assertGreyAvatarOnLarge(owner);
+        MeetUIUtils.assertGreyAvatarOnLarge(driver1);
 
         // The avatar should remain
         stopVideoTest.startVideoOnParticipantAndCheck();
-        MeetUIUtils.assertGreyAvatarOnLarge(owner);
+        MeetUIUtils.assertGreyAvatarOnLarge(driver1);
     }
 
     /**
-     * Unblocks 2nd participant's ports and see if UI has been updated
+     * Unblocks participant2's ports and see if UI has been updated
      * accordingly.
      *
      * @throws Exception if anything unexpected happens.
      */
-    @Test(dependsOnMethods = { "test2ndPeerInterruptedDuringCall" })
-    public void test2ndPeerRestored()
+    @Test(dependsOnMethods = {"testParticipant2InterruptedDuringCall"})
+    public void testParticipant2Restored()
         throws Exception
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondPeer = getParticipant2().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
         // 1. Unlock the port and see if we recover
-        unblockPort(peer2bundlePort);
+        unblockPort(bundlePort2);
 
         // 2. Verify if connection has restored
-        MeetUIUtils.verifyUserConnStatusIndication(owner, secondPeer, true);
-        MeetUIUtils.assertLargeVideoNotGrey(owner);
+        MeetUIUtils.verifyUserConnStatusIndication(
+            driver1, getParticipant2().getEndpointId(), true);
+        MeetUIUtils.assertLargeVideoNotGrey(driver1);
 
         // 3. Check local status
-        MeetUIUtils.verifyLocalConnStatusIndication(secondPeer, true);
+        MeetUIUtils.verifyLocalConnStatusIndication(driver2, true);
     }
 
     /**
-     * Blocks 2nd participant's ports until they expire on the JVB and then join
-     * with 3rd to see if the notification has been sent as expected.
+     * Blocks participant2's ports until they expire on the JVB and then join
+     * with participant3 to see if the notification has been sent as expected.
      *
      * @throws Exception if something goes wrong
      */
-    @Test(dependsOnMethods = { "test2ndPeerRestored" })
-    public void test2ndPeerExpired()
+    @Test(dependsOnMethods = {"testParticipant2Restored"})
+    public void testParticipant2Expired()
         throws Exception
     {
-        WebDriver owner = getParticipant1().getDriver();
-        assertNotNull(owner);
-        WebDriver secondPeer = getParticipant2().getDriver();
-        assertNotNull(secondPeer);
+        WebDriver driver1 = getParticipant1().getDriver();
+        assertNotNull(driver1);
+        WebDriver driver2 = getParticipant2().getDriver();
+        assertNotNull(driver2);
 
         // The purpose of next steps is to check if JVB sends
         // "interrupted" notifications about the user's whose channels have
@@ -283,81 +293,85 @@ public class PeerConnectionStatusTest
 
         // Block the port and wait for the channels to expire on
         // the bridge(unrecoverable)
-        blockPort(peer2bundlePort);
-        MeetUIUtils.verifyUserConnStatusIndication(owner, secondPeer, false);
-        MeetUIUtils.verifyLocalConnStatusIndication(secondPeer, false);
+        blockPort(bundlePort2);
+        MeetUIUtils.verifyUserConnStatusIndication(
+            driver1, getParticipant2().getEndpointId(), false);
+        MeetUIUtils.verifyLocalConnStatusIndication(driver2, false);
 
         // FIXME it would be better to expire channels somehow
         TestUtils.waitMillis(65000);
     }
 
     /**
-     * Join with the 3rd participant while 2nd stays in the room with expired
+     * Join with participant3 while participant2 stays in the room with expired
      * channels. The point of these is to make sure that the JVB has notified
-     * the 3rd peer correctly.
+     * participant3 correctly.
      */
-    @Test(dependsOnMethods = { "test2ndPeerExpired" })
-    public void testJoin3rdWhile2ndExpired()
+    @Test(dependsOnMethods = {"testParticipant2Expired"})
+    public void testJoinParticipant3WhileParticipant2Expired()
         throws Exception
     {
-        // 8. Join with 3rd and see if the user is marked as interrupted
+        // 8. Join with participant3 and see if the user is marked as interrupted
         ensureThreeParticipants();
 
-        WebDriver owner = getParticipant1().getDriver();
-        assertNotNull(owner);
-        WebDriver secondPeer = getParticipant2().getDriver();
-        assertNotNull(secondPeer);
-        WebDriver thirdPeer = getParticipant3().getDriver();
-        assertNotNull(thirdPeer);
+        WebDriver driver1 = getParticipant1().getDriver();
+        assertNotNull(driver1);
+        WebDriver driver2 = getParticipant2().getDriver();
+        assertNotNull(driver2);
+        WebDriver driver3 = getParticipant3().getDriver();
+        assertNotNull(driver3);
 
         MeetUIUtils.verifyUserConnStatusIndication(
-            thirdPeer, secondPeer, false);
+            driver3, getParticipant2().getEndpointId(), false);
         MeetUIUtils.verifyUserConnStatusIndication(
-            thirdPeer, owner, true);
+            driver3, getParticipant1().getEndpointId(), true);
 
         // Select local video
-        MeetUIUtils.selectLocalVideo(thirdPeer);
+        MeetUIUtils.selectLocalVideo(driver3);
         // User 2 should be a grey avatar
-        MeetUIUtils.assertGreyAvatarDisplayed(thirdPeer, secondPeer);
+        MeetUIUtils.assertGreyAvatarDisplayed(
+            driver3, getParticipant2().getEndpointId());
         // Select disconnected participant
-        MeetUIUtils.selectRemoteVideo(thirdPeer, secondPeer);
-        MeetUIUtils.assertGreyAvatarOnLarge(thirdPeer);
+        MeetUIUtils.selectRemoteVideo(
+            driver3, getParticipant2().getEndpointId());
+        MeetUIUtils.assertGreyAvatarOnLarge(driver3);
 
         // Unblock the port
-        unblockPort(peer2bundlePort);
+        unblockPort(bundlePort2);
     }
 
     /**
-     * Closes 2nd participant and joins with special flag "failICE" set to true
+     * Closes participant2 and joins with special flag "failICE" set to true
      * in order to fail ICE initially. The bridge should notify others when
      * the user fails to establish ICE connection.
      */
-    @Test(dependsOnMethods = { "testJoin3rdWhile2ndExpired" })
-    public void test2ndFailsICEOnJoin()
+    @Test(dependsOnMethods = {"testJoinParticipant3WhileParticipant2Expired"})
+    public void testParticipant2FailsICEOnJoin()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        assertNotNull(owner);
-        WebDriver secondPeer = getParticipant2().getDriver();
-        assertNotNull(secondPeer);
-        WebDriver thirdPeer = getParticipant3().getDriver();
-        assertNotNull(thirdPeer);
+        WebDriver driver1 = getParticipant1().getDriver();
+        assertNotNull(driver1);
+        WebDriver driver2 = getParticipant2().getDriver();
+        assertNotNull(driver2);
+        WebDriver driver3 = getParticipant3().getDriver();
+        assertNotNull(driver3);
 
-        // Close 2nd and join with failICE=true
+        // Close participant2 and join with failICE=true
         getParticipant2().hangUp();
-        ensureTwoParticipants(null,
+        ensureTwoParticipants(
+            null,
             getJitsiMeetUrl().appendConfig("config.failICE=true"));
 
-        secondPeer = getParticipant2().getDriver();
-        assertNotNull(secondPeer);
+        driver2 = getParticipant2().getDriver();
+        assertNotNull(driver2);
 
         // It will be marked as disconnected only after 15 seconds since
         // the channels have been allocated.
         TestUtils.waitMillis(17000);
         // Now see if others will see him
         MeetUIUtils.verifyUserConnStatusIndication(
-            owner, secondPeer, false);
+            driver1, getParticipant2().getEndpointId(), false);
         MeetUIUtils.verifyUserConnStatusIndication(
-            thirdPeer, secondPeer, false);
+            driver3, getParticipant2().getEndpointId(), false);
 
         getParticipant3().hangUp();
     }
@@ -373,9 +387,9 @@ public class PeerConnectionStatusTest
 
         try
         {
-            if (peer2bundlePort != -1)
+            if (bundlePort2 != -1)
             {
-                unblockPort(peer2bundlePort);
+                unblockPort(bundlePort2);
             }
         }
         catch (Exception e)

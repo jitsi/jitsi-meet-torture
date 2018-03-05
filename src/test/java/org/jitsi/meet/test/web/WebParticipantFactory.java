@@ -191,7 +191,7 @@ public class WebParticipantFactory
             ops.addArguments("mute-audio");
             ops.addArguments("disable-infobars");
 
-            if(options.getChromeExtensionId() != null)
+            if (options.getChromeExtensionId() != null)
             {
                 try
                 {
@@ -347,11 +347,12 @@ public class WebParticipantFactory
     }
 
     /**
-     * Downloads extension from chrome webstore.
+     * Downloads an extension from the chrome webstore.
      * @param id - the id of the extension.
      * @returns <tt>File</tt> associated with the downloaded extension.
      */
-    private static File downloadExtension(String id) throws IOException
+    private static File downloadExtension(String id)
+        throws IOException
     {
         URL website = new URL(String.format(EXT_DOWNLOAD_URL_FORMAT, id));
         File extension = File.createTempFile("jidesha", ".crx");

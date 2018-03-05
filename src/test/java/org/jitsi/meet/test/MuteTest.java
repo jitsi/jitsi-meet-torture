@@ -57,15 +57,14 @@ public class MuteTest
     }
 
     /**
-     * Mutes the owner and checks at other participant is this is visible.
+     * Mutes participant1 and checks at other participant is this is visible.
      */
     @Test
-    public void muteOwnerAndCheck()
+    public void muteParticipant1AndCheck()
     {
         toggleMuteAndCheck(
-            "muteOwnerAndCheck",
             getParticipant1().getDriver(),
-            "owner",
+            "participant1",
             getParticipant2().getDriver(),
             true);
 
@@ -73,27 +72,25 @@ public class MuteTest
     }
 
     /**
-     * Unmutes owner and checks at other participant is this is visible.
+     * Unmutes participant1 and checks at other participant is this is visible.
      */
-    @Test(dependsOnMethods = { "muteOwnerAndCheck" })
-    public void unMuteOwnerAndCheck()
+    @Test(dependsOnMethods = {"muteParticipant1AndCheck"})
+    public void unmuteParticipant1AndCheck()
     {
         toggleMuteAndCheck(
-            "unMuteOwnerAndCheck",
             getParticipant1().getDriver(),
-            "owner",
+            "participant1",
             getParticipant2().getDriver(),
             false);
     }
 
     /**
-     * Mutes the participant and checks at owner side.
+     * Mutes the participant and checks at participant1's side.
      */
-    @Test(dependsOnMethods = { "unMuteOwnerAndCheck" })
-    public void muteParticipantAndCheck()
+    @Test(dependsOnMethods = {"unmuteParticipant1AndCheck"})
+    public void muteParticipant2AndCheck()
     {
         toggleMuteAndCheck(
-            "muteParticipantAndCheck",
             getParticipant2().getDriver(),
             "getParticipant2()",
             getParticipant1().getDriver(),
@@ -101,41 +98,38 @@ public class MuteTest
     }
 
     /**
-     * UnMutes the participant and checks at owner side.
+     * UnMutes the participant and checks at participant1's side.
      */
-    @Test(dependsOnMethods = { "muteParticipantAndCheck" })
-    public void unMuteParticipantAndCheck()
+    @Test(dependsOnMethods = {"muteParticipant2AndCheck"})
+    public void unmuteParticipant2AndCheck()
     {
         toggleMuteAndCheck(
-            "unMuteParticipantAndCheck",
             getParticipant2().getDriver(),
-            "getParticipant2()",
+            "participant2",
             getParticipant1().getDriver(),
             false);
     }
 
     /**
-     * Mutes the participant and checks at owner side.
+     * Mutes participant3 and checks at participant1's side.
      */
-    public void muteThirdParticipantAndCheck()
+    public void muteParticipant3AndCheck()
     {
         ensureThreeParticipants();
 
         toggleMuteAndCheck(
-            "muteThirdParticipantAndCheck",
             getParticipant3().getDriver(),
-            "getParticipant3()",
+            "participant3",
             getParticipant1().getDriver(),
             true);
     }
 
     /**
-     * UnMutes the participant and checks at owner side.
+     * Unmutes participant3 and checks at participant1's side.
      */
-    public void unMuteThirdParticipantAndCheck()
+    public void unmuteParticipant3AndCheck()
     {
         toggleMuteAndCheck(
-            "unMuteThirdParticipantAndCheck",
             getParticipant3().getDriver(),
             "getParticipant3()",
             getParticipant1().getDriver(),
@@ -143,43 +137,41 @@ public class MuteTest
     }
 
     /**
-     * Finds the menu that can be used by the owner to control the participant.
-     * Hovers over it. Finds the mute link and mute it.
-     * Then checks in the second participant page whether it is muted
+     * Finds the menu that can be used by participant1 to control the
+     * participant. Hovers over it. Finds the mute link and mute it. Then
+     * checks in the second participant page whether it is muted
      */
-    @Test(dependsOnMethods = { "unMuteParticipantAndCheck" })
-    public void ownerMutesParticipantAndCheck()
+    @Test(dependsOnMethods = {"unmuteParticipant2AndCheck"})
+    public void participant1MutesParticipant2AndCheck()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        WebDriver secondParticipant = getParticipant2().getDriver();
-
-        String secondParticipantResource
-            = MeetUtils.getResourceJid(secondParticipant);
+        WebDriver driver1 = getParticipant1().getDriver();
+        String participant2EndpointId = getParticipant2().getEndpointId();
 
         // Open the remote video menu
-        WebElement cntElem = owner.findElement(By.id(
-            "participant_" + secondParticipantResource));
+        WebElement cntElem
+            = driver1.findElement(
+                By.id("participant_" + participant2EndpointId));
         String remoteVideoMenuButtonXPath
             = TestUtils.getXPathStringForClassName("//span", "remotevideomenu");
-        WebElement elem = owner.findElement(
-            By.xpath(remoteVideoMenuButtonXPath));
+        WebElement elem
+            = driver1.findElement(By.xpath(remoteVideoMenuButtonXPath));
 
-        Actions action = new Actions(owner);
+        Actions action = new Actions(driver1);
         action.moveToElement(cntElem);
         action.moveToElement(elem);
         action.perform();
 
         // give time for the menu to appear
         TestUtils.waitForDisplayedElementByXPath(
-            owner,
+            driver1,
             "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
             5);
 
         // click the button
-        MeetUIUtils.clickOnElement(owner, "ul.popupmenu a.mutelink", true);
+        MeetUIUtils.clickOnElement(driver1, "ul.popupmenu a.mutelink", true);
 
         // confirm muting
-        MeetUIUtils.clickOnButton(owner, "modal-dialog-ok-button", true);
+        MeetUIUtils.clickOnButton(driver1, "modal-dialog-ok-button", true);
 
         // and now check whether second participant is muted
         String participantMutedIconXPath
@@ -194,11 +186,11 @@ public class MuteTest
     }
 
     /**
-     * UnMutes once again the second participant and checks in the owner page
-     * does this change is reflected.
+     * Unmutes participant2 and checks in the participant1's page whether this
+     * change is reflected.
      */
-    @Test(dependsOnMethods = { "ownerMutesParticipantAndCheck" })
-    public void participantUnMutesAfterOwnerMutedHimAndCheck()
+    @Test(dependsOnMethods = {"participant1MutesParticipant2AndCheck"})
+    public void participant2UnmutesAfterParticipant1MutedItAndCheck()
     {
         TestUtils.waitMillis(1000);
 
@@ -212,41 +204,41 @@ public class MuteTest
             getParticipant2().getDriver(),
             false, //should be unmuted
             false, //audio
-            "getParticipant2()"
+            "participant2"
         );
 
-        // lets give time to the ui to reflect the change in the ui of the owner
+        // lets give time to the ui to reflect the change in the ui of
+        // participant1
         TestUtils.waitMillis(1000);
     }
 
     /**
-     * Closes the participant and leaves the owner alone in the room.
-     * Mutes the owner and then joins new participant and checks the status
-     * of the mute icon.
-     * At the end unmutes to clear the state.
+     * Closes participant2 and leaves participant1 alone in the room.
+     * Mutes participant1 and then joins new participant and checks the status
+     * of the mute icon. At the end unmutes to clear the state.
      */
-    @Test(dependsOnMethods = { "participantUnMutesAfterOwnerMutedHimAndCheck" })
-    public void muteOwnerBeforeSecondParticipantJoins()
+    @Test(dependsOnMethods = {"participant2UnmutesAfterParticipant1MutedItAndCheck"})
+    public void muteParticipant1BeforeParticipant2Joins()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
         getParticipant2().hangUp();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_mute");
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_mute");
 
         ensureTwoParticipants();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 getParticipant2().getDriver(),
-                owner,
+                driver1,
                 true, //should be muted
                 false, //audio
-                "owner");
+                "participant1");
 
         // now lets unmute
-        unMuteOwnerAndCheck();
+        unmuteParticipant1AndCheck();
     }
 
     /**
@@ -254,7 +246,6 @@ public class MuteTest
      * verifies that a specific other Meet conference participants sees a
      * specific mute state for the former.
      *
-     * @param testName the name of test (to be logged)
      * @param testee the {@code WebDriver} which represents the Meet conference
      * participant whose mute state is to be toggled
      * @param testeeName the name of {@code testee} to be displayed should the
@@ -265,11 +256,10 @@ public class MuteTest
      * {@code observer}
      */
     private void toggleMuteAndCheck(
-            String testName,
-            WebDriver testee,
-            String testeeName,
-            WebDriver observer,
-            boolean muted)
+        WebDriver testee,
+        String testeeName,
+        WebDriver observer,
+        boolean muted)
     {
         MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
         MeetUIUtils.assertMuteIconIsDisplayed(

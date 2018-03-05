@@ -47,39 +47,39 @@ public class SinglePortTest
     @Test
     public void singlePortTest()
     {
-        Participant owner = getParticipant1();
-        Participant secondParticipant = getParticipant2();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
 
         // Just make sure everyone is ready
-        owner.waitForSendReceiveData();
+        participant1.waitForSendReceiveData();
 
-        String ownerPortStr = getRemotePort(owner);
-        String secondParticipantPortStr = getRemotePort(secondParticipant);
-        int ownerPort = -1;
-        int secondParticipantPort = -1;
+        String port1Str = getRemotePort(participant1);
+        String port2Str = getRemotePort(participant2);
+        int port1 = -1;
+        int port2 = -1;
 
         try
         {
-            ownerPort = Integer.parseInt(ownerPortStr);
-            secondParticipantPort = Integer.parseInt(secondParticipantPortStr);
+            port1 = Integer.parseInt(port1Str);
+            port2 = Integer.parseInt(port2Str);
         }
         catch (NumberFormatException nfe)
         {}
 
-        if (ownerPort == -1)
+        if (port1 == -1)
         {
-            fail("The remote port for the owner has to be an int: "
-                     + ownerPortStr);
+            fail("The remote port for participant1 has to be an int: "
+                     + port1Str);
         }
-        if (secondParticipantPort == -1)
+        if (port2 == -1)
         {
-            fail("The remote port for the second participant has to be an int: "
-                     + secondParticipantPortStr);
+            fail("The remote port for participant2 has to be an int: "
+                     + port2Str);
         }
 
         assertEquals(
-            ownerPort,
-            secondParticipantPort,
+            port1,
+            port2,
             "The two participants must be connected to the same port.");
     }
 
@@ -110,7 +110,9 @@ public class SinglePortTest
         {
             String str = (String) result;
             if (str.startsWith("error: "))
+            {
                 return str;
+            }
             String[] ipAndPort = str.split(":");
             if (ipAndPort.length > 0)
             {

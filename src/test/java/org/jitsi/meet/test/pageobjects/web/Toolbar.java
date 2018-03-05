@@ -23,6 +23,8 @@ import java.util.*;
 
 /**
  * Represents the toolbar in a particular {@link WebParticipant}.
+ *
+ * @author Hristo Terezov
  */
 public class Toolbar {
     /**
@@ -45,7 +47,8 @@ public class Toolbar {
      *
      * @param participant the participant for this {@link Toolbar}.
      */
-    public Toolbar(WebParticipant participant) {
+    public Toolbar(WebParticipant participant)
+    {
         this.participant = Objects.requireNonNull(participant, "participant");
     }
 
@@ -53,7 +56,8 @@ public class Toolbar {
      * Clicks on the "desktop sharing" toolbar button. Fails if the button
      * doesn't exist or if the toggled state is not changed after the click.
      */
-    public void clickDesktopSharingButton() {
+    public void clickDesktopSharingButton()
+    {
         WebDriver driver = participant.getDriver();
 
         TestUtils.waitForElementByXPath(
@@ -69,7 +73,7 @@ public class Toolbar {
             driver,
             DS_BUTTON_ID);
 
-        if(isToggled)
+        if (isToggled)
         {
             TestUtils.waitForElementNotContainsClassByXPath(
                 driver,
@@ -90,7 +94,8 @@ public class Toolbar {
     /**
      * Clicks on the "chat" toolbar button which opens or closes the chat panel.
      */
-    public void clickChatButton() {
+    public void clickChatButton()
+    {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             "toolbar_button_chat",

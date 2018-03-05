@@ -25,7 +25,8 @@ import org.testng.annotations.*;
 import static org.testng.Assert.*;
 
 /**
- * To stop the video on owner and participant side.
+ * To stop the video on participant1's and participant2's side.
+ *
  * @author Damian Minkov
  */
 public class StopVideoTest
@@ -55,10 +56,11 @@ public class StopVideoTest
     }
 
     /**
-     * Stops the video on the conference owner.
+     * Stops the video on participant1
+     * TODO: do we actually need this?
      */
     @Test
-    public void stopVideoOnOwnerAndCheck()
+    public void stopVideoOnParticipant1AndCheck()
     {
         MeetUIUtils.muteVideoAndCheck(
             getParticipant1().getDriver(),
@@ -66,10 +68,10 @@ public class StopVideoTest
     }
 
     /**
-     * Starts the video on owner.
+     * Starts the video on participant1.
      */
-    @Test(dependsOnMethods = { "stopVideoOnOwnerAndCheck" })
-    public void startVideoOnOwnerAndCheck()
+    @Test(dependsOnMethods = {"stopVideoOnParticipant1AndCheck"})
+    public void startVideoOnParticipant1AndCheck()
     {
         MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
             "toolbar_button_camera");
@@ -80,37 +82,40 @@ public class StopVideoTest
             getParticipant2().getDriver(),
             "//span[starts-with(@id, 'participant_')]"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 10);
+                + "/i[@class='icon-camera-disabled']",
+            10);
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant1().getDriver(),
             "//span[@id='localVideoContainer']"
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 10);
+                + "/i[@class='icon-camera-disabled']",
+            10);
     }
 
     /**
      * Checks if muting/unmuting of the local video stream affects
      * large video of other participant.
      */
-    @Test(dependsOnMethods = { "startVideoOnOwnerAndCheck" })
-    public void stopAndStartVideoOnOwnerAndCheckStream()
+    @Test(dependsOnMethods = {"startVideoOnParticipant1AndCheck"})
+    public void stopAndStartVideoOnParticipant1AndCheckStream()
     {
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
-        // mute owner
-        stopVideoOnOwnerAndCheck();
+        // mute participant1
+        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
 
-        // now second participant should be on large video
-        String secondParticipantVideoId = MeetUIUtils.getLargeVideoID(owner);
+        // now participant2 should be on large video
+        String participant2VideoId = MeetUIUtils.getLargeVideoID(driver1);
 
-        // unmute owner
-        startVideoOnOwnerAndCheck();
+        // unmute participant1
+        startVideoOnParticipant1AndCheck();
 
         // check if video stream from second participant is still on large video
         assertEquals(
-            secondParticipantVideoId,
-            MeetUIUtils.getLargeVideoID(owner),
+            participant2VideoId,
+            MeetUIUtils.getLargeVideoID(driver1),
             "Large video stream id");
     }
 
@@ -118,44 +123,45 @@ public class StopVideoTest
      * Checks if muting/unmuting remote video triggers TRACK_ADDED or
      * TRACK_REMOVED events for the local participant.
      */
-    @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckStream" })
-    public void stopAndStartVideoOnOwnerAndCheckEvents()
+    @Test(dependsOnMethods = {"stopAndStartVideoOnParticipant1AndCheckStream"})
+    public void stopAndStartVideoOnParticipant1AndCheckEvents()
     {
-        Participant secondParticipant = getParticipant2();
+        Participant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
 
         String listenForTrackRemoved = "APP.conference._room.addEventListener("
             + "JitsiMeetJS.events.conference.TRACK_REMOVED,"
             + "function () { APP._remoteRemoved = true; }"
             + ");";
-        secondParticipant.executeScript(listenForTrackRemoved);
+        participant2.executeScript(listenForTrackRemoved);
 
         String listenForTrackAdded = "APP.conference._room.addEventListener("
             + "JitsiMeetJS.events.conference.TRACK_ADDED,"
             + "function () { APP._remoteAdded = true; }"
             + ");";
-        secondParticipant.executeScript(listenForTrackAdded);
+        participant2.executeScript(listenForTrackAdded);
 
-        stopVideoOnOwnerAndCheck();
-        startVideoOnOwnerAndCheck();
+        MeetUIUtils.muteVideoAndCheck(getParticipant1().getDriver(), driver2);
+        startVideoOnParticipant1AndCheck();
 
         TestUtils.waitMillis(1000);
 
         assertFalse(
             TestUtils.executeScriptAndReturnBoolean(
-                        secondParticipant.getDriver(),
-                        "return APP._remoteRemoved;"),
+                driver2,
+                "return APP._remoteRemoved;"),
             "Remote stream was removed");
         assertFalse(
             TestUtils.executeScriptAndReturnBoolean(
-                        secondParticipant.getDriver(),
-                        "return APP._remoteAdded;"),
+                driver2,
+                "return APP._remoteAdded;"),
             "Remote stream was added");
     }
 
     /**
      * Stops the video on participant.
      */
-    @Test(dependsOnMethods = { "stopAndStartVideoOnOwnerAndCheckEvents" })
+    @Test(dependsOnMethods = {"stopAndStartVideoOnParticipant1AndCheckEvents"})
     public void stopVideoOnParticipantAndCheck()
     {
         MeetUIUtils.muteVideoAndCheck(
@@ -174,23 +180,25 @@ public class StopVideoTest
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant1().getDriver(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted") +
-            "/i[@class='icon-camera-disabled']", 5);
+            TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']",
+            5);
         
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant2().getDriver(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted") +
-            "/i[@class='icon-camera-disabled']", 5);
+            TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']",
+            5);
     }
 
     /**
-     * Closes the participant and leaves the owner alone in the room.
-     * Stops video of the owner and then joins new participant and
+     * Closes the participant and leaves participant1 alone in the room.
+     * Stops video of participant1 and then joins new participant and
      * checks the status of the stopped video icon.
      * At the end starts the video to clear the state.
      */
     @Test(dependsOnMethods = { "startVideoOnParticipantAndCheck" })
-    public void stopOwnerVideoBeforeSecondParticipantJoins()
+    public void stopParticipant1VideoBeforeSecondParticipantJoins()
     {
         getParticipant2().hangUp();
 
@@ -204,48 +212,16 @@ public class StopVideoTest
         TestUtils.waitMillis(500);
 
         ensureTwoParticipants();
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
 
         TestUtils.waitForElementByXPath(
-            secondParticipant,
+            driver2,
             TestUtils.getXPathStringForClassName("//span", "videoMuted")
             + "/i[@class='icon-camera-disabled']",
             5);
 
-        // just debug messages
-        /*{
-            String ownerJid = (String) ((JavascriptExecutor)
-                ConferenceFixture.getOwner())
-                .executeScript("return APP.xmpp.myJid();");
-
-            String streamByJid = "APP.RTC.remoteStreams['" + ownerJid + "']";
-            print("Owner jid: " + ownerJid);
-
-            Object streamExist = ((JavascriptExecutor)secondParticipant)
-                .executeScript("return " + streamByJid + " != undefined;");
-            print("Stream : " + streamExist);
-
-            if (streamExist != null && streamExist.equals(Boolean.TRUE))
-            {
-                Object videoStreamExist
-                    = ((JavascriptExecutor)secondParticipant).executeScript(
-                        "return " + streamByJid + "['Video'] != undefined;");
-                print("Stream exist : " + videoStreamExist);
-
-                if (videoStreamExist != null && videoStreamExist
-                    .equals(Boolean.TRUE))
-                {
-                    Object videoStreamMuted
-                        = ((JavascriptExecutor) secondParticipant)
-                            .executeScript(
-                                "return " + streamByJid + "['Video'].muted;");
-                    print("Stream muted : " + videoStreamMuted);
-                }
-            }
-        }*/
-
-        // now lets start video for owner
-        startVideoOnOwnerAndCheck();
+        // now lets start video for participant1
+        startVideoOnParticipant1AndCheck();
 
         // just in case wait
         TestUtils.waitMillis(1500);

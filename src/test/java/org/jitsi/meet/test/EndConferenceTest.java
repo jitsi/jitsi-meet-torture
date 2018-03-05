@@ -42,13 +42,15 @@ public class EndConferenceTest
     @Test
     public void hangupCallAndCheck()
     {
-        final WebDriver owner = getParticipant1().getDriver();
-        final String url = owner.getCurrentUrl();
+        final WebDriver driver1 = getParticipant1().getDriver();
+        final String url = driver1.getCurrentUrl();
 
         // hangup and wait for redirect
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_hangup");
-        TestUtils.waitForCondition(owner, 5,
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_hangup");
+        TestUtils.waitForCondition(
+            driver1,
+            5,
             (ExpectedCondition<Boolean>) d
-                -> !url.equals(owner.getCurrentUrl()));
+                -> !url.equals(driver1.getCurrentUrl()));
     }
 }

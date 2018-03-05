@@ -27,6 +27,7 @@ import static org.testng.Assert.*;
 
 /**
  * Tests shared video functionality.
+ *
  * @author Damian Minkov
  */
 public class SharedVideoTest
@@ -48,6 +49,18 @@ public class SharedVideoTest
      */
     private static String JS_GET_SHARED_VIDEO_CONTAINER
         = "var c = APP.UI.getLargeVideo().containers['sharedvideo']; ";
+
+    /**
+     * The javascript code which returns the current time of the player.
+     */
+    private static final String JS_GET_PLAYER_CURRENT_TIME
+        = JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getCurrentTime();";
+
+    /**
+     * The javascript code which returns the video URL from the player.
+     */
+    private static final String JS_GET_PLAYER_VIDEO_URL
+        = JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getVideoUrl();";
 
     private static String currentVideoId;
 
@@ -82,52 +95,55 @@ public class SharedVideoTest
     private void startSharingVideoByUrl(String url, String expectedId,
         boolean checkSecondParticipantState)
     {
-        WebDriver owner = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_sharedvideo");
+        WebDriver driver1 = getParticipant1().getDriver();
+        MeetUIUtils.clickOnToolbarButton(
+            driver1, "toolbar_button_sharedvideo");
 
         TestUtils.waitForElementByXPath(
-            owner, "//input[@name='sharedVideoUrl']", 5);
+            driver1, "//input[@name='sharedVideoUrl']", 5);
 
-        //owner.findElement(
+        //getParticipant1().findElement(
         //    By.xpath("//input[@name='sharedVideoUrl']")).sendKeys(url);
         // sendKeys is not working for FF, seems the input has size of 20
         // and only 21 chars goes in, the size is not visible in
         // web-development console
         MeetUIUtils.setAttribute(
-            owner,
-            owner.findElement(
+            driver1,
+            driver1.findElement(
                 By.xpath("//input[@name='sharedVideoUrl']")),
             "value",
             url);
 
         currentVideoId = expectedId;
 
-        owner.findElement(
+        driver1.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"))
             .click();
 
         // give time for the internal frame to load and attach to the page.
         TestUtils.waitMillis(2000);
 
-        WebDriverWait wait = new WebDriverWait(owner, 30);
+        WebDriverWait wait = new WebDriverWait(driver1, 30);
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
             By.id("sharedVideoIFrame")));
         // make sure we are in meet, not in the frame
-        owner.switchTo().defaultContent();
+        driver1.switchTo().defaultContent();
 
         assertTrue(
-            owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
         if (checkSecondParticipantState)
         {
             // Now let's check the second participant state
-            WebDriver secondParticipant = getParticipant2().getDriver();
+            WebDriver driver2 = getParticipant2().getDriver();
             // make sure we are in meet, not in the frame
-            secondParticipant.switchTo().defaultContent();
+            driver2.switchTo().defaultContent();
 
-            TestUtils.waitForDisplayedElementByID(secondParticipant,
-                "sharedVideoIFrame", 10);
+            TestUtils.waitForDisplayedElementByID(
+                driver2,
+                "sharedVideoIFrame",
+                10);
         }
     }
 
@@ -139,10 +155,12 @@ public class SharedVideoTest
     private void checkPlayerLoadedAndInState(
         Participant participant, String state)
     {
-        TestUtils.waitForBoolean(participant.getDriver(),
+        TestUtils.waitForBoolean(
+            participant.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c && c.player "
-                    + "&& c.player.getPlayerState() === " + state + ");", 15);
+                    + "&& c.player.getPlayerState() === " + state + ");",
+            15);
     }
 
     /**
@@ -150,22 +168,20 @@ public class SharedVideoTest
      */
     private void checkUrls()
     {
-        String ownerVideoUrl
+        String participant1VideoUrl
             = TestUtils.executeScriptAndReturnString(
-                getParticipant1().getDriver(),
-                    JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getVideoUrl();");
-        assertTrue(
-            ownerVideoUrl.contains(currentVideoId),
-            "Different video url found on owner");
+                getParticipant1().getDriver(), JS_GET_PLAYER_VIDEO_URL);
 
-        String secondVideoUrl
-            = TestUtils.executeScriptAndReturnString(
-                getParticipant2().getDriver(),
-                    JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getVideoUrl();");
         assertTrue(
-            secondVideoUrl.contains(currentVideoId),
+            participant1VideoUrl.contains(currentVideoId),
+            "Different video url found for participant1");
+
+        String participant2VideoUrl
+            = TestUtils.executeScriptAndReturnString(
+                getParticipant2().getDriver(), JS_GET_PLAYER_VIDEO_URL);
+
+        assertTrue(
+            participant2VideoUrl.contains(currentVideoId),
             "Different video url found on second participant");
     }
 
@@ -186,12 +202,12 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "startSharingVideo" })
     public void pauseTest()
     {
-        Participant owner = getParticipant1();
-        owner.executeScript(
+        Participant participant1 = getParticipant1();
+        participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.pauseVideo();");
 
         checkPlayerLoadedAndInState(
-            owner,
+            participant1,
             "YT.PlayerState.PAUSED");
         checkPlayerLoadedAndInState(
             getParticipant2(),
@@ -204,12 +220,12 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "pauseTest" })
     public void playTest()
     {
-        Participant owner = getParticipant1();
-        owner.executeScript(
+        Participant participant1 = getParticipant1();
+        participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.playVideo();");
 
         checkPlayerLoadedAndInState(
-            owner,
+            participant1,
             "YT.PlayerState.PLAYING"
         );
         checkPlayerLoadedAndInState(
@@ -225,46 +241,51 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "playTest" })
     public void seekTest()
     {
-        Participant owner = getParticipant1();
-        owner.executeScript(
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+
+        participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.seekTo(86);");
 
         // let's wait for the fast forward
-        TestUtils.waitForBoolean(owner.getDriver(),
-            JS_GET_SHARED_VIDEO_CONTAINER
+        String waitForFastForwardScript
+            = JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getCurrentTime() > 86);", 10);
-        TestUtils.waitForBoolean(getParticipant2().getDriver(),
-            JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getCurrentTime() > 86);", 10);
+                + " && c.player.getCurrentTime() > 86);";
+        TestUtils.waitForBoolean(
+            participant1.getDriver(),
+            waitForFastForwardScript,
+            10);
+        TestUtils.waitForBoolean(
+            getParticipant2().getDriver(),
+            waitForFastForwardScript,
+            10);
 
-        Object ownerTimeObj
-            = owner.executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getCurrentTime();");
-
-        Object secondTimeObj
-            = getParticipant2().executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getCurrentTime();");
-
-        double ownerTime = 0;
-        if (ownerTimeObj instanceof Double)
-            ownerTime = (Double)ownerTimeObj;
-        else if (ownerTimeObj instanceof Long)
-            ownerTime = (Long)ownerTimeObj;
-
-        double secondTime = 0;
-        if (secondTimeObj instanceof Double)
-            secondTime = (Double)secondTimeObj;
-        else if (secondTimeObj instanceof Long)
-            secondTime = (Long)secondTimeObj;
+        double time1
+            = getDouble(participant1.executeScript(JS_GET_PLAYER_CURRENT_TIME));
+        double time2
+            = getDouble(participant2.executeScript(JS_GET_PLAYER_CURRENT_TIME));
 
         // let's check that time difference is less than 10 seconds
         assertTrue(
-            (Math.abs(ownerTime - secondTime) < 10),
-            "Players time differ owner:" + ownerTime + " second:" + secondTime);
+            (Math.abs(time1 - time2) < 10),
+            "Players time differ. Participant1:" + time1
+                + ", participant2:" + time2);
+    }
+
+    private double getDouble(Object o)
+    {
+        double d = 0;
+        if (o instanceof Double)
+        {
+            d = (Double) o;
+        }
+        else if (o instanceof Long)
+        {
+            d = (Long) o;
+        }
+
+        return d;
     }
 
     /**
@@ -273,25 +294,30 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "seekTest" })
     public void volumeTest()
     {
-        Participant owner = getParticipant1();
-        Long ownerVolume
-            = (Long) owner.executeScript(
+        Participant participant1 = getParticipant1();
+        Long participant1volume
+            = (Long) participant1.executeScript(
                 JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getVolume();");
 
-        long volumeToSet = ownerVolume - 20;
+        long volumeToSet = participant1volume - 20;
 
-        owner.executeScript(
+        participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return c.player.setVolume(" + volumeToSet + ");");
+
         // now check for volume on both sides
-        TestUtils.waitForBoolean(owner.getDriver(),
-            JS_GET_SHARED_VIDEO_CONTAINER
+        String checkVolumeScript
+            = JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getVolume() == " + volumeToSet + ");", 10);
-        TestUtils.waitForBoolean(getParticipant2().getDriver(),
-            JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getVolume() == " + volumeToSet + ");", 10);
+                + " && c.player.getVolume() == " + volumeToSet + ");";
+        TestUtils.waitForBoolean(
+            participant1.getDriver(),
+            checkVolumeScript,
+            10);
+        TestUtils.waitForBoolean(
+            getParticipant2().getDriver(),
+            checkVolumeScript,
+            10);
     }
 
     /**
@@ -300,16 +326,19 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "volumeTest" })
     public void muteTest()
     {
-        Participant owner = getParticipant1();
-        owner.executeScript(
+        Participant participant1 = getParticipant1();
+        participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return c.player.mute();");
         // now check for volume on both sides
-        TestUtils.waitForBoolean(owner.getDriver(),
+        TestUtils.waitForBoolean(
+            participant1.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.isMuted());", 10);
-        TestUtils.waitForBoolean(getParticipant2().getDriver(),
+                + " && c.player.isMuted());",
+            10);
+        TestUtils.waitForBoolean(
+            getParticipant2().getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
                 + " && (c.player.isMuted() || c.player.getVolume() == 0));",
@@ -351,42 +380,45 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "backToSharedVideoTest" })
     public void stopSharingTest()
     {
-        WebDriver owner = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_sharedvideo");
+        WebDriver driver1 = getParticipant1().getDriver();
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_sharedvideo");
 
         TestUtils.waitForElementByXPath(
-            owner, "//button[@name="
-                + "'jqi_state0_buttonspandatai18ndialogCancelCancelspan']", 5);
+            driver1,
+            "//button[@name="
+                + "'jqi_state0_buttonspandatai18ndialogCancelCancelspan']",
+            5);
 
         // let's cancel
-        owner.findElement(
+        driver1.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
             .click();
 
         // video should be visible on both sides
-        WebDriver secondParticipant = getParticipant2().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
         assertTrue(
-            owner.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
         assertTrue(
-            secondParticipant.findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed(),
+            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_sharedvideo");
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_sharedvideo");
 
         // now lets stop sharing
         TestUtils.waitForElementByXPath(
-            owner, "//button[@name="
-                + "'jqi_state0_buttonspandatai18ndialogRemoveRemovespan']", 5);
-        owner.findElement(
+            driver1,
+            "//button[@name="
+                + "'jqi_state0_buttonspandatai18ndialogRemoveRemovespan']",
+            5);
+        driver1.findElement(
             By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
             .click();
 
         try
         {
             TestUtils.waitForNotDisplayedElementByID(
-                owner, "sharedVideoIFrame", 5);
+                driver1, "sharedVideoIFrame", 5);
         }
         catch (StaleElementReferenceException ex)
         {
@@ -396,7 +428,7 @@ public class SharedVideoTest
         try
         {
             TestUtils.waitForNotDisplayedElementByID(
-                secondParticipant, "sharedVideoIFrame", 5);
+                driver2, "sharedVideoIFrame", 5);
         }
         catch (StaleElementReferenceException ex)
         {
@@ -431,11 +463,11 @@ public class SharedVideoTest
     }
 
     /**
-     * The owner leaves and we need to check that shared video is removed
+     * Participant1 leaves and we need to check that shared video is removed
      * on second participant.
      */
     @Test(dependsOnMethods = { "startSharingDifferentVideoAfterStop" })
-    public void videoOwnerLeavesTest()
+    public void videoParticipant1LeavesTest()
     {
         getParticipant1().hangUp();
 
@@ -447,7 +479,7 @@ public class SharedVideoTest
      * Start shared video before second participant joins.
      * This tests
      */
-    @Test(dependsOnMethods = { "videoOwnerLeavesTest" })
+    @Test(dependsOnMethods = {"videoParticipant1LeavesTest"})
     public void shareVideoBeforeOthersJoin()
     {
         shareVideoBeforeOthersJoin(false);
@@ -458,7 +490,7 @@ public class SharedVideoTest
     }
 
     /**
-     * Shares the video when only owner is in room, and if needed pause.
+     * Shares the video when only participant1 is in room, and if needed pause.
      * @param pause whether to pause before starting others
      */
     private void shareVideoBeforeOthersJoin(boolean pause)
@@ -468,10 +500,12 @@ public class SharedVideoTest
         TestUtils.waitMillis(1000);
 
         ensureOneParticipant();
-        Participant owner = getParticipant1();
+        Participant participant1 = getParticipant1();
 
-        TestUtils.waitForDisplayedElementByID(owner.getDriver(),
-            "toolbar_button_sharedvideo", 10);
+        TestUtils.waitForDisplayedElementByID(
+            participant1.getDriver(),
+            "toolbar_button_sharedvideo",
+            10);
 
         // just wait a little after button is displayed
         // sometimes the button is reported as
@@ -479,31 +513,30 @@ public class SharedVideoTest
         TestUtils.waitMillis(1000);
 
         startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, false);
-        checkPlayerLoadedAndInState(owner, "YT.PlayerState.PLAYING");
+        checkPlayerLoadedAndInState(participant1, "YT.PlayerState.PLAYING");
 
         String stateToCheck = "YT.PlayerState.PLAYING";
         if (pause)
         {
             stateToCheck = "YT.PlayerState.PAUSED";
-            owner.executeScript(
+            participant1.executeScript(
                 JS_GET_SHARED_VIDEO_CONTAINER + "c.player.seekTo(15);");
-            owner.executeScript(
+            participant1.executeScript(
                 JS_GET_SHARED_VIDEO_CONTAINER + "c.player.pauseVideo();");
         }
 
         ensureTwoParticipants();
 
         // Now let's check the second participant state
-        Participant secondParticipant = getParticipant2();
-        WebDriver secondParticipantDiver = secondParticipant.getDriver();
+        Participant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
         // make sure we are in meet, not in the frame
-        secondParticipantDiver.switchTo().defaultContent();
+        driver2.switchTo().defaultContent();
 
-        checkPlayerLoadedAndInState(secondParticipant, stateToCheck);
+        checkPlayerLoadedAndInState(participant2, stateToCheck);
 
         assertTrue(
-            secondParticipantDiver.findElement(By.id("sharedVideoIFrame"))
-                .isDisplayed(),
+            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
     }
 
@@ -512,40 +545,22 @@ public class SharedVideoTest
     {
         shareVideoBeforeOthersJoin(true);
 
-        Participant owner = getParticipant1();
-        checkPlayerLoadedAndInState(
-            owner,
-            "YT.PlayerState.PAUSED");
-        checkPlayerLoadedAndInState(
-            getParticipant2(),
-            "YT.PlayerState.PAUSED");
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
 
-        Object ownerTimeObj
-            = owner.executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getCurrentTime();");
+        checkPlayerLoadedAndInState(participant1, "YT.PlayerState.PAUSED");
+        checkPlayerLoadedAndInState(participant2, "YT.PlayerState.PAUSED");
 
-        Object secondTimeObj
-            = getParticipant2().executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER
-                    + "return c.player.getCurrentTime();");
-
-        double ownerTime = 0;
-        if (ownerTimeObj instanceof Double)
-            ownerTime = (Double)ownerTimeObj;
-        else if (ownerTimeObj instanceof Long)
-            ownerTime = (Long)ownerTimeObj;
-
-        double secondTime = 0;
-        if (secondTimeObj instanceof Double)
-            secondTime = (Double)secondTimeObj;
-        else if (secondTimeObj instanceof Long)
-            secondTime = (Long)secondTimeObj;
+        double time1
+            = getDouble(participant1.executeScript(JS_GET_PLAYER_CURRENT_TIME));
+        double time2
+            = getDouble(participant2.executeScript(JS_GET_PLAYER_CURRENT_TIME));
 
         // let's check that time difference is less than 10 seconds
         assertTrue(
-            (Math.abs(ownerTime - secondTime) < 10),
-            "Players time differ owner:" + ownerTime + " second:" + secondTime);
+            (Math.abs(time1 - time2) < 10),
+            "Players time differ. Participant1:" + time1
+                + " participant2:" + time2);
 
         checkUrls();
 

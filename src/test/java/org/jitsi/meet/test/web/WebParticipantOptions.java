@@ -47,7 +47,7 @@ public class WebParticipantOptions
      */
     public WebParticipantOptions()
     {
-        this.setProperty(FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
+        setProperty(FAKE_AUDIO_PROP, "resources/fakeAudioStream.wav");
     }
 
     @Override
@@ -56,12 +56,12 @@ public class WebParticipantOptions
         String configPrefix,
         ParticipantOptions overrides)
     {
-        this.loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_AUDIO_PROP);
-        this.loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
+        loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_AUDIO_PROP);
+        loadConfigProperty(config, GLOBAL_PROP_PREFIX, FAKE_VIDEO_PROP);
 
-        this.loadConfigProperty(config, configPrefix, REMOTE_PROP);
-        this.loadConfigProperty(config, configPrefix, BINARY_PROP);
-        this.loadConfigProperty(config, configPrefix, VERSION_PROP);
+        loadConfigProperty(config, configPrefix, REMOTE_PROP);
+        loadConfigProperty(config, configPrefix, BINARY_PROP);
+        loadConfigProperty(config, configPrefix, VERSION_PROP);
 
         super.load(config, configPrefix, overrides);
     }
@@ -79,7 +79,7 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamAudioFile(
         String fakeStreamAudioFile)
     {
-        this.setProperty(FAKE_AUDIO_PROP, fakeStreamAudioFile);
+        setProperty(FAKE_AUDIO_PROP, fakeStreamAudioFile);
 
         return this;
     }
@@ -97,7 +97,7 @@ public class WebParticipantOptions
     public WebParticipantOptions setFakeStreamVideoFile(
         String fakeStreamVideoFile)
     {
-        this.setProperty(FAKE_VIDEO_PROP, fakeStreamVideoFile);
+        setProperty(FAKE_VIDEO_PROP, fakeStreamVideoFile);
 
         return this;
     }
@@ -109,7 +109,7 @@ public class WebParticipantOptions
      */
     public WebParticipantOptions setChromeExtensionId(String extensionId)
     {
-        this.setProperty(CHROME_EXTENSION_ID, extensionId);
+        setProperty(CHROME_EXTENSION_ID, extensionId);
 
         return this;
     }
@@ -120,7 +120,7 @@ public class WebParticipantOptions
      */
     public String getVersion()
     {
-        return (String)this.getProperty(VERSION_PROP);
+        return (String) getProperty(VERSION_PROP);
     }
 
     /**
@@ -129,7 +129,7 @@ public class WebParticipantOptions
      */
     public String getBinary()
     {
-        return (String)this.getProperty(BINARY_PROP);
+        return (String) getProperty(BINARY_PROP);
     }
 
     /**
@@ -138,7 +138,7 @@ public class WebParticipantOptions
      */
     public boolean isRemote()
     {
-        return this.getBooleanProperty(REMOTE_PROP);
+        return getBooleanProperty(REMOTE_PROP);
     }
 
     /**
@@ -148,7 +148,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamAudioFile()
     {
-        return (String)this.getProperty(FAKE_AUDIO_PROP);
+        return (String) getProperty(FAKE_AUDIO_PROP);
     }
 
     /**
@@ -158,7 +158,7 @@ public class WebParticipantOptions
      */
     public String getFakeStreamVideoFile()
     {
-        return (String)this.getProperty(FAKE_VIDEO_PROP);
+        return (String) getProperty(FAKE_VIDEO_PROP);
     }
 
     /**
@@ -167,6 +167,6 @@ public class WebParticipantOptions
      */
     public String getChromeExtensionId()
     {
-        return (String)this.getProperty(CHROME_EXTENSION_ID);
+        return (String) getProperty(CHROME_EXTENSION_ID);
     }
 }

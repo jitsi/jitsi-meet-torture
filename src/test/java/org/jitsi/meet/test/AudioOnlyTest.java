@@ -48,55 +48,59 @@ public class AudioOnlyTest
     }
 
     /**
-     * Enables audio only mode for the owner and verifies the other participant
-     * sees the owner as video muted.
+     * Enables audio only mode for participant1 and verifies that the other
+     * participant sees participant1 as video muted.
      */
     @Test
     public void enableAudioOnlyAndCheck()
     {
         setAudioOnlyAndCheck(
             getParticipant1().getDriver(),
-            "owner",
+            "participant1",
             getParticipant2().getDriver(),
             true);
     }
 
     /**
-     * Verifies the owner cannot video unmute while in audio only mode.
+     * Verifies that participant1 cannot video unmute while in audio only mode.
      */
     @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
-    public void videoUnmuteDisabledInAudioOnly() {
+    public void videoUnmuteDisabledInAudioOnly()
+    {
         MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
             MUTE_BUTTON_ID);
 
         verifyVideoMute(
             getParticipant1().getDriver(),
-            "owner",
+            "participant1",
             getParticipant2().getDriver(),
             true);
     }
 
     /**
-     * Verifies the owner sees avatars for itself and other participants.
+     * Verifies that participant1 sees avatars for itself and other participants.
      */
     @Test(dependsOnMethods = { "videoUnmuteDisabledInAudioOnly" })
-    public void avatarsDisplayForParticipants() {
-        WebDriver owner = getParticipant1().getDriver();
+    public void avatarsDisplayForParticipants()
+    {
+        WebDriver driver1 = getParticipant1().getDriver();
 
-        TestUtils.waitForDisplayedElementByXPath(owner, LARGE_AVATAR_XPATH, 2);
+        TestUtils.waitForDisplayedElementByXPath(
+            driver1, LARGE_AVATAR_XPATH, 2);
 
-        MeetUIUtils.assertLocalThumbnailShowsAvatar(owner);
+        MeetUIUtils.assertLocalThumbnailShowsAvatar(driver1);
     }
 
     /**
-     * Disables audio only mode and verifies both the owner and the other
-     * participant see the owner as not video muted.
+     * Disables audio only mode and verifies that both participant1 and
+     * participant2 participant see participant1 as not video muted.
      */
     @Test(dependsOnMethods = { "avatarsDisplayForParticipants" })
-    public void disableAudioOnlyAndCheck() {
+    public void disableAudioOnlyAndCheck()
+    {
         setAudioOnlyAndCheck(
             getParticipant1().getDriver(),
-            "owner",
+            "participant1",
             getParticipant2().getDriver(),
             false);
     }
@@ -138,16 +142,16 @@ public class AudioOnlyTest
      * Shows the video quality menu in the from the toolbar and sets audio only
      * mode to either on or off.
      *
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param audioOnly whether or not audio only mode should be enabled.
      */
-    private void setAudioOnly(WebDriver participant, boolean audioOnly)
+    private void setAudioOnly(WebDriver driver, boolean audioOnly)
     {
         // Open tbe video quality dialog.
-        setVideoQualityDialogVisible(participant, true);
+        setVideoQualityDialogVisible(driver, true);
 
         // Calculate how far to move the quality slider and in which direction.
-        WebElement videoQualitySlider = participant.findElement(
+        WebElement videoQualitySlider = driver.findElement(
             By.className(VIDEO_QUALITY_SLIDER_CLASS));
 
         int audioOnlySliderValue
@@ -157,36 +161,40 @@ public class AudioOnlyTest
 
         int activeValue
             = Integer.parseInt(videoQualitySlider.getAttribute("value"));
-        int targetValue = audioOnly
-            ? audioOnlySliderValue : maxDefinitionSliderValue;
+        int targetValue
+            = audioOnly ? audioOnlySliderValue : maxDefinitionSliderValue;
 
         int distanceToTargetValue = targetValue - activeValue;
         Keys keyDirection = distanceToTargetValue > 0 ? Keys.RIGHT : Keys.LEFT;
 
         // Move the slider to the target value.
-        for (int i = 0; i < Math.abs(distanceToTargetValue); i++) {
+        for (int i = 0; i < Math.abs(distanceToTargetValue); i++)
+        {
             videoQualitySlider.sendKeys(keyDirection);
         }
 
         // Close the video quality dialog.
-        setVideoQualityDialogVisible(participant, false);
+        setVideoQualityDialogVisible(driver, false);
     }
 
     /**
      * Sets whether or not the video quality dialog is displayed.
      *
-     * @param participant the {@code WebDriver}.
+     * @param driver the {@code WebDriver}.
      * @param visible whether or not the dialog should be displayed.
      */
     private void setVideoQualityDialogVisible(
-        WebDriver participant, boolean visible) {
-        boolean isDialogSliderVisible = !participant.findElements(
-            By.className(VIDEO_QUALITY_SLIDER_CLASS)).isEmpty();
+        WebDriver driver, boolean visible)
+    {
+        boolean isDialogSliderVisible
+            = !driver.findElements(
+                By.className(VIDEO_QUALITY_SLIDER_CLASS)).isEmpty();
 
         if ((isDialogSliderVisible && !visible)
-            || (!isDialogSliderVisible && visible)) {
+            || (!isDialogSliderVisible && visible))
+        {
             MeetUIUtils.clickOnToolbarButton(
-                participant, VIDEO_QUALITY_BUTTON_ID);
+                driver, VIDEO_QUALITY_BUTTON_ID);
         }
     }
 

@@ -95,7 +95,9 @@ public class ParticipantOptions
     private void merge(ParticipantOptions overrides)
     {
         if (overrides != null)
+        {
             this.backend.putAll(overrides.backend);
+        }
     }
 
     /**

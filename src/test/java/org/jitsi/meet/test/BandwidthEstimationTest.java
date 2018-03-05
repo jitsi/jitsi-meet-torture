@@ -20,7 +20,6 @@ import org.jitsi.meet.test.web.*;
 import org.jitsi.meet.test.util.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -30,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * The tests for bandwidth estimations.
@@ -107,7 +107,9 @@ public class BandwidthEstimationTest
         throws Exception
     {
         if (portNumber == -1)
+        {
             throw new IllegalArgumentException("Trying to rate-limit port -1");
+        }
 
         CmdExecutor cmdExecutor = new CmdExecutor();
 
@@ -169,8 +171,7 @@ public class BandwidthEstimationTest
                     "WARN no tc script has been specified and "
                         + "the BandwidthEstimationTest will not be "
                         + "executed!");
-                throw new SkipException(
-                    "no tc script has been specified");
+                throw new SkipException("no tc script has been specified");
             }
         }
 
@@ -187,13 +188,13 @@ public class BandwidthEstimationTest
                     "WARN no benchmark script has been specified and "
                         + "the BandwidthEstimationTest will not be "
                         + "executed!");
-                throw new SkipException(
-                    "no tc script has been specified");
+                throw new SkipException("no tc script has been specified");
             }
         }
 
-        senderOptions = new WebParticipantOptions()
-                .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+        senderOptions
+            = new WebParticipantOptions().setFakeStreamVideoFile(
+                INPUT_VIDEO_FILE);
     }
 
     @Test
@@ -248,12 +249,13 @@ public class BandwidthEstimationTest
         WebDriver receiver = getParticipant2().getDriver();
         assertNotNull(receiver);
 
-        // Rate limit the media flow on 2nd and analyze the webrtc internals.
-        int peer2bundlePort = MeetUtils.getBundlePort(receiver, useJVB);
+        // Rate limit the media flow on the receiver and analyze the webrtc
+        // internals.
+        int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
 
-        print("Local bundle port for 2: " + peer2bundlePort);
+        print("Local bundle port for 2: " + receiverPort);
 
-        schedulePort(peer2bundlePort, timeout, unit, schedule);
+        schedulePort(receiverPort, timeout, unit, schedule);
 
         // Save the stats results and process them.
         StringBuilder fName = new StringBuilder();
@@ -264,8 +266,8 @@ public class BandwidthEstimationTest
 
         String stats = MeetUtils.getRtcStats(receiver, useJVB);
 
-        File outputFile = new File(
-                FailureListener.createLogsFolder(), fName.toString());
+        File outputFile
+            = new File(FailureListener.createLogsFolder(), fName.toString());
 
         try (FileWriter fileWriter = new FileWriter(outputFile))
         {

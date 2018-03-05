@@ -29,6 +29,7 @@ import static org.testng.Assert.*;
  * A test that tests ring overlay. Uses a dummy jwt token to activate ring
  * overlay tests for expected values, enters a second participant and checks
  * the values seen (display name and avatar).
+ *
  * @author Damian Minkov
  */
 public class RingOverlayTest
@@ -87,22 +88,23 @@ public class RingOverlayTest
     {
         ensureOneParticipant(getJitsiMeetUrl().setRoomParameters(JWT_TOKEN));
 
-        WebDriver owner = getParticipant1().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
 
         // test the values show on ring overlay about the user we are calling to
         String ringOverlayDivXpath = "div[@id='ringOverlay']";
-        WebElement calleeNameElem =
-            owner.findElement(By.xpath(
+        WebElement calleeNameElem
+            = driver1.findElement(By.xpath(
                 "//" + ringOverlayDivXpath
-                + "//div[@class='ringing__caller-info']"
-                + "/p"));
+                    + "//div[@class='ringing__caller-info']"
+                    + "/p"));
         String calleeNameText = calleeNameElem.getText();
-        assertTrue(
-            calleeNameText.equals(CALLEE_NAME),
+        assertEquals(
+            CALLEE_NAME,
+            calleeNameText,
             "Callee name is not correct! (" + CALLEE_NAME + ")");
 
         WebElement calleeAvatarElem =
-            owner.findElement(By.xpath(
+            driver1.findElement(By.xpath(
                 "//" + ringOverlayDivXpath
                 + "//img[@class='ringing__avatar']"));
         assertEquals(CALLEE_AVATAR_URL, calleeAvatarElem.getAttribute("src"));
@@ -112,19 +114,22 @@ public class RingOverlayTest
         String emailInput = "//input[@id='setEmail']";
         // wait for the toolbar to be visible before clicking on it
         TestUtils.waitForDisplayedElementByXPath(
-            owner, "//div[contains(@class, 'toolbar_secondary')]", 3);
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_profile");
+            driver1, "//div[contains(@class, 'toolbar_secondary')]", 3);
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
-            owner, emailInput, 5);
-        assertEquals(USER_EMAIL,
-            owner.findElement(By.xpath(emailInput)).getAttribute("value"));
+            driver1, emailInput, 5);
+        assertEquals(
+            USER_EMAIL,
+            driver1.findElement(By.xpath(emailInput)).getAttribute("value"));
 
-        assertEquals(USER_NAME,
-            owner.findElement(By.xpath("//input[@id='setDisplayName']"))
+        assertEquals(
+            USER_NAME,
+            driver1.findElement(By.xpath("//input[@id='setDisplayName']"))
                 .getAttribute("value"));
 
-        assertEquals(USER_AVATAR_URL,
-            owner.findElement(By.xpath(
+        assertEquals(
+            USER_AVATAR_URL,
+            driver1.findElement(By.xpath(
                     "//div[contains(@class, 'toolbar_secondary')]//img[@id='avatar']"))
                 .getAttribute("src"));
 
@@ -134,26 +139,28 @@ public class RingOverlayTest
 
         // Join with second participant
         ensureTwoParticipants();
-        Participant secondParticipant = getParticipant2();
-        WebDriver secondParticipantDriver = secondParticipant.getDriver();
+        Participant participant1 = getParticipant1();
+        Participant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
 
         // overlay absent or hidden
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            owner, "//" + ringOverlayDivXpath, 2);
+            driver1, "//" + ringOverlayDivXpath, 2);
 
         new DisplayNameTest(this)
             .checkRemoteVideoForName(
-                secondParticipant, getParticipant1(), USER_NAME);
+                participant2, getParticipant1(), USER_NAME);
 
         // let's check the avatar now
 
-        // Mute owner video
-        String ownerResource = MeetUtils.getResourceJid(owner);
-        MeetUIUtils.muteVideoAndCheck(owner, secondParticipantDriver);
+        // Mute participant1's video
+        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
 
-        MeetUIUtils.clickOnRemoteVideo(secondParticipantDriver, ownerResource);
-        // Check if owner's avatar is on large video now
-        TestUtils.waitForCondition(secondParticipantDriver, 5,
+        MeetUIUtils.clickOnRemoteVideo(driver2, participant1.getEndpointId());
+        // Check if participant1's avatar is on large video now
+        TestUtils.waitForCondition(
+            driver2,
+            5,
             (ExpectedCondition<Boolean>) d -> {
                 String currentSrc = AvatarTest.getLargeVideoSrc(d);
                 return currentSrc.equals(USER_AVATAR_URL);

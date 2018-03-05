@@ -49,11 +49,6 @@ public class EtherpadTest
         ensureTwoParticipants();
     }
 
-    private WebDriver getParticipant1Driver()
-    {
-        return getParticipant1().getDriver();
-    }
-
     /**
      * Clicks on share document button and check whether etherpad is loaded
      * and video is hidden.
@@ -66,9 +61,9 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = getParticipant1Driver();
+        WebDriver driver1 = getParticipant1().getDriver();
 
-        if (!MeetUtils.isEtherpadEnabled(owner))
+        if (!MeetUtils.isEtherpadEnabled(driver1))
         {
             EtherpadTest.enabled = false;
             throw new SkipException(
@@ -77,13 +72,15 @@ public class EtherpadTest
 
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitForDisplayedElementByID(
-                owner, "toolbar_button_etherpad", 15);
+                driver1, "toolbar_button_etherpad", 15);
 
-        MeetUIUtils.clickOnToolbarButton(owner, "toolbar_button_etherpad");
+        MeetUIUtils.clickOnToolbarButton(
+            driver1, "toolbar_button_etherpad");
 
         TestUtils.waitMillis(5000);
 
-        TestUtils.waitForNotDisplayedElementByID(owner, "largeVideo", 20);
+        TestUtils.waitForNotDisplayedElementByID(
+            driver1, "largeVideo", 20);
     }
 
     /**
@@ -98,39 +95,43 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver owner = getParticipant1Driver();
+        WebDriver driver1 = getParticipant1().getDriver();
         try
         {
             // give time for the internal frame to load and attach to the page.
             TestUtils.waitMillis(2000);
 
-            WebDriverWait wait = new WebDriverWait(owner, 30);
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.id("etherpadIFrame")));
+            WebDriverWait wait = new WebDriverWait(driver1, 30);
+            wait.until(
+                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                    By.id("etherpadIFrame")));
 
-            wait = new WebDriverWait(owner, 30);
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.name("ace_outer")));
+            wait = new WebDriverWait(driver1, 30);
+            wait.until(
+                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                    By.name("ace_outer")));
 
-            wait = new WebDriverWait(owner, 30);
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.name("ace_inner")));
+            wait = new WebDriverWait(driver1, 30);
+            wait.until(
+                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                    By.name("ace_inner")));
 
             String textToEnter = "SomeTestText";
 
-            owner.findElement(By.id("innerdocbody")).sendKeys(textToEnter);
+            driver1.findElement(By.id("innerdocbody")).sendKeys(textToEnter);
 
             TestUtils.waitMillis(2000);
 
             // now search and check the text
-            String txt = owner.findElement(
-                By.xpath("//span[contains(@class, 'author')]")).getText();
+            String txt
+                = driver1.findElement(
+                    By.xpath("//span[contains(@class, 'author')]")).getText();
 
             assertEquals(textToEnter, txt, "Texts do not match");
         }
         finally
         {
-            owner.switchTo().defaultContent();
+            driver1.switchTo().defaultContent();
         }
     }
 
@@ -145,15 +146,13 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver participant1Driver = getParticipant1Driver();
+        WebDriver driver1 = getParticipant1().getDriver();
 
-        MeetUIUtils.clickOnToolbarButton(
-            participant1Driver, "toolbar_button_etherpad");
+        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_etherpad");
 
         TestUtils.waitMillis(5000);
 
-        TestUtils.waitForDisplayedElementByID(
-            participant1Driver, "largeVideo", 10);
+        TestUtils.waitForDisplayedElementByID(driver1, "largeVideo", 10);
     }
 
     /**
@@ -161,22 +160,22 @@ public class EtherpadTest
      * is the local one.
      */
     @Test(dependsOnMethods = { "closeEtherpadCheck" })
-    public void ownerClickOnLocalVideoAndTest()
+    public void participant1ClickOnLocalVideoAndTest()
     {
         if (!enabled)
         {
             return;
         }
 
-        new SwitchVideoTest(this).ownerClickOnLocalVideoAndTest();
+        new SwitchVideoTest(this).participant1ClickOnLocalVideoAndTest();
     }
 
     /**
      * Clicks on the remote video thumbnail and checks whether the large video
      * is the remote one.
      */
-    @Test(dependsOnMethods = { "ownerClickOnLocalVideoAndTest" })
-    public void ownerClickOnRemoteVideoAndTest()
+    @Test(dependsOnMethods = {"participant1ClickOnLocalVideoAndTest"})
+    public void participant1ClickOnRemoteVideoAndTest()
     {
         if (!enabled)
         {
@@ -186,20 +185,20 @@ public class EtherpadTest
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
         try
         {
-            switchVideoTest.ownerClickOnRemoteVideoAndTest();
+            switchVideoTest.participant1ClickOnRemoteVideoAndTest();
         }
         finally
         {
-            switchVideoTest.ownerUnpinRemoteVideoAndTest();
+            switchVideoTest.participant1UnpinRemoteVideoAndTest();
         }
     }
 
-    @Test(dependsOnMethods = { "ownerClickOnRemoteVideoAndTest" })
+    @Test(dependsOnMethods = {"participant1ClickOnRemoteVideoAndTest"})
     public void enterEtherpadClickOnVideosWithoutWriteFocus()
     {
         enterEtherpad();
-        ownerClickOnLocalVideoAndTest();
-        ownerClickOnRemoteVideoAndTest();
+        participant1ClickOnLocalVideoAndTest();
+        participant1ClickOnRemoteVideoAndTest();
     }
 
     /**
@@ -209,7 +208,9 @@ public class EtherpadTest
     public void isEnabled()
     {
         if (!enabled)
+        {
             throw new SkipException(
                 "No etherpad configuration detected. Disabling test.");
+        }
     }
 }

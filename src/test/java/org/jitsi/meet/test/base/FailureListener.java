@@ -36,12 +36,12 @@ public class FailureListener
     private static File outputLogsParentFolder = null;
 
     /**
-     * The folder where the screenshost will be saved.
+     * The folder where the screenshots will be saved.
      */
     private static File outputScreenshotsParentFolder = null;
 
     /**
-     * The folder where the htmls will be saved.
+     * The folder where the html files will be saved.
      */
     private File outputHtmlSourceParentFolder = null;
 
@@ -238,7 +238,7 @@ public class FailureListener
     }
 
     /**
-     * Saves html sources of owner and participant in the moment of failure.
+     * Saves html sources of participant1 and participant2 in the moment of failure.
      *
      * @param fileName the filename to use.
      * @param participants the participants for whom the HTML sources will be

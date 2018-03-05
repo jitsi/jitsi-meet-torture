@@ -43,54 +43,58 @@ public class LastNTest
                 "config.startAudioMuted=0&config.channelLastN=1"),
             null, null);
 
-        WebDriver owner = getParticipant1().getDriver();
-
-        WebDriver secondParticipant = getParticipant2().getDriver();
-        WebDriver thirdParticipant = getParticipant3().getDriver();
+        WebDriver driver1 = getParticipant1().getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
+        WebDriver driver3 = getParticipant3().getDriver();
 
         assertEquals(
-            3, MeetUIUtils.getThumbnails(owner).size(),
+            3,
+            MeetUIUtils.getThumbnails(driver1).size(),
             "number of thumbnails");
         assertEquals(
-            2, MeetUIUtils.getVisibleThumbnails(owner).size(),
+            2,
+            MeetUIUtils.getVisibleThumbnails(driver1).size(),
             "number of visible thumbnails");
 
-        MeetUIUtils.assertAudioMuted(secondParticipant, owner, "owner");
-        MeetUIUtils.assertAudioMuted(owner, secondParticipant, "getParticipant2()");
-        MeetUIUtils.assertAudioMuted(owner, thirdParticipant, "getParticipant3()");
+        MeetUIUtils.assertAudioMuted(
+            driver2, driver1, "participant1");
+        MeetUIUtils.assertAudioMuted(
+            driver1, driver2, "getParticipant2()");
+        MeetUIUtils.assertAudioMuted(
+            driver1, driver3, "getParticipant3()");
 
-        // unmute second participant
+        // unmute participant1
         MuteTest muteTest = new MuteTest(this);
-        muteTest.unMuteParticipantAndCheck();
+        muteTest.unmuteParticipant2AndCheck();
 
-        // so now he should be active speaker
+        // now participant2 should be active speaker
         assertTrue(
-            MeetUIUtils.isActiveSpeaker(owner, secondParticipant),
-            "second participant is active speaker for the owner");
-        assertActiveSpeakerThumbIsVisible(owner, secondParticipant);
+            MeetUIUtils.isActiveSpeaker(driver1, driver2),
+            "participant1 should see participant2 as the active speaker");
+        assertActiveSpeakerThumbIsVisible(driver1, driver2);
         assertTrue(
-            MeetUIUtils.isActiveSpeaker(thirdParticipant, secondParticipant),
-            "second participant is active speaker for the third participant");
-        assertActiveSpeakerThumbIsVisible(thirdParticipant, secondParticipant);
+            MeetUIUtils.isActiveSpeaker(driver3, driver2),
+            "participant3 should see participant2 as the active speaker");
+        assertActiveSpeakerThumbIsVisible(driver3, driver2);
 
-        muteTest.muteParticipantAndCheck();
+        muteTest.muteParticipant2AndCheck();
 
-        // unmute third participant
-        muteTest.unMuteThirdParticipantAndCheck();
+        // unmute participant3
+        muteTest.unmuteParticipant3AndCheck();
 
-        // so now he should be active speaker
+        // now participant3 should be active speaker
         assertTrue(
-            MeetUIUtils.isActiveSpeaker(owner, thirdParticipant),
-            "third participant is active speaker for the owner");
-        assertActiveSpeakerThumbIsVisible(owner, thirdParticipant);
+            MeetUIUtils.isActiveSpeaker(driver1, driver3),
+            "participant1 should see participant3 as the active speaker");
+        assertActiveSpeakerThumbIsVisible(driver1, driver3);
         assertTrue(
-            MeetUIUtils.isActiveSpeaker(secondParticipant, thirdParticipant),
-            "third participant is active speaker for the second participant");
-        assertActiveSpeakerThumbIsVisible(secondParticipant, thirdParticipant);
+            MeetUIUtils.isActiveSpeaker(driver2, driver3),
+            "participant2 should see participant3 as the active speaker");
+        assertActiveSpeakerThumbIsVisible(driver2, driver3);
     }
 
     /**
-     * Assert that observer has only 2 visible thumbnails, and second one is
+     * Assert that observer has only 2 visible thumbnails, and the second one is
      * testee's thumbnail.
      */
     private void assertActiveSpeakerThumbIsVisible(
@@ -99,7 +103,8 @@ public class LastNTest
         List<WebElement> thumbs = MeetUIUtils.getVisibleThumbnails(observer);
 
         assertEquals(
-            2, thumbs.size(),
+            2,
+            thumbs.size(),
             "number of visible thumbnails");
 
         // remove local thumbnail from the list
@@ -112,7 +117,8 @@ public class LastNTest
         WebElement testeeThumb = thumbs.get(0);
         String testeeJid = MeetUtils.getResourceJid(testee);
         assertEquals(
-            "participant_" + testeeJid, testeeThumb.getAttribute("id"),
+            "participant_" + testeeJid,
+            testeeThumb.getAttribute("id"),
             "active speaker thumbnail id");
     }
 

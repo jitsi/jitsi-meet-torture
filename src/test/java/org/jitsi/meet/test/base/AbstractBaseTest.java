@@ -15,8 +15,6 @@
  */
 package org.jitsi.meet.test.base;
 
-import org.jitsi.meet.test.util.*;
-
 import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
@@ -24,6 +22,8 @@ import org.testng.annotations.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
+
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * The base of all tests, checks whether the tests is supposed to be executed
@@ -160,10 +160,7 @@ public abstract class AbstractBaseTest
 
         Properties output = new Properties(config);
 
-        for (Map.Entry<String, String> entry : params.entrySet())
-        {
-            output.setProperty(entry.getKey(), entry.getValue());
-        }
+        params.forEach(output::setProperty);
 
         return output;
     }
@@ -325,12 +322,4 @@ public abstract class AbstractBaseTest
         print("End " + m.getName() + ".");
     }
 
-    /**
-     * Prints text.
-     * @param txt the text to print.
-     */
-    protected static void print(String txt)
-    {
-        TestUtils.print(txt);
-    }
 }

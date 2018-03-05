@@ -73,7 +73,8 @@ public class DataChannelTest
      */
     private Boolean isServerHelloReceived(WebDriver webDriver)
     {
-        String script = "return APP.conference._room.rtc._channel.receivedServerHello;";
+        String script
+            = "return APP.conference._room.rtc._channel.receivedServerHello;";
 
         return TestUtils.executeScriptAndReturnBoolean(webDriver, script);
     }
@@ -127,21 +128,20 @@ public class DataChannelTest
     }
 
     /**
-     * Tests the WebRTC data channel between Videobridge and the Meet conference
-     * owner.
+     * Tests the WebRTC data channel between Videobridge and participant1
      */
     @Test
-    public void testDataChannelOfOwner()
+    public void testDataChannelOfParticipant1()
     {
         testDataChannel(getParticipant1().getDriver());
     }
 
     /**
      * Tests the WebRTC data channel between Videobridge and the second
-     * participant (i.e. not the owner) in the Meet conference.
+     * participant (i.e. not participant1) in the Meet conference.
      */
-    @Test(dependsOnMethods = { "testDataChannelOfOwner" })
-    public void testDataChannelOfSecondParticipant()
+    @Test(dependsOnMethods = {"testDataChannelOfParticipant1"})
+    public void testDataChannelOfParticipant2()
     {
         testDataChannel(getParticipant2().getDriver());
     }

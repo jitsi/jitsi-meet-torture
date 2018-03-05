@@ -22,7 +22,6 @@ import org.apache.http.protocol.*;
 import org.apache.http.util.*;
 import com.google.gson.*;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
@@ -31,6 +30,7 @@ import java.net.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
  * Test that connects to JVB instance and saves a list of conferences on the
@@ -62,7 +62,7 @@ public class JVBConferencesCheck
      * with first run list.
      */
     @Test
-    public void testJVBConferences()
+    public void testJvbConferences()
     {
         ensureTwoParticipants();
 
@@ -109,8 +109,8 @@ public class JVBConferencesCheck
         ArrayList<String> conferencesList = new ArrayList<>();
         try
         {
-            response = httpClient.execute(
-                targetHost, httpget, (HttpContext)null);
+            response
+                = httpClient.execute(targetHost, httpget, (HttpContext) null);
 
             HttpEntity entity = response.getEntity();
             String value = EntityUtils.toString(entity);
@@ -139,7 +139,8 @@ public class JVBConferencesCheck
                 {
                     response.close();
                 }
-                catch(Throwable t){}
+                catch(Throwable t)
+                {}
             }
         }
 
@@ -148,7 +149,7 @@ public class JVBConferencesCheck
             firstRunConferences = conferencesList;
             hangUpAllParticipants();
             ensureTwoParticipants();
-            testJVBConferences();
+            testJvbConferences();
         }
         else
         {

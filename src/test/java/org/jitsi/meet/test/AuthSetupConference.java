@@ -108,10 +108,10 @@ public class AuthSetupConference
     }
 
     @Test
-    public void authenticate() {
-
+    public void authenticate()
+    {
         String authenticationProperties
-                = System.getProperty(PROPERTIES_FILE_PNAME);
+            = System.getProperty(PROPERTIES_FILE_PNAME);
 
         if (authenticationProperties == null
                 || authenticationProperties.isEmpty())
@@ -127,11 +127,11 @@ public class AuthSetupConference
         String idpSubmitBtnName;
 
         // Identity provider login page
-        String    usernameInputId;
-        String    passwordInputId;
-        String    loginBtnName;
-        String    username;
-        String    password;
+        String usernameInputId;
+        String passwordInputId;
+        String loginBtnName;
+        String username;
+        String password;
 
         try
         {
@@ -155,63 +155,70 @@ public class AuthSetupConference
             throw new RuntimeException(e);
         }
 
-        WebDriver moderator = joinFirstParticipant().getDriver();
+        WebDriver participant1 = joinFirstParticipant().getDriver();
 
         String authButtonName = "jqi_state0_" +
                 "buttonspandatai18ndialogIamHostIamthehostspan";
 
         TestUtils.waitForElementByXPath(
-            moderator, "//button[@name='" + authButtonName + "']", 15);
+            participant1, "//button[@name='" + authButtonName + "']", 15);
 
-        WebElement authButton = moderator.findElement(By.name(authButtonName));
+        WebElement authButton
+            = participant1.findElement(By.name(authButtonName));
 
         authButton.click();
 
         // Redirected to Idp selection
         shibbolethIdpSelect(
-            moderator, idpSelectListId, idpName, idpSubmitBtnName);
+            participant1, idpSelectListId, idpName, idpSubmitBtnName);
 
         // IdpLogin
         shibbolethIdpLogin(
-            moderator, usernameInputId, passwordInputId, loginBtnName,
+            participant1, usernameInputId, passwordInputId, loginBtnName,
             username,  password);
     }
 
-    private void shibbolethIdpSelect(WebDriver participant,
-                                     String idpSelectListId,
-                                     String idpName,
-                                     String idSubmitBtnName)
+    private void shibbolethIdpSelect(
+        WebDriver driver,
+        String idpSelectListId,
+        String idpName,
+        String idSubmitBtnName)
     {
         TestUtils.waitForElementByXPath(
-            participant, "//input[@id='" + idpSelectListId + "']", 15);
+            driver,
+            "//input[@id='" + idpSelectListId + "']",
+            15);
 
-        WebElement idpInput = participant.findElement(By.id(idpSelectListId));
+        WebElement idpInput = driver.findElement(By.id(idpSelectListId));
         idpInput.sendKeys(idpName);
 
-        WebElement submit = participant.findElement(By.name(idSubmitBtnName));
+        WebElement submit = driver.findElement(By.name(idSubmitBtnName));
         submit.click();
     }
 
-    private void shibbolethIdpLogin( WebDriver participant,
-                                     String    usernameInputId,
-                                     String    passwordInputId,
-                                     String    loginBtnName,
-                                     String    username,
-                                     String    password )
+    private void shibbolethIdpLogin(
+        WebDriver driver,
+        String usernameInputId,
+        String passwordInputId,
+        String loginBtnName,
+        String username,
+        String password)
     {
         TestUtils.waitForElementByXPath(
-            participant, "//input[@id='" + usernameInputId + "']", 15);
+            driver,
+            "//input[@id='" + usernameInputId + "']",
+            15);
 
         WebElement usernameElem
-            = participant.findElement(By.id(usernameInputId));
+            = driver.findElement(By.id(usernameInputId));
         WebElement passwordElem
-            = participant.findElement(By.id(passwordInputId));
+            = driver.findElement(By.id(passwordInputId));
 
         usernameElem.sendKeys(username);
 
         passwordElem.sendKeys(password);
 
-        WebElement submit = participant.findElement(By.name(loginBtnName));
+        WebElement submit = driver.findElement(By.name(loginBtnName));
 
         submit.click();
     }

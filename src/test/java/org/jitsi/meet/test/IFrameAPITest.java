@@ -16,12 +16,9 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.net.*;
 
@@ -85,16 +82,16 @@ public class IFrameAPITest
         ensureThreeParticipants();
 
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
-        switchVideoTest.ownerClickOnLocalVideoAndTest();
-        switchVideoTest.ownerClickOnRemoteVideoAndTest();
-        switchVideoTest.ownerUnpinRemoteVideoAndTest();
+        switchVideoTest.participant1ClickOnLocalVideoAndTest();
+        switchVideoTest.participant1ClickOnRemoteVideoAndTest();
+        switchVideoTest.participant1UnpinRemoteVideoAndTest();
         switchVideoTest.participantClickOnLocalVideoAndTest();
         switchVideoTest.participantClickOnRemoteVideoAndTest();
-        switchVideoTest.participantUnpinRemoteVideo();
+        switchVideoTest.participant2UnpinRemoteVideo();
 
         MuteTest muteTest = new MuteTest(this);
-        muteTest.muteOwnerAndCheck();
-        muteTest.muteParticipantAndCheck();
-        muteTest.muteThirdParticipantAndCheck();
+        muteTest.muteParticipant1AndCheck();
+        muteTest.muteParticipant2AndCheck();
+        muteTest.muteParticipant3AndCheck();
     }
 }

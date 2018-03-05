@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.util;
 
+import org.jitsi.meet.test.base.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.support.ui.*;
@@ -43,6 +44,10 @@ public class MeetUtils
     public static final String STOP_P2P_SCRIPT =
         "APP.conference._stopP2P();";
 
+    /**
+     * The javascript code which check whether the P2P ICE session is in state
+     * 'connected'.
+     */
     public static final String P2P_ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getP2PConnectionState() === 'connected';";
 
@@ -70,24 +75,25 @@ public class MeetUtils
      * Returns the webrtc stats (in JSON format) of the specific participant
      * of the specified peer connection.
      *
-     * @param participant
-     * @param useJVB
+     * @param driver
+     * @param useJVB TODO DOCUMENT
      */
-    public static String getRtcStats(WebDriver participant, boolean useJVB)
+    public static String getRtcStats(WebDriver driver, boolean useJVB)
     {
         String script = String.format(
                 "return JSON.stringify("
                 + "APP.conference._room.%s.peerconnection.stats)",
                 useJVB ? "jvbJingleSession" : "p2pJingleSession");
 
-        return TestUtils.executeScriptAndReturnString(participant, script);
+        return TestUtils.executeScriptAndReturnString(driver, script);
     }
 
     /**
      * Obtains the RTP bundle port used by the given <tt>participant</tt>.
      *
-     * @param participant the <tt>WebDriver</tt> instance of the participant for
+     * @param driver the <tt>WebDriver</tt> instance of the participant for
      * whose bundle port is to be obtained.
+     * @param useJVB TODO DOCUMENT
      *
      * @return an <tt>int</tt> with the bundle port number.
      *
@@ -95,7 +101,7 @@ public class MeetUtils
      * failed to obtain it(the intention of throwing runtime exception is
      * to fail the test).
      */
-    public static int getBundlePort(WebDriver participant, boolean useJVB)
+    public static int getBundlePort(WebDriver driver, boolean useJVB)
     {
         StringBuilder sb = new StringBuilder("return APP.conference._room.");
         sb.append(useJVB ? "jvbJingleSession" : "p2pJingleSession");
@@ -103,7 +109,7 @@ public class MeetUtils
         sb.append(".values[0].split(':')[1]");
 
         String portNumberStr = TestUtils
-            .executeScriptAndReturnString(participant, sb.toString());
+            .executeScriptAndReturnString(driver, sb.toString());
 
         if (portNumberStr == null)
         {
@@ -127,14 +133,16 @@ public class MeetUtils
      * Returns resource JID which corresponds to XMPP MUC nickname of the given
      * <tt>participant</tt>.
      *
-     * @param participant the <tt>WebDriver</tt> instance which runs conference
+     * @param driver the <tt>WebDriver</tt> instance which runs conference
      *                    participant.
      * @return resource JID which corresponds to XMPP MUC nickname of the given
      * <tt>participant</tt>.
+     * @deprecated use {@link Participant#getEndpointId()} instead.
      */
-    public static String getResourceJid(WebDriver participant)
+    @Deprecated
+    public static String getResourceJid(WebDriver driver)
     {
-        return (String)((JavascriptExecutor) participant)
+        return (String)((JavascriptExecutor) driver)
             .executeScript("return APP.conference.getMyUserId();");
     }
 
@@ -158,8 +166,8 @@ public class MeetUtils
      * @param participant
      * @return
      */
-    public static Double getPeerAudioLevel(WebDriver observer,
-                                           WebDriver participant)
+    public static Double getRemoteAudioLevel(WebDriver observer,
+                                             WebDriver participant)
     {
 
         String jid = getResourceJid(participant);
@@ -182,16 +190,10 @@ public class MeetUtils
      */
     public static void waitForPageToLoad(WebDriver driver)
     {
-        ExpectedCondition<Boolean> expectation = new
-            ExpectedCondition<Boolean>()
-            {
-                public Boolean apply(WebDriver driver)
-                {
-                    return ((JavascriptExecutor)driver)
-                        .executeScript("return document.readyState")
-                        .equals("complete");
-                }
-            };
+        ExpectedCondition<Boolean> expectation
+            = d-> ((JavascriptExecutor) d)
+                .executeScript("return document.readyState")
+                .equals("complete");
         Wait<WebDriver> wait = new WebDriverWait(driver, 10);
         try
         {
@@ -207,16 +209,15 @@ public class MeetUtils
 
     /**
      * Returns download bitrate.
-     * @param participant
+     * @param driver
      * @return
      */
-    public static long getDownloadBitrate(WebDriver participant)
+    public static long getDownloadBitrate(WebDriver driver)
     {
-        Map stats = (Map)((JavascriptExecutor) participant)
+        Map stats = (Map)((JavascriptExecutor) driver)
             .executeScript("return APP.conference.getStats();");
 
-        Map<String,Long> bitrate =
-            (Map<String,Long>)stats.get("bitrate");
+        Map<String,Long> bitrate = (Map<String,Long>)stats.get("bitrate");
 
         if (bitrate != null)
         {
@@ -227,130 +228,78 @@ public class MeetUtils
         return 0;
     }
 
-    /**
-     * Checks whether the strophe connection is connected.
-     * @param participant
-     * @return
-     */
-    public static boolean isXmppConnected(WebDriver participant)
+    public static void startP2P(WebDriver driver)
     {
-        Object res = ((JavascriptExecutor) participant)
-            .executeScript(
-                "return APP.conference._room.xmpp.connection.connected;");
-        return res != null && res.equals(Boolean.TRUE);
+        ((JavascriptExecutor) driver).executeScript(START_P2P_SCRIPT);
     }
 
-    public static boolean isP2PConnected(WebDriver participant)
+    public static void stopP2P(WebDriver driver)
     {
-        Object result = ((JavascriptExecutor) participant)
-            .executeScript(
-                    P2P_ICE_CONNECTED_CHECK_SCRIPT);
-
-        return Boolean.valueOf(result.toString());
+        ((JavascriptExecutor) driver).executeScript(STOP_P2P_SCRIPT);
     }
 
-    public static void startP2P(WebDriver participant)
-    {
-        ((JavascriptExecutor) participant).executeScript(START_P2P_SCRIPT);
-    }
-
-    public static void stopP2P(WebDriver participant)
-    {
-        ((JavascriptExecutor) participant).executeScript(STOP_P2P_SCRIPT);
-    }
-
-    public static void waitForP2PIceConnected(WebDriver participant)
+    public static void waitForP2PIceConnected(WebDriver driver)
     {
         // FIXME method with timeout
         TestUtils.waitForBoolean(
-            participant, P2P_ICE_CONNECTED_CHECK_SCRIPT, 15);
+            driver, P2P_ICE_CONNECTED_CHECK_SCRIPT, 15);
     }
 
-    public static void waitForP2PIceDisconnected(WebDriver participant)
+    public static void waitForP2PIceDisconnected(WebDriver driver)
     {
         // FIXME method with timeout
         TestUtils.waitForBoolean(
-            participant, P2P_ICE_DISCONNECTED_CHECK_SCRIPT, 15);
+            driver, P2P_ICE_DISCONNECTED_CHECK_SCRIPT, 15);
     }
 
     /**
      * Checks whether the iceConnectionState of <tt>participant</tt> is in state
      * {@code connected}.
      *
-     * @param participant driver instance used by the participant for whom we
+     * @param driver driver instance used by the participant for whom we
      *                    want to check.
      * @return {@code true} if the {@code iceConnectionState} of the specified
      * {@code participant} is {@code connected}; otherwise, {@code false}
      */
-    public static boolean isIceConnected(WebDriver participant)
+    public static boolean isIceConnected(WebDriver driver)
     {
-        Object res = ((JavascriptExecutor) participant)
+        Object res = ((JavascriptExecutor) driver)
             .executeScript(ICE_CONNECTED_CHECK_SCRIPT);
         return res != null && res.equals(Boolean.TRUE);
     }
 
     /**
-     * Waits 30 sec for the given participant to enter the ICE 'disconnected'
-     * state.
-     *
-     * @param participant the participant.
-     */
-    public static void waitForIceDisconnected(WebDriver participant)
-    {
-        waitForIceDisconnected(participant, 30);
-    }
-
-    /**
      * Waits for the given participant to enter the ICE 'disconnected' state.
      *
-     * @param participant the participant.
+     * @param driver the participant.
      * @param timeout timeout in seconds.
      */
     public static void waitForIceDisconnected(
-            WebDriver participant,
+            WebDriver driver,
             long timeout)
     {
         TestUtils.waitForBoolean(
-            participant, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
-    }
-
-    /**
-     * Returns the transport protocol used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt>, or an error string
-     * (beginning with "error:") or null on failure.
-     * @return the transport protocol used by the media connection in the
-     * Jitsi-Meet conference running in <tt>driver</tt>.
-     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
-     */
-    public static String getProtocol(WebDriver driver)
-    {
-        if (driver == null)
-            return "error: driver is null";
-        Object protocol = ((JavascriptExecutor) driver).executeScript(
-            "try {" +
-                "return APP.conference.getStats().transport[0].type;" +
-            "} catch (err) { return 'error: '+err; }");
-
-        return (protocol == null) ? null : protocol.toString().toLowerCase();
+            driver, ICE_DISCONNECTED_CHECK_SCRIPT, timeout);
     }
 
     /**
      * Returns a JS script which checks if the remote participant's media
      * connection is OK or not.
      *
-     * @param peerId the ID(Colibri endpoint ID/MUC nickname) of the remote
+     * @param endpointId the ID(Colibri endpoint ID/MUC nickname) of the remote
      * participant whose connection is to be checked with the script produced.
      * @param isActive tells whether the script should check for connected or
      * disconnected status.
      *
      * @return a <tt>String</tt> representing JS script.
      */
-    public static String isConnectionActiveScript(String     peerId,
-                                                  boolean    isActive)
+    public static String isConnectionActiveScript(
+        String endpointId,
+        boolean isActive)
     {
         return
             "return APP.conference.getParticipantConnectionStatus('"
-                + peerId + "') "
+                + endpointId + "') "
                 + ( isActive ? "===" : "!==" )
                 + " JitsiMeetJS.constants.participantConnectionStatus.ACTIVE;";
     }
@@ -375,7 +324,8 @@ public class MeetUtils
      * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
      * @return returns {@code true} if dial in is enabled.
      */
-    public static boolean isDialInEnabled(WebDriver driver) {
+    public static boolean isDialInEnabled(WebDriver driver)
+    {
         return TestUtils.executeScriptAndReturnBoolean(
             driver, DIAL_IN_ENABLED_CHECK_SCRIPT);
     }

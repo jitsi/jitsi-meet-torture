@@ -20,10 +20,11 @@ import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 import org.testng.*;
 
-
 /**
  * Launches a hook script that will launch a participant that will join
  * the conference and that participant will be sharing its screen.
+ *
+ * @author Hristo Terezov
  */
 public class DesktopSharingTest
     extends WebTestBase
@@ -43,10 +44,11 @@ public class DesktopSharingTest
         ensureOneParticipant();
 
         String extId
-                = (String) getParticipant1().getConfigValue(
+            = (String) getParticipant1().getConfigValue(
                 "desktopSharingChromeExtId");
 
-        if(extId == null) {
+        if (extId == null)
+        {
             throw new SkipException(
                 "No Desktop sharing configuration detected. Disabling test.");
         }
@@ -54,19 +56,21 @@ public class DesktopSharingTest
         ensureTwoParticipants(
                 null, null, null,
                 new WebParticipantOptions().setChromeExtensionId(extId));
-        startDesktopSharing();
+        toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(true);
         testDesktopSharingInPresence("desktop");
-
     }
 
     /**
-     * Check desktop sharing stop.
+     * Ensure we have only one participant available in the room - participant1.
+     * Starts the new participants using the external script and check whether
+     * the stream we are receiving from him is screen.
+     * Returns at the end the state we found tests - with 2 participants.
      */
     @Test(dependsOnMethods = { "testDesktopSharingStart" })
     public void testDesktopSharingStop()
     {
-        stopDesktopSharing();
+        toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(false);
         testDesktopSharingInPresence("camera");
     }
@@ -76,41 +80,31 @@ public class DesktopSharingTest
      * compares it to the passed expected result.
      * @param expectedResult camera/desktop
      */
-    private void testDesktopSharingInPresence(final String  expectedResult)
+    private void testDesktopSharingInPresence(final String expectedResult)
     {
-        String participant1Jid
-            = MeetUtils.getResourceJid(getParticipant2().getDriver());
+        String participant2EndpointId = getParticipant2().getEndpointId();
 
         TestUtils.waitForStrings(
-            getParticipant2().getDriver(),
-                "return APP.UI.getRemoteVideoType('" + participant1Jid + "');",
+            getParticipant1().getDriver(),
+            "return APP.UI.getRemoteVideoType('" + participant2EndpointId +
+                "');",
             expectedResult,
             5);
     }
 
     /**
-     * Starts desktop sharing.
+     * Toggles desktop sharing.
      */
-    private void startDesktopSharing()
+    private void toggleDesktopSharing()
     {
-        ((WebParticipant)getParticipant2())
-            .getToolbar().clickDesktopSharingButton();
-    }
-
-    /**
-     * Stops desktop sharing.
-     */
-    private void stopDesktopSharing()
-    {
-        ((WebParticipant)getParticipant2())
-            .getToolbar().clickDesktopSharingButton();
+        getParticipant2().getToolbar().clickDesktopSharingButton();
     }
 
     /**
      * Checks the video layout on the other side, after we imitate
      * desktop sharing.
      * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
-     *                        otherwise.
+     * otherwise.
      */
     private void checkExpandingDesktopSharingLargeVideo(boolean isScreenSharing)
     {

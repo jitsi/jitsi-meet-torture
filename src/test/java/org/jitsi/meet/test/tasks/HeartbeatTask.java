@@ -15,10 +15,8 @@
  */
 package org.jitsi.meet.test.tasks;
 
-import org.jitsi.meet.test.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 import org.testng.*;
 
 import java.util.*;
@@ -41,6 +39,11 @@ public class HeartbeatTask
     private final boolean enableBitrateCheck;
     private final Participant participant1;
     private final Participant participant2;
+    private long lastRun = System.currentTimeMillis();
+    private int millsToRun;
+
+    private CountDownLatch downloadSignal1 = new CountDownLatch(3);
+    private CountDownLatch downloadSignal2 = new CountDownLatch(3);
 
     public HeartbeatTask(
         Participant participant1,
@@ -55,11 +58,6 @@ public class HeartbeatTask
         this.millsToRun = millsToRun;
     }
 
-    long lastRun = System.currentTimeMillis();
-    int millsToRun;
-
-    CountDownLatch ownerDownloadSignal = new CountDownLatch(3);
-    CountDownLatch secondPDownloadSignal = new CountDownLatch(3);
 
     /**
      * Starts the <tt>HeartbeatTask</tt>. From now on it will be checking
@@ -84,75 +82,78 @@ public class HeartbeatTask
 
             if (!MeetUtils.isIceConnected(participant1.getDriver()))
             {
-                assertAndQuit("Owner ice is not connected.");
+                assertAndQuit("Participant1 ice is not connected.");
                 return;
             }
 
             if (!participant1.isInMuc())
             {
-                assertAndQuit("Owner is not in the muc.");
+                assertAndQuit("Participant1 is not in the muc.");
                 return;
             }
 
             if (!MeetUtils.isIceConnected(participant2.getDriver()))
             {
                 assertAndQuit(
-                    "Second participant ice is not connected.");
+                    "Participant2 ice is not connected.");
                 return;
             }
 
             if (!participant2.isInMuc())
             {
                 assertAndQuit(
-                    "The second participant is not in the muc.");
+                    "Participant2 is not in the muc.");
                 return;
             }
 
-            long downloadOwner
+            long download1
                 = MeetUtils.getDownloadBitrate(participant1.getDriver());
-            long downloadParticipant =
+            long download2 =
                 MeetUtils.getDownloadBitrate(participant2.getDriver());
 
-            if (downloadOwner <= 0)
+            if (download1 <= 0)
             {
-                TestUtils.print("Owner no download bitrate");
-                ownerDownloadSignal.countDown();
+                TestUtils.print("Participant1 no download bitrate");
+                downloadSignal1.countDown();
             }
             else
-                ownerDownloadSignal = new CountDownLatch(3);
-
-            if (ownerDownloadSignal.getCount() <= 0)
             {
-                assertAndQuit("Owner download bitrate less than 0");
+                downloadSignal1 = new CountDownLatch(3);
+            }
+
+            if (downloadSignal1.getCount() <= 0)
+            {
+                assertAndQuit("Participant1 download bitrate less than 0");
                 return;
             }
 
-            if (enableBitrateCheck && downloadParticipant <= 0)
+            if (enableBitrateCheck && download2 <= 0)
             {
                 TestUtils.print(
-                   "Second participant no download bitrate");
-               secondPDownloadSignal.countDown();
+                   "Participant2 no download bitrate");
+               downloadSignal2.countDown();
             }
             else
-                secondPDownloadSignal = new CountDownLatch(3);
+            {
+                downloadSignal2 = new CountDownLatch(3);
+            }
 
-            if (enableBitrateCheck && secondPDownloadSignal.getCount() <= 0)
+            if (enableBitrateCheck && downloadSignal2.getCount() <= 0)
             {
                 assertAndQuit(
-                    "Second participant download rate less than 0");
+                    "Participant2 download rate less than 0");
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(participant1.getDriver()))
+            if (!participant1.isXmppConnected())
             {
-                assertAndQuit("Owner xmpp connection is not connected");
+                assertAndQuit("Participant1 xmpp connection is not connected");
                 return;
             }
 
-            if (!MeetUtils.isXmppConnected(participant2.getDriver()))
+            if (!participant2.isXmppConnected())
             {
-                assertAndQuit("The second participant xmpp "
-                    + "connection is not connected");
+                assertAndQuit("Participant2's xmpp connection is not connected");
                 return;
             }
 
