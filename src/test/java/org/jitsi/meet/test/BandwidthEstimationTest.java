@@ -244,15 +244,25 @@ public class BandwidthEstimationTest
             boolean useJVB, long timeout, TimeUnit unit, String[] schedule)
         throws Exception
     {
+        StringBuilder sb = new StringBuilder();
+        sb.append(useJVB ? "jvb" : "turn");
+        for (String s : schedule)
+        {
+            sb.append(s.replaceAll(",", ""));
+            sb.append("s"); // append an to indicate the duration unit.
+        }
+
         JitsiMeetUrl senderUrl, receiverUrl;
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
+            senderUrl.setRoomName(sb.toString());
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
 
             receiverUrl = getJitsiMeetUrl();
+            receiverUrl.setRoomName(sb.toString());
             receiverUrl.appendConfig("config.p2p.enabled=true");
             // XXX we disable TURN server discovery in an attempt to fix a
             // situation where the receiver connects with the relay candidate
@@ -266,6 +276,7 @@ public class BandwidthEstimationTest
         else
         {
             senderUrl = receiverUrl = getJitsiMeetUrl();
+            senderUrl.setRoomName(sb.toString());
         }
 
         ensureTwoParticipants(senderUrl, receiverUrl, senderOptions, null);
@@ -284,16 +295,12 @@ public class BandwidthEstimationTest
         schedulePort(receiverPort, timeout, unit, schedule);
 
         // Save the stats results and process them.
-        StringBuilder fName = new StringBuilder();
-        fName.append(new SimpleDateFormat("yyyyMMddHHmm").format(new Date()));
-        fName.append(useJVB ? "-jvb-" : "-webrtc-");
-        fName.append(String.join(",", schedule));
-        fName.append(".json");
+        sb.append(".json");
 
         String stats = MeetUtils.getRtcStats(receiver, useJVB);
 
         File outputFile
-            = new File(FailureListener.createLogsFolder(), fName.toString());
+            = new File(FailureListener.createLogsFolder(), sb.toString());
 
         try (FileWriter fileWriter = new FileWriter(outputFile))
         {
