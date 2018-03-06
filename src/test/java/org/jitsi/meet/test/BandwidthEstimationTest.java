@@ -236,6 +236,14 @@ public class BandwidthEstimationTest
 
             receiverUrl = getJitsiMeetUrl();
             receiverUrl.appendConfig("config.p2p.enabled=true");
+            // XXX we disable TURN server discovery in an attempt to fix a
+            // situation where the receiver connects with the relay candidate
+            // (so we get the port the TURN server has reserved for the
+            // receiver, which is not what we want), and after a few seconds
+            // the server reflexive candidate is connected (which is what we
+            // want).
+
+            receiverUrl.appendConfig("config.p2p.useStunTurn=false");
         }
         else
         {
