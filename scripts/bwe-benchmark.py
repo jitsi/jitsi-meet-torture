@@ -53,7 +53,7 @@ def compare(args):
     ratio = jvb_bps.mean() / p2p_bps.mean()
     if args.loglevel == logging.DEBUG:
         logging.debug(pd.DataFrame({'p2p_bps': p2p_bps, 'jvb_bps': jvb_bps}))
-    logging.info(ratio)
+    print(ratio)
     sys.exit(0 if ratio > .95 else 1)
 
 def plot(args):

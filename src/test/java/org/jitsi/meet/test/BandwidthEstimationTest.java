@@ -145,24 +145,77 @@ public class BandwidthEstimationTest
      * Runs the benchmark script with the jvb and the p2p webrtc-stats
      * as a parameter.
      *
-     * @param jvb the JVB webrtc-stats file.
-     * @param p2p the P2P webrtc-stats file.
+     * @param jvb the {@link File} to read the JVB webrtc-stats from.
+     * @param p2p the {@link File} to read the webrtc-stats file from.
+     * @param analysisFile the {@link File} to store the analysis results in.
      */
-    private static int benchmark(File jvb, File p2p)
+    private static int benchmark(File jvbFile, File p2pFile, File analysisFile)
         throws Exception
     {
-        CmdExecutor cmdExecutor = new CmdExecutor();
+        CmdExecutor cmdExecutor = new CmdExecutor()
+        {
+            @Override
+            public void configureProcessBuilder(ProcessBuilder processBuilder)
+            {
+                processBuilder.redirectOutput(analysisFile);
+                processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+            }
+        };
 
         List<String> cmdArgs = new LinkedList<>();
 
         cmdArgs.add(benchmarkScript);
         cmdArgs.add("compare");
         cmdArgs.add("--jvb");
-        cmdArgs.add(jvb.toString());
+        cmdArgs.add(jvbFile.toString());
         cmdArgs.add("--p2p");
-        cmdArgs.add(p2p.toString());
+        cmdArgs.add(p2pFile.toString());
 
         return cmdExecutor.executeCmd(cmdArgs, 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Returns a human readable name for the bottleneck schedule that is passed
+     * in as a parameter. The name won't contain any special characters so it
+     * can be used in URLs and file names.
+     *
+     * @param schedule the bottleneck schedule to humanize
+     * @return the human readable name for the bottleneck schedule that is
+     * passed in as a parameter.
+     */
+    private static String humanizeSchedule(String[] schedule)
+    {
+	StringBuilder sb = new StringBuilder();
+        for (String s : schedule)
+        {
+            sb.append(s.replaceAll(",", ""));
+            sb.append("s"); // append an to indicate the duration unit.
+        }
+	return sb.toString();
+    }
+
+    /**
+     * Gets a {@link File} with the specified name located in the logs folder.
+     *
+     * @param fileName the file name.
+     * @return a {@link File} with the specified name located in the logs
+     * folder.
+     */
+    private static File getLogFile(String fileName)
+    {
+        return new File(FailureListener.createLogsFolder(), fileName);
+    }
+
+    /**
+     * Writes the contents to the output file.
+     */
+    private static void writeFile(File outputFile, String contents)
+        throws IOException
+    {
+        try (FileWriter fileWriter = new FileWriter(outputFile))
+        {
+            fileWriter.write(contents);
+        }
     }
 
     @Override
@@ -222,10 +275,21 @@ public class BandwidthEstimationTest
         // These are bitrate,duration pairs. The units are important and are
         // defined in TC(8). The test duration should be in seconds.
         String[] schedule = { "10mbit,60", "1mbit,60", "10mbit,60" };
-        File jvb = this.test(true, 200, TimeUnit.SECONDS, schedule);
-        File p2p = this.test(false, 200, TimeUnit.SECONDS, schedule);
 
-        int result = benchmark(jvb, p2p);
+        // XXX notice that the webrtc stats gathering default interval is 300
+        // seconds.
+        String jvbStats = this.test(true, 200, TimeUnit.SECONDS, schedule);
+        String p2pStats = this.test(false, 200, TimeUnit.SECONDS, schedule);
+
+        File jvbFile = getLogFile("jvb" + humanizeSchedule(schedule) + ".json");
+        File p2pFile = getLogFile("p2p" + humanizeSchedule(schedule) + ".json");
+        File analysisFile
+            = getLogFile("test" + humanizeSchedule(schedule) + ".out");
+
+        writeFile(jvbFile, jvbStats);
+        writeFile(p2pFile, p2pStats);
+
+        int result = benchmark(jvbFile, p2pFile, analysisFile);
         assertEquals(result, 0);
     }
 
@@ -240,7 +304,7 @@ public class BandwidthEstimationTest
      *
      * @throws Exception if something goes wrong.
      */
-    private File test(
+    private String test(
             boolean useJVB, long timeout, TimeUnit unit, String[] schedule)
         throws Exception
     {
@@ -248,11 +312,14 @@ public class BandwidthEstimationTest
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
+            String roomName = "jvb" + humanizeSchedule(schedule);
+            senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
 
             receiverUrl = getJitsiMeetUrl();
+            receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
             // XXX we disable TURN server discovery in an attempt to fix a
             // situation where the receiver connects with the relay candidate
@@ -265,7 +332,9 @@ public class BandwidthEstimationTest
         }
         else
         {
+            String roomName = "p2p" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
+            senderUrl.setRoomName(roomName);
         }
 
         ensureTwoParticipants(senderUrl, receiverUrl, senderOptions, null);
@@ -281,32 +350,14 @@ public class BandwidthEstimationTest
 
         print("Local bundle port for 2: " + receiverPort);
 
+        // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
 
-        // Save the stats results and process them.
-        StringBuilder fName = new StringBuilder();
-        fName.append(new SimpleDateFormat("yyyyMMddHHmm").format(new Date()));
-        fName.append(useJVB ? "-jvb-" : "-webrtc-");
-        fName.append(String.join(",", schedule));
-        fName.append(".json");
-
-        String stats = MeetUtils.getRtcStats(receiver, useJVB);
-
-        File outputFile
-            = new File(FailureListener.createLogsFolder(), fName.toString());
-
-        try (FileWriter fileWriter = new FileWriter(outputFile))
-        {
-            fileWriter.write(stats);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        String rtcStats = MeetUtils.getRtcStats(receiver, useJVB);
 
         getParticipant1().hangUp();
         getParticipant2().hangUp();
 
-        return outputFile;
+        return rtcStats;
     }
 }

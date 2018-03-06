@@ -53,6 +53,19 @@ public class CmdExecutor
     private final CountDownLatch waitEndSignal = new CountDownLatch(1);
 
     /**
+     * A method that configures the wrapped {@link ProcessBuilder}. It allows
+     * to capture the stdout/stderr/stdin of the process, add/remove environemnt
+     * variables etc.
+     *
+     * @param processBuilder the wrapped {@link ProcessBuilder}.
+     */
+    public void configureProcessBuilder(ProcessBuilder pb)
+    {
+        pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+    }
+
+    /**
      * Executes a command through the {@link ProcessBuilder}.
      *
      * @param cmd the <tt>List<String></tt> which will be passed to
@@ -86,8 +99,7 @@ public class CmdExecutor
             public void run()
             {
                 ProcessBuilder pb = new ProcessBuilder(cmd);
-                pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                configureProcessBuilder(pb);
 
                 try
                 {
