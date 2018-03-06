@@ -32,7 +32,25 @@ import static org.testng.Assert.*;
 import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
- * The tests for bandwidth estimations.
+ * This class defines tests that evaluate the performance of our bandwidth
+ * estimations. Tests in this class are comprised of a chrome sender, a chrome
+ * receiver, a JVB, a TURN server and a bottleneck scenario. The test will
+ * connect the sender and the receiver through the middlebox and play the
+ * bottleneck scenario. When the bottleneck scenario is over, it will extract
+ * and store the webrtc-internals of the receiver. This sequence of steps is
+ * run once for the JVB and once for the TURN server, so we end up with two
+ * webrtc-internals, one for the JVB and one for the TURN server. Finally, it
+ * will feed the two webrtc-internals to an analysis script (bwe-benchmark.py)
+ * that exits with success if the JVB bitrate time series is healthy, or with
+ * failure otherwise.
+ *
+ * There are several requirements that must be met in order for this test to
+ * function correctly:
+ * - The user that is executing the test needs to be able to run the tc command.
+ * - The JVB and the TURN server need to run on the same host that is running
+ *   the test.
+ * - A recent version of the python pandas library needs to be installed.
+ * - The grid nodes need to be powerful enough to achieve high target bitrates.
  *
  * @author George Politis
  */
