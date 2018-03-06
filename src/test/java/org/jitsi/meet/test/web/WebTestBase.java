@@ -37,6 +37,7 @@ public class WebTestBase
         + "&config.callStatsID=false"
         + "&config.alwaysVisibleToolbar=true"
         + "&config.p2p.enabled=false"
+        + "&config.p2p.useStunTurn=false"
         + "&config.gatherStats=true"
         + "&config.disable1On1Mode=true";
 
