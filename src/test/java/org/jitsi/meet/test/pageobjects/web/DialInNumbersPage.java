@@ -33,7 +33,7 @@ public class DialInNumbersPage
      * {@link DialInNumbersPage}.
      */
     private final static String CONFERENCE_ID_MESSAGE = "dial-in-conference-id";
-    private final static String NUMBERS = "dial-in-numbers-table";
+    private final static String NUMBERS = "dial-in-numbers-list";
     private final static String NUMBER = "dial-in-number";
 
     /**
