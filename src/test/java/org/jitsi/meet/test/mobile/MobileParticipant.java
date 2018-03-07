@@ -135,11 +135,56 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     public Object getConfigValue(String key) { return null; }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEndpointId()
+    {
+        throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMeetDebugLog()
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProtocol()
+    {
+        throw new RuntimeException("Not implemented");
+    }
+
+    /**
      * @return {@link ToolbarView} for this participant.
      */
     public ToolbarView getToolbarView()
     {
         return getConferenceView().getToolbarView();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isP2pConnected()
+    {
+        throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isXmppConnected()
+    {
+        throw new RuntimeException("Not implemented");
     }
 
     /**

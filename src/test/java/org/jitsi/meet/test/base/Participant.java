@@ -23,14 +23,12 @@ import org.openqa.selenium.logging.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.logging.*;
 
 /**
  * The participant instance holding the {@link WebDriver}.
  * @param <T> the driver type.
  */
 public abstract class Participant<T extends WebDriver>
-    implements JavascriptExecutor
 {
     /**
      * The seconds between calls that will make sure we keep alive the
@@ -258,39 +256,6 @@ public abstract class Participant<T extends WebDriver>
         return name;
     }
 
-    private JavascriptExecutor getJSExecutor()
-    {
-        return driver instanceof JavascriptExecutor
-            ? (JavascriptExecutor) driver : null;
-    }
-
-    /**
-     * Executes a script in this {@link Participant}'s {@link WebDriver}.
-     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
-     */
-    @Override
-    public Object executeScript(String var1, Object... var2)
-    {
-        JavascriptExecutor executor = getJSExecutor();
-
-        return executor != null
-            ? executor.executeScript(var1, var2) : null;
-    }
-
-    /**
-     * Executes a script asynchronously in this {@link Participant}'s
-     * {@link WebDriver}.
-     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
-     */
-    @Override
-    public Object executeAsyncScript(String var1, Object... var2)
-    {
-        JavascriptExecutor executor = getJSExecutor();
-
-        return executor != null
-            ? executor.executeAsyncScript(var1, var2) : null;
-    }
-
     /**
      * Waits until this participant joins the MUC.
      * @param timeout the maximum time to wait in seconds.
@@ -385,27 +350,16 @@ public abstract class Participant<T extends WebDriver>
         }
     }
 
-    public String getMeetDebugLog()
-    {
-        try
-        {
-            Object log
-                = executeScript(
-                    "try{ "
-                        + "return JSON.stringify("
-                        + "  APP.conference.getLogs(), null, '    ');"
-                        + "}catch (e) {}");
-
-            return log instanceof String ? (String) log : null;
-        }
-        catch (Exception e)
-        {
-            Logger.getGlobal()
-                .log(Level.SEVERE, "Failed to get meet logs from " + name, e);
-
-            return null;
-        }
-    }
+    /**
+     * Obtains JitsiMeet debug logs.
+     *
+     * XXX On web the value is obtained from "APP.conference.getLogs()", but
+     * it's done by executing a script, so no idea at this point when that will
+     * be available on mobile.
+     *
+     * @return a string with logs.
+     */
+    public abstract String getMeetDebugLog();
 
     public LogEntries getBrowserLogs()
     {
@@ -440,53 +394,23 @@ public abstract class Participant<T extends WebDriver>
      * @return the endpoint ID of this participant (i.e. the resource part of
      * the occupant JID in the MUC).
      */
-    public String getEndpointId()
-    {
-        Object o = executeScript("return APP.conference.getMyUserId();");
-        return o == null ? null : o.toString();
-    }
+    public abstract String getEndpointId();
 
     /**
      * @return {@code true} if the ICE connection for P2P is in state
      * 'connected' and {@code false} otherwise.
      */
-    public boolean isP2pConnected()
-    {
-        Object result = executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT);
-
-        return Boolean.valueOf(result.toString());
-    }
+    public abstract boolean isP2pConnected();
 
     /**
      * @return the transport protocol used by the jitsi-videobridge connection
      * for this {@link Participant}, or {@code null}.
      */
-    public String getProtocol()
-    {
-        WebDriver driver = getDriver();
-
-        if (driver == null)
-        {
-            return null;
-        }
-        Object protocol
-            = executeScript(
-                "try {" +
-                    "return APP.conference.getStats().transport[0].type;" +
-                "} catch (err) { return 'error: '+err; }");
-
-        return (protocol == null) ? null : protocol.toString().toLowerCase();
-    }
+    public abstract String getProtocol();
 
     /**
      * Checks whether the strophe connection is connected.
      * @return {@code true} iff the XMPP connection is connected.
      */
-    public boolean isXmppConnected()
-    {
-        Object res
-            = executeScript(
-                "return APP.conference._room.xmpp.connection.connected;");
-        return res != null && res.equals(Boolean.TRUE);
-    }
+    public abstract boolean isXmppConnected();
 }

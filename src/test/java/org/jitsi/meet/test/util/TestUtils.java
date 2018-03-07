@@ -493,6 +493,24 @@ public class TestUtils
     }
 
     /**
+     * Converts an arbitrary result of the JavaScript execution into primitive
+     * <tt>boolean</tt> (null means <tt>false</tt>).
+     *
+     * @param jsExecutionResult - The <tt>Object</tt> which is a result of
+     * JavaScript execution.
+     * @return a primitive <tt>boolean</tt> value for the given <tt>Object</tt>
+     * where <tt>null</tt> will be converted to <tt>false</tt>.
+     */
+    public static boolean getBooleanResult(Object jsExecutionResult)
+    {
+        // FIXME cleanup to not use 'executeScriptAndReturnBoolean' and have one
+        // way for dealing with script execution (the method above works on
+        // WebDriver directly).
+        return jsExecutionResult != null
+            && Boolean.valueOf(jsExecutionResult.toString());
+    }
+
+    /**
      * Executes a specific (piece of) JavaScript script in the browser
      * controlled by a specific {@code WebDriver} and returns the result of its
      * execution as a {@code String} value.

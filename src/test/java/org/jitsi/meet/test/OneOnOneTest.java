@@ -58,8 +58,8 @@ public class OneOnOneTest
             = getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES);
         ensureTwoParticipants(url, url);
 
-        Participant participant1 =  getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 =  getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
         // Prevent toolbar from being always displayed as filmstrip visibility
         // is tied to toolbar visibility.
@@ -80,7 +80,7 @@ public class OneOnOneTest
             null, null,
             getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES));
 
-        Participant participant3 = getParticipant3();
+        WebParticipant participant3 = getParticipant3();
         stopDockingToolbar(participant3);
 
         verifyRemoteVideosDisplay(getParticipant1(), true);
@@ -167,7 +167,7 @@ public class OneOnOneTest
      *               no longer want to dock toolbars.
 
      */
-    private void stopDockingToolbar(Participant testee)
+    private void stopDockingToolbar(WebParticipant testee)
     {
         testee.executeScript("APP.UI.dockToolbar(false);");
     }

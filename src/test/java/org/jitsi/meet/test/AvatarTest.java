@@ -253,8 +253,8 @@ public class AvatarTest
     @Test
     public void changeAvatarAndCheck()
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         final WebDriver driver1 = participant1.getDriver();
         final WebDriver driver2 = participant2.getDriver();
 

@@ -52,9 +52,9 @@ public class ActiveSpeakerTest
     @Test
     public void testActiveSpeaker()
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
-        Participant participant3 = getParticipant3();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
 
         // skip if we are not chrome
         if (!participant1.getType().isChrome())
@@ -128,9 +128,9 @@ public class ActiveSpeakerTest
      * @param participant3 used only to print some debugging info
      */
     private void testActiveSpeaker(
-        Participant activeSpeaker,
-        Participant participant2,
-        Participant participant3)
+        WebParticipant activeSpeaker,
+        WebParticipant participant2,
+        WebParticipant participant3)
     {
         // we cannot use firefox as active speaker as it uses constant beep
         // audio which is not detected as speech

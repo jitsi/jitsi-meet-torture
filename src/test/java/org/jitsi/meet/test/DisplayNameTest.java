@@ -123,8 +123,8 @@ public class DisplayNameTest
     private void checkForDefaultDisplayNames()
     {
         // default remote display name
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         String defaultDisplayName =
             (String) participant1.executeScript(
                     "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");

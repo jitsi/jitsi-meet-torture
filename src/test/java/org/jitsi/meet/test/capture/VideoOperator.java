@@ -15,10 +15,9 @@
  */
 package org.jitsi.meet.test.capture;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
-import org.openqa.selenium.*;
+import org.jitsi.meet.test.web.*;
 
 import java.util.*;
 
@@ -38,14 +37,14 @@ public class VideoOperator
     /**
      * <tt>WebDriver</tt> used by this instance.
      */
-    private final Participant participant;
+    private final WebParticipant participant;
 
     /**
      * Creates new instance of <tt>VideoOperator</tt>.
      * @param participant the <tt>WebDriver</tt> instance where recorder script
      * will be running.
      */
-    public VideoOperator(Participant participant)
+    public VideoOperator(WebParticipant participant)
     {
         this.participant = Objects.requireNonNull(participant);
     }

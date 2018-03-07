@@ -276,7 +276,7 @@ public class ReloadTest
      */
     private void waitForReloadAndTest(boolean isParticipant1Muted)
     {
-        List<Participant> participants
+        List<WebParticipant> participants
             = Arrays.asList(getParticipant1(), getParticipant2());
 
         final String checkForConferenceLeftScript = "return "
@@ -304,7 +304,7 @@ public class ReloadTest
         {
             print("Wait for send data on the second "
                 + "participant side.");
-            Participant participant = getParticipant2();
+            WebParticipant participant = getParticipant2();
             new WebDriverWait(participant.getDriver(), 15)
                 .until((ExpectedCondition<Boolean>) d ->
                 {
