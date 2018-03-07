@@ -22,7 +22,7 @@ import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 
-import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.fail;
 
 /**
  * Class contains utility methods related with jitsi-meet application logic.
@@ -201,9 +201,7 @@ public class MeetUtils
         }
         catch(TimeoutException error)
         {
-            assertFalse(
-                true,
-                "Timeout waiting for Page Load Request to complete.");
+            fail("Timeout waiting for Page Load Request to complete.", error);
         }
     }
 
