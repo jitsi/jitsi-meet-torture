@@ -256,9 +256,8 @@ public class WebParticipant extends Participant<WebDriver>
         // necessarily mean that the conference is currently in the P2P mode.
         // It may turn out we're not really checking if P2P is connected
         // and the method name may be confusing.
-        Object result = executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT);
-
-        return Boolean.valueOf(result.toString());
+        return TestUtils.getBooleanResult(
+                executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT));
     }
 
     /**
@@ -267,11 +266,9 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public boolean isXmppConnected()
     {
-        Object res
-            = executeScript(
-            "return APP.conference._room.xmpp.connection.connected;");
-
-        return res != null && res.equals(Boolean.TRUE);
+        return TestUtils.getBooleanResult(
+            executeScript(
+                "return APP.conference._room.xmpp.connection.connected;"));
     }
 
     /**
