@@ -122,6 +122,20 @@ public class JitsiMeetUrl
      */
     public JitsiMeetUrl appendConfig(String extraConfig)
     {
+        return appendConfig(extraConfig, true /* overwrite */);
+    }
+
+    /**
+     * Adds extra config parameters.
+     *
+     * @param extraConfig extra config params to be added at the end of the
+     * current {@link #fragmentParams}, without "?" nor "&" at the beginning.
+     * @param override if {@code true} will overwrite any existing fragment
+     * parameters.
+     * @return a reference to this object.
+     */
+    public JitsiMeetUrl appendConfig(String extraConfig, boolean override)
+    {
         if (StringUtils.isBlank(extraConfig))
         {
             return this;
@@ -131,13 +145,18 @@ public class JitsiMeetUrl
         for (String pair : pairs)
         {
             String[] keyValue = pair.split("=");
-            if (keyValue.length > 1)
+
+            // Do not overwrite existing values unless override is true
+            if (!fragmentParams.containsKey(keyValue[0]) || override)
             {
-                fragmentParams.put(keyValue[0], keyValue[1]);
-            }
-            else
-            {
-                fragmentParams.remove(keyValue[0]);
+                if (keyValue.length > 1)
+                {
+                    fragmentParams.put(keyValue[0], keyValue[1]);
+                }
+                else
+                {
+                    fragmentParams.remove(keyValue[0]);
+                }
             }
         }
 

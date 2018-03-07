@@ -38,6 +38,12 @@ public abstract class Participant<T extends WebDriver>
     private static final int KEEP_ALIVE_SESSION_INTERVAL = 20;
 
     /**
+     * The default config which will be set on the {@link JitsiMeetUrl}, before
+     * conference is joined.
+     */
+    private final String defaultConfig;
+
+    /**
      * The driver.
      */
     protected final T driver;
@@ -80,15 +86,19 @@ public abstract class Participant<T extends WebDriver>
      * @param name the name.
      * @param driver its driver instance.
      * @param type the type (type of browser).
+     * @param defaultConfig the config which will be set on
+     *        the {@link JitsiMeetUrl}, before conference is joined.
      */
     public Participant(
-        String name,
-        T driver,
-        ParticipantType type)
+            String name,
+            T driver,
+            ParticipantType type,
+            String defaultConfig)
     {
         this.name = Objects.requireNonNull(name, "name");
         this.driver = Objects.requireNonNull(driver, "driver");
         this.type = Objects.requireNonNull(type, "type");
+        this.defaultConfig = defaultConfig;
     }
 
     /**
@@ -108,10 +118,11 @@ public abstract class Participant<T extends WebDriver>
      * the config part. For example:
      * "https://server.com/conference1?login=true#config.debug=true"
      */
-    public void joinConference(
-        JitsiMeetUrl meetURL)
+    public void joinConference(JitsiMeetUrl meetURL)
     {
         meetURL = Objects.requireNonNull(meetURL, "meetURL");
+
+        meetURL.appendConfig(defaultConfig, false /* do not override */);
 
         TestUtils.print(getName() + " is opening URL: " + meetURL);
 

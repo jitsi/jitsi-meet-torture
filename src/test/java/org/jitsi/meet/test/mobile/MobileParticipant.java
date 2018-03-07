@@ -83,7 +83,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
                              String appBundleId,
                              String appBinaryFile)
     {
-        super(name, driver, type);
+        super(name, driver, type, null);
         this.driver = Objects.requireNonNull(driver, "driver");
         this.appBundleId = Objects.requireNonNull(appBundleId, "appBundleId");
         this.appBinaryFile = appBinaryFile;
@@ -232,8 +232,6 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     @Override
     public void doJoinConference(JitsiMeetUrl conferenceUrl)
     {
-        logger.log(Level.INFO, "Joining a conference: " + conferenceUrl);
-
         if (type.isAndroid())
         {
             maybeAcceptOverlayPermissions();

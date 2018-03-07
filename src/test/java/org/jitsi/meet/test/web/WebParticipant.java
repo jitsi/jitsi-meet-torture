@@ -34,6 +34,21 @@ public class WebParticipant extends Participant<WebDriver>
     implements JavascriptExecutor
 {
     /**
+     * Default config for Web participants.
+     */
+    private static final String DEFAULT_CONFIG
+        = "config.requireDisplayName=false"
+            + "&config.debug=true"
+            + "&config.disableAEC=true"
+            + "&config.disableNS=true"
+            + "&config.callStatsID=false"
+            + "&config.alwaysVisibleToolbar=true"
+            + "&config.p2p.enabled=false"
+            + "&config.p2p.useStunTurn=false"
+            + "&config.gatherStats=true"
+            + "&config.disable1On1Mode=true";
+
+    /**
      * The javascript code which returns {@code true} if we are joined in
      * the muc.
      */
@@ -63,7 +78,7 @@ public class WebParticipant extends Participant<WebDriver>
     public WebParticipant(
             String name, WebDriver driver, ParticipantType type)
     {
-        super(name, driver, type);
+        super(name, driver, type, DEFAULT_CONFIG);
     }
 
     /**
