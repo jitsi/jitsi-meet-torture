@@ -237,12 +237,6 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public String getProtocol()
     {
-        WebDriver driver = getDriver();
-
-        if (driver == null)
-        {
-            return null;
-        }
         Object protocol
             = executeScript(
             "try {"
