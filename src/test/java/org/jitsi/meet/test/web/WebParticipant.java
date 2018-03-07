@@ -166,10 +166,7 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public Object executeScript(String var1, Object... var2)
     {
-        JavascriptExecutor executor = getJSExecutor();
-
-        return executor != null
-            ? executor.executeScript(var1, var2) : null;
+        return getJSExecutor().executeScript(var1, var2);
     }
 
     /**
@@ -180,16 +177,20 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public Object executeAsyncScript(String var1, Object... var2)
     {
-        JavascriptExecutor executor = getJSExecutor();
-
-        return executor != null
-            ? executor.executeAsyncScript(var1, var2) : null;
+        return getJSExecutor().executeAsyncScript(var1, var2);
     }
 
     private JavascriptExecutor getJSExecutor()
     {
-        return driver instanceof JavascriptExecutor
-            ? (JavascriptExecutor) driver : null;
+        if (driver instanceof JavascriptExecutor)
+        {
+            return (JavascriptExecutor) driver;
+        }
+        else
+        {
+            throw new RuntimeException(
+                "The driver is not capable of executing JavaScript");
+        }
     }
 
     /**
