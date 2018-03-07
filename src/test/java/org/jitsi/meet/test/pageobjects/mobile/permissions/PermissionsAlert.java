@@ -31,13 +31,10 @@ import org.jitsi.meet.test.pageobjects.mobile.base.*;
 public class PermissionsAlert extends AbstractMobilePage
 {
     @AndroidFindBy(
-        xpath
-            = "//android.widget.Button["
-            + "@resource-id="
-            + "'com.android.packageinstaller:id/permission_allow_button']"
+        id = "com.android.packageinstaller:id/permission_allow_button"
     )
     @iOSFindBy(
-        xpath = "//XCUIElementTypeButton[@name='OK']"
+        id = "OK"
     )
     private MobileElement allowButton;
 
