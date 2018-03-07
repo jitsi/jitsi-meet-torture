@@ -100,8 +100,8 @@ public class ConferenceMigrationTest
                 "config.enforcedBridge=\"" + migratedBridge +"\""),
             null);
 
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
         participant1.waitForIceConnected();

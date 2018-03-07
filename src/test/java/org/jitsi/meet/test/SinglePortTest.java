@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
@@ -47,8 +46,8 @@ public class SinglePortTest
     @Test
     public void singlePortTest()
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
         // Just make sure everyone is ready
         participant1.waitForSendReceiveData();
@@ -94,8 +93,10 @@ public class SinglePortTest
      * not be determined.
      * @param participant the <tt>WebDriver</tt> running Jitsi-Meet.
      */
-    private static String getRemotePort(Participant participant)
+    private static String getRemotePort(WebParticipant participant)
     {
+        // FIXME this should be in Participant and this specific implementation
+        // in the WebParticipant (because it executes scripts).
         if (participant == null)
         {
             return null;

@@ -74,7 +74,7 @@ public class FollowMeTest
     @Test
     public void testFollowMeCheckboxVisibleOnlyForModerator()
     {
-        Participant participant2 = getParticipant2();
+        WebParticipant participant2 = getParticipant2();
 
         Boolean allModeratorsEnabled = (Boolean)(
             participant2.executeScript(
@@ -162,8 +162,8 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
     public void testNextOnStageCommandsAreFollowed()
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
         String participant2EndpointId = participant2.getEndpointId();
 

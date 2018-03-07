@@ -126,7 +126,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopAndStartVideoOnParticipant1AndCheckStream"})
     public void stopAndStartVideoOnParticipant1AndCheckEvents()
     {
-        Participant participant2 = getParticipant2();
+        WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
         String listenForTrackRemoved = "APP.conference._room.addEventListener("

@@ -291,7 +291,7 @@ public class WebTestBase
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)
     {
-        Participant p = participants.get(index);
+        WebParticipant p = (WebParticipant) participants.get(index);
 
         if (p == null)
         {
@@ -311,7 +311,8 @@ public class WebTestBase
 
             String configPrefix = "web.participant" + (index + 1);
 
-            p = participants.createParticipant(configPrefix, options);
+            p= (WebParticipant) participants
+                .createParticipant(configPrefix, options);
 
             // Adds a print in the console/selenium-node logs
             // useful when checking crashes or failures in node logs

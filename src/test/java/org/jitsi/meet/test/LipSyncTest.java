@@ -119,8 +119,9 @@ public class LipSyncTest
                 "config.disableSuspendVideo=true"),
             options, options);
 
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        // FIXME do not operate on the drivers directly
         WebDriver driver1 = participant1.getDriver();
         WebDriver driver2 = participant2.getDriver();
 

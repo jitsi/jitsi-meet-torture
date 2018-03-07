@@ -63,7 +63,8 @@ public class VideoLayoutTest
      * @param isScreenSharing <tt>true</tt> if SS is started and <tt>false</tt>
      * otherwise.
      */
-    void driverVideoLayoutTest(Participant participant, boolean isScreenSharing)
+    void driverVideoLayoutTest(
+            WebParticipant participant, boolean isScreenSharing)
     {
         doLargeVideoSizeCheck(participant, isScreenSharing);
     }
@@ -77,7 +78,7 @@ public class VideoLayoutTest
      * otherwise.
      */
     private void doLargeVideoSizeCheck(
-        Participant participant,
+        WebParticipant participant,
         boolean isScreenSharing)
     {
         Integer innerWidth

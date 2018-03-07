@@ -202,7 +202,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "startSharingVideo" })
     public void pauseTest()
     {
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.pauseVideo();");
 
@@ -220,7 +220,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "pauseTest" })
     public void playTest()
     {
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.playVideo();");
 
@@ -241,8 +241,8 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "playTest" })
     public void seekTest()
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER + "c.player.seekTo(86);");
@@ -294,7 +294,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "seekTest" })
     public void volumeTest()
     {
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
         Long participant1volume
             = (Long) participant1.executeScript(
                 JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getVolume();");
@@ -326,7 +326,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "volumeTest" })
     public void muteTest()
     {
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return c.player.mute();");
@@ -500,7 +500,7 @@ public class SharedVideoTest
         TestUtils.waitMillis(1000);
 
         ensureOneParticipant();
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
 
         TestUtils.waitForDisplayedElementByID(
             participant1.getDriver(),
@@ -545,8 +545,8 @@ public class SharedVideoTest
     {
         shareVideoBeforeOthersJoin(true);
 
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
         checkPlayerLoadedAndInState(participant1, "YT.PlayerState.PAUSED");
         checkPlayerLoadedAndInState(participant2, "YT.PlayerState.PAUSED");

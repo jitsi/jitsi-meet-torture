@@ -25,11 +25,13 @@ import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.*;
 
 /**
  * The web specific participant implementation.
  */
 public class WebParticipant extends Participant<WebDriver>
+    implements JavascriptExecutor
 {
     /**
      * The javascript code which returns {@code true} if we are joined in
@@ -155,6 +157,126 @@ public class WebParticipant extends Participant<WebDriver>
         // parameters, which change during testing
         driver.get("about:blank");
         MeetUtils.waitForPageToLoad(driver);
+    }
+
+    /**
+     * Executes a script in this {@link WebParticipant}'s {@link WebDriver}.
+     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
+     */
+    @Override
+    public Object executeScript(String var1, Object... var2)
+    {
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeScript(var1, var2) : null;
+    }
+
+    /**
+     * Executes a script asynchronously in this {@link WebParticipant}'s
+     * {@link WebDriver}.
+     * See {@link JavascriptExecutor#executeScript(String, Object...)}.
+     */
+    @Override
+    public Object executeAsyncScript(String var1, Object... var2)
+    {
+        JavascriptExecutor executor = getJSExecutor();
+
+        return executor != null
+            ? executor.executeAsyncScript(var1, var2) : null;
+    }
+
+    private JavascriptExecutor getJSExecutor()
+    {
+        return driver instanceof JavascriptExecutor
+            ? (JavascriptExecutor) driver : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEndpointId()
+    {
+        Object o = executeScript("return APP.conference.getMyUserId();");
+        return o == null ? null : o.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMeetDebugLog()
+    {
+        try
+        {
+            Object log
+                = executeScript(
+                "try{ "
+                        + "return JSON.stringify("
+                        + "  APP.conference.getLogs(), null, '    ');"
+                        + "}catch (e) {}");
+
+            return log instanceof String ? (String) log : null;
+        }
+        catch (Exception e)
+        {
+            Logger.getGlobal().log(
+                    Level.SEVERE,
+                    "Failed to get meet logs from " + name,
+                    e);
+
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProtocol()
+    {
+        WebDriver driver = getDriver();
+
+        if (driver == null)
+        {
+            return null;
+        }
+        Object protocol
+            = executeScript(
+            "try {"
+                    + "return APP.conference.getStats().transport[0].type;"
+                    + "} catch (err) { return 'error: '+err; }");
+
+        return (protocol == null) ? null : protocol.toString().toLowerCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isP2pConnected()
+    {
+        // FIXME hmm this checks for ICE connected state which does not
+        // necessarily mean that the conference is currently in the P2P mode.
+        // It may turn out we're not really checking if P2P is connected
+        // and the method name may be confusing.
+        Object result = executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT);
+
+        return Boolean.valueOf(result.toString());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isXmppConnected()
+    {
+        Object res
+            = executeScript(
+            "return APP.conference._room.xmpp.connection.connected;");
+
+        return res != null && res.equals(Boolean.TRUE);
     }
 
     /**

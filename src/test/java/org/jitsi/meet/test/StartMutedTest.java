@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -84,7 +83,7 @@ public class StartMutedTest
                 "config.startVideoMuted=1"),
             null);
 
-        Participant participant1 = getParticipant1();
+        WebParticipant participant1 = getParticipant1();
 
         final WebDriver driver2 = getParticipant2().getDriver();
         participant1.executeScript(
