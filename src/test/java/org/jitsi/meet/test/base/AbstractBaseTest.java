@@ -158,7 +158,9 @@ public abstract class AbstractBaseTest
         Map<String, String> params
             = context.getSuite().getXmlSuite().getAllParameters();
 
-        Properties output = new Properties(config);
+        Properties output = new Properties();
+
+        output.putAll(config);
 
         params.forEach(output::setProperty);
 

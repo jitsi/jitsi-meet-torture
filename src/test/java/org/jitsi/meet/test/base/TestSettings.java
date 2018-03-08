@@ -53,9 +53,12 @@ public class TestSettings
                 throw new RuntimeException("Missing settings.properties file.");
             }
 
+            Properties p = new Properties();
+
             // take current system properties as we will set merged props
             // to system
-            Properties p = new Properties(System.getProperties());
+            p.putAll(System.getProperties());
+
             p.load(is);
 
             // setting system properties
