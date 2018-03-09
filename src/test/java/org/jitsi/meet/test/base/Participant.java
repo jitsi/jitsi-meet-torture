@@ -361,6 +361,18 @@ public abstract class Participant<T extends WebDriver>
      */
     public abstract String getMeetDebugLog();
 
+    /**
+     * Obtains JitsiMeet rtp stats.
+     *
+     * XXX On web the value is obtained from
+     * "APP.conference._room.jvbJingleSession.peerconnection.stats", but
+     * it's done by executing a script, so no idea at this point when that will
+     * be available on mobile.
+     *
+     * @return a string with logs.
+     */
+    public abstract String getRTPStats();
+
     public LogEntries getBrowserLogs()
     {
         if (type.isFirefox())

@@ -76,9 +76,10 @@ public class MeetUtils
      * of the specified peer connection.
      *
      * @param driver
-     * @param useJVB TODO DOCUMENT
+     * @param useJVB true if we want the stats when the used connection was
+     * through jvb, or false if p2p is used.
      */
-    public static String getRtcStats(WebDriver driver, boolean useJVB)
+    public static String getRtpStats(WebDriver driver, boolean useJVB)
     {
         String script = String.format(
                 "return JSON.stringify("
