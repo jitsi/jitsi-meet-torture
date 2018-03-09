@@ -136,11 +136,11 @@ public class AvatarTest
         // we check whether avatar of participant2 is same on both sides
         // and we check whether it had changed after reloading the page
         assertEquals(
-            participant2AvatarSrc,
-            getLocalThumbnailSrc(driver2));
+            getLocalThumbnailSrc(driver2),
+            participant2AvatarSrc);
         assertEquals(
-            participant2AvatarSrc,
-            getThumbnailSrc(driver1, participant2EndpointId));
+            getThumbnailSrc(driver1, participant2EndpointId),
+            participant2AvatarSrc);
 
         // Start the third participant
         ensureThreeParticipants();
@@ -155,11 +155,11 @@ public class AvatarTest
         MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId);
 
         assertEquals(
-            participant2Src,
-            getThumbnailSrc(driver3, participant2EndpointId));
+            getThumbnailSrc(driver3, participant2EndpointId),
+            participant2Src);
         assertEquals(
-            participant1ThumbSrc,
-            getThumbnailSrc(driver3, participant1EndpointId));
+            getThumbnailSrc(driver3, participant1EndpointId),
+            participant1ThumbSrc);
 
         // Click on participant1's video
         MeetUIUtils.clickOnRemoteVideo(driver3, participant1EndpointId);
@@ -333,8 +333,8 @@ public class AvatarTest
         participant2AvatarSrc = getLocalThumbnailSrc(driver2);
         String participant2EndpointId = participant2.getEndpointId();
         assertEquals(
-            participant2AvatarSrc,
-            getThumbnailSrc(driver1, participant2EndpointId));
+            getThumbnailSrc(driver1, participant2EndpointId),
+            participant2AvatarSrc);
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted

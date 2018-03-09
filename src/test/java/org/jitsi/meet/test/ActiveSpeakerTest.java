@@ -103,8 +103,8 @@ public class ActiveSpeakerTest
         }
 
         assertEquals(
-            1,
             speakers,
+            1,
             "Wrong number of dominant speaker indicators.");
     }
 
@@ -178,8 +178,8 @@ public class ActiveSpeakerTest
         catch (TimeoutException exc)
         {
             assertEquals(
-                speakerEndpoint,
                 MeetUIUtils.getLargeVideoResource(driver2),
+                speakerEndpoint,
                 "Active speaker not displayed on large video " + new Date());
         }
 

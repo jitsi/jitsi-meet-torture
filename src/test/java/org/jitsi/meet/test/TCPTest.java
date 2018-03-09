@@ -65,8 +65,8 @@ public class TCPTest
     {
         // Initially we should be connected over UDP
         assertEquals(
-            "udp",
             getParticipant2().getProtocol(),
+            "udp",
             "We must be connected through UDP");
 
         getParticipant2().hangUp();
@@ -76,8 +76,8 @@ public class TCPTest
             getJitsiMeetUrl().appendConfig(DISABLE_UDP_URL_FRAGMENT));
 
         assertEquals(
-            "tcp",
             getParticipant2().getProtocol(),
+            "tcp",
             "We must be connected through TCP");
     }
 }

@@ -99,15 +99,15 @@ public class RingOverlayTest
                     + "/p"));
         String calleeNameText = calleeNameElem.getText();
         assertEquals(
-            CALLEE_NAME,
             calleeNameText,
+            CALLEE_NAME,
             "Callee name is not correct! (" + CALLEE_NAME + ")");
 
         WebElement calleeAvatarElem =
             driver1.findElement(By.xpath(
                 "//" + ringOverlayDivXpath
                 + "//img[@class='ringing__avatar']"));
-        assertEquals(CALLEE_AVATAR_URL, calleeAvatarElem.getAttribute("src"));
+        assertEquals(calleeAvatarElem.getAttribute("src"), CALLEE_AVATAR_URL);
 
         // Test local user values that were set by the token string
         // these are display name, email and avatar
@@ -119,19 +119,19 @@ public class RingOverlayTest
         TestUtils.waitForDisplayedElementByXPath(
             driver1, emailInput, 5);
         assertEquals(
-            USER_EMAIL,
-            driver1.findElement(By.xpath(emailInput)).getAttribute("value"));
+            driver1.findElement(By.xpath(emailInput)).getAttribute("value"),
+            USER_EMAIL);
 
         assertEquals(
-            USER_NAME,
             driver1.findElement(By.xpath("//input[@id='setDisplayName']"))
-                .getAttribute("value"));
+                .getAttribute("value"),
+            USER_NAME);
 
         assertEquals(
-            USER_AVATAR_URL,
             driver1.findElement(By.xpath(
                     "//div[contains(@class, 'toolbar_secondary')]//img[@id='avatar']"))
-                .getAttribute("src"));
+                .getAttribute("src"),
+            USER_AVATAR_URL);
 
         // now let's join a second participant and check that there is no
         // ring overlay and the second participant sees the same display name
