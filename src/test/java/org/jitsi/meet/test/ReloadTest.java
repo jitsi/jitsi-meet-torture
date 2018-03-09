@@ -228,7 +228,7 @@ public class ReloadTest
 
             int result = exec.executeCmd(cmd);
 
-            assertEquals(0, result, "Script returned non-zero value");
+            assertEquals(result, 0, "Script returned non-zero value");
         }
         catch (Exception hookException)
         {

@@ -127,7 +127,7 @@ public class EtherpadTest
                 = driver1.findElement(
                     By.xpath("//span[contains(@class, 'author')]")).getText();
 
-            assertEquals(textToEnter, txt, "Texts do not match");
+            assertEquals(txt, textToEnter, "Texts do not match");
         }
         finally
         {

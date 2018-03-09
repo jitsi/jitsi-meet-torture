@@ -114,8 +114,8 @@ public class StopVideoTest
 
         // check if video stream from second participant is still on large video
         assertEquals(
-            participant2VideoId,
             MeetUIUtils.getLargeVideoID(driver1),
+            participant2VideoId,
             "Large video stream id");
     }
 

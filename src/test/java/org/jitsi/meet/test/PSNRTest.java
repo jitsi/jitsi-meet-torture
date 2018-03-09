@@ -316,8 +316,8 @@ public class PSNRTest
                 }
 
                 assertEquals(
-                    0,
                     proc.waitFor(),
+                    0,
                     "The psnr-test.sh failed.");
 
                 // If the test has passed for a specific frame, delete

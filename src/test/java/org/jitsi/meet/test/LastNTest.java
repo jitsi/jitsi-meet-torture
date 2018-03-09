@@ -48,12 +48,12 @@ public class LastNTest
         WebDriver driver3 = getParticipant3().getDriver();
 
         assertEquals(
-            3,
             MeetUIUtils.getThumbnails(driver1).size(),
+            3,
             "number of thumbnails");
         assertEquals(
-            2,
             MeetUIUtils.getVisibleThumbnails(driver1).size(),
+            2,
             "number of visible thumbnails");
 
         MeetUIUtils.assertAudioMuted(
@@ -103,8 +103,8 @@ public class LastNTest
         List<WebElement> thumbs = MeetUIUtils.getVisibleThumbnails(observer);
 
         assertEquals(
-            2,
             thumbs.size(),
+            2,
             "number of visible thumbnails");
 
         // remove local thumbnail from the list
@@ -112,13 +112,13 @@ public class LastNTest
         thumbs.removeIf(
             thumb -> localContainerId.equals(thumb.getAttribute("id")));
 
-        assertEquals(1, thumbs.size());
+        assertEquals(thumbs.size(), 1);
 
         WebElement testeeThumb = thumbs.get(0);
         String testeeJid = MeetUtils.getResourceJid(testee);
         assertEquals(
-            "participant_" + testeeJid,
             testeeThumb.getAttribute("id"),
+            "participant_" + testeeJid,
             "active speaker thumbnail id");
     }
 

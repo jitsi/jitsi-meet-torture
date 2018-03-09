@@ -89,7 +89,7 @@ public class ContactListTest
         int contactCount
             = contactListElem.findElements(By.className("clickable")).size();
 
-        assertEquals(expectedCount, contactCount);
+        assertEquals(contactCount, expectedCount);
     }
 
     /**
@@ -146,8 +146,8 @@ public class ContactListTest
         catch (TimeoutException exc)
         {
             assertEquals(
-                participant2EndpointId,
                 MeetUIUtils.getLargeVideoResource(driver1),
+                participant2EndpointId,
                 "Pinned participant not displayed on large video");
         }
         finally

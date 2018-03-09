@@ -216,14 +216,14 @@ public class JibriTest
     {
         WebDriver driver1 = getParticipant1().getDriver();
         assertEquals(
-            2,
             MeetUIUtils.getVisibleThumbnails(driver1).size(),
+            2,
             "number of visible thumbnails for participant1");
 
         WebDriver driver2 = getParticipant2().getDriver();
         assertEquals(
-            2,
             MeetUIUtils.getVisibleThumbnails(driver2).size(),
+            2,
             "number of visible thumbnails for participant2");
     }
 
