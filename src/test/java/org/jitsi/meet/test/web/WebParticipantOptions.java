@@ -86,6 +86,7 @@ public class WebParticipantOptions
 
         globalKeys.add(PROP_DISABLE_NOSANBOX);
         globalKeys.add(PROP_ENABLE_HEADLESS);
+        globalKeys.add(PROP_REMOTE_ADDRESS_NAME);
         globalKeys.add(PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
 
         return globalKeys;
