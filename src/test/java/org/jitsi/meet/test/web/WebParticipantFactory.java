@@ -158,6 +158,15 @@ public class WebParticipantFactory
         }
         else if (participantType == ParticipantType.safari)
         {
+            // You must enable the 'Allow Remote Automation' option in
+            // Safari's Develop menu to control Safari via WebDriver.
+            // In Safari->Preferences->Websites, select Camera,
+            // and select Allow for "When visiting other websites"
+            if (isRemote)
+            {
+                return new RemoteWebDriver(
+                    getRemoteDriverAddress(), new SafariOptions());
+            }
             return new SafariDriver();
         }
         else if (participantType == ParticipantType.edge)
