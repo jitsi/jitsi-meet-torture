@@ -353,7 +353,7 @@ public class BandwidthEstimationTest
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
 
-        String rtcStats = MeetUtils.getRtcStats(receiver, useJVB);
+        String rtcStats = MeetUtils.getRtpStats(receiver, useJVB);
 
         getParticipant1().hangUp();
         getParticipant2().hangUp();

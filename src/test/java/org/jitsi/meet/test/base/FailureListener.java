@@ -181,6 +181,8 @@ public class FailureListener
 
             saveMeetDebugLog(fileNamePrefix, participants);
 
+            saveMeetRTPStats(fileNamePrefix, participants);
+
             saveBrowserLogs(fileNamePrefix, participants);
 
             saveThreadDump(fileNamePrefix);
@@ -291,6 +293,44 @@ public class FailureListener
                 .log(
                     Level.SEVERE,
                     "Failed to write meet logs for " + participant.getName(),
+                    e);
+        }
+    }
+
+    /**
+     * Saves the rtp stats from meet.
+     */
+    private void saveMeetRTPStats(
+        String fileNamePrefix,
+        List<Participant<? extends WebDriver>> participants)
+    {
+        participants
+            .forEach(
+                p -> saveMeetRTPStats(
+                    p,
+                    fileNamePrefix + "-rtpstats-" + p.getName() + ".json"));
+    }
+
+    /**
+     * Saves the rtp stats from meet.
+     */
+    private void saveMeetRTPStats(Participant participant, String fileName)
+    {
+        try
+        {
+            String log = participant.getRTPStats();
+            if (log != null)
+            {
+                FileUtils.write(
+                    new File(outputLogsParentFolder, fileName), log);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.getGlobal()
+                .log(
+                    Level.SEVERE,
+                    "Failed to write rtp stats for " + participant.getName(),
                     e);
         }
     }
