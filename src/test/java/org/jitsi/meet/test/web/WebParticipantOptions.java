@@ -180,7 +180,7 @@ public class WebParticipantOptions
      *
      * @return <tt>true</tt> or <tt>false</tt>.
      */
-    public boolean isEnabledHeadless()
+    public boolean isHeadless()
     {
         return getBooleanProperty(PROP_ENABLE_HEADLESS);
     }
