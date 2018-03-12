@@ -27,6 +27,12 @@ public class WebParticipantOptions
     extends ParticipantOptions
 {
     /**
+     * The default value for {@link #PROP_CHROME_DISABLE_SANDBOX}.
+     */
+    private static final String DEFAULT_CHROME_DISABLE_SANDBOX
+        = Boolean.TRUE.toString();
+
+    /**
      * The default address used to connect remote selenium drivers.
      * ...wait it's the localhost ?
      */
@@ -63,9 +69,20 @@ public class WebParticipantOptions
 
     /**
      * The property to disable no-sandbox parameter for chrome.
+     *
+     * XXX There is a typo in 'nosanbox', but it was like that before
+     * the property was moved from WebParticipantFactory (not really sure...).
      */
+    @Deprecated
     private static final String PROP_DISABLE_NOSANBOX
         = "chrome.disable.nosanbox";
+
+    /**
+     * The property to disable Chrome sandbox through the 'no-sandbox'
+     * argument passed to the driver.
+     */
+    private static final String PROP_CHROME_DISABLE_SANDBOX
+        = "chrome.disable.sandbox";
 
     /**
      * The property to enable headless parameter for chrome.
@@ -104,6 +121,8 @@ public class WebParticipantOptions
                 PROP_FAKE_AUDIO, "resources/fakeAudioStream.wav");
         defaults.setProperty(
                 PROP_REMOTE_ADDRESS_NAME, DEFAULT_REMOTE_ADDRESS_NAME);
+        defaults.setProperty(
+                PROP_CHROME_DISABLE_SANDBOX, DEFAULT_CHROME_DISABLE_SANDBOX);
 
         return defaults;
     }
@@ -139,13 +158,21 @@ public class WebParticipantOptions
     }
 
     /**
-     * The getter for {@link #PROP_DISABLE_NOSANBOX}.
+     * The getter for {@link #PROP_CHROME_DISABLE_SANDBOX}.
      *
      * @return <tt>true</tt> or <tt>false</tt>.
      */
-    public boolean isDisableNoSandbox()
+    public boolean isChromeSandboxDisabled()
     {
-        return getBooleanProperty(PROP_DISABLE_NOSANBOX);
+        // Go with the legacy option first
+        if (getProperty(PROP_DISABLE_NOSANBOX) != null)
+        {
+            return !getBooleanProperty(PROP_DISABLE_NOSANBOX);
+        }
+        else
+        {
+            return getBooleanProperty(PROP_CHROME_DISABLE_SANDBOX);
+        }
     }
 
     /**
