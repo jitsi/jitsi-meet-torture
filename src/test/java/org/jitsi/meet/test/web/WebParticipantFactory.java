@@ -216,7 +216,7 @@ public class WebParticipantFactory
                 ops.addArguments("disable-setuid-sandbox");
             }
 
-            if (options.isEnabledHeadless())
+            if (options.isHeadless())
             {
                 ops.addArguments("headless");
                 ops.addArguments("window-size=1200x600");
