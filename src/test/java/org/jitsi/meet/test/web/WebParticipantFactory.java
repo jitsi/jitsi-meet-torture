@@ -210,10 +210,7 @@ public class WebParticipantFactory
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-            // FIXME This is hard to understand. The property is "to disable",
-            // then it's a negation here... It would be simpler if that would be
-            // just "no sandbox" with true by default.
-            if (!options.isDisableNoSandbox())
+            if (options.isChromeSandboxDisabled())
             {
                 ops.addArguments("no-sandbox");
                 ops.addArguments("disable-setuid-sandbox");
