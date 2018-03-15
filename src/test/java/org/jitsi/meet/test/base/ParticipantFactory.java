@@ -106,6 +106,8 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
         Participant<? extends WebDriver> participant
             = doCreateParticipant(targetOptions);
 
+        participant.initialize();
+
         TestUtils.print(
             "Started " + participantType
                 + " driver for prefix: " + configPrefix);

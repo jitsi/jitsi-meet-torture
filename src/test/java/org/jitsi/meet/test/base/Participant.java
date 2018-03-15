@@ -102,6 +102,15 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
+     * Does anything that needs to be done just, after the new
+     * {@link Participant} has been created.
+     */
+    public void initialize()
+    {
+        startKeepAliveExecution();
+    }
+
+    /**
      * Joins a conference.
      * @param roomName the room name to join.
      */
@@ -141,8 +150,6 @@ public abstract class Participant<T extends WebDriver>
 
         this.joinedRoomName = meetURL.getRoomName();
         this.hungUp = false;
-
-        startKeepAliveExecution();
     }
 
     /**
