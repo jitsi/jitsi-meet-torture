@@ -48,7 +48,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
      * The full path to the binary file which can be used to install the app on
      * the device.
      */
-    private final String app;
+    private final String appBinaryFile;
 
     /**
      * The conference view instance.
@@ -73,19 +73,19 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
      * @param type - The participant's type.
      * @param appBundleId - The app bundle identifies which can be used to
      * start/uninstall the app.
-     * @param app - A full path to the app binary file which can be used to
-     * install the app on the device.
+     * @param appBinaryFile - A full path to the app binary file which can be
+     * used to install the app on the device.
      */
     public MobileParticipant(AppiumDriver<WebElement> driver,
                              String name,
                              ParticipantType type,
                              String appBundleId,
-                             String app)
+                             String appBinaryFile)
     {
         super(name, driver, type);
         this.driver = Objects.requireNonNull(driver, "driver");
         this.appBundleId = Objects.requireNonNull(appBundleId, "appBundleId");
-        this.app = Objects.requireNonNull(app, "app");
+        this.appBinaryFile = appBinaryFile;
     }
 
     /**
@@ -330,7 +330,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
             Logger.getGlobal().log(Level.INFO, "Removing app...");
             driver.removeApp(appBundleId);
             Logger.getGlobal().log(Level.INFO, "Installing app...");
-            driver.installApp(app);
+            driver.installApp(appBinaryFile);
             Logger.getGlobal().log(Level.INFO, "Launching app...");
             driver.launchApp();
         }

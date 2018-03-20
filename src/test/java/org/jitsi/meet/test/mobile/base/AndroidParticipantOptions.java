@@ -35,6 +35,21 @@ public class AndroidParticipantOptions
     private static final String ANDROID_PLATFORM_NAME = "android";
 
     /**
+     * If the {@link #CAPS_APP} is not an .apk file then Android driver will
+     * require both {@code #CAPS_ACTIVITY} and {@link #CAPS_PACKAGE} to be
+     * specified in order to run the app without installation (which will work
+     * if the app is on the device already).
+     */
+    private static final String CAPS_ACTIVITY
+        = _CAPS_PROP_PREFIX + "appActivity";
+
+    /**
+     * Specifies the Android's app package name. Required to be specified if
+     * the {@link #CAPS_APP} is missing.
+     */
+    private static final String CAPS_PACKAGE = _CAPS_PROP_PREFIX + "appPackage";
+
+    /**
      * The name of Appium capability which tells the Appium driver which
      * activity should it expect when the app starts.
      */
@@ -46,6 +61,11 @@ public class AndroidParticipantOptions
      */
     private static final String CAPS_WAIT_PACKAGE
         = _CAPS_PROP_PREFIX + "appWaitPackage";
+
+    /**
+     * The default value for {@link #CAPS_ACTIVITY}.
+     */
+    private static final String DEFAULT_ACTIVITY = ".MainActivity";
 
     /**
      * Default Android bundle ID of the app being tested.
@@ -75,6 +95,8 @@ public class AndroidParticipantOptions
     {
         DesiredCapabilities capabilities = super.createCapabilities();
 
+        readAndSetCapability(capabilities, CAPS_ACTIVITY);
+        readAndSetCapability(capabilities, CAPS_PACKAGE);
         readAndSetCapability(capabilities, CAPS_WAIT_ACTIVITY);
         readAndSetCapability(capabilities, CAPS_WAIT_PACKAGE);
 
@@ -89,6 +111,10 @@ public class AndroidParticipantOptions
     {
         Properties defaults = super.initDefaults();
 
+        defaults.setProperty(
+                CAPS_ACTIVITY, DEFAULT_ACTIVITY);
+        defaults.setProperty(
+                CAPS_PACKAGE, DEFAULT_BUNDLE_ID);
         defaults.setProperty(
                 CAPS_PLATFORM_NAME, ANDROID_PLATFORM_NAME);
         defaults.setProperty(
