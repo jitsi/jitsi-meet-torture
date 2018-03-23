@@ -47,9 +47,22 @@ public class WebParticipantOptions
      */
     private static final String PROP_CHROME_EXTENSION_ID = "chromeExtensionID";
 
+    /**
+     * The name of the system property that holds the path to the packet
+     * delivery trace file to use for the downlink direction in the mahimahi
+     * shell.
+     */
+    private static final String PROP_DOWNLINK = "downlink";
+
     private static final String PROP_FAKE_AUDIO = "fakeStreamAudioFile";
 
     private static final String PROP_FAKE_VIDEO = "fakeStreamVideoFile";
+
+    /**
+     * The name of the property that holds the user data/profile directory to
+     * use for the launched browser instance.
+     */
+    private static final String PROP_PROFILE_DIR = "profiledir";
 
     /**
      * The property to change remote selenium grid URL, defaults to
@@ -89,6 +102,13 @@ public class WebParticipantOptions
      */
     private static final String PROP_ENABLE_HEADLESS
         = "chrome.enable.headless";
+
+    /**
+     * The name of the system property that holds the path to the packet
+     * delivery trace file to use for the uplink direction in the mahimahi
+     * shell.
+     */
+    private static final String PROP_UPLINK = "uplink";
 
     private static final String PROP_VERSION = "version";
 
@@ -204,6 +224,36 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets the path to the packet delivery trace file to use for the uplink
+     * direction in the mahimahi shell.
+     */
+    public WebParticipantOptions setUplink(String uplink)
+    {
+        setProperty(PROP_UPLINK, uplink);
+        return this;
+    }
+
+    /**
+     * Sets the path to the packet delivery trace file to use for the downlink
+     * direction in the mahimahi shell.
+     */
+    public WebParticipantOptions setDownlink(String downlink)
+    {
+        setProperty(PROP_DOWNLINK, downlink);
+        return this;
+    }
+
+    /**
+     * Sets the user data/profile directory to use for the launched browser
+     * instance.
+     */
+    public WebParticipantOptions setProfileDirectory(String profileDirectory)
+    {
+        setProperty(PROP_PROFILE_DIR, profileDirectory);
+        return this;
+    }
+
+    /**
      * Sets the name of y4m video file which will be streamed through fake video
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
@@ -252,6 +302,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets the binary to use when starting the driver.
+     */
+    public WebParticipantOptions setBinary(String binary)
+    {
+        setProperty(PROP_BINARY, binary);
+        return this;
+    }
+
+    /**
      * Returns is the driver remote.
      * @return is the driver remote.
      */
@@ -268,6 +327,33 @@ public class WebParticipantOptions
     public String getFakeStreamAudioFile()
     {
         return getProperty(PROP_FAKE_AUDIO);
+    }
+
+    /**
+     * Gets the path to the packet delivery trace file to use for the uplink
+     * direction in the mahimahi shell.
+     */
+    public String getUplink()
+    {
+        return getProperty(PROP_UPLINK);
+    }
+
+    /**
+     * Gets the path to the packet delivery trace file to use for the downlink
+     * direction in the mahimahi shell.
+     */
+    public String getDownlink()
+    {
+        return getProperty(PROP_DOWNLINK);
+    }
+
+    /**
+     * Gets the user data/profile directory to use for the launched browser
+     * instance.
+     */
+    public String getProfileDirectory()
+    {
+        return getProperty(PROP_PROFILE_DIR);
     }
 
     /**

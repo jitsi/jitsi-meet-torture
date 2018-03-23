@@ -49,6 +49,29 @@ public class WebParticipantFactory
             + "%%26installsource%%3Dondemand%%26uc";
 
     /**
+     * Gets a {@link File} pointing to the pathname passed as an argument.
+     */
+    private static File getFile(
+            WebParticipantOptions options, String pathname)
+    {
+        if (pathname == null || pathname.trim().length() == 0)
+        {
+            return null;
+        }
+
+        File file = new File(pathname);
+        if (file.isAbsolute() || !options.isRemote())
+        {
+            return file;
+        }
+
+        String remoteResourcePath = options.getRemoteResourcePath();
+
+        return remoteResourcePath == null
+            ? file : new File(remoteResourcePath, pathname);
+    }
+
+    /**
      * The private constructor of the factory.
      *
      * @param config - A <tt>Properties</tt> instance holding configuration
@@ -101,7 +124,8 @@ public class WebParticipantFactory
     {
         ParticipantType participantType = options.getParticipantType();
         String version = options.getVersion();
-        String browserBinary = options.getBinary();
+        File browserBinaryAPath = getFile(options, options.getBinary());
+
         boolean isRemote = options.isRemote();
 
         // by default we load chrome, but we can load safari or firefox
@@ -109,11 +133,12 @@ public class WebParticipantFactory
         {
             FirefoxDriverManager.getInstance().setup();
 
-            if (browserBinary != null && browserBinary.trim().length() > 0)
+            if (browserBinaryAPath != null
+                    && (browserBinaryAPath.exists() || isRemote))
             {
-                File binaryFile = new File(browserBinary);
-                if (binaryFile.exists())
-                    System.setProperty("webdriver.firefox.bin", browserBinary);
+                System.setProperty(
+                        "webdriver.firefox.bin",
+                        browserBinaryAPath.getAbsolutePath());
             }
 
             FirefoxProfile profile = new FirefoxProfile();
@@ -229,37 +254,46 @@ public class WebParticipantFactory
             // fallback to software graphics, we try to disable gpu for now
             ops.addArguments("disable-gpu");
 
-            if (browserBinary != null && browserBinary.trim().length() > 0)
+            if (browserBinaryAPath != null
+                    && (browserBinaryAPath.exists() || isRemote))
             {
-                File binaryFile = new File(browserBinary);
-                if (binaryFile.exists())
-                    ops.setBinary(binaryFile);
+                ops.setBinary(browserBinaryAPath.getAbsolutePath());
             }
 
-            String remoteResourcePath = options.getRemoteResourcePath();
-
-            String fakeStreamAudioFName = options.getFakeStreamAudioFile();
-            if (fakeStreamAudioFName != null)
+            File uplinkFile = getFile(options, options.getUplink());
+            if (uplinkFile != null)
             {
-                String fileAbsolutePath = new File(
-                    isRemote && remoteResourcePath != null
-                        ? new File(remoteResourcePath) : null,
-                    fakeStreamAudioFName).getAbsolutePath();
-
                 ops.addArguments(
-                    "use-file-for-fake-audio-capture=" + fileAbsolutePath);
+                        "uplink=" + uplinkFile.getAbsolutePath());
             }
 
-            String fakeStreamVideoFName = options.getFakeStreamVideoFile();
-            if (fakeStreamVideoFName != null)
+            File downlinkFile = getFile(options, options.getDownlink());
+            if (downlinkFile != null)
             {
-                String fileAbsolutePath = new File(
-                    isRemote && remoteResourcePath != null
-                        ? new File(remoteResourcePath) : null,
-                    fakeStreamVideoFName).getAbsolutePath();
-
                 ops.addArguments(
-                    "use-file-for-fake-video-capture=" + fileAbsolutePath);
+                        "downlink=" + downlinkFile.getAbsolutePath());
+            }
+
+            String profileDirectory = options.getProfileDirectory();
+            if (profileDirectory != null && profileDirectory != "")
+            {
+                ops.addArguments("user-data-dir=" + profileDirectory);
+            }
+
+            File fakeStreamAudioFile
+                = getFile(options, options.getFakeStreamAudioFile());
+            if (fakeStreamAudioFile != null)
+            {
+                ops.addArguments("use-file-for-fake-audio-capture="
+                        + fakeStreamAudioFile.getAbsolutePath());
+            }
+
+            File fakeStreamVideoFile
+                = getFile(options, options.getFakeStreamVideoFile());
+            if (fakeStreamVideoFile != null)
+            {
+                ops.addArguments("use-file-for-fake-video-capture="
+                        + fakeStreamVideoFile.getAbsolutePath());
             }
 
             //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");

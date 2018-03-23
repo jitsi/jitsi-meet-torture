@@ -66,6 +66,12 @@ public class BandwidthEstimationTest
     private static final String TC_SCRIPT_PROP_NAME = "tc.script";
 
     /**
+     * Name of the system which holds the Chrome wrapper script with mahimahi
+     * support.
+     */
+    private static final String CHROME_WRAPPER_PROP_NAME = "chrome.wrapper";
+
+    /**
      * Name of the system property which point to the benchmark script used to
      * determine whether or not the jvb bitrate time series is healthy.
      * See {@link #benchmarkScript}.
@@ -76,8 +82,69 @@ public class BandwidthEstimationTest
     /**
      * The video file to use as input for the first participant (the sender).
      */
-    public static final String INPUT_VIDEO_FILE
+    private static final String INPUT_VIDEO_FILE
         = "resources/FourPeople_1280x720_60.y4m";
+
+    /**
+     * The Verizon uplink packet delivery trace file.
+     *
+     * see /usr/share/mahimahi/traces/README for more information.
+     */
+    private static final String VERIZON_UPLINK
+        = "/usr/share/mahimahi/traces/Verizon-LTE-short.up";
+
+    /**
+     * The Verizon downlink packet delivery trace file.
+     */
+    private static final String VERIZON_DOWNLINK
+        = "/usr/share/mahimahi/traces/Verizon-LTE-short.down";
+
+    /**
+     * The ATT uplink packet delivery trace file.
+     */
+    private static final String ATT_UPLINK
+        = "/usr/share/mahimahi/traces/ATT-LTE-driving.up";
+
+    /**
+     * The ATT downlink packet delivery trace file.
+     */
+    private static final String ATT_DOWNLINK
+        = "/usr/share/mahimahi/traces/ATT-LTE-driving.down";
+
+    /**
+     * The TMobile uplink packet delivery trace file.
+     */
+    private static final String TMOBILE_UPLINK
+        = "/usr/share/mahimahi/traces/TMobile-LTE-short.up";
+
+    /**
+     * The TMobile downlink packet delivery trace file.
+     */
+    private static final String TMOBILE_DOWNLINK
+        = "/usr/share/mahimahi/traces/TMobile-LTE-short.down";
+
+    /**
+     * The ATT network descriptor.
+     */
+    private static final Network att
+        = new Network("att", ATT_UPLINK, ATT_DOWNLINK);
+
+    /**
+     * The TMobile network descriptor.
+     */
+    private static final Network tmobile
+        = new Network("tmobile", TMOBILE_UPLINK, TMOBILE_DOWNLINK);
+
+    /**
+     * The Verizon network descriptor.
+     */
+    private static final Network verizon
+        = new Network("verizon", VERIZON_UPLINK, VERIZON_DOWNLINK);
+
+    /**
+     * The AWS network descriptor.
+     */
+    private static final Network aws = new Network("aws", null, null);
 
     /**
      * Default tc script which will work only on linux.
@@ -90,6 +157,12 @@ public class BandwidthEstimationTest
      */
     private static final String DEFAULT_BENCHMARK_SCRIPT
         = "scripts/bwe-benchmark.py";
+
+    /**
+     * Default chrome wrapper script with mahimahi(1) support.
+     */
+    private static final String DEFAULT_CHROME_WRAPPER
+        = "scripts/google-chrome-stable-mahimahi.sh";
 
     /**
      * Stores the path to the tc script. It is expected that the script
@@ -106,6 +179,11 @@ public class BandwidthEstimationTest
      * Stores the path to the benchmark script.
      */
     private static String benchmarkScript;
+
+    /**
+     * Stores the path to the Chrome wrapper with mahimahi(1) support.
+     */
+    private static String chromeWrapper;
 
     /**
      * The options to launch the sender participant with.
@@ -263,28 +341,65 @@ public class BandwidthEstimationTest
             }
         }
 
+        chromeWrapper = System.getProperty(CHROME_WRAPPER_PROP_NAME);
+        if (chromeWrapper == null)
+        {
+            if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
+            {
+                chromeWrapper = DEFAULT_CHROME_WRAPPER;
+            }
+            else
+            {
+                print(
+                    "WARN no chrome wrapper has been specified and "
+                        + "the BandwidthEstimationTest will not be "
+                        + "executed!");
+                throw new SkipException("no tc script has been specified");
+            }
+        }
+
         senderOptions
             = new WebParticipantOptions().setFakeStreamVideoFile(
                 INPUT_VIDEO_FILE);
     }
 
-    @Test
-    public void test10mbit60s1mbit60s10mbit60s()
-        throws Exception
+    @DataProvider(name = "dp")
+    public Object[][] createData()
     {
         // These are bitrate,duration pairs. The units are important and are
         // defined in TC(8). The test duration should be in seconds.
-        String[] schedule = { "10mbit,60", "1mbit,60", "10mbit,60" };
+        String[] schedule1 = { "100mbit,90" };
+        String[] schedule2 = { "10mbit,60", "1mbit,60", "10mbit,60" };
 
+        return new Object[][]
+        {
+            new Object[] { aws, schedule1 },
+            new Object[] { verizon, schedule1 },
+            new Object[] { verizon, schedule2 },
+            new Object[] { tmobile, schedule1 },
+            new Object[] { tmobile, schedule2 },
+            new Object[] { att, schedule1 },
+            new Object[] { att, schedule2 },
+        };
+    }
+
+    @Test(dataProvider = "dp")
+    public void test(Network network, String[] schedule)
+        throws Exception
+    {
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
-        String jvbStats = this.test(true, 200, TimeUnit.SECONDS, schedule);
-        String p2pStats = this.test(false, 200, TimeUnit.SECONDS, schedule);
+        String jvbStats = test(
+                true, 200, TimeUnit.SECONDS, network, schedule);
+        String p2pStats = test(
+                false, 200, TimeUnit.SECONDS, network, schedule);
 
-        File jvbFile = getLogFile("jvb" + humanizeSchedule(schedule) + ".json");
-        File p2pFile = getLogFile("p2p" + humanizeSchedule(schedule) + ".json");
-        File analysisFile
-            = getLogFile("test" + humanizeSchedule(schedule) + ".out");
+        File jvbFile = getLogFile(
+                network.name + "JVB" + humanizeSchedule(schedule) + ".json");
+        File p2pFile = getLogFile(
+                network.name + "P2P" + humanizeSchedule(schedule) + ".json");
+        File analysisFile = getLogFile(
+                network.name + humanizeSchedule(schedule) + ".out");
 
         writeFile(jvbFile, jvbStats);
         writeFile(p2pFile, p2pStats);
@@ -305,14 +420,15 @@ public class BandwidthEstimationTest
      * @throws Exception if something goes wrong.
      */
     private String test(
-            boolean useJVB, long timeout, TimeUnit unit, String[] schedule)
+            boolean useJVB, long timeout, TimeUnit unit,
+            Network network, String[] schedule)
         throws Exception
     {
         JitsiMeetUrl senderUrl, receiverUrl;
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
-            String roomName = "jvb" + humanizeSchedule(schedule);
+            String roomName = network.name + "JVB" + humanizeSchedule(schedule);
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
@@ -332,12 +448,39 @@ public class BandwidthEstimationTest
         }
         else
         {
-            String roomName = "p2p" + humanizeSchedule(schedule);
+            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
             senderUrl.setRoomName(roomName);
         }
 
-        ensureTwoParticipants(senderUrl, receiverUrl, senderOptions, null);
+        WebParticipantOptions receiverOptions = new WebParticipantOptions();
+
+        boolean useCustomBinary = false;
+        if (network.uplink != null && network.uplink != "")
+        {
+            receiverOptions.setUplink(network.uplink);
+            useCustomBinary = true;
+        }
+
+        if (network.downlink != null && network.downlink != "")
+        {
+            receiverOptions.setDownlink(network.downlink);
+            useCustomBinary = true;
+        }
+
+        if (useCustomBinary)
+        {
+            receiverOptions.setBinary(chromeWrapper);
+            // XXX The default behavior of the chromedriver is to SIGKILL the
+            // launched chrome instance. However, we need the chromedriver to
+            // either SIGINT or SIGTERM the chrome wrapper to give it a chance
+            // to free up any resources it has allocated. Setting the profile
+            // directory does that..
+            receiverOptions.setProfileDirectory("/tmp/bwe-receiver-data-dir");
+        }
+
+        ensureTwoParticipants(
+                senderUrl, receiverUrl, senderOptions, receiverOptions);
 
         WebDriver sender = getParticipant1().getDriver();
         assertNotNull(sender);
@@ -355,9 +498,27 @@ public class BandwidthEstimationTest
 
         String rtcStats = MeetUtils.getRtpStats(receiver, useJVB);
 
+        // XXX prevent ghosts
         getParticipant1().hangUp();
         getParticipant2().hangUp();
+        // XXX we want to actually quit the drivers because we may wish to
+        // launch chrome with different parameters.
+        participants.cleanup();
 
         return rtcStats;
+    }
+
+    static class Network
+    {
+        Network(String name, String uplink, String downlink)
+        {
+            this.name = name;
+            this.uplink = uplink;
+            this.downlink = downlink;
+        }
+
+        final String name;
+        final String uplink;
+        final String downlink;
     }
 }
