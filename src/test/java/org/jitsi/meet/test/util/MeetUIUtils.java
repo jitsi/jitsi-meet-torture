@@ -426,19 +426,21 @@ public class MeetUIUtils
     /**
      * Opens the contact list panel, if not open.
      *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to open the contact list panel.
+     * @param participant <tt>WebParticipant</tt> instance of the participant
+     * for whom we'll try to open the contact list panel.
      * @throws TimeoutException if we fail to open the contact list panel
      */
-    public static void displayContactListPanel(WebDriver driver)
+    public static void displayContactListPanel(WebParticipant participant)
     {
         String contactListXPath = "//div[@id='contacts_container']";
+        WebDriver driver = participant.getDriver();
+
         WebElement contactList
             = driver.findElement(By.xpath(contactListXPath));
 
         if (!contactList.isDisplayed())
         {
-            clickOnToolbarButton(driver, "toolbar_contact_list");
+            participant.getToolbar().clickContactList();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, contactListXPath, 5);

@@ -33,6 +33,8 @@ public class Toolbar {
      * {@link Toolbar}.
      */
     private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_chat";
+    private final static String CONTACT_LIST_BUTTON_ID
+            = "toolbar_contact_list";
     private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
     private final static String DS_BUTTON_XPATH
         = "//a[@id='" + DS_BUTTON_ID + "']";
@@ -114,6 +116,17 @@ public class Toolbar {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             AUDIO_MUTE_BUTTON_ID,
+            true);
+    }
+
+    /**
+     * Clicks on the contact list toolbar button opens or closes the contac
+     * list.
+     */
+    public void clickContactList() {
+        MeetUIUtils.clickOnButton(
+            participant.getDriver(),
+            CONTACT_LIST_BUTTON_ID,
             true);
     }
 

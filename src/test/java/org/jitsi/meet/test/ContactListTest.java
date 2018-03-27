@@ -52,11 +52,10 @@ public class ContactListTest
     @Test
     public void testContactList()
     {
-        Participant participant1 = getParticipant1();
-        WebDriver driver1 = participant1.getDriver();
+        WebParticipant participant1 = getParticipant1();
 
         // Make sure that the contact list panel is open.
-        MeetUIUtils.displayContactListPanel(driver1);
+        MeetUIUtils.displayContactListPanel(participant1);
 
         // Make sure we have the 2 initial participants shown in the contact
         // list.
