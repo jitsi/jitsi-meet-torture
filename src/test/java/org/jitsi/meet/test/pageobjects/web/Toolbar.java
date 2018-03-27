@@ -53,6 +53,16 @@ public class Toolbar {
     }
 
     /**
+     * Clicks on the microphone mute toolbar button, which toggles audio mute.
+     */
+    public void clickAudioMute() {
+        MeetUIUtils.clickOnButton(
+            participant.getDriver(),
+            "toolbar_button_mute",
+            true);
+    }
+
+    /**
      * Clicks on the "desktop sharing" toolbar button. Fails if the button
      * doesn't exist or if the toggled state is not changed after the click.
      */
