@@ -40,7 +40,9 @@ public class Toolbar {
         = "//a[@id='" + DS_BUTTON_ID + "']";
     private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
     private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
+    private final static String INFO_BUTTON_ID = "toolbar_button_info";
     private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
+    private final static String RECORD_BUTTON_ID = "toolbar_button_record";
     private final static String SETTINGS_BUTTON_ID = "toolbar_button_settings";
     private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
     private final static String VIDEO_QUALITY_BUTTON_ID
@@ -155,6 +157,16 @@ public class Toolbar {
     }
 
     /**
+     * Clicks on the info toolbar button which opens or closes the info dialog.
+     */
+    public void clickInfo() {
+        MeetUIUtils.clickOnButton(
+            participant.getDriver(),
+            INFO_BUTTON_ID,
+            true);
+    }
+
+    /**
      * Clicks on the profile toolbar button which opens or closes the profile
      * panel.
      */
@@ -162,6 +174,16 @@ public class Toolbar {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             PROFILE_BUTTON_ID);
+    }
+
+    /**
+     * Clicks on the recording toolbar button which toggles recording or live
+     * streaming.
+     */
+    public void clickRecord() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            RECORD_BUTTON_ID);
     }
 
     /**
@@ -191,5 +213,15 @@ public class Toolbar {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             VIDEO_QUALITY_BUTTON_ID);
+    }
+
+    /**
+     * Returns whether or not the recording button is present in the toolbar.
+     */
+    public boolean hasRecordButton() {
+        List<WebElement> elements = participant.getDriver().findElements(
+            By.id(RECORD_BUTTON_ID));
+
+        return !elements.isEmpty();
     }
 }
