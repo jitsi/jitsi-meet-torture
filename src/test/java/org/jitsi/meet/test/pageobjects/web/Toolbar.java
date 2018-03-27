@@ -27,15 +27,17 @@ import java.util.*;
  * @author Hristo Terezov
  */
 public class Toolbar {
-    /**
-     * The id of the desktop sharing button.
-     */
-    private static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
 
     /**
-     * The XPATH of the desktop sharing button.
+     * Button IDs to be used as selectors for finding WebElements within the
+     * {@link Toolbar}.
      */
-    private static String DS_BUTTON_XPATH = "//a[@id='" + DS_BUTTON_ID + "']";
+    private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_chat";
+    private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
+    private final static String DS_BUTTON_XPATH
+        = "//a[@id='" + DS_BUTTON_ID + "']";
+    private final static String VIDEO_QUALITY_BUTTON_ID
+        = "toolbar_button_videoquality";
 
     /**
      * The participant.
@@ -108,7 +110,17 @@ public class Toolbar {
     {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
-            "toolbar_button_chat",
+            AUDIO_MUTE_BUTTON_ID,
             true);
+    }
+
+    /**
+     * Clicks on the video quality toolbar button which opens or closes the
+     * dialog for adjusting max-received video quality.
+     */
+    public void clickVideoQualityButton() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            VIDEO_QUALITY_BUTTON_ID);
     }
 }
