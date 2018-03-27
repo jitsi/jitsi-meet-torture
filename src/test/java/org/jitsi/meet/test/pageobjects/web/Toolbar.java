@@ -38,6 +38,7 @@ public class Toolbar {
     private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
     private final static String DS_BUTTON_XPATH
         = "//a[@id='" + DS_BUTTON_ID + "']";
+    private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
     private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
     private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
     private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
@@ -120,14 +121,26 @@ public class Toolbar {
     }
 
     /**
-     * Clicks on the contact list toolbar button opens or closes the contac
-     * list.
+     * Clicks on the contact list toolbar button which opens or closes the
+     * contact list.
      */
     public void clickContactList() {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             CONTACT_LIST_BUTTON_ID,
             true);
+    }
+
+    /**
+     * Clicks on the etherpad toolbar button which shows or hides etherpad.
+     */
+    public void clickEtherpad() {
+        // waits for etherpad button to be displayed in the toolbar
+        TestUtils.waitForDisplayedElementByID(
+            participant.getDriver(), ETHERPAD_BUTTON_ID, 15);
+
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(), ETHERPAD_BUTTON_ID);
     }
 
     /**

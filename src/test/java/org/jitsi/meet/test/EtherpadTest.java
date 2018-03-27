@@ -70,12 +70,7 @@ public class EtherpadTest
                 "No etherpad configuration detected. Disabling test.");
         }
 
-        // waits for etherpad button to be displayed in the toolbar
-        TestUtils.waitForDisplayedElementByID(
-                driver1, "toolbar_button_etherpad", 15);
-
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpad();
 
         TestUtils.waitMillis(5000);
 
