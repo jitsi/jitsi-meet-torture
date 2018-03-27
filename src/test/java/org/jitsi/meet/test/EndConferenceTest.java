@@ -46,7 +46,7 @@ public class EndConferenceTest
         final String url = driver1.getCurrentUrl();
 
         // hangup and wait for redirect
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_hangup");
+        getParticipant1().getToolbar().clickHangUp();
         TestUtils.waitForCondition(
             driver1,
             5,
