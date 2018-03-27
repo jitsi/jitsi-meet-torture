@@ -374,6 +374,7 @@ public class BandwidthEstimationTest
         return new Object[][]
         {
             new Object[] { aws, schedule1 },
+            new Object[] { aws, schedule2 },
             new Object[] { verizon, schedule1 },
             new Object[] { verizon, schedule2 },
             new Object[] { tmobile, schedule1 },
