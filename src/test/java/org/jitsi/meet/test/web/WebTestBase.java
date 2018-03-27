@@ -39,7 +39,8 @@ public class WebTestBase
         + "&config.p2p.enabled=false"
         + "&config.p2p.useStunTurn=false"
         + "&config.gatherStats=true"
-        + "&config.disable1On1Mode=true";
+        + "&config.disable1On1Mode=true"
+        + "&interfaceConfig._USE_NEW_TOOLBOX=false";
 
     /**
      * Default
