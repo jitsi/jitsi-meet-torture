@@ -102,10 +102,7 @@ public class InfoDialog
      */
     private void clickToolbarButton()
     {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            INFO_DIALOG_BUTTON,
-            true);
+        participant.getToolbar().clickInfo();
     }
 
     /**
