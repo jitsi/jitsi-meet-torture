@@ -41,6 +41,7 @@ public class Toolbar {
     private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
     private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
     private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
+    private final static String SETTINGS_BUTTON_ID = "toolbar_button_settings";
     private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
     private final static String VIDEO_QUALITY_BUTTON_ID
         = "toolbar_button_videoquality";
@@ -161,6 +162,16 @@ public class Toolbar {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             PROFILE_BUTTON_ID);
+    }
+
+    /**
+     * Clicks on the settings toolbar button which opens or closes the settings
+     * panel.
+     */
+    public void clickSettings() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            SETTINGS_BUTTON_ID);
     }
 
     /**

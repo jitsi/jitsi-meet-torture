@@ -386,17 +386,18 @@ public class MeetUIUtils
     /**
      * Opens the settings panel, if not open.
      *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to open the settings panel.
+     * @param participant <tt>WebParticipant</tt> instance of the participant
+     * for whom we'll try to open the settings panel.
      * @throws TimeoutException if we fail to open the settings panel.
      */
-    public static void displaySettingsPanel(WebDriver driver)
+    public static void displaySettingsPanel(WebParticipant participant)
     {
+        WebDriver driver = participant.getDriver();
         String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = driver.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
-            clickOnToolbarButton(driver, "toolbar_button_settings");
+            participant.getToolbar().clickSettings();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, settingsXPath, 5);
