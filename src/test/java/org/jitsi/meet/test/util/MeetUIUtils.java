@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.util;
 
+import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.*;
@@ -1128,6 +1129,23 @@ public class MeetUIUtils
                 true,
                 true,
                 "");
+        }
+    }
+
+    /**
+     * Mutes participant's video and checks local indication for that.
+     * @param participant the participant's video to be muted.
+     * @param participantCheck another participant in the room which we want to
+     * test whether he is seeing the muted participant as really muted. Can be
+     * null if we want to skip this check.
+     */
+    public static void muteVideoAndCheck(WebParticipant participant,
+                                         WebParticipant participantCheck) {
+        if (participantCheck == null) {
+            muteVideoAndCheck( participant.getDriver(), null);
+        } else {
+            muteVideoAndCheck(
+                participant.getDriver(), participantCheck.getDriver());
         }
     }
 

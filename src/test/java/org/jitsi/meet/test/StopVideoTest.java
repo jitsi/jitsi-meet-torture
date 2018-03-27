@@ -73,8 +73,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopVideoOnParticipant1AndCheck"})
     public void startVideoOnParticipant1AndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
-            "toolbar_button_camera");
+        getParticipant1().getToolbar().clickVideoMute();
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
@@ -175,8 +174,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopVideoOnParticipantAndCheck" })
     public void startVideoOnParticipantAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            getParticipant2().getDriver(), "toolbar_button_camera");
+        getParticipant2().getToolbar().clickVideoMute();
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant1().getDriver(),

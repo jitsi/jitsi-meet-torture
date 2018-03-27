@@ -36,6 +36,9 @@ public class Toolbar {
     private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
     private final static String DS_BUTTON_XPATH
         = "//a[@id='" + DS_BUTTON_ID + "']";
+    private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
+    private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
+    private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
     private final static String VIDEO_QUALITY_BUTTON_ID
         = "toolbar_button_videoquality";
 
@@ -112,6 +115,35 @@ public class Toolbar {
             participant.getDriver(),
             AUDIO_MUTE_BUTTON_ID,
             true);
+    }
+
+    /**
+     * Clicks on the hangup toolbar button which leaves the current conference.
+     */
+    public void clickHangUp() {
+        MeetUIUtils.clickOnButton(
+            participant.getDriver(),
+            HANGUP_BUTTON_ID,
+            false);
+    }
+
+    /**
+     * Clicks on the profile toolbar button which opens or closes the profile
+     * panel.
+     */
+    public void clickProfile() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            PROFILE_BUTTON_ID);
+    }
+
+    /**
+     * Clicks on the video mute toolbar button which toggles video mute.
+     */
+    public void clickVideoMute() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            VIDEO_MUTE_BUTTON_ID);
     }
 
     /**
