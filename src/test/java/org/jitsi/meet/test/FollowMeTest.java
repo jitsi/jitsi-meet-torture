@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -104,12 +103,12 @@ public class FollowMeTest
             return;
         }
 
-        getParticipant1().getToolbar().clickEtherpad();
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitForDisplayedElementByXPath(driver1, etherpadXPath, 5);
         TestUtils.waitForDisplayedElementByXPath(driver2, etherpadXPath, 5);
 
-        getParticipant1().getToolbar().clickEtherpad();
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver1, etherpadXPath, 5);

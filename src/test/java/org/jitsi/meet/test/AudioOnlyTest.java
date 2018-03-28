@@ -65,7 +65,7 @@ public class AudioOnlyTest
     @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
     public void videoUnmuteDisabledInAudioOnly()
     {
-        getParticipant1().getToolbar().clickAudioMute();
+        getParticipant1().getToolbar().clickAudioMuteButton();
 
         verifyVideoMute(
             getParticipant1().getDriver(),

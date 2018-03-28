@@ -149,7 +149,7 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
-        getToolbar().clickHangUp();
+        getToolbar().clickHangUpButton();
 
         TestUtils.waitMillis(500);
         // open a blank page after hanging up, to make sure

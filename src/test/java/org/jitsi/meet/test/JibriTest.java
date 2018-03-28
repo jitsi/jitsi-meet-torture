@@ -15,8 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import java.util.*;
-
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -99,7 +97,7 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriEnabled" })
     public void startLiveStreaming()
     {
-        getParticipant1().getToolbar().clickRecord();
+        getParticipant1().getToolbar().clickRecordButton();
 
         WebDriver driver1 = getParticipant1().getDriver();
 
@@ -249,7 +247,7 @@ public class JibriTest
     public void stopLiveStreaming()
     {
         WebDriver driver1 = getParticipant1().getDriver();
-        getParticipant1().getToolbar().clickRecord();
+        getParticipant1().getToolbar().clickRecordButton();
 
         // fill in the dialog
         TestUtils.waitForElementByXPath(

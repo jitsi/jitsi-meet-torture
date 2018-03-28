@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -149,7 +148,7 @@ public class ActiveSpeakerTest
         activeSpeaker.executeScript(
                 "console.log('Unmuting in testActiveSpeaker');");
         // Unmute
-        activeSpeaker.getToolbar().clickAudioMute();
+        activeSpeaker.getToolbar().clickAudioMuteButton();
 
         // just a debug print to go in logs
         participant2.executeScript(
@@ -186,7 +185,7 @@ public class ActiveSpeakerTest
         activeSpeaker.executeScript(
                 "console.log('Muting in testActiveSpeaker');");
         // Mute back again
-        activeSpeaker.getToolbar().clickAudioMute();
+        activeSpeaker.getToolbar().clickAudioMuteButton();
         // just a debug print to go in logs
         participant2.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "

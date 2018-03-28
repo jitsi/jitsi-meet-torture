@@ -115,7 +115,7 @@ public class RingOverlayTest
         // wait for the toolbar to be visible before clicking on it
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//div[contains(@class, 'toolbar_secondary')]", 3);
-        getParticipant1().getToolbar().clickProfile();;
+        getParticipant1().getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, emailInput, 5);
         assertEquals(

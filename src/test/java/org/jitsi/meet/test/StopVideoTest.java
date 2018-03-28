@@ -71,7 +71,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopVideoOnParticipant1AndCheck"})
     public void startVideoOnParticipant1AndCheck()
     {
-        getParticipant1().getToolbar().clickVideoMute();
+        getParticipant1().getToolbar().clickVideoMuteButton();
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
@@ -168,7 +168,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopVideoOnParticipantAndCheck" })
     public void startVideoOnParticipantAndCheck()
     {
-        getParticipant2().getToolbar().clickVideoMute();
+        getParticipant2().getToolbar().clickVideoMuteButton();
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant1().getDriver(),
@@ -197,7 +197,7 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        getParticipant1().getToolbar().clickVideoMute();
+        getParticipant1().getToolbar().clickVideoMuteButton();
 
         TestUtils.waitMillis(500);
 

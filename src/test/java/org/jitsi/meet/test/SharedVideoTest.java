@@ -95,7 +95,7 @@ public class SharedVideoTest
     private void startSharingVideoByUrl(String url, String expectedId,
         boolean checkSecondParticipantState)
     {
-        getParticipant1().getToolbar().clickSharedVideo();;
+        getParticipant1().getToolbar().clickSharedVideoButton();
 
         WebDriver driver1 = getParticipant1().getDriver();
 
@@ -380,7 +380,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "backToSharedVideoTest" })
     public void stopSharingTest()
     {
-        getParticipant1().getToolbar().clickSharedVideo();
+        getParticipant1().getToolbar().clickSharedVideoButton();
 
         WebDriver driver1 = getParticipant1().getDriver();
 
@@ -404,7 +404,7 @@ public class SharedVideoTest
             driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
-        getParticipant1().getToolbar().clickSharedVideo();
+        getParticipant1().getToolbar().clickSharedVideoButton();
 
         // now lets stop sharing
         TestUtils.waitForElementByXPath(

@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -215,7 +214,7 @@ public class AvatarTest
 
         WebDriver driver1 = getParticipant1().getDriver();
 
-        getParticipant1().getToolbar().clickProfile();
+        getParticipant1().getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//input[@id='setEmail']", 5);
 
@@ -230,7 +229,7 @@ public class AvatarTest
         getParticipant1().hangUp();
         ensureTwoParticipants();
 
-        getParticipant1().getToolbar().clickProfile();
+        getParticipant1().getToolbar().clickProfileButton();
         driver1 = getParticipant1().getDriver();
         TestUtils.waitForDisplayedElementByXPath(
             driver1,
@@ -272,7 +271,7 @@ public class AvatarTest
             getSrcByXPath(driver2, participant1AvatarXPath);
 
         // change the email for participant1
-        participant1.getToolbar().clickProfile();
+        participant1.getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//input[@id='setEmail']", 5);
 
@@ -324,7 +323,7 @@ public class AvatarTest
                 return currentSrc.contains(HASH);
             });
 
-        participant1.getToolbar().clickProfile();
+        participant1.getToolbar().clickProfileButton();
 
         // we check whether avatar of participant2 is same on both sides
         // and we stored to check it after reload

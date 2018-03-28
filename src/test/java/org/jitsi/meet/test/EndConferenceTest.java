@@ -46,7 +46,7 @@ public class EndConferenceTest
         final String url = driver1.getCurrentUrl();
 
         // hangup and wait for redirect
-        getParticipant1().getToolbar().clickHangUp();
+        getParticipant1().getToolbar().clickHangUpButton();
         TestUtils.waitForCondition(
             driver1,
             5,

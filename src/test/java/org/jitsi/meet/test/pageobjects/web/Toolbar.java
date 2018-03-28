@@ -32,12 +32,10 @@ public class Toolbar {
      * Button IDs to be used as selectors for finding WebElements within the
      * {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_chat";
+    private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_mute";
     private final static String CONTACT_LIST_BUTTON_ID
             = "toolbar_contact_list";
     private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
-    private final static String DS_BUTTON_XPATH
-        = "//a[@id='" + DS_BUTTON_ID + "']";
     private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
     private final static String FILMSTRIP_ONLY_SETTINGS_BUTTON_ID
         = "toolbar_button_fodeviceselection";
@@ -51,6 +49,13 @@ public class Toolbar {
     private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
     private final static String VIDEO_QUALITY_BUTTON_ID
         = "toolbar_button_videoquality";
+
+    /**
+     * Xpaths to be used as selectors for finding WebElements within the
+     * {@link Toolbar}.
+     */
+    private final static String DS_BUTTON_XPATH
+        = "//a[@id='" + DS_BUTTON_ID + "']";
 
     /**
      * The participant.
@@ -70,10 +75,10 @@ public class Toolbar {
     /**
      * Clicks on the microphone mute toolbar button, which toggles audio mute.
      */
-    public void clickAudioMute() {
+    public void clickAudioMuteButton() {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
-            "toolbar_button_mute",
+            AUDIO_MUTE_BUTTON_ID,
             true);
     }
 
@@ -131,7 +136,7 @@ public class Toolbar {
      * Clicks on the contact list toolbar button which opens or closes the
      * contact list.
      */
-    public void clickContactList() {
+    public void clickContactListButton() {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             CONTACT_LIST_BUTTON_ID,
@@ -141,7 +146,7 @@ public class Toolbar {
     /**
      * Clicks on the etherpad toolbar button which shows or hides etherpad.
      */
-    public void clickEtherpad() {
+    public void clickEtherpadButton() {
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitForDisplayedElementByID(
             participant.getDriver(), ETHERPAD_BUTTON_ID, 15);
@@ -163,7 +168,7 @@ public class Toolbar {
     /**
      * Clicks on the hangup toolbar button which leaves the current conference.
      */
-    public void clickHangUp() {
+    public void clickHangUpButton() {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             HANGUP_BUTTON_ID,
@@ -173,7 +178,7 @@ public class Toolbar {
     /**
      * Clicks on the info toolbar button which opens or closes the info dialog.
      */
-    public void clickInfo() {
+    public void clickInfoButton() {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             INFO_BUTTON_ID,
@@ -184,7 +189,7 @@ public class Toolbar {
      * Clicks on the profile toolbar button which opens or closes the profile
      * panel.
      */
-    public void clickProfile() {
+    public void clickProfileButton() {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             PROFILE_BUTTON_ID);
@@ -194,7 +199,7 @@ public class Toolbar {
      * Clicks on the recording toolbar button which toggles recording or live
      * streaming.
      */
-    public void clickRecord() {
+    public void clickRecordButton() {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             RECORD_BUTTON_ID);
@@ -204,7 +209,7 @@ public class Toolbar {
      * Clicks on the settings toolbar button which opens or closes the settings
      * panel.
      */
-    public void clickSettings() {
+    public void clickSettingsButton() {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             SETTINGS_BUTTON_ID);
@@ -214,7 +219,7 @@ public class Toolbar {
      * Clicks on the shared video toolbar button which toggles sharing of a
      * YouTube video.
      */
-    public void clickSharedVideo() {
+    public void clickSharedVideoButton() {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             SHARED_VIDEO_BUTTON_ID);
@@ -223,7 +228,7 @@ public class Toolbar {
     /**
      * Clicks on the video mute toolbar button which toggles video mute.
      */
-    public void clickVideoMute() {
+    public void clickVideoMuteButton() {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             VIDEO_MUTE_BUTTON_ID);

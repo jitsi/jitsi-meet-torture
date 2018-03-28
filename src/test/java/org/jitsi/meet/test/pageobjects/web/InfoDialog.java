@@ -102,7 +102,7 @@ public class InfoDialog
      */
     private void clickToolbarButton()
     {
-        participant.getToolbar().clickInfo();
+        participant.getToolbar().clickInfoButton();
     }
 
     /**

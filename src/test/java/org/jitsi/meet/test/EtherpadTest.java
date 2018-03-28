@@ -70,7 +70,7 @@ public class EtherpadTest
                 "No etherpad configuration detected. Disabling test.");
         }
 
-        getParticipant1().getToolbar().clickEtherpad();
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitMillis(5000);
 
@@ -141,7 +141,7 @@ public class EtherpadTest
             return;
         }
 
-        getParticipant1().getToolbar().clickEtherpad();
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitMillis(5000);
 

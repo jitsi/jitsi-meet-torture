@@ -194,7 +194,7 @@ public class MuteTest
     {
         TestUtils.waitMillis(1000);
 
-        getParticipant2().getToolbar().clickAudioMute();
+        getParticipant2().getToolbar().clickAudioMuteButton();
 
         TestUtils.waitMillis(1000);
 
@@ -225,7 +225,7 @@ public class MuteTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        getParticipant1().getToolbar().clickAudioMute();
+        getParticipant1().getToolbar().clickAudioMuteButton();
 
         ensureTwoParticipants();
 
@@ -260,7 +260,7 @@ public class MuteTest
         WebParticipant observer,
         boolean muted)
     {
-        testee.getToolbar().clickAudioMute();
+        testee.getToolbar().clickAudioMuteButton();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
                 observer.getDriver(),

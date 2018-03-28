@@ -397,7 +397,7 @@ public class MeetUIUtils
         WebElement settings = driver.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
-            participant.getToolbar().clickSettings();
+            participant.getToolbar().clickSettingsButton();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, settingsXPath, 5);
@@ -421,7 +421,7 @@ public class MeetUIUtils
 
         if (!contactList.isDisplayed())
         {
-            participant.getToolbar().clickContactList();
+            participant.getToolbar().clickContactListButton();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, contactListXPath, 5);
