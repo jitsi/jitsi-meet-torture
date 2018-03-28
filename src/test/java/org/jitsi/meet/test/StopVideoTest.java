@@ -140,7 +140,7 @@ public class StopVideoTest
             + ");";
         participant2.executeScript(listenForTrackAdded);
 
-        MeetUIUtils.muteVideoAndCheck(getParticipant1().getDriver(), driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         startVideoOnParticipant1AndCheck();
 
         TestUtils.waitMillis(1000);
@@ -163,9 +163,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopAndStartVideoOnParticipant1AndCheckEvents"})
     public void stopVideoOnParticipantAndCheck()
     {
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant2().getDriver(),
-            getParticipant1().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
     }
 
     /**
@@ -203,9 +201,7 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(
-            getParticipant1().getDriver(),
-            "toolbar_button_camera");
+        getParticipant1().getToolbar().clickVideoMute();
 
         TestUtils.waitMillis(500);
 
