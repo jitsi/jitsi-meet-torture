@@ -90,11 +90,61 @@ public class MeetUtils
     }
 
     /**
+     * Obtains the last value of the desired stat.
+     *
+     * @param statName the stat name to sample
+     * @param useJVB if true, use the JVB peer connection, or the P2P peer
+     * connection otherwise.
+     */
+    private static String getLastStatValueJS(String statName, boolean useJVB)
+    {
+        return "var stats = APP.conference._room."
+            + (useJVB
+                ? "jvbJingleSession.peerconnection.stats;"
+                : "p2pJingleSession.peerconnection.stats;")
+            + "var values = stats['" + statName + "'].values;"
+            + "return values[values.length-1];";
+    }
+
+    /**
+     * Obtains the local candidate type used by the given <tt>participant</tt>.
+     *
+     * @param driver the <tt>WebDriver</tt> instance of the participant for
+     * whose local candidate type is to be obtained.
+     * @param useJVB if true, use the JVB peer connection, or the P2P peer
+     * connection otherwise.
+     *
+     * @return an <tt>String</tt> with the local candidate type.
+     *
+     * @throws RuntimeException if the local candidate type is either invalid
+     * or the script has failed to obtain it(the intention of throwing runtime
+     * exception is to fail the test).
+     */
+    public static String getLocalCandidateType(WebDriver driver, boolean useJVB)
+    {
+        String lastLocalCandidateTypeJS = getLastStatValueJS(
+                "Conn-audio-1-0-googLocalCandidateType", useJVB);
+
+        String lastLocalCandidateType = TestUtils
+            .executeScriptAndReturnString(driver, lastLocalCandidateTypeJS);
+
+        if (lastLocalCandidateType == null)
+        {
+            throw new RuntimeException(
+                "Failed to obtain the local candidate type through"
+                    + " the JS script(might be broken)");
+        }
+
+        return lastLocalCandidateType;
+    }
+
+    /**
      * Obtains the RTP bundle port used by the given <tt>participant</tt>.
      *
      * @param driver the <tt>WebDriver</tt> instance of the participant for
      * whose bundle port is to be obtained.
-     * @param useJVB TODO DOCUMENT
+     * @param useJVB if true, use the JVB peer connection, or the P2P peer
+     * connection otherwise.
      *
      * @return an <tt>int</tt> with the bundle port number.
      *
@@ -104,15 +154,13 @@ public class MeetUtils
      */
     public static int getBundlePort(WebDriver driver, boolean useJVB)
     {
-        StringBuilder sb = new StringBuilder("return APP.conference._room.");
-        sb.append(useJVB ? "jvbJingleSession" : "p2pJingleSession");
-        sb.append(".peerconnection.stats['Conn-audio-1-0-googLocalAddress']");
-        sb.append(".values[0].split(':')[1]");
+        String lastLocalAddressJS
+            = getLastStatValueJS("Conn-audio-1-0-googLocalAddress", useJVB);
 
-        String portNumberStr = TestUtils
-            .executeScriptAndReturnString(driver, sb.toString());
+        String lastLocalAddress = TestUtils
+            .executeScriptAndReturnString(driver, lastLocalAddressJS);
 
-        if (portNumberStr == null)
+        if (lastLocalAddress == null)
         {
             throw new RuntimeException(
                 "Failed to obtain the bundle port through"
@@ -120,11 +168,11 @@ public class MeetUtils
         }
 
         // Try to parse to see if it's a valid integer
-        int portNumber = Integer.parseInt(portNumberStr);
+        int portNumber = Integer.parseInt(lastLocalAddress.split(":")[1]);
         if (portNumber < 0 || portNumber > 65535)
         {
             throw new RuntimeException(
-                "Invalid port number: " + portNumberStr);
+                "Invalid port number: " + portNumber);
         }
 
         return portNumber;

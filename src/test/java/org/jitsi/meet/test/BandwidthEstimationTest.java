@@ -579,9 +579,21 @@ public class BandwidthEstimationTest
 
         // Rate limit the media flow on the receiver and analyze the webrtc
         // internals.
+        String localCandidateType
+            = MeetUtils.getLocalCandidateType(receiver, useJVB);
+        while (!"prflx".equalsIgnoreCase(localCandidateType))
+        {
+            print("Waiting for a prflx local candidate type. Got: "
+                    + localCandidateType);
+
+            Thread.sleep(1000);
+            localCandidateType
+                = MeetUtils.getLocalCandidateType(receiver, useJVB);
+        }
+
         int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
 
-        print("Local bundle port for 2: " + receiverPort);
+        print("Receiver port: " + receiverPort);
 
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
