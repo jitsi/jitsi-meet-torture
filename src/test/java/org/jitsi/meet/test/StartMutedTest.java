@@ -101,7 +101,7 @@ public class StartMutedTest
         checkParticipant2ForMute();
 
         // Unmute and see if the audio works
-        MeetUIUtils.clickOnToolbarButton(driver2, "toolbar_button_mute");
+        getParticipant2().getToolbar().clickAudioMute();
         participant1.executeScript(
             "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(
