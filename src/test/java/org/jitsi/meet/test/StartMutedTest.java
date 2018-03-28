@@ -47,7 +47,7 @@ public class StartMutedTest
         WebDriver driver1 = getParticipant1().getDriver();
 
         // Make sure settings panel is displayed
-        MeetUIUtils.displaySettingsPanel(driver1);
+        MeetUIUtils.displaySettingsPanel(getParticipant1());
         // Wait for 'start muted' checkboxes
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//input[@id='startAudioMuted']", 5);
@@ -101,7 +101,7 @@ public class StartMutedTest
         checkParticipant2ForMute();
 
         // Unmute and see if the audio works
-        MeetUIUtils.clickOnToolbarButton(driver2, "toolbar_button_mute");
+        getParticipant2().getToolbar().clickAudioMuteButton();
         participant1.executeScript(
             "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(

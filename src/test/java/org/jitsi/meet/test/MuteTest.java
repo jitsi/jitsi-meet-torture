@@ -63,9 +63,9 @@ public class MuteTest
     public void muteParticipant1AndCheck()
     {
         toggleMuteAndCheck(
-            getParticipant1().getDriver(),
+            getParticipant1(),
             "participant1",
-            getParticipant2().getDriver(),
+            getParticipant2(),
             true);
 
         TestUtils.waitMillis(2000);
@@ -78,9 +78,9 @@ public class MuteTest
     public void unmuteParticipant1AndCheck()
     {
         toggleMuteAndCheck(
-            getParticipant1().getDriver(),
+            getParticipant1(),
             "participant1",
-            getParticipant2().getDriver(),
+            getParticipant2(),
             false);
     }
 
@@ -91,9 +91,9 @@ public class MuteTest
     public void muteParticipant2AndCheck()
     {
         toggleMuteAndCheck(
-            getParticipant2().getDriver(),
+            getParticipant2(),
             "getParticipant2()",
-            getParticipant1().getDriver(),
+            getParticipant1(),
             true);
     }
 
@@ -104,9 +104,9 @@ public class MuteTest
     public void unmuteParticipant2AndCheck()
     {
         toggleMuteAndCheck(
-            getParticipant2().getDriver(),
+            getParticipant2(),
             "participant2",
-            getParticipant1().getDriver(),
+            getParticipant1(),
             false);
     }
 
@@ -118,9 +118,9 @@ public class MuteTest
         ensureThreeParticipants();
 
         toggleMuteAndCheck(
-            getParticipant3().getDriver(),
+            getParticipant3(),
             "participant3",
-            getParticipant1().getDriver(),
+            getParticipant1(),
             true);
     }
 
@@ -130,9 +130,9 @@ public class MuteTest
     public void unmuteParticipant3AndCheck()
     {
         toggleMuteAndCheck(
-            getParticipant3().getDriver(),
+            getParticipant3(),
             "getParticipant3()",
-            getParticipant1().getDriver(),
+            getParticipant1(),
             false);
     }
 
@@ -194,8 +194,7 @@ public class MuteTest
     {
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(
-            getParticipant2().getDriver(), "toolbar_button_mute");
+        getParticipant2().getToolbar().clickAudioMuteButton();
 
         TestUtils.waitMillis(1000);
 
@@ -226,7 +225,7 @@ public class MuteTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_mute");
+        getParticipant1().getToolbar().clickAudioMuteButton();
 
         ensureTwoParticipants();
 
@@ -246,31 +245,32 @@ public class MuteTest
      * verifies that a specific other Meet conference participants sees a
      * specific mute state for the former.
      *
-     * @param testee the {@code WebDriver} which represents the Meet conference
-     * participant whose mute state is to be toggled
+     * @param testee the {@code WebParticipant} which represents the Meet
+     * conference participant whose mute state is to be toggled
      * @param testeeName the name of {@code testee} to be displayed should the
      * test fail
-     * @param observer the {@code WebDriver} which represents the Meet
+     * @param observer the {@code WebParticipant} which represents the Meet
      * conference participant to verify the mute state of {@code testee}
      * @param muted the mute state of {@code testee} expected to be observed by
      * {@code observer}
      */
     private void toggleMuteAndCheck(
-        WebDriver testee,
+        WebParticipant testee,
         String testeeName,
-        WebDriver observer,
+        WebParticipant observer,
         boolean muted)
     {
-        MeetUIUtils.clickOnToolbarButton(testee, "toolbar_button_mute");
+        testee.getToolbar().clickAudioMuteButton();
+
         MeetUIUtils.assertMuteIconIsDisplayed(
-                observer,
-                testee,
+                observer.getDriver(),
+                testee.getDriver(),
                 muted,
                 false, //audio
                 testeeName);
         MeetUIUtils.assertMuteIconIsDisplayed(
-            testee,
-            testee,
+            testee.getDriver(),
+            testee.getDriver(),
             muted,
             false, //audio
             testeeName);

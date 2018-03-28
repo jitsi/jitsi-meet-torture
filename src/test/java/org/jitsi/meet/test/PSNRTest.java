@@ -156,9 +156,7 @@ public class PSNRTest
         MuteTest muteTest = new MuteTest(this);
         muteTest.muteParticipant1AndCheck();
         muteTest.muteParticipant2AndCheck();
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
 
         // Sleep 30 seconds to allow the clients to ramp up
         int rampUpDurationSeconds = 30;

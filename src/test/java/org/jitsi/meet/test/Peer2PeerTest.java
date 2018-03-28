@@ -65,22 +65,22 @@ public class Peer2PeerTest
 
         // Verify video mute feature
         // Check participant1 mute
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         MeetUIUtils.verifyUserConnStatusIndication(
             driver2, endpointId1 , true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant1(), getParticipant2());
         // Participant conn status kind of tells if video is playing
         MeetUIUtils.verifyUserConnStatusIndication(
             driver2, endpointId1 , true);
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
-        MeetUIUtils.muteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndication(
             driver1, endpointId2, true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndication(
             driver1, endpointId2, true);
     }
@@ -192,11 +192,11 @@ public class Peer2PeerTest
 
         // Verify video mute feature
         // Check participant1 mute
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         MeetUIUtils.verifyUserConnStatusIndicationLong(
             driver2, endpointId1 , true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant1(), getParticipant2());
         // Wait for connection to restore
         MeetUIUtils.verifyUserConnStatusIndication(
             driver2, endpointId1, true);
@@ -206,11 +206,11 @@ public class Peer2PeerTest
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
-        MeetUIUtils.muteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndicationLong(
             driver1, endpointId2, true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndication(
             driver1, endpointId2, true);
         MeetUIUtils.verifyUserConnStatusIndicationLong(
@@ -243,7 +243,7 @@ public class Peer2PeerTest
         // Video mute participant1
         // Verify video mute feature
         // Check participant1 mute
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         MeetUIUtils.verifyUserConnStatusIndicationLong(
             driver2, endpointId1 , true);
 
@@ -264,7 +264,7 @@ public class Peer2PeerTest
         MeetUIUtils.waitForAudioMuted(driver2, driver1, "participant1", false);
 
         // Unmute and see if that works
-        MeetUIUtils.unmuteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant1(), getParticipant2());
         // Wait for connection to restore b
         // Participant conn status kind of tells if video is playing
         MeetUIUtils.verifyUserConnStatusIndicationLong(
@@ -288,11 +288,11 @@ public class Peer2PeerTest
 
         // Verify video mute feature
         // Check participant1 mute
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         MeetUIUtils.verifyUserConnStatusIndicationLong(
             driver2, endpointId1 , true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant1(), getParticipant2());
         // Wait for connection to restore
         MeetUIUtils.verifyUserConnStatusIndication(
             driver2, endpointId1, true);
@@ -302,11 +302,11 @@ public class Peer2PeerTest
 
         // Check participant mute
         // FIXME refactor to preserve the order of observer and subject
-        MeetUIUtils.muteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndicationLong(
             driver1, endpointId2, true);
 
-        MeetUIUtils.unmuteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.unmuteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.verifyUserConnStatusIndication(
             driver1, endpointId2, true);
         MeetUIUtils.verifyUserConnStatusIndicationLong(

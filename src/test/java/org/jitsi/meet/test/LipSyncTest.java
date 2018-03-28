@@ -130,7 +130,7 @@ public class LipSyncTest
 
         // Stops audio and video on participant1 to improve performance
         new MuteTest(this).muteParticipant1AndCheck();
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
 
         // Read and inject helper script
         VideoOperator operator1 = new VideoOperator(participant1);

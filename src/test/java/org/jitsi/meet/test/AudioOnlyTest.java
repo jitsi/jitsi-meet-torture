@@ -34,8 +34,6 @@ public class AudioOnlyTest
             "//i[contains(@class, 'icon-visibility-off')]";
     private static String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
     private static String MUTE_BUTTON_ID = "toolbar_button_camera";
-    private static String VIDEO_QUALITY_BUTTON_ID
-        = "toolbar_button_videoquality";
     private static String VIDEO_QUALITY_SLIDER_CLASS
         = "video-quality-dialog-slider";
 
@@ -55,9 +53,9 @@ public class AudioOnlyTest
     public void enableAudioOnlyAndCheck()
     {
         setAudioOnlyAndCheck(
-            getParticipant1().getDriver(),
+            getParticipant1(),
             "participant1",
-            getParticipant2().getDriver(),
+            getParticipant2(),
             true);
     }
 
@@ -67,8 +65,7 @@ public class AudioOnlyTest
     @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
     public void videoUnmuteDisabledInAudioOnly()
     {
-        MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
-            MUTE_BUTTON_ID);
+        getParticipant1().getToolbar().clickAudioMuteButton();
 
         verifyVideoMute(
             getParticipant1().getDriver(),
@@ -99,9 +96,9 @@ public class AudioOnlyTest
     public void disableAudioOnlyAndCheck()
     {
         setAudioOnlyAndCheck(
-            getParticipant1().getDriver(),
+            getParticipant1(),
             "participant1",
-            getParticipant2().getDriver(),
+            getParticipant2(),
             false);
     }
 
@@ -111,28 +108,28 @@ public class AudioOnlyTest
      * other Meet conference participant sees a specific video mute state for
      * the former.
      *
-     * @param testee the {@code WebDriver} which represents the Meet conference
-     * participant whose audio only state is to be toggled
+     * @param testee the {@code WebParticipant} which represents the Meet
+     * conference participant whose audio only state is to be toggled
      * @param testeeName the name of {@code testee} to be displayed
      * should the test fail
-     * @param observer the {@code WebDriver} which represents the Meet
+     * @param observer the {@code WebParticipant} which represents the Meet
      * conference participant to verify the mute state of {@code testee}
      * @param audioOnly the audio only state of {@code testee} expected to be
      * observed by {@code observer}
      */
     private void setAudioOnlyAndCheck(
-        WebDriver testee,
+        WebParticipant testee,
         String testeeName,
-        WebDriver observer,
+        WebParticipant observer,
         boolean audioOnly)
     {
         setAudioOnly(testee, audioOnly);
 
         verifyVideoMute(
-            testee, testeeName, observer, audioOnly);
+            testee.getDriver(), testeeName, observer.getDriver(), audioOnly);
 
         TestUtils.waitForDisplayedOrNotByXPath(
-            testee,
+            testee.getDriver(),
             AUDIO_ONLY_ENABLED_ICON_XPATH,
             5,
             audioOnly);
@@ -142,16 +139,18 @@ public class AudioOnlyTest
      * Shows the video quality menu in the from the toolbar and sets audio only
      * mode to either on or off.
      *
-     * @param driver the {@code WebDriver}.
+     * @param participant the {@code WebParticipant}.
      * @param audioOnly whether or not audio only mode should be enabled.
      */
-    private void setAudioOnly(WebDriver driver, boolean audioOnly)
+    private void setAudioOnly(WebParticipant participant, boolean audioOnly)
     {
-        // Open tbe video quality dialog.
-        setVideoQualityDialogVisible(driver, true);
+        WebDriver participantDriver = participant.getDriver();
+
+        // Open the video quality dialog.
+        setVideoQualityDialogVisible(participant, true);
 
         // Calculate how far to move the quality slider and in which direction.
-        WebElement videoQualitySlider = driver.findElement(
+        WebElement videoQualitySlider = participantDriver.findElement(
             By.className(VIDEO_QUALITY_SLIDER_CLASS));
 
         int audioOnlySliderValue
@@ -174,27 +173,26 @@ public class AudioOnlyTest
         }
 
         // Close the video quality dialog.
-        setVideoQualityDialogVisible(driver, false);
+        setVideoQualityDialogVisible(participant, false);
     }
 
     /**
      * Sets whether or not the video quality dialog is displayed.
      *
-     * @param driver the {@code WebDriver}.
+     * @param participant the {@code WebParticipant}.
      * @param visible whether or not the dialog should be displayed.
      */
     private void setVideoQualityDialogVisible(
-        WebDriver driver, boolean visible)
+        WebParticipant participant, boolean visible)
     {
         boolean isDialogSliderVisible
-            = !driver.findElements(
+            = !participant.getDriver().findElements(
                 By.className(VIDEO_QUALITY_SLIDER_CLASS)).isEmpty();
 
         if ((isDialogSliderVisible && !visible)
             || (!isDialogSliderVisible && visible))
         {
-            MeetUIUtils.clickOnToolbarButton(
-                driver, VIDEO_QUALITY_BUTTON_ID);
+            participant.getToolbar().clickVideoQualityButton();
         }
     }
 

@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.util;
 
+import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.*;
@@ -385,17 +386,18 @@ public class MeetUIUtils
     /**
      * Opens the settings panel, if not open.
      *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to open the settings panel.
+     * @param participant <tt>WebParticipant</tt> instance of the participant
+     * for whom we'll try to open the settings panel.
      * @throws TimeoutException if we fail to open the settings panel.
      */
-    public static void displaySettingsPanel(WebDriver driver)
+    public static void displaySettingsPanel(WebParticipant participant)
     {
+        WebDriver driver = participant.getDriver();
         String settingsXPath = "//div[@id='settings_container']";
         WebElement settings = driver.findElement(By.xpath(settingsXPath));
         if (!settings.isDisplayed())
         {
-            clickOnToolbarButton(driver, "toolbar_button_settings");
+            participant.getToolbar().clickSettingsButton();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, settingsXPath, 5);
@@ -403,41 +405,23 @@ public class MeetUIUtils
     }
 
     /**
-     * Hides the settings panel, if not hidden.
-     *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to hide the settings panel.
-     * @throws TimeoutException if we fail to hide the settings panel.
-     */
-    public static void hideSettingsPanel(WebDriver driver)
-    {
-        String settingsXPath = "//div[@id='settings_container']";
-        WebElement settings = driver.findElement(By.xpath(settingsXPath));
-        if (settings.isDisplayed())
-        {
-            clickOnToolbarButton(driver, "toolbar_button_settings");
-
-            TestUtils.waitForNotDisplayedElementByXPath(
-                    driver, settingsXPath, 5);
-        }
-    }
-
-    /**
      * Opens the contact list panel, if not open.
      *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to open the contact list panel.
+     * @param participant <tt>WebParticipant</tt> instance of the participant
+     * for whom we'll try to open the contact list panel.
      * @throws TimeoutException if we fail to open the contact list panel
      */
-    public static void displayContactListPanel(WebDriver driver)
+    public static void displayContactListPanel(WebParticipant participant)
     {
         String contactListXPath = "//div[@id='contacts_container']";
+        WebDriver driver = participant.getDriver();
+
         WebElement contactList
             = driver.findElement(By.xpath(contactListXPath));
 
         if (!contactList.isDisplayed())
         {
-            clickOnToolbarButton(driver, "toolbar_contact_list");
+            participant.getToolbar().clickContactListButton();
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, contactListXPath, 5);
@@ -1100,18 +1084,19 @@ public class MeetUIUtils
 
     /**
      * Mutes participant's video and checks local indication for that.
-     * @param driver the participant's video to be muted.
-     * @param driverCheck another participant in the room which we want to
+     * @param participant the participant's video to be muted.
+     * @param participantCheck another participant in the room which we want to
      * test whether he is seeing the muted participant as really muted. Can be
      * null if we want to skip this check.
      */
-    public static void muteVideoAndCheck(WebDriver driver,
-                                         WebDriver driverCheck)
+    public static void muteVideoAndCheck(WebParticipant participant,
+                                         WebParticipant participantCheck)
     {
+        WebDriver driver = participant.getDriver();
+
         // Mute participant1's video
-        TestUtils.waitForDisplayedElementByXPath(
-            driver, "//a[@id='toolbar_button_camera']", 10);
-        MeetUIUtils.clickOnToolbarButton(driver, "toolbar_button_camera");
+        participant.getToolbar().waitForVideoMuteButtonDisplay();
+        participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon appears on local thumbnail
         TestUtils.waitForDisplayedElementByXPath(
@@ -1120,10 +1105,10 @@ public class MeetUIUtils
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 5);
 
-        if (driverCheck != null)
+        if (participantCheck != null)
         {
             MeetUIUtils.assertMuteIconIsDisplayed(
-                driverCheck,
+                participantCheck.getDriver(),
                 driver,
                 true,
                 true,
@@ -1135,20 +1120,21 @@ public class MeetUIUtils
      * Unmutes <tt>participant</tt>'s video, checks if the local UI has been
      * updated accordingly and then does the verification from
      * the <tt>participantCheck</tt> perspective.
-     * @param driver the {@link WebDriver} of the participant to be
+     * @param participant the {@link WebParticipant} of the participant to be
      * "video unmuted"
-     * @param driverCheck the {@link WebDriver} of the participant which
-     * observes and checks if the video has been unmuted correctly.
+     * @param participantCheck the {@link WebParticipant} of the participant
+     * which observes and checks if the video has been unmuted correctly.
      */
-    public static void unmuteVideoAndCheck(WebDriver driver,
-                                           WebDriver driverCheck)
+    public static void unmuteVideoAndCheck(WebParticipant participant,
+                                           WebParticipant participantCheck)
     {
-        // Make sure that there is the video mute button
-        TestUtils.waitForDisplayedElementByXPath(
-            driver, "//a[@id='toolbar_button_camera']", 10);
-        // Mute participant's video
-        MeetUIUtils.clickOnToolbarButton(driver, "toolbar_button_camera");
+        WebDriver driver = participant.getDriver();
 
+        // Make sure that there is the video mute button
+        participant.getToolbar().waitForVideoMuteButtonDisplay();
+
+        // Mute participant's video
+        participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon disappeared
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
@@ -1157,10 +1143,10 @@ public class MeetUIUtils
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 5);
 
-        if (driverCheck != null)
+        if (participantCheck != null)
         {
             MeetUIUtils.assertMuteIconIsDisplayed(
-                driverCheck,
+                participantCheck.getDriver(),
                 driver,
                 false,
                 true,

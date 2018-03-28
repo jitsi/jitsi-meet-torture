@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -64,7 +63,7 @@ public class AvatarTest
         String participant1EndpointId = getParticipant1().getEndpointId();
 
         // Mute participant1's video
-        MeetUIUtils.muteVideoAndCheck(driver1, null);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), null);
 
         // Check if avatar on large video is the same as on local thumbnail
         String participant1ThumbSrc = getLocalThumbnailSrc(driver1);
@@ -118,14 +117,14 @@ public class AvatarTest
         MeetUIUtils.assertLocalThumbnailShowsVideo(driver1);
 
         // Now both participant1 and participant2 have video muted
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         MeetUIUtils.assertMuteIconIsDisplayed(
                 driver2,
                 driver1,
                 true,
                 true, //video
                 "participant1");
-        MeetUIUtils.muteVideoAndCheck(driver2, driver1);
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
         MeetUIUtils.assertMuteIconIsDisplayed(
                 driver1,
                 driver2,
@@ -215,7 +214,7 @@ public class AvatarTest
 
         WebDriver driver1 = getParticipant1().getDriver();
 
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_profile");
+        getParticipant1().getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//input[@id='setEmail']", 5);
 
@@ -230,8 +229,8 @@ public class AvatarTest
         getParticipant1().hangUp();
         ensureTwoParticipants();
 
+        getParticipant1().getToolbar().clickProfileButton();
         driver1 = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_profile");
         TestUtils.waitForDisplayedElementByXPath(
             driver1,
             "//input[@id='setEmail']",
@@ -272,8 +271,7 @@ public class AvatarTest
             getSrcByXPath(driver2, participant1AvatarXPath);
 
         // change the email for participant1
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_profile");
+        participant1.getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//input[@id='setEmail']", 5);
 
@@ -325,8 +323,7 @@ public class AvatarTest
                 return currentSrc.contains(HASH);
             });
 
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_profile");
+        participant1.getToolbar().clickProfileButton();
 
         // we check whether avatar of participant2 is same on both sides
         // and we stored to check it after reload

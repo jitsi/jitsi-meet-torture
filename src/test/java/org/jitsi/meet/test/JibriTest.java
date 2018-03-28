@@ -15,8 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import java.util.*;
-
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -88,11 +86,9 @@ public class JibriTest
     @Test
     public void checkJibriEnabled()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        List<WebElement> elements = driver1.findElements(
-            By.xpath("//a[@class='button fa " + "fa-play-circle']"));
-
-        assertFalse(elements.isEmpty(), "Jibri button is missing");
+        assertTrue(
+            getParticipant1().getToolbar().hasRecordButton(),
+            "Jibri button is missing");
     }
 
     /**
@@ -101,8 +97,9 @@ public class JibriTest
     @Test(dependsOnMethods = { "checkJibriEnabled" })
     public void startLiveStreaming()
     {
+        getParticipant1().getToolbar().clickRecordButton();
+
         WebDriver driver1 = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_record");
 
         // fill in the dialog
         TestUtils.waitForElementByXPath(
@@ -250,8 +247,7 @@ public class JibriTest
     public void stopLiveStreaming()
     {
         WebDriver driver1 = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_record");
+        getParticipant1().getToolbar().clickRecordButton();
 
         // fill in the dialog
         TestUtils.waitForElementByXPath(

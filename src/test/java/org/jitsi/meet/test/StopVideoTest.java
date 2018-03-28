@@ -62,9 +62,7 @@ public class StopVideoTest
     @Test
     public void stopVideoOnParticipant1AndCheck()
     {
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
     }
 
     /**
@@ -73,8 +71,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopVideoOnParticipant1AndCheck"})
     public void startVideoOnParticipant1AndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(getParticipant1().getDriver(),
-            "toolbar_button_camera");
+        getParticipant1().getToolbar().clickVideoMuteButton();
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
@@ -100,13 +97,11 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"startVideoOnParticipant1AndCheck"})
     public void stopAndStartVideoOnParticipant1AndCheckStream()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
-
         // mute participant1
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
 
         // now participant2 should be on large video
+        WebDriver driver1 = getParticipant1().getDriver();
         String participant2VideoId = MeetUIUtils.getLargeVideoID(driver1);
 
         // unmute participant1
@@ -141,7 +136,7 @@ public class StopVideoTest
             + ");";
         participant2.executeScript(listenForTrackAdded);
 
-        MeetUIUtils.muteVideoAndCheck(getParticipant1().getDriver(), driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
         startVideoOnParticipant1AndCheck();
 
         TestUtils.waitMillis(1000);
@@ -164,9 +159,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopAndStartVideoOnParticipant1AndCheckEvents"})
     public void stopVideoOnParticipantAndCheck()
     {
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant2().getDriver(),
-            getParticipant1().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
     }
 
     /**
@@ -175,8 +168,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopVideoOnParticipantAndCheck" })
     public void startVideoOnParticipantAndCheck()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            getParticipant2().getDriver(), "toolbar_button_camera");
+        getParticipant2().getToolbar().clickVideoMuteButton();
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             getParticipant1().getDriver(),
@@ -205,9 +197,7 @@ public class StopVideoTest
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.clickOnToolbarButton(
-            getParticipant1().getDriver(),
-            "toolbar_button_camera");
+        getParticipant1().getToolbar().clickVideoMuteButton();
 
         TestUtils.waitMillis(500);
 

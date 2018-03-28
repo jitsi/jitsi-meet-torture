@@ -115,7 +115,7 @@ public class RingOverlayTest
         // wait for the toolbar to be visible before clicking on it
         TestUtils.waitForDisplayedElementByXPath(
             driver1, "//div[contains(@class, 'toolbar_secondary')]", 3);
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_profile");
+        getParticipant1().getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, emailInput, 5);
         assertEquals(
@@ -154,7 +154,7 @@ public class RingOverlayTest
         // let's check the avatar now
 
         // Mute participant1's video
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
 
         MeetUIUtils.clickOnRemoteVideo(driver2, participant1.getEndpointId());
         // Check if participant1's avatar is on large video now

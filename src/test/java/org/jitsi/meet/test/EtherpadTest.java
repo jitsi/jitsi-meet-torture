@@ -70,12 +70,7 @@ public class EtherpadTest
                 "No etherpad configuration detected. Disabling test.");
         }
 
-        // waits for etherpad button to be displayed in the toolbar
-        TestUtils.waitForDisplayedElementByID(
-                driver1, "toolbar_button_etherpad", 15);
-
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitMillis(5000);
 
@@ -146,11 +141,11 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitMillis(5000);
+
+        WebDriver driver1 = getParticipant1().getDriver();
 
         TestUtils.waitForDisplayedElementByID(driver1, "largeVideo", 10);
     }

@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -52,11 +51,10 @@ public class FollowMeTest
 
     private void oneTimeSetUp()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
+        MeetUIUtils.displaySettingsPanel(getParticipant1());
+        MeetUIUtils.displaySettingsPanel(getParticipant2());
 
-        MeetUIUtils.displaySettingsPanel(driver1);
-        MeetUIUtils.displaySettingsPanel(driver2);
+        WebDriver driver1 = getParticipant1().getDriver();
 
         TestUtils.waitForDisplayedElementByXPath(
                 driver1, followMeCheckboxXPath, 5);
@@ -105,13 +103,12 @@ public class FollowMeTest
             return;
         }
 
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitForDisplayedElementByXPath(driver1, etherpadXPath, 5);
         TestUtils.waitForDisplayedElementByXPath(driver2, etherpadXPath, 5);
 
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpadButton();
 
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver1, etherpadXPath, 5);
