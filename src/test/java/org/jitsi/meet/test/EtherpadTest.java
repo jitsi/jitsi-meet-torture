@@ -141,11 +141,11 @@ public class EtherpadTest
             return;
         }
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_etherpad");
+        getParticipant1().getToolbar().clickEtherpad();
 
         TestUtils.waitMillis(5000);
+
+        WebDriver driver1 = getParticipant1().getDriver();
 
         TestUtils.waitForDisplayedElementByID(driver1, "largeVideo", 10);
     }

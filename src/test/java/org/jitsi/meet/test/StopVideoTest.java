@@ -62,9 +62,7 @@ public class StopVideoTest
     @Test
     public void stopVideoOnParticipant1AndCheck()
     {
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
     }
 
     /**
@@ -99,13 +97,11 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"startVideoOnParticipant1AndCheck"})
     public void stopAndStartVideoOnParticipant1AndCheckStream()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
-
         // mute participant1
-        MeetUIUtils.muteVideoAndCheck(driver1, driver2);
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
 
         // now participant2 should be on large video
+        WebDriver driver1 = getParticipant1().getDriver();
         String participant2VideoId = MeetUIUtils.getLargeVideoID(driver1);
 
         // unmute participant1

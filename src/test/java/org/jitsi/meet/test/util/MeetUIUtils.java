@@ -405,26 +405,6 @@ public class MeetUIUtils
     }
 
     /**
-     * Hides the settings panel, if not hidden.
-     *
-     * @param driver <tt>WebDriver</tt> instance of the participant for
-     * whom we'll try to hide the settings panel.
-     * @throws TimeoutException if we fail to hide the settings panel.
-     */
-    public static void hideSettingsPanel(WebDriver driver)
-    {
-        String settingsXPath = "//div[@id='settings_container']";
-        WebElement settings = driver.findElement(By.xpath(settingsXPath));
-        if (settings.isDisplayed())
-        {
-            clickOnToolbarButton(driver, "toolbar_button_settings");
-
-            TestUtils.waitForNotDisplayedElementByXPath(
-                    driver, settingsXPath, 5);
-        }
-    }
-
-    /**
      * Opens the contact list panel, if not open.
      *
      * @param participant <tt>WebParticipant</tt> instance of the participant
@@ -1193,7 +1173,7 @@ public class MeetUIUtils
      * Unmutes <tt>participant</tt>'s video, checks if the local UI has been
      * updated accordingly and then does the verification from
      * the <tt>participantCheck</tt> perspective.
-     * @param particiapnt the {@link WebParticipant} of the participant to be
+     * @param participant the {@link WebParticipant} of the participant to be
      * "video unmuted"
      * @param participantCheck the {@link WebParticipant} of the participant
      * which observes and checks if the video has been unmuted correctly.

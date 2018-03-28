@@ -39,6 +39,8 @@ public class Toolbar {
     private final static String DS_BUTTON_XPATH
         = "//a[@id='" + DS_BUTTON_ID + "']";
     private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
+    private final static String FILMSTRIP_ONLY_SETTINGS_BUTTON_ID
+        = "toolbar_button_fodeviceselection";
     private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
     private final static String INFO_BUTTON_ID = "toolbar_button_info";
     private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
@@ -146,6 +148,16 @@ public class Toolbar {
 
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(), ETHERPAD_BUTTON_ID);
+    }
+
+    /**
+     * Clicks on the settings toolbar button which opens the device selection
+     * popup.
+     */
+    public void clickFilmstripOnlySettingsButton() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            FILMSTRIP_ONLY_SETTINGS_BUTTON_ID);
     }
 
     /**

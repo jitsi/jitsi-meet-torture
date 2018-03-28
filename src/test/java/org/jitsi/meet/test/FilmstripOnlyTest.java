@@ -75,14 +75,12 @@ public class FilmstripOnlyTest
     @Test(dependsOnMethods = { "testLoadsOnlyTheFilmstrip" })
     public void testDisplaysDeviceSelection()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        MeetUIUtils.clickOnToolbarButton(
-            driver1,
-            "toolbar_button_fodeviceselection");
+        getParticipant1().getToolbar().clickFilmstripOnlySettingsButton();
 
         // give some time for the window to open and load
         TestUtils.waitMillis(2000);
+
+        WebDriver driver1 = getParticipant1().getDriver();
 
         Set<String> windowHandles = driver1.getWindowHandles();
         Iterator<String> handleIterator = windowHandles.iterator();
