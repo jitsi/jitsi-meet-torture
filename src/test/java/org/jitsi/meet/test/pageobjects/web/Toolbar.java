@@ -32,6 +32,7 @@ public class Toolbar {
      * {@link Toolbar}.
      */
     private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_mute";
+    private final static String CHAT_BUTTON_ID = "toolbar_button_chat";
     private final static String CONTACT_LIST_BUTTON_ID
             = "toolbar_contact_list";
     private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
@@ -128,7 +129,7 @@ public class Toolbar {
     {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
-            AUDIO_MUTE_BUTTON_ID,
+            CHAT_BUTTON_ID,
             true);
     }
 
