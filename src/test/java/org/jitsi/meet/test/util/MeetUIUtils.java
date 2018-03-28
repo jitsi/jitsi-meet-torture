@@ -1084,18 +1084,19 @@ public class MeetUIUtils
 
     /**
      * Mutes participant's video and checks local indication for that.
-     * @param driver the participant's video to be muted.
-     * @param driverCheck another participant in the room which we want to
+     * @param participant the participant's video to be muted.
+     * @param participantCheck another participant in the room which we want to
      * test whether he is seeing the muted participant as really muted. Can be
      * null if we want to skip this check.
      */
-    public static void muteVideoAndCheck(WebDriver driver,
-                                         WebDriver driverCheck)
+    public static void muteVideoAndCheck(WebParticipant participant,
+                                         WebParticipant participantCheck)
     {
+        WebDriver driver = participant.getDriver();
+
         // Mute participant1's video
-        TestUtils.waitForDisplayedElementByXPath(
-            driver, "//a[@id='toolbar_button_camera']", 10);
-        MeetUIUtils.clickOnToolbarButton(driver, "toolbar_button_camera");
+        participant.getToolbar().waitForVideoMuteButtonDisplay();
+        participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon appears on local thumbnail
         TestUtils.waitForDisplayedElementByXPath(
@@ -1104,66 +1105,12 @@ public class MeetUIUtils
                 + TestUtils.getXPathStringForClassName("//span", "videoMuted")
                 + "/i[@class='icon-camera-disabled']", 5);
 
-        if (driverCheck != null)
+        if (participantCheck != null)
         {
             MeetUIUtils.assertMuteIconIsDisplayed(
-                driverCheck,
+                participantCheck.getDriver(),
                 driver,
                 true,
-                true,
-                "");
-        }
-    }
-
-    /**
-     * Mutes participant's video and checks local indication for that.
-     * @param participant the participant's video to be muted.
-     * @param participantCheck another participant in the room which we want to
-     * test whether he is seeing the muted participant as really muted. Can be
-     * null if we want to skip this check.
-     */
-    public static void muteVideoAndCheck(WebParticipant participant,
-                                         WebParticipant participantCheck) {
-        if (participantCheck == null) {
-            muteVideoAndCheck( participant.getDriver(), null);
-        } else {
-            muteVideoAndCheck(
-                participant.getDriver(), participantCheck.getDriver());
-        }
-    }
-
-    /**
-     * Unmutes <tt>participant</tt>'s video, checks if the local UI has been
-     * updated accordingly and then does the verification from
-     * the <tt>participantCheck</tt> perspective.
-     * @param driver the {@link WebDriver} of the participant to be
-     * "video unmuted"
-     * @param driverCheck the {@link WebDriver} of the participant which
-     * observes and checks if the video has been unmuted correctly.
-     */
-    public static void unmuteVideoAndCheck(WebDriver driver,
-                                           WebDriver driverCheck)
-    {
-        // Make sure that there is the video mute button
-        TestUtils.waitForDisplayedElementByXPath(
-            driver, "//a[@id='toolbar_button_camera']", 10);
-        // Mute participant's video
-        MeetUIUtils.clickOnToolbarButton(driver, "toolbar_button_camera");
-
-
-        // Check if local video muted icon disappeared
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            driver,
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 5);
-
-        if (driverCheck != null)
-        {
-            MeetUIUtils.assertMuteIconIsDisplayed(
-                driverCheck,
-                driver,
-                false,
                 true,
                 "");
         }
@@ -1181,13 +1128,31 @@ public class MeetUIUtils
     public static void unmuteVideoAndCheck(WebParticipant participant,
                                            WebParticipant participantCheck)
     {
-        if (participantCheck == null) {
-            unmuteVideoAndCheck(
-                participant.getDriver(), null);
-        } else {
-            unmuteVideoAndCheck(
-                participant.getDriver(), participantCheck.getDriver());
+        WebDriver driver = participant.getDriver();
+
+        // Make sure that there is the video mute button
+        participant.getToolbar().waitForVideoMuteButtonDisplay();
+
+        // Mute participant's video
+        participant.getToolbar().clickVideoMuteButton();
+
+        // Check if local video muted icon disappeared
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+            driver,
+            "//span[@id='localVideoContainer']"
+                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
+                + "/i[@class='icon-camera-disabled']", 5);
+
+        if (participantCheck != null)
+        {
+            MeetUIUtils.assertMuteIconIsDisplayed(
+                participantCheck.getDriver(),
+                driver,
+                false,
+                true,
+                "");
         }
+
 
     }
 }

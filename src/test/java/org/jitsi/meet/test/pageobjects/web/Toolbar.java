@@ -75,7 +75,8 @@ public class Toolbar {
     /**
      * Clicks on the microphone mute toolbar button, which toggles audio mute.
      */
-    public void clickAudioMuteButton() {
+    public void clickAudioMuteButton()
+    {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             AUDIO_MUTE_BUTTON_ID,
@@ -136,7 +137,8 @@ public class Toolbar {
      * Clicks on the contact list toolbar button which opens or closes the
      * contact list.
      */
-    public void clickContactListButton() {
+    public void clickContactListButton()
+    {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             CONTACT_LIST_BUTTON_ID,
@@ -146,7 +148,8 @@ public class Toolbar {
     /**
      * Clicks on the etherpad toolbar button which shows or hides etherpad.
      */
-    public void clickEtherpadButton() {
+    public void clickEtherpadButton()
+    {
         // waits for etherpad button to be displayed in the toolbar
         TestUtils.waitForDisplayedElementByID(
             participant.getDriver(), ETHERPAD_BUTTON_ID, 15);
@@ -159,7 +162,8 @@ public class Toolbar {
      * Clicks on the settings toolbar button which opens the device selection
      * popup.
      */
-    public void clickFilmstripOnlySettingsButton() {
+    public void clickFilmstripOnlySettingsButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             FILMSTRIP_ONLY_SETTINGS_BUTTON_ID);
@@ -168,7 +172,8 @@ public class Toolbar {
     /**
      * Clicks on the hangup toolbar button which leaves the current conference.
      */
-    public void clickHangUpButton() {
+    public void clickHangUpButton()
+    {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             HANGUP_BUTTON_ID,
@@ -178,7 +183,8 @@ public class Toolbar {
     /**
      * Clicks on the info toolbar button which opens or closes the info dialog.
      */
-    public void clickInfoButton() {
+    public void clickInfoButton()
+    {
         MeetUIUtils.clickOnButton(
             participant.getDriver(),
             INFO_BUTTON_ID,
@@ -189,7 +195,8 @@ public class Toolbar {
      * Clicks on the profile toolbar button which opens or closes the profile
      * panel.
      */
-    public void clickProfileButton() {
+    public void clickProfileButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             PROFILE_BUTTON_ID);
@@ -199,7 +206,8 @@ public class Toolbar {
      * Clicks on the recording toolbar button which toggles recording or live
      * streaming.
      */
-    public void clickRecordButton() {
+    public void clickRecordButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             RECORD_BUTTON_ID);
@@ -209,7 +217,8 @@ public class Toolbar {
      * Clicks on the settings toolbar button which opens or closes the settings
      * panel.
      */
-    public void clickSettingsButton() {
+    public void clickSettingsButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             SETTINGS_BUTTON_ID);
@@ -219,7 +228,8 @@ public class Toolbar {
      * Clicks on the shared video toolbar button which toggles sharing of a
      * YouTube video.
      */
-    public void clickSharedVideoButton() {
+    public void clickSharedVideoButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             SHARED_VIDEO_BUTTON_ID);
@@ -228,7 +238,8 @@ public class Toolbar {
     /**
      * Clicks on the video mute toolbar button which toggles video mute.
      */
-    public void clickVideoMuteButton() {
+    public void clickVideoMuteButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             VIDEO_MUTE_BUTTON_ID);
@@ -238,7 +249,8 @@ public class Toolbar {
      * Clicks on the video quality toolbar button which opens or closes the
      * dialog for adjusting max-received video quality.
      */
-    public void clickVideoQualityButton() {
+    public void clickVideoQualityButton()
+    {
         MeetUIUtils.clickOnToolbarButton(
             participant.getDriver(),
             VIDEO_QUALITY_BUTTON_ID);
@@ -247,7 +259,8 @@ public class Toolbar {
     /**
      * Returns whether or not the recording button is present in the toolbar.
      */
-    public boolean hasRecordButton() {
+    public boolean hasRecordButton()
+    {
         List<WebElement> elements = participant.getDriver().findElements(
             By.id(RECORD_BUTTON_ID));
 
@@ -258,10 +271,24 @@ public class Toolbar {
      * Waits up to 10 seconds for the shared video button in the toolbar to be
      * visible.
      */
-    public void waitForSharedVideoButtonDisplay() {
+    public void waitForSharedVideoButtonDisplay()
+    {
         TestUtils.waitForDisplayedElementByID(
             participant.getDriver(),
             SHARED_VIDEO_BUTTON_ID,
             10);
     }
+
+    /**
+     * Waits up to 10 seconds for the video mute button in the toolbar to be
+     * visible.
+     */
+    public void waitForVideoMuteButtonDisplay()
+    {
+        TestUtils.waitForDisplayedElementByID(
+            participant.getDriver(),
+            VIDEO_MUTE_BUTTON_ID,
+            10);
+    }
+
 }
