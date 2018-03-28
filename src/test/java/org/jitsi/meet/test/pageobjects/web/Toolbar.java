@@ -27,7 +27,6 @@ import java.util.*;
  * @author Hristo Terezov
  */
 public class Toolbar {
-
     /**
      * Button IDs to be used as selectors for finding WebElements within the
      * {@link Toolbar}.
@@ -290,5 +289,4 @@ public class Toolbar {
             VIDEO_MUTE_BUTTON_ID,
             10);
     }
-
 }

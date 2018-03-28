@@ -1152,7 +1152,5 @@ public class MeetUIUtils
                 true,
                 "");
         }
-
-
     }
 }
