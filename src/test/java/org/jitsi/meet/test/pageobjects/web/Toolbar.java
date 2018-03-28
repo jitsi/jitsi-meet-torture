@@ -44,6 +44,8 @@ public class Toolbar {
     private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
     private final static String RECORD_BUTTON_ID = "toolbar_button_record";
     private final static String SETTINGS_BUTTON_ID = "toolbar_button_settings";
+    private final static String SHARED_VIDEO_BUTTON_ID
+        = "toolbar_button_sharedvideo";
     private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
     private final static String VIDEO_QUALITY_BUTTON_ID
         = "toolbar_button_videoquality";
@@ -197,6 +199,16 @@ public class Toolbar {
     }
 
     /**
+     * Clicks on the shared video toolbar button which toggles sharing of a
+     * YouTube video.
+     */
+    public void clickSharedVideo() {
+        MeetUIUtils.clickOnToolbarButton(
+            participant.getDriver(),
+            SHARED_VIDEO_BUTTON_ID);
+    }
+
+    /**
      * Clicks on the video mute toolbar button which toggles video mute.
      */
     public void clickVideoMute() {
@@ -223,5 +235,16 @@ public class Toolbar {
             By.id(RECORD_BUTTON_ID));
 
         return !elements.isEmpty();
+    }
+
+    /**
+     * Waits up to 10 seconds for the shared video button in the toolbar to be
+     * visible.
+     */
+    public void waitForSharedVideoButtonDisplay() {
+        TestUtils.waitForDisplayedElementByID(
+            participant.getDriver(),
+            SHARED_VIDEO_BUTTON_ID,
+            10);
     }
 }

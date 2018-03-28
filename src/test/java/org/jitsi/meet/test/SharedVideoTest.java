@@ -95,9 +95,9 @@ public class SharedVideoTest
     private void startSharingVideoByUrl(String url, String expectedId,
         boolean checkSecondParticipantState)
     {
+        getParticipant1().getToolbar().clickSharedVideo();;
+
         WebDriver driver1 = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(
-            driver1, "toolbar_button_sharedvideo");
 
         TestUtils.waitForElementByXPath(
             driver1, "//input[@name='sharedVideoUrl']", 5);
@@ -380,8 +380,9 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "backToSharedVideoTest" })
     public void stopSharingTest()
     {
+        getParticipant1().getToolbar().clickSharedVideo();
+
         WebDriver driver1 = getParticipant1().getDriver();
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_sharedvideo");
 
         TestUtils.waitForElementByXPath(
             driver1,
@@ -403,7 +404,7 @@ public class SharedVideoTest
             driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
             "Video not displayed:");
 
-        MeetUIUtils.clickOnToolbarButton(driver1, "toolbar_button_sharedvideo");
+        getParticipant1().getToolbar().clickSharedVideo();
 
         // now lets stop sharing
         TestUtils.waitForElementByXPath(
@@ -502,10 +503,7 @@ public class SharedVideoTest
         ensureOneParticipant();
         WebParticipant participant1 = getParticipant1();
 
-        TestUtils.waitForDisplayedElementByID(
-            participant1.getDriver(),
-            "toolbar_button_sharedvideo",
-            10);
+        participant1.getToolbar().waitForSharedVideoButtonDisplay();
 
         // just wait a little after button is displayed
         // sometimes the button is reported as
