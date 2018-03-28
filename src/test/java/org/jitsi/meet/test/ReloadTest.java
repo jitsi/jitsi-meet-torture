@@ -105,9 +105,7 @@ public class ReloadTest
     @Test(dependsOnMethods = { "testProsodyRestart" })
     public void participant1VideoMuteAndCheck()
     {
-        MeetUIUtils.muteVideoAndCheck(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver());
+        MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
     }
     
     /**
