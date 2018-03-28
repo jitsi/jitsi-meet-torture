@@ -1188,4 +1188,26 @@ public class MeetUIUtils
                 "");
         }
     }
+
+    /**
+     * Unmutes <tt>participant</tt>'s video, checks if the local UI has been
+     * updated accordingly and then does the verification from
+     * the <tt>participantCheck</tt> perspective.
+     * @param particiapnt the {@link WebParticipant} of the participant to be
+     * "video unmuted"
+     * @param participantCheck the {@link WebParticipant} of the participant
+     * which observes and checks if the video has been unmuted correctly.
+     */
+    public static void unmuteVideoAndCheck(WebParticipant participant,
+                                           WebParticipant participantCheck)
+    {
+        if (participantCheck == null) {
+            unmuteVideoAndCheck(
+                participant.getDriver(), null);
+        } else {
+            unmuteVideoAndCheck(
+                participant.getDriver(), participantCheck.getDriver());
+        }
+
+    }
 }
