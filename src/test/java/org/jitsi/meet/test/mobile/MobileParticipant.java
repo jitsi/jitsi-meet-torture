@@ -384,7 +384,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     }
 
     @Override
-    public void waitForSendReceiveData()
+    public void waitForSendReceiveData(boolean send, boolean receive)
     {
 
     }

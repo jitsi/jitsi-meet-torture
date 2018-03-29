@@ -298,6 +298,15 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * Whether this participant supports video, based on the browser type.
+     * @return {@code true} if the participant browser do not support video.
+     */
+    public boolean isAudioOnlyParticipant()
+    {
+        return getType() == ParticipantType.safari;
+    }
+
+    /**
      * Waits until this participant joins the MUC.
      * @param timeout the maximum time to wait in seconds.
      */
@@ -344,8 +353,10 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * Waits until data has been sent and received over the ICE connection
      * in this participant.
+     * @param checkReceive should we expect and wait for receive data.
+     * @param checkSend should we expect and wait for send data.
      */
-    public void waitForSendReceiveData()
+    public void waitForSendReceiveData(boolean checkSend, boolean checkReceive)
     {
         new WebDriverWait(getDriver(), 15)
             .until((ExpectedCondition<Boolean>) d -> {
@@ -360,8 +371,8 @@ public class WebParticipant extends Participant<WebDriver>
                     long download = bitrate.get("download");
                     long upload = bitrate.get("upload");
 
-                    if (download > 0 && upload > 0)
-                        return true;
+                    return (!checkSend || upload > 0)
+                        && (!checkReceive || download > 0);
                 }
 
                 return false;

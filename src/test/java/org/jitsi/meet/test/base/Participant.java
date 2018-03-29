@@ -287,7 +287,18 @@ public abstract class Participant<T extends WebDriver>
      * Waits until data has been sent and received over the ICE connection
      * in this participant.
      */
-    public abstract void waitForSendReceiveData();
+    public void waitForSendReceiveData()
+    {
+        this.waitForSendReceiveData(true, true);
+    }
+
+    /**
+     * Waits until data has been sent and received over the ICE connection
+     * in this participant.
+     * @param receive should we expect and wait for receive data.
+     * @param send should we expect and wait for send data.
+     */
+    public abstract void waitForSendReceiveData(boolean send, boolean receive);
 
     /**
      * Waits for number of remote streams.
