@@ -18,6 +18,7 @@ package org.jitsi.meet.test.mobile;
 import io.appium.java_client.*;
 import io.appium.java_client.android.*;
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.pageobjects.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.permissions.*;
 import org.openqa.selenium.*;
@@ -404,5 +405,11 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     public void pressShortcut(Character shortcut)
     {
 
+    }
+
+    @Override
+    public Filmstrip<MobileParticipant> getFilmstrip()
+    {
+        throw new RuntimeException("Not implemented");
     }
 }

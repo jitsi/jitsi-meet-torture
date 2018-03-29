@@ -117,40 +117,21 @@ public class StartMutedTest
      */
     private void checkParticipant2ForMute()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
-        TestUtils.waitForElementByXPath(
-            driver2,
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']", 25);
-
-        TestUtils.waitForElementByXPath(
-            driver2,
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 25);
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant2(), true);
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant2(), true);
 
         MeetUIUtils.waitForAudioMuted(
-            driver1,
-            driver2,
+            participant1.getDriver(),
+            participant2.getDriver(),
             "participant2",
             true);
 
-        String participant1EndpointId = getParticipant1().getEndpointId();
-        TestUtils.waitForElementNotPresentByXPath(
-            driver2,
-            "//span[@id='participant_" + participant1EndpointId + "']"
-                + TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']",
-            25);
-
-        TestUtils.waitForElementNotPresentByXPath(
-            driver2,
-            "//span[@id='participant_" + participant1EndpointId + "']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            25);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
     }
 }

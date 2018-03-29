@@ -158,12 +158,8 @@ public class ActiveSpeakerTest
         participant3.executeScript(
                 "console.log('Participant unmuted in testActiveSpeaker "
                     + speakerEndpoint + "');");
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                activeSpeaker.getDriver(),
-                false,
-                false, //audio
-                speakerEndpoint);
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(activeSpeaker, false);
 
         // Verify that the user is now an active speaker from participant2's
         // perspective
@@ -194,11 +190,6 @@ public class ActiveSpeakerTest
         participant3.executeScript(
                 "console.log('Participant muted in testActiveSpeaker "
                     + speakerEndpoint + "');");
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                activeSpeaker.getDriver(),
-                true,
-                false, //audio
-                speakerEndpoint);
+        participant2.getFilmstrip().assertAudioMuteIcon(activeSpeaker, true);
     }
 }

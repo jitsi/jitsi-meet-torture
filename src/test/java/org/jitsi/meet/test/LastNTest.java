@@ -56,12 +56,12 @@ public class LastNTest
             2,
             "number of visible thumbnails");
 
-        MeetUIUtils.assertAudioMuted(
-            driver2, driver1, "participant1");
-        MeetUIUtils.assertAudioMuted(
-            driver1, driver2, "getParticipant2()");
-        MeetUIUtils.assertAudioMuted(
-            driver1, driver3, "getParticipant3()");
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant1(), true);
+        getParticipant1().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant2(), true);
+        getParticipant1().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant3(), true);
 
         // unmute participant1
         MuteTest muteTest = new MuteTest(this);

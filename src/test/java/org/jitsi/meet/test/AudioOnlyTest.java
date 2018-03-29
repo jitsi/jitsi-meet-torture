@@ -54,7 +54,6 @@ public class AudioOnlyTest
     {
         setAudioOnlyAndCheck(
             getParticipant1(),
-            "participant1",
             getParticipant2(),
             true);
     }
@@ -68,9 +67,8 @@ public class AudioOnlyTest
         getParticipant1().getToolbar().clickAudioMuteButton();
 
         verifyVideoMute(
-            getParticipant1().getDriver(),
-            "participant1",
-            getParticipant2().getDriver(),
+            getParticipant1(),
+            getParticipant2(),
             true);
     }
 
@@ -97,7 +95,6 @@ public class AudioOnlyTest
     {
         setAudioOnlyAndCheck(
             getParticipant1(),
-            "participant1",
             getParticipant2(),
             false);
     }
@@ -110,8 +107,6 @@ public class AudioOnlyTest
      *
      * @param testee the {@code WebParticipant} which represents the Meet
      * conference participant whose audio only state is to be toggled
-     * @param testeeName the name of {@code testee} to be displayed
-     * should the test fail
      * @param observer the {@code WebParticipant} which represents the Meet
      * conference participant to verify the mute state of {@code testee}
      * @param audioOnly the audio only state of {@code testee} expected to be
@@ -119,14 +114,12 @@ public class AudioOnlyTest
      */
     private void setAudioOnlyAndCheck(
         WebParticipant testee,
-        String testeeName,
         WebParticipant observer,
         boolean audioOnly)
     {
         setAudioOnly(testee, audioOnly);
 
-        verifyVideoMute(
-            testee.getDriver(), testeeName, observer.getDriver(), audioOnly);
+        verifyVideoMute(testee, observer, audioOnly);
 
         TestUtils.waitForDisplayedOrNotByXPath(
             testee.getDriver(),
@@ -200,35 +193,22 @@ public class AudioOnlyTest
      * Verifies that a specific other Meet conference participant sees a
      * specific mute state for the former.
      *
-     * @param testee the {@code WebDriver} which represents the Meet conference
-     * participant whose mute state is to be toggled
-     * @param testeeName the name of {@code testee} to be displayed should the
-     * test fail
-     * @param observer the {@code WebDriver} which represents the Meet
+     * @param testee the {@code WebParticipant} which represents the Meet
+     * conference participant whose mute state is to be toggled
+     * @param observer the {@code WebParticipant} which represents the Meet
      * conference participant to verify the mute state of {@code testee}
      * @param muted the mute state of {@code testee} expected to be observed by
      * {@code observer}
      */
     private void verifyVideoMute(
-        WebDriver testee,
-        String testeeName,
-        WebDriver observer,
+        WebParticipant testee,
+        WebParticipant observer,
         boolean muted
     ) {
         // Verify the observer sees the testee in the desired muted state.
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                observer,
-                testee,
-                muted,
-                true, // checking video mute
-                testeeName);
+        observer.getFilmstrip().assertVideoMuteIcon(testee, muted);
 
         // Verify the testee sees itself in the desired muted state.
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                testee,
-                testee,
-                muted,
-                true, // checking video mute
-                testeeName);
+        testee.getFilmstrip().assertVideoMuteIcon(testee, muted);
     }
 }

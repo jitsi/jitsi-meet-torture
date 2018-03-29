@@ -133,18 +133,10 @@ public class ReloadTest
     @Test(dependsOnMethods = { "testJicofoRestart" })
     public void participant1CheckVideoMuted()
     {
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            getParticipant1().getDriver(),
-            getParticipant1().getDriver(),
-            true,
-            true,
-            "participant1");
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            getParticipant2().getDriver(),
-            getParticipant1().getDriver(),
-            true,
-            true,
-            "participant1");
+        getParticipant1().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), true);
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), true);
     }
     
     /**
@@ -154,18 +146,10 @@ public class ReloadTest
     @Test(dependsOnMethods = {"participant1CheckVideoMuted"})
     public void participant1CheckAudioMuted()
     {
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            getParticipant1().getDriver(),
-            getParticipant1().getDriver(),
-            true,
-            false,
-            "participant1");
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            getParticipant2().getDriver(),
-            getParticipant1().getDriver(),
-            true,
-            false,
-            "participant1");
+        getParticipant1().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant1(), true);
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant1(), true);
     }
     
     /**

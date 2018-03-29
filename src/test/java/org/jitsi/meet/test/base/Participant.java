@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.io.*;
+import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.logging.*;
@@ -425,4 +426,9 @@ public abstract class Participant<T extends WebDriver>
      * @return {@code true} iff the XMPP connection is connected.
      */
     public abstract boolean isXmppConnected();
+
+    /**
+     * @return a representation of the filmstrip of this participant.
+     */
+    public abstract Filmstrip<? extends Participant> getFilmstrip();
 }

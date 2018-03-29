@@ -834,27 +834,6 @@ public class MeetUIUtils
     }
 
     /**
-     * Asserts that observer shows the audio mute icon for the testee.
-     *
-     * @param observer <tt>WebDriver</tt> instance of the participant that
-     * observes the audio status
-     * @param testee <tt>WebDriver</tt> instance of the participant for whom
-     * we're checking the audio muted status.
-     * @param testeeName the name of the testee that will be printed in failure
-     * logs
-     */
-    public static void assertAudioMuted(
-        WebDriver observer, WebDriver testee, String testeeName)
-    {
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            observer,
-            testee,
-            true, //should be muted
-            false, //audio
-            testeeName);
-    }
-
-    /**
      * Click on the local video thumbnail and waits until it's displayed on
      * "the large video".
      *
@@ -1099,11 +1078,8 @@ public class MeetUIUtils
         participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon appears on local thumbnail
-        TestUtils.waitForDisplayedElementByXPath(
-            driver,
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 5);
+        assertMuteIconIsDisplayed(
+            driver, driver, true, true, participant.getName());
 
         if (participantCheck != null)
         {
@@ -1137,11 +1113,8 @@ public class MeetUIUtils
         participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon disappeared
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            driver,
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']", 5);
+        assertMuteIconIsDisplayed(
+            driver, driver, false, true, participant.getName());
 
         if (participantCheck != null)
         {

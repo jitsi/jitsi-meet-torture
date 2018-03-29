@@ -51,6 +51,7 @@ public class WebParticipant extends Participant<WebDriver>
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
     private Toolbar toolbar;
+    private WebFilmstrip filmstrip;
 
     /**
      * Constructs a Participant.
@@ -502,5 +503,18 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return toolbar;
+    }
+
+    /**
+     * @return a representation of the filmstrip of this participant.
+     */
+    public WebFilmstrip getFilmstrip()
+    {
+        if (filmstrip == null)
+        {
+            filmstrip = new WebFilmstrip(this);
+        }
+
+        return filmstrip;
     }
 }
