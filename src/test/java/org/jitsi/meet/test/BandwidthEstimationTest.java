@@ -86,65 +86,146 @@ public class BandwidthEstimationTest
         = "resources/FourPeople_1280x720_60.y4m";
 
     /**
-     * The Verizon uplink packet delivery trace file.
+     * The Verizon EVDO (driving) uplink packet delivery trace file.
      *
      * see /usr/share/mahimahi/traces/README for more information.
      */
-    private static final String VERIZON_UPLINK
+    private static final String VERIZON_EVDO_DRIVING_UP
+        = "/usr/share/mahimahi/traces/Verizon-EVDO-driving.up";
+
+    /**
+     * The Verizon EVDO (driving) downlink packet delivery trace file.
+     */
+    private static final String VERIZON_EVDO_DRIVING_DOWN
+        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.down";
+
+    /**
+     * The Verizon LTE (short) uplink packet delivery trace file.
+     *
+     * see /usr/share/mahimahi/traces/README for more information.
+     */
+    private static final String VERIZON_LTE_SHORT_UP
         = "/usr/share/mahimahi/traces/Verizon-LTE-short.up";
 
     /**
-     * The Verizon downlink packet delivery trace file.
+     * The Verizon LTE (short) downlink packet delivery trace file.
      */
-    private static final String VERIZON_DOWNLINK
+    private static final String VERIZON_LTE_SHORT_DOWN
         = "/usr/share/mahimahi/traces/Verizon-LTE-short.down";
 
     /**
-     * The ATT uplink packet delivery trace file.
+     * The Verizon LTE (driving) uplink packet delivery trace file.
+     *
+     * see /usr/share/mahimahi/traces/README for more information.
      */
-    private static final String ATT_UPLINK
+    private static final String VERIZON_LTE_DRIVING_UP
+        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.up";
+
+    /**
+     * The Verizon LTE (driving) downlink packet delivery trace file.
+     */
+    private static final String VERIZON_LTE_DRIVING_DOWN
+        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.down";
+
+    /**
+     * The ATT LTE (driving) uplink packet delivery trace file.
+     */
+    private static final String ATT_LTE_DRIVING_UP
         = "/usr/share/mahimahi/traces/ATT-LTE-driving.up";
 
     /**
-     * The ATT downlink packet delivery trace file.
+     * The ATT LTE (driving) downlink packet delivery trace file.
      */
-    private static final String ATT_DOWNLINK
+    private static final String ATT_LTE_DRIVING_DOWN
         = "/usr/share/mahimahi/traces/ATT-LTE-driving.down";
 
     /**
-     * The TMobile uplink packet delivery trace file.
+     * The ATT LTE (driving in 2016) uplink packet delivery trace file.
      */
-    private static final String TMOBILE_UPLINK
+    private static final String ATT_LTE_DRIVING_2016_UP
+        = "/usr/share/mahimahi/traces/ATT-LTE-driving-2016.up";
+
+    /**
+     * The ATT LTE (driving in 2016) downlink packet delivery trace file.
+     */
+    private static final String ATT_LTE_DRIVING_2016_DOWN
+        = "/usr/share/mahimahi/traces/ATT-LTE-driving-2016.down";
+
+    /**
+     * The TMobile LTE (driving) uplink packet delivery trace file.
+     */
+    private static final String TMOBILE_LTE_DRIVING_UP
+        = "/usr/share/mahimahi/traces/TMobile-LTE-driving.up";
+
+    /**
+     * The TMobile LTE (driving) downlink packet delivery trace file.
+     */
+    private static final String TMOBILE_LTE_DRIVING_DOWN
+        = "/usr/share/mahimahi/traces/TMobile-LTE-driving.down";
+
+    /**
+     * The TMobile LTE (short) uplink packet delivery trace file.
+     */
+    private static final String TMOBILE_LTE_SHORT_UP
         = "/usr/share/mahimahi/traces/TMobile-LTE-short.up";
 
     /**
-     * The TMobile downlink packet delivery trace file.
+     * The TMobile LTE (short) downlink packet delivery trace file.
      */
-    private static final String TMOBILE_DOWNLINK
+    private static final String TMOBILE_LTE_SHORT_DOWN
         = "/usr/share/mahimahi/traces/TMobile-LTE-short.down";
 
     /**
-     * The ATT network descriptor.
+     * The ATT LTE (driving) network descriptor.
      */
-    private static final Network att
-        = new Network("att", ATT_UPLINK, ATT_DOWNLINK);
+    private static final Network attLTEDriving = new Network(
+            "attLTEDriving", ATT_LTE_DRIVING_UP, ATT_LTE_DRIVING_DOWN);
 
     /**
-     * The TMobile network descriptor.
+     * The ATT LTE (driving in 2016) network descriptor.
      */
-    private static final Network tmobile
-        = new Network("tmobile", TMOBILE_UPLINK, TMOBILE_DOWNLINK);
+    private static final Network attLTEDriving2016 = new Network(
+            "attLTEDriving2016",
+            ATT_LTE_DRIVING_2016_UP, ATT_LTE_DRIVING_2016_DOWN);
 
     /**
-     * The Verizon network descriptor.
+     * The TMobile LTE (driving) network descriptor.
      */
-    private static final Network verizon
-        = new Network("verizon", VERIZON_UPLINK, VERIZON_DOWNLINK);
+    private static final Network tmobileLTEDriving = new Network(
+            "tmobileLTEDriving",
+            TMOBILE_LTE_DRIVING_UP, TMOBILE_LTE_DRIVING_DOWN);
 
     /**
-     * The AWS network descriptor.
+     * The TMobile LTE (short) network descriptor.
      */
-    private static final Network aws = new Network("aws", null, null);
+    private static final Network tmobileLTEShort = new Network(
+            "tmobileLTEShort",
+            TMOBILE_LTE_SHORT_UP, TMOBILE_LTE_SHORT_DOWN);
+
+    /**
+     * The Verizon LTE (short) network descriptor.
+     */
+    private static final Network verizonLTEShort = new Network(
+            "verizonLTEShort", VERIZON_LTE_SHORT_UP, VERIZON_LTE_SHORT_DOWN);
+
+    /**
+     * The Verizon LTE (driving) network descriptor.
+     */
+    private static final Network verizonLTEDriving = new Network(
+            "verizonLTEDriving",
+            VERIZON_LTE_DRIVING_UP, VERIZON_LTE_DRIVING_DOWN);
+
+    /**
+     * The Verizon EVDO (driving) network descriptor.
+     */
+    private static final Network verizonEVDODriving = new Network(
+            "verizonEVDODriving",
+            VERIZON_EVDO_DRIVING_UP, VERIZON_EVDO_DRIVING_DOWN);
+
+    /**
+     * The "default" network descriptor (no mahimahi emulation).
+     */
+    private static final Network def = new Network("def", null, null);
 
     /**
      * Default tc script which will work only on linux.
@@ -373,14 +454,22 @@ public class BandwidthEstimationTest
 
         return new Object[][]
         {
-            new Object[] { aws, schedule1 },
-            new Object[] { aws, schedule2 },
-            new Object[] { verizon, schedule1 },
-            new Object[] { verizon, schedule2 },
-            new Object[] { tmobile, schedule1 },
-            new Object[] { tmobile, schedule2 },
-            new Object[] { att, schedule1 },
-            new Object[] { att, schedule2 },
+            new Object[] { def, schedule1 },
+            new Object[] { def, schedule2 },
+            new Object[] { verizonLTEShort, schedule1 },
+            new Object[] { verizonLTEShort, schedule2 },
+            new Object[] { verizonLTEDriving, schedule1 },
+            new Object[] { verizonLTEDriving, schedule2 },
+            new Object[] { verizonEVDODriving, schedule1 },
+            new Object[] { verizonEVDODriving, schedule2 },
+            new Object[] { tmobileLTEDriving, schedule1 },
+            new Object[] { tmobileLTEDriving, schedule2 },
+            new Object[] { tmobileLTEShort, schedule1 },
+            new Object[] { tmobileLTEShort, schedule2 },
+            new Object[] { attLTEDriving, schedule1 },
+            new Object[] { attLTEDriving, schedule2 },
+            new Object[] { attLTEDriving2016, schedule1 },
+            new Object[] { attLTEDriving2016, schedule2 },
         };
     }
 
@@ -429,7 +518,7 @@ public class BandwidthEstimationTest
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
-            String roomName = network.name + "JVB" + humanizeSchedule(schedule);
+            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
@@ -449,7 +538,7 @@ public class BandwidthEstimationTest
         }
         else
         {
-            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
+            String roomName = network.name + "JVB" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
             senderUrl.setRoomName(roomName);
         }
@@ -490,9 +579,21 @@ public class BandwidthEstimationTest
 
         // Rate limit the media flow on the receiver and analyze the webrtc
         // internals.
+        String localCandidateType
+            = MeetUtils.getLocalCandidateType(receiver, useJVB);
+        while (!"prflx".equalsIgnoreCase(localCandidateType))
+        {
+            print("Waiting for a prflx local candidate type. Got: "
+                    + localCandidateType);
+
+            Thread.sleep(1000);
+            localCandidateType
+                = MeetUtils.getLocalCandidateType(receiver, useJVB);
+        }
+
         int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
 
-        print("Local bundle port for 2: " + receiverPort);
+        print("Receiver port: " + receiverPort);
 
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
