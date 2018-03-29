@@ -34,7 +34,6 @@ public class WebTestBase
         + "&config.debug=true"
         + "&config.disableAEC=true"
         + "&config.disableNS=true"
-        + "&config.callStatsID=false"
         + "&config.alwaysVisibleToolbar=true"
         + "&config.p2p.enabled=false"
         + "&config.p2p.useStunTurn=false"
