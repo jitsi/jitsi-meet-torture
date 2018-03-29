@@ -80,12 +80,9 @@ public class AvatarTest
 
         // Verify that participant1 is muted from the perspective of
         // participant2
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                driver1,
-                true,
-                true, //video
-                "participant1");
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), true);
+
         // Pin participant1's thumbnail, as participant1 is started muted for
         // participant2, there is no video element, so don't use
         // SwitchVideoTests.clickOnRemoteVideoAndTest which will check for
@@ -108,29 +105,19 @@ public class AvatarTest
         StopVideoTest stopVideoTest = new StopVideoTest(this);
         stopVideoTest.startVideoOnParticipant1AndCheck();
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                driver1,
-                false,
-                true, //video
-                "participant1");
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
+
         MeetUIUtils.assertLocalThumbnailShowsVideo(driver1);
 
         // Now both participant1 and participant2 have video muted
         MeetUIUtils.muteVideoAndCheck(getParticipant1(), getParticipant2());
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                driver1,
-                true,
-                true, //video
-                "participant1");
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), true);
+
         MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver1,
-                driver2,
-                true,
-                true, //video
-                "participant2");
+        getParticipant1().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant2(), true);
 
         // we check whether avatar of participant2 is same on both sides
         // and we check whether it had changed after reloading the page
@@ -182,19 +169,11 @@ public class AvatarTest
 
         // Unmute participant1's and participant2's videos
         stopVideoTest.startVideoOnParticipant1AndCheck();
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                driver1,
-                false,
-                true, //video
-                "participant1");
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
         stopVideoTest.startVideoOnParticipantAndCheck();
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                driver2,
-                driver1,
-                false,
-                true, //video
-                "participant2");
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
     }
 
     /**
@@ -335,12 +314,8 @@ public class AvatarTest
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            driver2,
-            driver1,
-            false,
-            false, //audio
-            "participant1");
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant1(), false);
     }
 
     /**

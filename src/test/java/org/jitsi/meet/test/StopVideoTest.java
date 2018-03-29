@@ -75,19 +75,10 @@ public class StopVideoTest
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            getParticipant2().getDriver(),
-            "//span[starts-with(@id, 'participant_')]"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            10);
-
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            getParticipant1().getDriver(),
-            "//span[@id='localVideoContainer']"
-                + TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            10);
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
+        getParticipant1().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
     }
 
     /**
@@ -170,17 +161,10 @@ public class StopVideoTest
     {
         getParticipant2().getToolbar().clickVideoMuteButton();
 
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            getParticipant1().getDriver(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            5);
-        
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            getParticipant2().getDriver(),
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']",
-            5);
+        getParticipant1().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), false);
     }
 
     /**
@@ -204,11 +188,8 @@ public class StopVideoTest
         ensureTwoParticipants();
         WebDriver driver2 = getParticipant2().getDriver();
 
-        TestUtils.waitForElementByXPath(
-            driver2,
-            TestUtils.getXPathStringForClassName("//span", "videoMuted")
-            + "/i[@class='icon-camera-disabled']",
-            5);
+        getParticipant2().getFilmstrip()
+            .assertVideoMuteIcon(getParticipant1(), true);
 
         // now lets start video for participant1
         startVideoOnParticipant1AndCheck();

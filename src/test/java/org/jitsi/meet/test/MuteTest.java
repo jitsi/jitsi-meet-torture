@@ -174,13 +174,8 @@ public class MuteTest
         MeetUIUtils.clickOnButton(driver1, "modal-dialog-ok-button", true);
 
         // and now check whether second participant is muted
-        String participantMutedIconXPath
-            = TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "//i[@class='icon-mic-disabled']";
-        TestUtils.waitForElementByXPath(
-            getParticipant2().getDriver(),
-            participantMutedIconXPath,
-            5);
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant2(), true);
 
         action.release();
     }
@@ -198,13 +193,8 @@ public class MuteTest
 
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            getParticipant1().getDriver(),
-            getParticipant2().getDriver(),
-            false, //should be unmuted
-            false, //audio
-            "participant2"
-        );
+        getParticipant1().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant2(), false);
 
         // lets give time to the ui to reflect the change in the ui of
         // participant1
@@ -229,12 +219,8 @@ public class MuteTest
 
         ensureTwoParticipants();
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                getParticipant2().getDriver(),
-                driver1,
-                true, //should be muted
-                false, //audio
-                "participant1");
+        getParticipant2().getFilmstrip()
+            .assertAudioMuteIcon(getParticipant1(), true);
 
         // now lets unmute
         unmuteParticipant1AndCheck();
@@ -262,17 +248,9 @@ public class MuteTest
     {
         testee.getToolbar().clickAudioMuteButton();
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-                observer.getDriver(),
-                testee.getDriver(),
-                muted,
-                false, //audio
-                testeeName);
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            testee.getDriver(),
-            testee.getDriver(),
-            muted,
-            false, //audio
-            testeeName);
+        observer.getFilmstrip()
+            .assertAudioMuteIcon(testee, muted);
+        testee.getFilmstrip()
+            .assertAudioMuteIcon(testee, muted);
     }
 }
