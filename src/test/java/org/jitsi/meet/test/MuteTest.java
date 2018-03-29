@@ -209,7 +209,6 @@ public class MuteTest
     @Test(dependsOnMethods = {"participant2UnmutesAfterParticipant1MutedItAndCheck"})
     public void muteParticipant1BeforeParticipant2Joins()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
         getParticipant2().hangUp();
 
         // just in case wait
@@ -217,7 +216,12 @@ public class MuteTest
 
         getParticipant1().getToolbar().clickAudioMuteButton();
 
-        ensureTwoParticipants();
+        WebParticipant participant = joinSecondParticipant();
+
+        // if the participant is audio only, if audio is muted we will not
+        // receive any data, so skip download check
+        participant.waitForSendReceiveData(
+            true, !participant.isAudioOnlyParticipant());
 
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(getParticipant1(), true);

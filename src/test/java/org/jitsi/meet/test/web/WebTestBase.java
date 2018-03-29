@@ -299,7 +299,7 @@ public class WebTestBase
      * @param options the options to be used when creating the participant.
      * @return the participant which was created
      */
-    private Participant joinParticipant(
+    private WebParticipant joinParticipant(
         int                     index,
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)
@@ -351,6 +351,20 @@ public class WebTestBase
     public Participant joinFirstParticipant()
     {
         return joinParticipant(0, null, null);
+    }
+
+    /**
+     * Joins the second participant.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinSecondParticipant()
+    {
+        WebParticipant participant = joinParticipant(1, null, null);
+
+        participant.waitToJoinMUC(10);
+        participant.waitForIceConnected();
+
+        return participant;
     }
 
     /**

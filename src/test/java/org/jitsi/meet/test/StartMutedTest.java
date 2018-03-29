@@ -57,7 +57,13 @@ public class StartMutedTest
         driver1.findElement(By.id("startAudioMuted")).click();
         driver1.findElement(By.id("startVideoMuted")).click();
 
-        ensureTwoParticipants();
+        WebParticipant participant2 = joinSecondParticipant();
+
+        // if the participant2 is audio only and audio muted there will be no
+        // data sent
+        participant2.waitForSendReceiveData(
+            !participant2.isAudioOnlyParticipant(),
+            true);
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -76,19 +82,24 @@ public class StartMutedTest
     {
         hangUpAllParticipants();
 
-        ensureTwoParticipants(
-            getJitsiMeetUrl().appendConfig(
-                "config.startAudioMuted=1&" +
+        ensureOneParticipant(getJitsiMeetUrl().appendConfig(
+            "config.startAudioMuted=1&" +
                 "config.debugAudioLevels=true&" +
-                "config.startVideoMuted=1"),
-            null);
+                "config.startVideoMuted=1"));
+
+        WebParticipant participant2 = joinSecondParticipant();
+
+        // if the participant is audio only, if audio is muted we will not
+        // receive any data, so skip upload check
+        participant2.waitForSendReceiveData(
+            !participant2.isAudioOnlyParticipant(), true);
 
         WebParticipant participant1 = getParticipant1();
 
-        final WebDriver driver2 = getParticipant2().getDriver();
+        final WebDriver driver2 = participant2.getDriver();
         participant1.executeScript(
             "console.log('Start configOptionsTest, second participant: "
-                + getParticipant2().getEndpointId() + "');");
+                + participant2.getEndpointId() + "');");
 
         participant1.waitForIceConnected();
 
@@ -101,7 +112,7 @@ public class StartMutedTest
         checkParticipant2ForMute();
 
         // Unmute and see if the audio works
-        getParticipant2().getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioMuteButton();
         participant1.executeScript(
             "console.log('configOptionsTest, unmuted second participant');");
         MeetUIUtils.waitForAudioMuted(
