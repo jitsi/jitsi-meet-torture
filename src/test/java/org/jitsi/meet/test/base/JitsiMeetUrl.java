@@ -89,6 +89,31 @@ public class JitsiMeetUrl
     }
 
     /**
+     * Gets the value associated to the fragment key specified in the argument.
+     *
+     * @param key the fragment key
+     * @return the value associated to the fragment key specified in the
+     * argument.
+     */
+    public String getFragmentParam(String key)
+    {
+        return fragmentParams.get(key);
+    }
+
+    /**
+     * Removes the value associated to the fragment key specified in the
+     * argument.
+     *
+     * @param key the fragment key
+     * @return the previous value associated with the key specified in the
+     * argument, or null if there was no mapping for key.
+     */
+    public String removeFragmentParam(String key)
+    {
+        return fragmentParams.remove(key);
+    }
+
+    /**
      * Adds extra config parameters.
      *
      * @param extraConfig extra config params to be added at the end of the
