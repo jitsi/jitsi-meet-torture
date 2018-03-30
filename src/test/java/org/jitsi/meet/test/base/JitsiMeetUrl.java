@@ -38,7 +38,7 @@ public class JitsiMeetUrl
      * {@link #setHashConfigPart(String)}. For convenience
      * {@link #appendConfig(String)} will do that automatically.
      */
-    private final Map<String, String> hashConfigPart = new HashMap<>();
+    private final Map<String, String> fragmentParams = new HashMap<>();
 
     /**
      * In the example URL:
@@ -92,7 +92,7 @@ public class JitsiMeetUrl
      * Adds extra config parameters.
      *
      * @param extraConfig extra config params to be added at the end of the
-     * current {@link #hashConfigPart}, without "?" nor "&" at the beginning.
+     * current {@link #fragmentParams}, without "?" nor "&" at the beginning.
      * @return a reference to this object.
      */
     public JitsiMeetUrl appendConfig(String extraConfig)
@@ -108,11 +108,11 @@ public class JitsiMeetUrl
             String[] keyValue = pair.split("=");
             if (keyValue.length > 1)
             {
-                hashConfigPart.put(keyValue[0], keyValue[1]);
+                fragmentParams.put(keyValue[0], keyValue[1]);
             }
             else
             {
-                hashConfigPart.remove(keyValue[0]);
+                fragmentParams.remove(keyValue[0]);
             }
         }
 
@@ -241,7 +241,7 @@ public class JitsiMeetUrl
 
         boolean appendHash = true;
         StringBuilder urlBuilder = new StringBuilder(url);
-        for (Map.Entry<String, String> entry : hashConfigPart.entrySet())
+        for (Map.Entry<String, String> entry : fragmentParams.entrySet())
         {
             if (appendHash)
             {
