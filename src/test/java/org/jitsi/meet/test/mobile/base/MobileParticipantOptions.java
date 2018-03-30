@@ -42,6 +42,12 @@ public class MobileParticipantOptions
     static final String CAPS_APP = _CAPS_PROP_PREFIX + "app";
 
     /**
+     * The property key for Appium's "automationName" capability.
+     */
+    private static final String CAPS_AUTOMATION_NAME
+        = _CAPS_PROP_PREFIX + "automationName";
+
+    /**
      * The property key for Appium's "deviceName" capability.
      */
     private static final String CAPS_DEVICE_NAME
@@ -99,6 +105,7 @@ public class MobileParticipantOptions
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
         readAndSetCapability(capabilities, CAPS_APP);
+        readAndSetCapability(capabilities, CAPS_AUTOMATION_NAME);
         readAndSetCapability(capabilities, CAPS_PLATFORM_NAME);
         readAndSetCapability(capabilities, CAPS_DEVICE_NAME);
 
