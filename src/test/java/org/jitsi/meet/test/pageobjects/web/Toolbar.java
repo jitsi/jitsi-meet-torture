@@ -54,6 +54,7 @@ public class Toolbar {
      * Xpaths to be used as selectors for finding WebElements within the
      * {@link Toolbar}.
      */
+    private final static String AVATAR_IMAGE_XPATH = "//img[@id='avatar']";
     private final static String DS_BUTTON_XPATH
         = "//a[@id='" + DS_BUTTON_ID + "']";
 
@@ -257,7 +258,28 @@ public class Toolbar {
     }
 
     /**
-     * Returns whether or not the recording button is present in the toolbar.
+     * Ensures the overflow menu is closed.
+     */
+    public void closeOverflowMenu() {
+        // This method is intentionally not implemented. This Class in general
+        // is temporary while converting tests to use ToolbarV2.
+    }
+
+    /**
+     * Gets the participant's avatar image element located in the toolbar.
+     *
+     * @return <tt>WebElement</tt> for the toolbar profile image.
+     */
+    public WebElement getProfileImage()
+    {
+        return participant.getDriver().findElement(
+            By.xpath(AVATAR_IMAGE_XPATH));
+    }
+
+    /**
+     * Checks whether or not the recording button is present in the toolbar.
+     *
+     * @return A boolean for whether or not the recording button is present.
      */
     public boolean hasRecordButton()
     {
@@ -265,6 +287,17 @@ public class Toolbar {
             By.id(RECORD_BUTTON_ID));
 
         return !elements.isEmpty();
+    }
+
+    /**
+     * Returns whether or not this the participant is using the new toolbar.
+     * This method is used to help transition tests over to the new toolbar.
+     *
+     * @return false to indicate this is the old toolbar.
+     */
+    public boolean isNewToolbar()
+    {
+        return false;
     }
 
     /**
@@ -289,5 +322,16 @@ public class Toolbar {
             participant.getDriver(),
             VIDEO_MUTE_BUTTON_ID,
             10);
+    }
+
+    /**
+     * Waits up to 3 seconds for the the toolbar to be visible on the page.
+     */
+    public void waitForVisible()
+    {
+        TestUtils.waitForDisplayedElementByXPath(
+            participant.getDriver(),
+            "//div[contains(@class, 'toolbar')]",
+            3);
     }
 }

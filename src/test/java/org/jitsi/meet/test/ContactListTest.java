@@ -21,6 +21,7 @@ import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -53,6 +54,11 @@ public class ContactListTest
     public void testContactList()
     {
         WebParticipant participant1 = getParticipant1();
+
+        if (participant1.getToolbar().isNewToolbar()) {
+            throw new SkipException(
+                "Contact list no supported in new toolbox. Disabling test.");
+        }
 
         // Make sure that the contact list panel is open.
         MeetUIUtils.displayContactListPanel(participant1);

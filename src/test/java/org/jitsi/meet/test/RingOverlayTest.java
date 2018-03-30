@@ -113,8 +113,7 @@ public class RingOverlayTest
         // these are display name, email and avatar
         String emailInput = "//input[@id='setEmail']";
         // wait for the toolbar to be visible before clicking on it
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, "//div[contains(@class, 'toolbar_secondary')]", 3);
+        getParticipant1().getToolbar().waitForVisible();
         getParticipant1().getToolbar().clickProfileButton();
         TestUtils.waitForDisplayedElementByXPath(
             driver1, emailInput, 5);
@@ -127,11 +126,12 @@ public class RingOverlayTest
                 .getAttribute("value"),
             USER_NAME);
 
-        assertEquals(
-            driver1.findElement(By.xpath(
-                    "//div[contains(@class, 'toolbar_secondary')]//img[@id='avatar']"))
-                .getAttribute("src"),
-            USER_AVATAR_URL);
+        String profileImageSRC = getParticipant1()
+            .getToolbar()
+            .getProfileImage()
+            .getAttribute("src");
+
+        assertEquals(profileImageSRC, USER_AVATAR_URL);
 
         // now let's join a second participant and check that there is no
         // ring overlay and the second participant sees the same display name

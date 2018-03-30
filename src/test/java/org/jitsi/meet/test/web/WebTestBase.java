@@ -40,7 +40,7 @@ public class WebTestBase
         + "&config.p2p.useStunTurn=false"
         + "&config.gatherStats=true"
         + "&config.disable1On1Mode=true"
-        + "&interfaceConfig._USE_NEW_TOOLBOX=false";
+        + "&interfaceConfig._USE_NEW_TOOLBOX=true";
 
     /**
      * Default

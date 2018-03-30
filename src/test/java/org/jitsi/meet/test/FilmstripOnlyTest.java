@@ -61,12 +61,7 @@ public class FilmstripOnlyTest
             "//span[@id='participant_" + participant2EndpointId + "']",
             5);
 
-        // The toolbox should display.
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1,
-            "//div[contains(@class, 'toolbox')]",
-            5
-        );
+        getParticipant1().getToolbar().waitForVisible();
     }
 
     /**

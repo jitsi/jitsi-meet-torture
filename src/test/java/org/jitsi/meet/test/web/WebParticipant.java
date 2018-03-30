@@ -498,7 +498,14 @@ public class WebParticipant extends Participant<WebDriver>
     {
         if (toolbar == null)
         {
-            toolbar = new Toolbar(this);
+            boolean usingNewToolbar = (boolean) executeScript
+                ("return interfaceConfig._USE_NEW_TOOLBOX");
+
+            if (usingNewToolbar) {
+                toolbar = new ToolbarV2(this);
+            } else {
+                toolbar = new Toolbar(this);
+            }
         }
 
         return toolbar;
