@@ -498,6 +498,14 @@ public class BandwidthEstimationTest
         assertEquals(result, 0);
     }
 
+    @AfterMethod
+    public void cleanupMethod()
+    {
+        // XXX cleanup crashed test methods (this is normally taken care of by
+        // the test method, unless it's crashed).
+        participants.cleanup();
+    }
+
     /**
      * This test evaluates a congestion control scenario.
      *
@@ -581,24 +589,37 @@ public class BandwidthEstimationTest
         WebDriver receiver = getParticipant2().getDriver();
         assertNotNull(receiver);
 
-        // Rate limit the media flow on the receiver and analyze the webrtc
-        // internals.
-        String localCandidateType
-            = MeetUtils.getLocalCandidateType(receiver, useJVB);
-        while (!"prflx".equalsIgnoreCase(localCandidateType))
+        for (int i = 0; i < 10; i++)
         {
-            print("Waiting for a prflx local candidate type. Got: "
-                    + localCandidateType);
+            // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
+            try
+            {
+                String localCandidateType
+                    = MeetUtils.getLocalCandidateType(receiver, useJVB);
+
+                if ("prflx".equalsIgnoreCase(localCandidateType))
+                {
+                    break;
+                }
+
+                print("Waiting a sec for a prflx local candidate type. Got: "
+                        + localCandidateType);
+            }
+            catch (Exception ex)
+            {
+                print("Waiting a sec for a prflx local candidate type. Got: "
+                        + "nothing...");
+            }
 
             Thread.sleep(1000);
-            localCandidateType
-                = MeetUtils.getLocalCandidateType(receiver, useJVB);
         }
 
         int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
 
         print("Receiver port: " + receiverPort);
 
+        // Rate limit the media flow towards the receiver and analyze the
+        // webrtc internals.
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
 
