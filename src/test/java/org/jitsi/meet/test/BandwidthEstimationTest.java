@@ -518,6 +518,8 @@ public class BandwidthEstimationTest
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
+            senderUrl.removeFragmentParam("config.callStatsID");
+
             String roomName = network.name + "P2P" + humanizeSchedule(schedule);
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
@@ -525,6 +527,7 @@ public class BandwidthEstimationTest
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
 
             receiverUrl = getJitsiMeetUrl();
+            receiverUrl.removeFragmentParam("config.callStatsID");
             receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
             // XXX we disable TURN server discovery in an attempt to fix a
@@ -540,6 +543,7 @@ public class BandwidthEstimationTest
         {
             String roomName = network.name + "JVB" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
+            senderUrl.removeFragmentParam("config.callStatsID");
             senderUrl.setRoomName(roomName);
         }
 

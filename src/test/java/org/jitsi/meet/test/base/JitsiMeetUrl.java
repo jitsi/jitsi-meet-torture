@@ -18,11 +18,13 @@ package org.jitsi.meet.test.base;
 import org.apache.commons.lang3.*;
 
 import java.net.*;
+import java.util.*;
 
 /**
  * Convenience class for dealing with Jitsi Meet conference URL components.
  *
  * @author Pawel Domas
+ * @author George Politis
  */
 public class JitsiMeetUrl
     implements Cloneable
@@ -36,7 +38,7 @@ public class JitsiMeetUrl
      * {@link #setHashConfigPart(String)}. For convenience
      * {@link #appendConfig(String)} will do that automatically.
      */
-    private String hashConfigPart;
+    private final Map<String, String> fragmentParams = new HashMap<>();
 
     /**
      * In the example URL:
@@ -87,10 +89,35 @@ public class JitsiMeetUrl
     }
 
     /**
+     * Gets the value associated to the fragment key specified in the argument.
+     *
+     * @param key the fragment key
+     * @return the value associated to the fragment key specified in the
+     * argument.
+     */
+    public String getFragmentParam(String key)
+    {
+        return fragmentParams.get(key);
+    }
+
+    /**
+     * Removes the value associated to the fragment key specified in the
+     * argument.
+     *
+     * @param key the fragment key
+     * @return the previous value associated with the key specified in the
+     * argument, or null if there was no mapping for key.
+     */
+    public String removeFragmentParam(String key)
+    {
+        return fragmentParams.remove(key);
+    }
+
+    /**
      * Adds extra config parameters.
      *
      * @param extraConfig extra config params to be added at the end of the
-     * current {@link #hashConfigPart}, without "?" nor "&" at the beginning.
+     * current {@link #fragmentParams}, without "?" nor "&" at the beginning.
      * @return a reference to this object.
      */
     public JitsiMeetUrl appendConfig(String extraConfig)
@@ -100,13 +127,18 @@ public class JitsiMeetUrl
             return this;
         }
 
-        if (StringUtils.isNotBlank(hashConfigPart))
+        String[] pairs = extraConfig.split("&");
+        for (String pair : pairs)
         {
-            hashConfigPart += "&" + extraConfig;
-        }
-        else
-        {
-            hashConfigPart = extraConfig;
+            String[] keyValue = pair.split("=");
+            if (keyValue.length > 1)
+            {
+                fragmentParams.put(keyValue[0], keyValue[1]);
+            }
+            else
+            {
+                fragmentParams.remove(keyValue[0]);
+            }
         }
 
         return this;
@@ -130,14 +162,6 @@ public class JitsiMeetUrl
             // to support it.
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * @return obtains {@link #hashConfigPart} of the conference URL.
-     */
-    public String getHashConfigPart()
-    {
-        return hashConfigPart;
     }
 
     /**
@@ -185,17 +209,6 @@ public class JitsiMeetUrl
     public String getServerUrl()
     {
         return serverUrl;
-    }
-
-    /**
-     * Sets {@link #hashConfigPart} of the conference URL.
-     *
-     * @param hashConfigPart a string without "#" sign at the beginning, but
-     * with "&" between config params.
-     */
-    public void setHashConfigPart(String hashConfigPart)
-    {
-        this.hashConfigPart = hashConfigPart;
     }
 
     /**
@@ -251,11 +264,25 @@ public class JitsiMeetUrl
             url += "?" + roomParameters;
         }
 
-        if (StringUtils.isNotBlank(hashConfigPart))
+        boolean appendHash = true;
+        StringBuilder urlBuilder = new StringBuilder(url);
+        for (Map.Entry<String, String> entry : fragmentParams.entrySet())
         {
-            url += "#" + hashConfigPart;
+            if (appendHash)
+            {
+                urlBuilder.append("#");
+                appendHash = false;
+            }
+            else
+            {
+                urlBuilder.append("&");
+            }
+
+            urlBuilder.append(entry.getKey());
+            urlBuilder.append("=");
+            urlBuilder.append(entry.getValue());
         }
 
-        return url;
+        return urlBuilder.toString();
     }
 }
