@@ -491,11 +491,11 @@ public class BandwidthEstimationTest
     {
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
-        String jvbStats = test(
+        String jvbStats = runScenario(
                 true, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pLinearRegressionStats = test(
+        String p2pLinearRegressionStats = runScenario(
                 false, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pKalmanFilterStats = test(
+        String p2pKalmanFilterStats = runScenario(
                 false, true, false, 200, TimeUnit.SECONDS, network, schedule);
 
         File jvbFile = getLogFile(
@@ -536,7 +536,7 @@ public class BandwidthEstimationTest
      *
      * @throws Exception if something goes wrong.
      */
-    private String test(
+    private String runScenario(
             boolean useJVB, boolean enableRemb, boolean enableTcc,
             long timeout, TimeUnit unit,
             Network network, String[] schedule)
@@ -590,21 +590,12 @@ public class BandwidthEstimationTest
 
         WebParticipantOptions receiverOptions = new WebParticipantOptions();
 
-        boolean useCustomBinary = false;
-        if (network.uplink != null && network.uplink != "")
+        if ((network.uplink != null && network.uplink != "")
+            && (network.downlink != null && network.downlink != ""))
         {
             receiverOptions.setUplink(network.uplink);
-            useCustomBinary = true;
-        }
-
-        if (network.downlink != null && network.downlink != "")
-        {
             receiverOptions.setDownlink(network.downlink);
-            useCustomBinary = true;
-        }
 
-        if (useCustomBinary)
-        {
             receiverOptions.setBinary(chromeWrapper);
             // XXX The default behavior of the chromedriver is to SIGKILL the
             // launched chrome instance. However, we need the chromedriver to
