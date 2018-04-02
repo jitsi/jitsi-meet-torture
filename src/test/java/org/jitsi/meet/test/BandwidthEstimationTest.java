@@ -492,21 +492,28 @@ public class BandwidthEstimationTest
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
         String jvbStats = test(
-                true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pStats = test(
-                false, 200, TimeUnit.SECONDS, network, schedule);
+                true, false, true, 200, TimeUnit.SECONDS, network, schedule);
+        String p2pLinearRegressionStats = test(
+                false, false, true, 200, TimeUnit.SECONDS, network, schedule);
+        String p2pKalmanFilterStats = test(
+                false, true, false, 200, TimeUnit.SECONDS, network, schedule);
 
         File jvbFile = getLogFile(
                 network.name + "JVB" + humanizeSchedule(schedule) + ".json");
-        File p2pFile = getLogFile(
-                network.name + "P2P" + humanizeSchedule(schedule) + ".json");
+        File p2pLinearRegressionFile = getLogFile(
+                network.name + "Regression"
+                + humanizeSchedule(schedule) + ".json");
+        File p2pKalmanFilterFile = getLogFile(
+                network.name + "Kalman"
+                + humanizeSchedule(schedule) + ".json");
         File analysisFile = getLogFile(
                 network.name + humanizeSchedule(schedule) + ".out");
 
         writeFile(jvbFile, jvbStats);
-        writeFile(p2pFile, p2pStats);
+        writeFile(p2pLinearRegressionFile, p2pLinearRegressionStats);
+        writeFile(p2pKalmanFilterFile, p2pKalmanFilterStats);
 
-        int result = benchmark(jvbFile, p2pFile, analysisFile);
+        int result = benchmark(jvbFile, p2pLinearRegressionFile, analysisFile);
         assertEquals(result, 0);
     }
 
@@ -530,7 +537,8 @@ public class BandwidthEstimationTest
      * @throws Exception if something goes wrong.
      */
     private String test(
-            boolean useJVB, long timeout, TimeUnit unit,
+            boolean useJVB, boolean enableRemb, boolean enableTcc,
+            long timeout, TimeUnit unit,
             Network network, String[] schedule)
         throws Exception
     {
@@ -545,11 +553,20 @@ public class BandwidthEstimationTest
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
+
 
             receiverUrl = getJitsiMeetUrl();
             receiverUrl.removeFragmentParam("config.callStatsID");
             receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
+            receiverUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            receiverUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
             // XXX we disable TURN server discovery in an attempt to fix a
             // situation where the receiver connects with the relay candidate
             // (so we get the port the TURN server has reserved for the
@@ -564,6 +581,10 @@ public class BandwidthEstimationTest
             String roomName = network.name + "JVB" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
             senderUrl.setRoomName(roomName);
         }
 
