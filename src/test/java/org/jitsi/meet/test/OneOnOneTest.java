@@ -45,7 +45,6 @@ public class OneOnOneTest
     private static final String ONE_ON_ONE_CONFIG_OVERRIDES
         = "config.disable1On1Mode=false"
         + "&interfaceConfig.TOOLBAR_TIMEOUT=250"
-        + "&interfaceConfig.INITIAL_TOOLBAR_TIMEOUT=250"
         + "&config.alwaysVisibleToolbar=false";
 
     /**
@@ -63,8 +62,8 @@ public class OneOnOneTest
 
         // Prevent toolbar from being always displayed as filmstrip visibility
         // is tied to toolbar visibility.
-        stopDockingToolbar(participant1);
-        stopDockingToolbar(participant2);
+        configureToolbarsToHideQuickly(participant1);
+        configureToolbarsToHideQuickly(participant2);
 
         verifyRemoteVideosDisplay(participant1, false);
         verifyRemoteVideosDisplay(participant2, false);
@@ -81,7 +80,7 @@ public class OneOnOneTest
             getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES));
 
         WebParticipant participant3 = getParticipant3();
-        stopDockingToolbar(participant3);
+        configureToolbarsToHideQuickly(participant3);
 
         verifyRemoteVideosDisplay(getParticipant1(), true);
         verifyRemoteVideosDisplay(getParticipant2(), true);
@@ -148,8 +147,6 @@ public class OneOnOneTest
     private void verifyRemoteVideosDisplay(
         Participant testee, boolean isDisplayed)
     {
-        waitForToolbarsHidden(testee);
-
         String filmstripRemoteVideosXpath
             = "//div[@id='filmstripRemoteVideosContainer']";
 
@@ -161,33 +158,15 @@ public class OneOnOneTest
     }
 
     /**
-     * Disables permanent display (docking) of the toolbars.
+     * Disables permanent display (docking) of the toolbars and sets toolbars
+     * to be dismissed more quickly.
      *
      * @param testee the <tt>WebDriver</tt> of the participant for whom we're
      *               no longer want to dock toolbars.
-
      */
-    private void stopDockingToolbar(WebParticipant testee)
+    private void configureToolbarsToHideQuickly(WebParticipant testee)
     {
         testee.executeScript("APP.UI.dockToolbar(false);");
-    }
-
-    /**
-     * Waits until the toolbars are no longer displayed.
-     *
-     * @param testee the <tt>WebDriver</tt> of the participant for whom we're
-     *               waiting to no longer see toolbars.
-     */
-    private void waitForToolbarsHidden(Participant testee)
-    {
-        // Wait for the visible filmstrip to no longer be displayed.
-        String visibleToolbarXpath
-            = "//*[contains(@class, 'toolbar_secondary')"
-            + "and contains(@class ,'slideInExtX')]";
-
-        TestUtils.waitForElementNotPresentByXPath(
-            testee.getDriver(),
-            visibleToolbarXpath,
-            FILMSTRIP_VISIBILITY_WAIT);
+        testee.executeScript("APP.UI.showToolbar(250);");
     }
 }

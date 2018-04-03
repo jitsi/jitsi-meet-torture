@@ -72,6 +72,7 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = {"participant1ClickOnLocalVideoAndTest"})
     public void participant1ClickOnRemoteVideoAndTest()
     {
+        getParticipant1().getToolbar().closeOverflowMenu();
         MeetUIUtils.selectRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());

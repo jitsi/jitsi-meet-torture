@@ -263,7 +263,9 @@ public class AvatarTest
             driver1,
             5,
             (ExpectedCondition<Boolean>) d
-                -> getSrcByXPath(driver1, "//img[@id='avatar']")
+                -> participant1.getToolbar()
+                        .getProfileImage()
+                        .getAttribute("src")
                         .contains(HASH));
 
         //check if the avatar in the local thumbnail has changed
