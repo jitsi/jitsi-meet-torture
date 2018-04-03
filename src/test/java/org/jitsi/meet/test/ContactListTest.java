@@ -57,7 +57,7 @@ public class ContactListTest
 
         if (participant1.getToolbar().isNewToolbar()) {
             throw new SkipException(
-                "Contact list no supported in new toolbox. Disabling test.");
+                "Contact list not supported in new toolbox. Disabling test.");
         }
 
         // Make sure that the contact list panel is open.
