@@ -54,6 +54,11 @@ public class MuteTest
         super.setupClass();
 
         ensureTwoParticipants();
+
+        // Make sure the info dialog is closed because it may overlap the
+        // remove video menus.
+        getParticipant1().getInfoDialog().close();
+        getParticipant2().getInfoDialog().close();
     }
 
     /**
@@ -169,6 +174,12 @@ public class MuteTest
 
         // click the button
         MeetUIUtils.clickOnElement(driver1, "ul.popupmenu a.mutelink", true);
+
+        // wait for confirm muting to display
+        TestUtils.waitForDisplayedElementByXPath(
+            driver1,
+            "//button[@id='modal-dialog-ok-button']",
+            5);
 
         // confirm muting
         MeetUIUtils.clickOnButton(driver1, "modal-dialog-ok-button", true);

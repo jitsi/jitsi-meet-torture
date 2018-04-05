@@ -35,7 +35,6 @@ public class InfoDialog
     private final static String ADD_PASSWORD_LINK = "add-password";
     private final static String ADD_PASSWORD_FIELD = "info-password-input";
     private final static String CONFERENCE_URL = "info-dialog-conference-url";
-    private final static String INFO_DIALOG_BUTTON = "toolbar_button_info";
     private final static String INFO_DIALOG_CONTAINER = "info-dialog";
     private final static String LOCAL_LOCK = "info-password-local";
     private final static String MORE_NUMBERS = "more-numbers";
