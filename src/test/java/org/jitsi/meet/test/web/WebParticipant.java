@@ -16,14 +16,15 @@
 package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.stats.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.support.ui.*;
 
-import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 
@@ -294,6 +295,15 @@ public class WebParticipant extends Participant<WebDriver>
      * {@inheritDoc}
      */
     @Override
+    protected RtpStatistics getRtpStatistics()
+    {
+        return new WebRtpStatistics(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isP2pConnected()
     {
         // FIXME hmm this checks for ICE connected state which does not
@@ -325,15 +335,12 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     * Waits until this participant joins the MUC.
-     * @param timeout the maximum time to wait in seconds.
+     * {@inheritDoc}
      */
-    public void waitToJoinMUC(long timeout)
+    protected boolean isIceConnected()
     {
-        TestUtils.waitForBoolean(
-            getDriver(),
-            IS_MUC_JOINED,
-            timeout);
+        return TestUtils.executeScriptAndReturnBoolean(
+                driver, ICE_CONNECTED_CHECK_SCRIPT);
     }
 
     /**
@@ -356,45 +363,6 @@ public class WebParticipant extends Participant<WebDriver>
     public void waitForIceConnected()
     {
         waitForIceConnected(15);
-    }
-
-    /**
-     * Waits for the given participant to enter the ICE 'connected' state.
-     * @param timeout timeout in seconds.
-     */
-    public void waitForIceConnected(long timeout)
-    {
-        TestUtils.waitForBoolean(
-            getDriver(), ICE_CONNECTED_CHECK_SCRIPT, timeout);
-    }
-
-    /**
-     * Waits until data has been sent and received over the ICE connection
-     * in this participant.
-     * @param checkReceive should we expect and wait for receive data.
-     * @param checkSend should we expect and wait for send data.
-     */
-    public void waitForSendReceiveData(boolean checkSend, boolean checkReceive)
-    {
-        new WebDriverWait(getDriver(), 15)
-            .until((ExpectedCondition<Boolean>) d -> {
-                Map stats
-                    = (Map) executeScript("return APP.conference.getStats();");
-
-                Map<String, Long> bitrate =
-                    (Map<String, Long>) stats.get("bitrate");
-
-                if (bitrate != null)
-                {
-                    long download = bitrate.get("download");
-                    long upload = bitrate.get("upload");
-
-                    return (!checkSend || upload > 0)
-                        && (!checkReceive || download > 0);
-                }
-
-                return false;
-            });
     }
 
     /**
@@ -467,6 +435,15 @@ public class WebParticipant extends Participant<WebDriver>
         actions.moveToElement(body);
         actions.sendKeys(body, shortcut.toString());
         actions.perform();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "WebParticipant[" + name + "]@" + hashCode();
     }
 
     /**

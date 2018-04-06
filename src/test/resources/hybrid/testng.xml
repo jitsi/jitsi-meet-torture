@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="TortureSuite" verbose="1">
+    <test name="HybridTesting" thread-count="1">
+        <parameter name="hybrid.participant1" value="${mobile.participant}" />
+        <parameter name="hybrid.participant2" value="web.participant1" />
+        <classes>
+            <class name="org.jitsi.meet.test.SetupConferenceTest" />
+        </classes>
+    </test>
+</suite>

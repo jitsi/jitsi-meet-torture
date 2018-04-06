@@ -88,7 +88,7 @@ public class WebParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected List<String> getGlobalConfigKeys()
+    public List<String> getGlobalConfigKeys()
     {
         List<String> globalKeys =  super.getGlobalConfigKeys();
 
@@ -101,17 +101,26 @@ public class WebParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected Participant<? extends WebDriver> doCreateParticipant(
+    public Participant<? extends WebDriver> doCreateParticipant(
         ParticipantOptions options)
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();
 
         webOptions.putAll(options);
 
-        return new WebParticipant(
-                webOptions.getName(),
-                startWebDriver(webOptions),
-                webOptions.getParticipantType());
+        WebParticipant webParticipant
+            = new WebParticipant(
+                    webOptions.getName(),
+                    startWebDriver(webOptions),
+                    webOptions.getParticipantType());
+
+        // Adds a print in the console/selenium-node logs
+        // useful when checking crashes or failures in node logs
+        webParticipant.executeScript(
+            "console.log('--- Will start test:"
+                + getClass().getSimpleName() + "')");
+
+        return webParticipant;
     }
 
     /**

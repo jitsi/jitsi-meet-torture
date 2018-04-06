@@ -18,11 +18,14 @@ package org.jitsi.meet.test.mobile;
 import io.appium.java_client.*;
 import io.appium.java_client.android.*;
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.pageobjects.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.permissions.*;
+import org.jitsi.meet.test.pageobjects.mobile.stats.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.logging.*;
 
 import java.util.*;
 import java.util.logging.*;
@@ -34,6 +37,12 @@ import java.util.logging.*;
  */
 public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
 {
+    /**
+     * The default config part of the {@link JitsiMeetUrl} for every mobile
+     * participant.
+     */
+    private static final String DEFAULT_CONFIG_PART
+        = "config.testing.testMode=true";
     /**
      * Logger used by this instance.
      */
@@ -83,7 +92,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
                              String appBundleId,
                              String appBinaryFile)
     {
-        super(name, driver, type, null);
+        super(name, driver, type, DEFAULT_CONFIG_PART);
         this.driver = Objects.requireNonNull(driver, "driver");
         this.appBundleId = Objects.requireNonNull(appBundleId, "appBundleId");
         this.appBinaryFile = appBinaryFile;
@@ -357,34 +366,44 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         toolbar.getHangupButton().click();
     }
 
-    @Override
-    public void waitToJoinMUC(long timeout)
-    {
-
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isInMuc()
     {
-        return false;
+        return new TestConnectionInfo(this).isConferenceJoined();
     }
 
     @Override
-    public void waitForIceConnected()
+    public LogEntries getBrowserLogs()
     {
-
+        if (type.isAndroid())
+        {
+            return driver.manage().logs().get("logcat");
+        }
+        else
+        {
+            return super.getBrowserLogs();
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void waitForIceConnected(long timeout)
+    protected boolean isIceConnected()
     {
-
+        return new TestConnectionInfo(MobileParticipant.this).isIceConnected();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void waitForSendReceiveData(boolean send, boolean receive)
+    protected RtpStatistics getRtpStatistics()
     {
-
+        return new TestConnectionInfo(this).getRtpStats();
     }
 
     @Override

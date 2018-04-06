@@ -70,6 +70,12 @@ public abstract class AbstractBaseTest
     private static List<String> testsToInclude = null;
 
     /**
+     * The {@link Properties} instance which holds all configuration properties
+     * used by this test and it's sub-components.
+     */
+    private Properties config;
+
+    /**
      * The current room name used.
      */
     protected final String currentRoomName;
@@ -120,6 +126,19 @@ public abstract class AbstractBaseTest
             Properties config);
 
     /**
+     * Convenience method for getting a string property from the configuration.
+     *
+     * @param propertyKey - The name of the config property to be read.
+     *
+     * @return a {@code String} value or <tt>null</tt> if property does not
+     * exist.
+     */
+    protected String getStringConfigValue(String propertyKey)
+    {
+        return config.getProperty(propertyKey);
+    }
+
+    /**
      * NOTE: We don't want this method to be overridden in subclasses, because
      * it contains TestNG specific ITestContext. Use {@link #setupClass()} to do
      * any per class setup.
@@ -128,7 +147,7 @@ public abstract class AbstractBaseTest
     @BeforeClass
     final public void setupClassPrivate(ITestContext context)
     {
-        Properties config = TestSettings.initSettings();
+        this.config = TestSettings.initSettings();
 
         config = mergeTestNGSuiteProperties(config, context);
 
@@ -145,6 +164,8 @@ public abstract class AbstractBaseTest
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
         ParticipantFactory factory = createParticipantFactory(config);
+
+        factory.initialize();
 
         participants = new ParticipantHelper(factory);
 

@@ -18,9 +18,10 @@ package org.jitsi.meet.test.pageobjects.mobile.base;
 import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.mobile.*;
-
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.openqa.selenium.support.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -54,5 +55,44 @@ public class AbstractMobilePage
                 new AppiumFieldDecorator(
                         participant.getDriver(), 10, TimeUnit.SECONDS),
                 this);
+        initTestHintFields();
+    }
+
+    /**
+     * Goes through the class hierarchy and try to initialise {@link TestHint}
+     * fields.
+     */
+    private void initTestHintFields()
+    {
+        for(Class classIn = getClass();
+            classIn != Object.class;
+            classIn = classIn.getSuperclass())
+        {
+            initTestHintFields(classIn);
+        }
+    }
+
+    private void initTestHintFields(Class classIn)
+    {
+        for(Field field : classIn.getDeclaredFields())
+        {
+            TestHintLocator[] locators
+                = field.getAnnotationsByType(TestHintLocator.class);
+            TestHintLocator locator = locators.length > 0 ? locators[0] : null;
+
+            if (locator != null)
+            {
+                String id = locator.id();
+                try
+                {
+                    field.setAccessible(true);
+                    field.set(this, new TestHint(participant.getDriver(), id));
+                }
+                catch (IllegalAccessException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }
