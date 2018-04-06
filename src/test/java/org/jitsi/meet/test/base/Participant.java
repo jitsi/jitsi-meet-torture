@@ -16,10 +16,12 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.io.*;
+import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.logging.*;
+import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
 import java.util.*;
@@ -252,9 +254,24 @@ public abstract class Participant<T extends WebDriver>
         return driver;
     }
 
+    /**
+     * @return {@link RtpStatistics} for this participant.
+     */
+    protected abstract RtpStatistics getRtpStatistics();
+
+    /**
+     * Returns {@code true} if the ICE connection is currently in the connected
+     * state.
+     *
+     * @return {@code true} for connected or {@code false} for any other state.
+     */
+    protected abstract boolean isIceConnected();
+
     @Override
     public String toString()
     {
+        // FIXME cleanup empty method or remove overrides from derived classes
+        // and make a generic toString here.
         return super.toString();
     }
 
@@ -276,10 +293,37 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
+     * Waits 15 seconds until this participant joins the MUC.
+     */
+    public void waitToJoinMUC()
+    {
+        waitToJoinMUC(15);
+    }
+
+    /**
      * Waits until this participant joins the MUC.
      * @param timeout the maximum time to wait in seconds.
      */
-    public abstract void waitToJoinMUC(long timeout);
+    public void waitToJoinMUC(int timeout)
+    {
+        TestUtils.waitForCondition(
+            getDriver(),
+            timeout,
+            new ExpectedCondition<Boolean>()
+            {
+                @Override
+                public Boolean apply(WebDriver webDriver)
+                {
+                    return isInMuc();
+                }
+
+                @Override
+                public String toString()
+                {
+                    return Participant.this.toString() + "#waitToJoinMUC";
+                }
+            });
+    }
 
     /**
      * Checks whether this participant is in the MUC.
@@ -293,13 +337,39 @@ public abstract class Participant<T extends WebDriver>
      * Waits 15 sec for the given participant to enter the ICE 'connected'
      * state.
      */
-    public abstract void waitForIceConnected();
+    public void waitForIceConnected()
+    {
+        waitForIceConnected(15);
+    }
 
     /**
      * Waits for the given participant to enter the ICE 'connected' state.
-     * @param timeout timeout in seconds.
+     * @param timeoutSeconds timeout in seconds.
      */
-    public abstract void waitForIceConnected(long timeout);
+    public void waitForIceConnected(int timeoutSeconds)
+    {
+        // FIXME The ExpectedCondition takes driver and then passes it to
+        // the condition, but the isIceConnected() takes the driver from
+        // participant (comment applies to few other places). This opens
+        // the possibility to pass other driver and expect that it will be used.
+        TestUtils.waitForCondition(
+            driver,
+            timeoutSeconds,
+            new ExpectedCondition<Boolean>()
+            {
+                @Override
+                public Boolean apply(WebDriver webDriver)
+                {
+                    return isIceConnected();
+                }
+
+                @Override
+                public String toString()
+                {
+                    return Participant.this.toString() + "#isIceConnected";
+                }
+            });
+    }
 
     /**
      * Waits until data has been sent and received over the ICE connection
@@ -313,10 +383,32 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Waits until data has been sent and received over the ICE connection
      * in this participant.
-     * @param receive should we expect and wait for receive data.
-     * @param send should we expect and wait for send data.
+     * @param checkSend should we expect and wait for send data.
+     * @param checkReceive should we expect and wait for receive data.
      */
-    public abstract void waitForSendReceiveData(boolean send, boolean receive);
+    public void waitForSendReceiveData(boolean checkSend, boolean checkReceive)
+    {
+        TestUtils.waitForCondition(
+            driver, 15,
+            new ExpectedCondition<Boolean>(){
+
+                @Override
+                public Boolean apply(WebDriver webDriver)
+                {
+                    RtpStatistics rtpStats = getRtpStatistics();
+
+                    return (!checkSend || rtpStats.getUploadBitrate() > 0)
+                        && (!checkReceive || rtpStats.getDownloadBitrate() > 0);
+                }
+
+                @Override
+                public String toString()
+                {
+                    return Participant.this.toString()
+                        + "#waitForSendReceiveData";
+                }
+            });
+    }
 
     /**
      * Waits for number of remote streams.

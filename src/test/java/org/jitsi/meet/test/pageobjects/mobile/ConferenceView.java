@@ -19,6 +19,7 @@ import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.mobile.*;
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
 
 /**
@@ -33,6 +34,12 @@ public class ConferenceView extends AbstractMobilePage
     @iOSFindBy(accessibility = "Conference")
     private MobileElement conference;
 
+    /**
+     * Root element with "Conference" accessibility label.
+     */
+    @TestHintLocator(id = "org.jitsi.meet.conference.name")
+    private TestHint conferenceName;
+
     private ToolbarView toolbar;
 
     /**
@@ -43,6 +50,11 @@ public class ConferenceView extends AbstractMobilePage
     public ConferenceView(MobileParticipant mobileParticipant)
     {
         super(mobileParticipant);
+    }
+
+    public String getName()
+    {
+        return conferenceName.getValue();
     }
 
     MobileParticipant getParticipant()

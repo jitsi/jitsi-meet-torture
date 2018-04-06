@@ -53,7 +53,14 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
     protected ParticipantFactory(Properties config)
     {
         this.config = Objects.requireNonNull(config, "config");
+    }
 
+    /**
+     * Initializes this factory instance. Method must be called, before
+     * the factory is used.
+     */
+    public void initialize()
+    {
         moveSystemGlobalProperties();
     }
 

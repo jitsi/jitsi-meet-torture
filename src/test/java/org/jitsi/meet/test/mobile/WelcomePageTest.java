@@ -21,6 +21,8 @@ import org.testng.annotations.*;
 /**
  * Simple test case where we wait for room name field, fill it and clicks join.
  *
+ * FIXME we no longer need this test ?
+ *
  * @author Damian Minkov
  * @author Pawel Domas
  */

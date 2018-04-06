@@ -48,7 +48,7 @@ public class MobileParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected List<String> getGlobalConfigKeys()
+    public List<String> getGlobalConfigKeys()
     {
         List<String> systemGlobalKeys = new LinkedList<>();
 
@@ -65,9 +65,14 @@ public class MobileParticipantFactory
 
     /**
      * {@inheritDoc}
+     *
+     * FIXME this method should not be public. Extract the common part that
+     * loads the configs to another place and make createParticipant expect
+     * final config. Then it's fine to rename this method to
+     * "createParticipant" and leave it public.
      */
     @Override
-    protected Participant<? extends WebDriver> doCreateParticipant(
+    public Participant<? extends WebDriver> doCreateParticipant(
             ParticipantOptions options)
     {
         ParticipantType type = options.getParticipantType();

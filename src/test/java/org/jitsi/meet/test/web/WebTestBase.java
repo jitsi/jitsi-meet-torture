@@ -87,7 +87,7 @@ public class WebTestBase
     {
         Participant participant = joinParticipant(0, meetURL, options);
 
-        participant.waitToJoinMUC(10);
+        participant.waitToJoinMUC();
     }
 
     /**
@@ -161,11 +161,13 @@ public class WebTestBase
         Participant participant
             = joinParticipant(1, participantTwoMeetURL, participantTwoOptions);
 
-        participant.waitToJoinMUC(10);
+        participant.waitToJoinMUC();
 
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();
 
+        // FIXME missing a comment on why is it needed here (in case someone
+        // would want to come up with a proper fix).
         TestUtils.waitMillis(500);
     }
 
@@ -193,7 +195,7 @@ public class WebTestBase
             = joinParticipant(
                 2, participantThreeMeetURL, null);
 
-        participant.waitToJoinMUC(15);
+        participant.waitToJoinMUC();
 
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();

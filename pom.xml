@@ -60,6 +60,11 @@
             <version>5.0.4</version>
         </dependency>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180130</version>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.13.1</version>
@@ -135,6 +140,38 @@
                         <includes>
                             <include>testng.xml</include>
                             <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+        <profile>
+            <id>hybrid</id>
+            <activation>
+                <property>
+                    <name>target</name>
+                    <value>hybrid</value>
+                </property>
+            </activation>
+            <properties>
+                <suite.xml>src/test/resources/hybrid/testng.xml</suite.xml>
+            </properties>
+            <build>
+                <testResources>
+                    <!-- Hybrid derives mobile participants definitions -->
+                    <testResource>
+                        <directory>src/test/resources/mobile</directory>
+                        <includes>
+                            <include>settings.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                    <!-- ...but has it's own set of tests -->
+                    <testResource>
+                        <directory>src/test/resources/hybrid</directory>
+                        <includes>
+                            <include>testng.xml</include>
                         </includes>
                         <filtering>true</filtering>
                     </testResource>
