@@ -250,13 +250,6 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
 
         if (type.isAndroid())
         {
-
-            // FIXME The 3 clicks below is a hack to workaround a bug in Jitsi
-            // Meet UI where the focus is lost after the first click.
-            // To be removed once the bug mentioned above is fixed (I don't know
-            // how to fix it).
-            roomNameInput.click();
-            roomNameInput.click();
             roomNameInput.click();
 
             getAndroidDriver().pressKeyCode(AndroidKeyCode.ENTER);
