@@ -401,6 +401,10 @@ public class MeetUIUtils
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, settingsXPath, 5);
+
+            if (participant.getToolbar().isNewToolbar()) {
+                participant.getToolbar().closeOverflowMenu();
+            }
         }
     }
 
