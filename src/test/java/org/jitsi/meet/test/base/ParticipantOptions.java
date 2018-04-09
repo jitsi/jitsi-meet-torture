@@ -25,6 +25,17 @@ import java.util.*;
 public class ParticipantOptions
 {
     /**
+     * A prefix for global options (not per participant).
+     */
+    public static final String GLOBAL_PROP_PREFIX = "jitsi-meet";
+
+    /**
+     * The url of the deployment to connect to.
+     */
+    public static final String JITSI_MEET_URL_PROP
+        = GLOBAL_PROP_PREFIX + ".instance.url";
+
+    /**
      * The property name for the type of the participant option.
      */
     private static final String PROP_TYPE = "type";

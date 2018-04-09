@@ -79,13 +79,13 @@ public class MobileTestBase
 
     /**
      * Mobile test are expected to operate only on {@link MobileParticipant}s,
-     * so create {@link MobileParticipantFactory} here.
+     * so create {@link MobileParticipantHelper} here.
      *
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantFactory createParticipantFactory(Properties config)
+    protected ParticipantHelper createParticipantHelper(Properties config)
     {
-        return new MobileParticipantFactory(config);
+        return new MobileParticipantHelper(config);
     }
 }

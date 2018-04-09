@@ -33,17 +33,6 @@ public class MobileParticipantFactory
     extends ParticipantFactory<MobileParticipantOptions>
 {
     /**
-     * The private constructor of the factory.
-     *
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     *               properties required to setup new participants.
-     */
-    public MobileParticipantFactory(Properties config)
-    {
-        super(config);
-    }
-
-    /**
      * Include global properties specific to mobile.
      * {@inheritDoc}
      */
@@ -65,14 +54,9 @@ public class MobileParticipantFactory
 
     /**
      * {@inheritDoc}
-     *
-     * FIXME this method should not be public. Extract the common part that
-     * loads the configs to another place and make createParticipant expect
-     * final config. Then it's fine to rename this method to
-     * "createParticipant" and leave it public.
      */
     @Override
-    public Participant<? extends WebDriver> doCreateParticipant(
+    protected Participant<? extends WebDriver> doCreateParticipant(
             ParticipantOptions options)
     {
         ParticipantType type = options.getParticipantType();

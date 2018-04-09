@@ -110,19 +110,19 @@ public abstract class AbstractBaseTest
     protected AbstractBaseTest(AbstractBaseTest baseTest)
     {
         currentRoomName = baseTest.currentRoomName;
-        participants = new ParticipantHelper(baseTest.participants);
+        participants = baseTest.participants;
     }
 
     /**
-     * Create {@link ParticipantFactory} which will be used by the test to
-     * create new participants.
+     * Create {@link ParticipantHelper} which will be used by the test to
+     * create and store participants.
      *
      * @param config the config which will be the source of all properties
      * required to create {@link Participant}s.
      *
-     * @return a new factory initialized with the given config.
+     * @return a new helper initialized with the given config.
      */
-    protected abstract ParticipantFactory createParticipantFactory(
+    protected abstract ParticipantHelper createParticipantHelper(
             Properties config);
 
     /**
@@ -156,6 +156,8 @@ public abstract class AbstractBaseTest
 
         if (skipped)
         {
+            // FIXME duplication of this.getClass().getSimpleName()
+            // FIXME formatting: there's still space left no need to break line
             throw new SkipException(
                     "skips-" + this.getClass().getSimpleName());
         }
@@ -163,11 +165,9 @@ public abstract class AbstractBaseTest
         print(
             "---=== Testing " + getClass().getSimpleName() + " ===---");
 
-        ParticipantFactory factory = createParticipantFactory(config);
+        participants = createParticipantHelper(config);
 
-        factory.initialize();
-
-        participants = new ParticipantHelper(factory);
+        participants.initialize();
 
         // if this one fails, the failure will be registered in the
         // FailureListener to gather information and it will call
@@ -214,7 +214,7 @@ public abstract class AbstractBaseTest
     /**
      * Return new {@link JitsiMeetUrl} instance which has only
      * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
+     * {@link ParticipantOptions#JITSI_MEET_URL_PROP} system property.
      *
      * @return a new instance of {@link JitsiMeetUrl}.
      */

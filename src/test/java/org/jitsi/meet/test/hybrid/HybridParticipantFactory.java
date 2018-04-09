@@ -43,16 +43,11 @@ public class HybridParticipantFactory
 
     /**
      * The constructor of the factory.
-     *
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     * properties required to setup new participants.
      */
-    HybridParticipantFactory(Properties config)
+    HybridParticipantFactory()
     {
-        super(config);
-
-        this.webFactory = new WebParticipantFactory(config);
-        this.mobileFactory = new MobileParticipantFactory(config);
+        this.webFactory = new WebParticipantFactory();
+        this.mobileFactory = new MobileParticipantFactory();
     }
 
     /**
@@ -82,11 +77,11 @@ public class HybridParticipantFactory
 
         if (type == null || type.isWeb())
         {
-            return webFactory.doCreateParticipant(options);
+            return webFactory.createParticipant(options);
         }
         else
         {
-            return mobileFactory.doCreateParticipant(options);
+            return mobileFactory.createParticipant(options);
         }
     }
 }

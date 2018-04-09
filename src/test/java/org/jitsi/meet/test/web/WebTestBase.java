@@ -49,9 +49,9 @@ public class WebTestBase
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantFactory createParticipantFactory(Properties config)
+    protected ParticipantHelper createParticipantHelper(Properties config)
     {
-        return new WebParticipantFactory(config);
+        return new WebParticipantHelper(config);
     }
 
     /**

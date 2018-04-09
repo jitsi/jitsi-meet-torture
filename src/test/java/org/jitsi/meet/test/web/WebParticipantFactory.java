@@ -72,17 +72,6 @@ public class WebParticipantFactory
     }
 
     /**
-     * The private constructor of the factory.
-     *
-     * @param config - A <tt>Properties</tt> instance holding configuration
-     *               properties required to setup new participants.
-     */
-    public WebParticipantFactory(Properties config)
-    {
-        super(config);
-    }
-
-    /**
      * Include web specific globals.
      *
      * {@inheritDoc}
@@ -101,7 +90,7 @@ public class WebParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    public Participant<? extends WebDriver> doCreateParticipant(
+    protected Participant<? extends WebDriver> doCreateParticipant(
         ParticipantOptions options)
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();

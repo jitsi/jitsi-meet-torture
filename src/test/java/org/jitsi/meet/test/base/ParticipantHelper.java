@@ -15,16 +15,30 @@
  */
 package org.jitsi.meet.test.base;
 
+import org.apache.commons.lang3.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
 import java.util.*;
 
+import static org.jitsi.meet.test.base.ParticipantOptions.GLOBAL_PROP_PREFIX;
+
 /**
  * Helper class for managing {@link Participant}s.
  */
-public class ParticipantHelper
+public abstract class ParticipantHelper
 {
-    private final ParticipantFactory participantFactory;
+    /**
+     * The global config which will be used as a source for participant's
+     * config properties.
+     */
+    private final Properties config;
+
+    /**
+     * The factory which creates participants compatible with this helper's
+     * instance.
+     */
+    private ParticipantFactory participantFactory;
 
     /**
      * The current test participant list, the order is important, as the
@@ -36,24 +50,41 @@ public class ParticipantHelper
     /**
      * Default.
      *
-     * @param factory - The participants factory which will be used to create
-     * new {@link Participant}s.
+     * @param config - The config which will be used as a properties source for
+     * participant's configs.
      */
-    protected ParticipantHelper(ParticipantFactory factory)
+    protected ParticipantHelper(Properties config)
     {
-        participants = new LinkedList<>();
-        participantFactory = Objects.requireNonNull(factory, "factory");
+        this.config = Objects.requireNonNull(config, "config");
+        this.participants = new LinkedList<>();
+        this.participantFactory = null;
     }
 
     /**
-     * Constructs with predefined room name and participants.
-     * @param participants the participants to add.
+     * Makes sure that this instance has been initialized or throws an
+     * exception. Should be called in al places where
+     * {@link #participantFactory} field is expected to be initialized.
+     *
+     * @throws IllegalStateException if this instance has not been initialized
+     * yet.
      */
-    protected ParticipantHelper(ParticipantHelper participants)
+    private void assertInitialized()
     {
-        this.participants = participants.getAll();
-        this.participantFactory = participants.participantFactory;
+        if (participantFactory == null)
+        {
+            throw new IllegalStateException(
+                "This instance has not been initialized yet.");
+        }
     }
+
+    /**
+     * Creates a factory which produces participants compatible with this
+     * helper.
+     *
+     * @return new {@link ParticipantFactory} instance which will be used by
+     * this helper instance to create new participants.
+     */
+    protected abstract ParticipantFactory createFactory();
 
     /**
      * Joins a participant, created if does not exists.
@@ -78,10 +109,49 @@ public class ParticipantHelper
     public Participant createParticipant(
         String configPrefix, ParticipantOptions options)
     {
+        assertInitialized();
+
+        ParticipantOptions targetOptions = new ParticipantOptions();
+
+        // Load the global properties
+        targetOptions.load(config, ParticipantOptions.GLOBAL_PROP_PREFIX);
+
+        // Load the config options onto of the globals
+        targetOptions.load(config, configPrefix);
+
+        // Put explicit options on top of whatever has been loaded from
+        // the config and the globals
+        if (options != null)
+        {
+            targetOptions.putAll(options);
+        }
+
+        // If at this point there's no participant type we'll go with Chrome,
+        // because the web tests were first and we don't want to require changes
+        // to the old web run configs.
+        if (targetOptions.getParticipantType() == null)
+        {
+            TestUtils.print(
+                "No participant type specified for prefix: "
+                    + configPrefix + ", will use Chrome...");
+            targetOptions.setParticipantType(ParticipantType.chrome);
+        }
+
+        // Provide some default name if wasn't specified neither in
+        // the arguments nor in the config.
+        if (StringUtils.isBlank(targetOptions.getName()))
+        {
+            targetOptions.setName(configPrefix);
+        }
+
         Participant<? extends WebDriver> participant
-            = participantFactory.createParticipant(configPrefix, options);
+            = participantFactory.createParticipant(targetOptions);
 
         participants.add(participant);
+
+        TestUtils.print(
+                "Started " + participant.getType()
+                    + " driver for prefix: " + configPrefix);
 
         return participant;
     }
@@ -136,12 +206,60 @@ public class ParticipantHelper
     /**
      * Return new {@link JitsiMeetUrl} instance which has only
      * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
+     * {@link ParticipantOptions#JITSI_MEET_URL_PROP} system property.
      *
      * @return a new instance of {@link JitsiMeetUrl}.
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        return participantFactory.getJitsiMeetUrl();
+        JitsiMeetUrl url = new JitsiMeetUrl();
+
+        url.setServerUrl(
+                config.getProperty(ParticipantOptions.JITSI_MEET_URL_PROP));
+
+        return url;
+    }
+
+    /**
+     * Initializes this instance. Must be called, before first use.
+     */
+    public void initialize()
+    {
+        if (participantFactory != null)
+        {
+            throw new IllegalStateException(
+                "This class has been initialized already");
+        }
+
+        participantFactory = createFactory();
+
+        moveSystemGlobalProperties();
+    }
+
+    /**
+     * This will move all global properties (not proceeded with any prefix)
+     * under the {@link ParticipantOptions#GLOBAL_PROP_PREFIX}. This will allow
+     * to simplify the code which has to deal with global properties.
+     * Ideally we would not use global properties, but some of them are out of
+     * our control.
+     */
+    private void moveSystemGlobalProperties()
+    {
+        List<String> systemGlobalKeys
+            = participantFactory.getGlobalConfigKeys();
+
+        for (String systemGlobalKey : systemGlobalKeys)
+        {
+            String value = config.getProperty(systemGlobalKey);
+
+            if (StringUtils.isNotBlank(value))
+            {
+                config.setProperty(
+                    GLOBAL_PROP_PREFIX + "." + systemGlobalKey, value);
+
+                // Clear the global one
+                config.remove(systemGlobalKey);
+            }
+        }
     }
 }
