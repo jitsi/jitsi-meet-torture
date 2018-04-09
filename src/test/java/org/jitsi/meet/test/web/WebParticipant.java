@@ -438,15 +438,6 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString()
-    {
-        return "WebParticipant[" + name + "]@" + hashCode();
-    }
-
-    /**
      * @return a representation of the chat panel of this participant.
      */
     public ChatPanel getChatPanel()
