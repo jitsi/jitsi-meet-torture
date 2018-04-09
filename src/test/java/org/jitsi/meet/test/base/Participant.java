@@ -26,6 +26,7 @@ import org.openqa.selenium.support.ui.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * The participant instance holding the {@link WebDriver}.
@@ -306,23 +307,10 @@ public abstract class Participant<T extends WebDriver>
      */
     public void waitToJoinMUC(int timeout)
     {
-        TestUtils.waitForCondition(
-            getDriver(),
-            timeout,
-            new ExpectedCondition<Boolean>()
-            {
-                @Override
-                public Boolean apply(WebDriver webDriver)
-                {
-                    return isInMuc();
-                }
-
-                @Override
-                public String toString()
-                {
-                    return Participant.this.toString() + "#waitToJoinMUC";
-                }
-            });
+        waitForCondition(
+                this::isInMuc,
+                timeout,
+                toString() + "#waitToJoinMUC");
     }
 
     /**
@@ -343,15 +331,19 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
-     * Waits for the given participant to enter the ICE 'connected' state.
-     * @param timeoutSeconds timeout in seconds.
+     * Waits for a condition.
+     *
+     * @param condition a {@link BooleanSupplier} which return {@code true} when
+     * the condition has been met.
+     * @param timeoutSeconds a timeout in seconds.
+     * @param label a label which will appear in a timeout exception when
+     * the condition is not met withing the time limit.
      */
-    public void waitForIceConnected(int timeoutSeconds)
+    public void waitForCondition(
+            final BooleanSupplier    condition,
+            int                      timeoutSeconds,
+            String                   label)
     {
-        // FIXME The ExpectedCondition takes driver and then passes it to
-        // the condition, but the isIceConnected() takes the driver from
-        // participant (comment applies to few other places). This opens
-        // the possibility to pass other driver and expect that it will be used.
         TestUtils.waitForCondition(
             driver,
             timeoutSeconds,
@@ -360,15 +352,27 @@ public abstract class Participant<T extends WebDriver>
                 @Override
                 public Boolean apply(WebDriver webDriver)
                 {
-                    return isIceConnected();
+                    return condition.getAsBoolean();
                 }
 
                 @Override
                 public String toString()
                 {
-                    return Participant.this.toString() + "#isIceConnected";
+                    return label;
                 }
             });
+    }
+
+    /**
+     * Waits for the given participant to enter the ICE 'connected' state.
+     * @param timeoutSeconds timeout in seconds.
+     */
+    public void waitForIceConnected(int timeoutSeconds)
+    {
+        waitForCondition(
+            this::isIceConnected,
+            timeoutSeconds,
+            toString() + "#isIceConnected");
     }
 
     /**
@@ -388,26 +392,15 @@ public abstract class Participant<T extends WebDriver>
      */
     public void waitForSendReceiveData(boolean checkSend, boolean checkReceive)
     {
-        TestUtils.waitForCondition(
-            driver, 15,
-            new ExpectedCondition<Boolean>(){
+        waitForCondition(
+            () -> {
+                RtpStatistics rtpStats = getRtpStatistics();
 
-                @Override
-                public Boolean apply(WebDriver webDriver)
-                {
-                    RtpStatistics rtpStats = getRtpStatistics();
-
-                    return (!checkSend || rtpStats.getUploadBitrate() > 0)
-                        && (!checkReceive || rtpStats.getDownloadBitrate() > 0);
-                }
-
-                @Override
-                public String toString()
-                {
-                    return Participant.this.toString()
-                        + "#waitForSendReceiveData";
-                }
-            });
+                return (!checkSend || rtpStats.getUploadBitrate() > 0)
+                    && (!checkReceive || rtpStats.getDownloadBitrate() > 0);
+            },
+            15,
+            toString() + "#waitForSendReceiveData");
     }
 
     /**

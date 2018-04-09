@@ -371,12 +371,12 @@ public class WebParticipant extends Participant<WebDriver>
      */
     public void waitForRemoteStreams(int n)
     {
-        new WebDriverWait(getDriver(), 15)
-            .until(
-                (ExpectedCondition<Boolean>) d
-                    -> (Boolean) executeScript(
-                        "return APP.conference"
-                        + ".getNumberOfParticipantsWithTracks() >= " + n + ";"));
+        waitForCondition(
+            () -> (Boolean) executeScript(
+                "return APP.conference"
+                    + ".getNumberOfParticipantsWithTracks() >= " + n + ";"),
+                15,
+                "waitForRemoteStreams:" + n);
     }
 
     /**
