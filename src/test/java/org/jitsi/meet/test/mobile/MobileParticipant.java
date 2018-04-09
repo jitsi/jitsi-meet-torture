@@ -344,12 +344,6 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         }
     }
 
-    @Override
-    public String toString()
-    {
-        return "MobileParticipant[" + name + "]@" + hashCode();
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -271,9 +271,11 @@ public abstract class Participant<T extends WebDriver>
     @Override
     public String toString()
     {
-        // FIXME cleanup empty method or remove overrides from derived classes
-        // and make a generic toString here.
-        return super.toString();
+        return String.format(
+            "%s[%s]@%s",
+            this.getClass().getSimpleName(),
+            name,
+            String.valueOf(hashCode()));
     }
 
     /**
