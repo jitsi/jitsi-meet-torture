@@ -34,13 +34,13 @@ public class HybridTestBase
     extends AbstractBaseTest
 {
     /**
-     * Creates {@link HybridParticipantFactory}.
+     * Creates {@link HybridParticipantHelper}.
      *
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantFactory createParticipantFactory(Properties config)
+    protected ParticipantHelper createParticipantHelper(Properties config)
     {
-        return new HybridParticipantFactory(config);
+        return new HybridParticipantHelper(config);
     }
 }
