@@ -41,6 +41,21 @@ public class WebParticipantFactory
     extends ParticipantFactory<WebParticipantOptions>
 {
     /**
+     * Default config for Web participants.
+     */
+    public static final String DEFAULT_CONFIG
+        = "config.requireDisplayName=false"
+        + "&config.debug=true"
+        + "&config.disableAEC=true"
+        + "&config.disableNS=true"
+        + "&config.callStatsID=false"
+        + "&config.alwaysVisibleToolbar=true"
+        + "&config.p2p.enabled=false"
+        + "&config.p2p.useStunTurn=false"
+        + "&config.gatherStats=true"
+        + "&config.disable1On1Mode=true";
+
+    /**
      * The format string for the URL used to download an extension.
      */
     private static String EXT_DOWNLOAD_URL_FORMAT
@@ -112,6 +127,23 @@ public class WebParticipantFactory
                 webOptions.getName(),
                 startWebDriver(webOptions),
                 webOptions.getParticipantType());
+    }
+
+    /**
+     * Return new {@link JitsiMeetUrl} instance which has only
+     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
+     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
+     *
+     * @return a new instance of {@link JitsiMeetUrl}.
+     */
+    @Override
+    public JitsiMeetUrl getJitsiMeetUrl()
+    {
+        JitsiMeetUrl url = super.getJitsiMeetUrl();
+
+        url.appendConfig(DEFAULT_CONFIG);
+
+        return url;
     }
 
     /**

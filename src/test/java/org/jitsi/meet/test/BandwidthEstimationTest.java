@@ -55,7 +55,7 @@ import static org.jitsi.meet.test.util.TestUtils.*;
  * @author George Politis
  */
 public class BandwidthEstimationTest
-    extends WebTestBase
+    extends AbstractTest
 {
     /**
      * Name of the system property which point to the tc script used to
@@ -267,11 +267,6 @@ public class BandwidthEstimationTest
     private static String chromeWrapper;
 
     /**
-     * The options to launch the sender participant with.
-     */
-    private ParticipantOptions senderOptions;
-
-    /**
      * Utility method that calls {@link #tcScript} to rate-limit given port.
      *
      * @param portNumber the port number to be rate-limited.
@@ -396,9 +391,9 @@ public class BandwidthEstimationTest
     }
 
     @Override
-    public void setupClass()
+    public void setupClass(Properties config)
     {
-        super.setupClass();
+        super.setupClass(config);
 
         tcScript = System.getProperty(TC_SCRIPT_PROP_NAME);
         if (tcScript == null)
@@ -450,13 +445,9 @@ public class BandwidthEstimationTest
                 throw new SkipException("no tc script has been specified");
             }
         }
-
-        senderOptions
-            = new WebParticipantOptions().setFakeStreamVideoFile(
-                INPUT_VIDEO_FILE);
     }
 
-    @DataProvider(name = "dp")
+    @DataProvider(name = "dp", parallel = true)
     public Object[][] createData()
     {
         // These are bitrate,duration pairs. The units are important and are
@@ -489,13 +480,19 @@ public class BandwidthEstimationTest
     public void test(Network network, String[] schedule)
         throws Exception
     {
+        Properties config = TestSettings.initSettings();
+        ParticipantFactory factory = new WebParticipantFactory(config);
+        ParticipantHelper participants = new ParticipantHelper(factory);
+
+        try
+        {
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
-        String jvbStats = runScenario(
+        String jvbStats = runScenario(participants,
                 true, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pLinearRegressionStats = runScenario(
+        String p2pLinearRegressionStats = runScenario(participants,
                 false, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pKalmanFilterStats = runScenario(
+        String p2pKalmanFilterStats = runScenario(participants,
                 false, true, false, 200, TimeUnit.SECONDS, network, schedule);
 
         File jvbFile = getLogFile(
@@ -515,14 +512,11 @@ public class BandwidthEstimationTest
 
         int result = benchmark(jvbFile, p2pLinearRegressionFile, analysisFile);
         assertEquals(result, 0);
-    }
-
-    @AfterMethod
-    public void cleanupMethod()
-    {
-        // XXX cleanup crashed test methods (this is normally taken care of by
-        // the test method, unless it's crashed).
-        participants.cleanup();
+        }
+        finally
+        {
+            participants.cleanup();
+        }
     }
 
     /**
@@ -536,7 +530,7 @@ public class BandwidthEstimationTest
      *
      * @throws Exception if something goes wrong.
      */
-    private String runScenario(
+    private static String runScenario(ParticipantHelper participants,
             boolean useJVB, boolean enableRemb, boolean enableTcc,
             long timeout, TimeUnit unit,
             Network network, String[] schedule)
@@ -545,7 +539,7 @@ public class BandwidthEstimationTest
         JitsiMeetUrl senderUrl, receiverUrl;
         if (!useJVB)
         {
-            senderUrl = getJitsiMeetUrl();
+            senderUrl = participants.getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
 
             String roomName = network.name + "P2P" + humanizeSchedule(schedule);
@@ -559,7 +553,7 @@ public class BandwidthEstimationTest
                     + Boolean.toString(enableTcc).toLowerCase());
 
 
-            receiverUrl = getJitsiMeetUrl();
+            receiverUrl = participants.getJitsiMeetUrl();
             receiverUrl.removeFragmentParam("config.callStatsID");
             receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
@@ -579,7 +573,7 @@ public class BandwidthEstimationTest
         else
         {
             String roomName = network.name + "JVB" + humanizeSchedule(schedule);
-            senderUrl = receiverUrl = getJitsiMeetUrl();
+            senderUrl = receiverUrl = participants.getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
             senderUrl.appendConfig("config.enableRemb="
                     + Boolean.toString(enableRemb).toLowerCase());
@@ -605,13 +599,20 @@ public class BandwidthEstimationTest
             receiverOptions.setProfileDirectory("/tmp/bwe-receiver-data-dir");
         }
 
-        ensureTwoParticipants(
-                senderUrl, receiverUrl, senderOptions, receiverOptions);
+        final WebParticipantOptions senderOptions
+            = new WebParticipantOptions().setFakeStreamVideoFile(
+                INPUT_VIDEO_FILE);
 
-        WebDriver sender = getParticipant1().getDriver();
-        assertNotNull(sender);
-        WebDriver receiver = getParticipant2().getDriver();
-        assertNotNull(receiver);
+        Participant p1 = participants
+                .createParticipant("web.participant1", senderOptions);
+        p1.joinConference(senderUrl);
+        WebDriver d1 = p1.getDriver();
+
+        Participant p2 = participants
+                .createParticipant("web.participant2", receiverOptions);
+        p2.joinConference(receiverUrl);
+        WebDriver d2 = p2.getDriver();
+
 
         for (int i = 0; i < 10; i++)
         {
@@ -619,7 +620,7 @@ public class BandwidthEstimationTest
             try
             {
                 String localCandidateType
-                    = MeetUtils.getLocalCandidateType(receiver, useJVB);
+                    = MeetUtils.getLocalCandidateType(d2, useJVB);
 
                 if ("prflx".equalsIgnoreCase(localCandidateType))
                 {
@@ -638,7 +639,7 @@ public class BandwidthEstimationTest
             Thread.sleep(1000);
         }
 
-        int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
+        int receiverPort = MeetUtils.getBundlePort(d2, useJVB);
 
         print("Receiver port: " + receiverPort);
 
@@ -647,11 +648,10 @@ public class BandwidthEstimationTest
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
 
-        String rtcStats = MeetUtils.getRtpStats(receiver, useJVB);
+        String rtcStats = MeetUtils.getRtpStats(d2, useJVB);
 
         // XXX prevent ghosts
-        getParticipant1().hangUp();
-        getParticipant2().hangUp();
+        participants.hangUpAll();
         // XXX we want to actually quit the drivers because we may wish to
         // launch chrome with different parameters.
         participants.cleanup();
