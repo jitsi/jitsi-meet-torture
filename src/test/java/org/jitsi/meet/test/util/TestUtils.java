@@ -210,6 +210,22 @@ public class TestUtils
     }
 
     /**
+     * Waits until an element becomes unavailable
+     * @param driver the {@code WebDriver}.
+     * @param by the xpath to search for the element
+     * @param timeout the time to wait for the element in seconds.
+     * @return WebElement the found element
+     */
+    public static void waitForElementNotPresentBy(
+        WebDriver driver,
+        final By by,
+        long timeout) {
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> d.findElements(by)
+                .isEmpty());
+    }
+
+    /**
      * Waits until an element becomes unavailable.
      * @param driver the {@code WebDriver}.
      * @param xpath the xpath to search for the element
@@ -220,10 +236,7 @@ public class TestUtils
         final String xpath,
         long timeout)
     {
-        new WebDriverWait(driver, timeout)
-            .until(
-                (ExpectedCondition<Boolean>) d -> d.findElements(By.xpath(xpath))
-                    .isEmpty());
+        waitForElementNotPresentBy(driver, By.xpath(xpath), timeout);
     }
 
     /**

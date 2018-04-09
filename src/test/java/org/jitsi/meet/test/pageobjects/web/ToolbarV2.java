@@ -232,6 +232,8 @@ public class ToolbarV2 extends Toolbar {
         }
 
         clickOverflowButton();
+
+        waitForOverFlowMenu(false);
     }
 
     /**
@@ -299,10 +301,7 @@ public class ToolbarV2 extends Toolbar {
 
         clickOverflowButton();
 
-        TestUtils.waitForElementBy(
-            participant.getDriver(),
-            getOverflowMenuSelector(),
-            5);
+        waitForOverFlowMenu(true);
     }
 
     /**
@@ -412,5 +411,30 @@ public class ToolbarV2 extends Toolbar {
             participant.getDriver(),
             By.cssSelector(getAccessibilityCSSSelector(accessibilityLabel)),
             10);
+    }
+
+    /**
+     * Waits up to 10 seconds for the overflow menu to be visible or not
+     * visible.
+     *
+     * @param visible Whether to wait for the overflow menu to be visible or
+     * not visible.
+     */
+    private void waitForOverFlowMenu(boolean visible) {
+        By selector = getOverflowMenuSelector();
+        WebDriver driver = participant.getDriver();
+        int waitTime = 10;
+
+        if (visible) {
+            TestUtils.waitForElementBy(
+                driver,
+                selector,
+                waitTime);
+        } else {
+            TestUtils.waitForElementNotPresentBy(
+                driver,
+                selector,
+                waitTime);
+        }
     }
 }
