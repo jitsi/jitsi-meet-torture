@@ -262,12 +262,17 @@ public class ReloadTest
 
         final String checkForConferenceLeftScript = "return "
             + "APP.conference._room.conference_left_event;";
-        participants.forEach(p -> (new WebDriverWait(p.getDriver(), 200))
-            .until((ExpectedCondition<Boolean>) d -> {
-                Object res
-                    = p.executeScript(checkForConferenceLeftScript);
-                return res != null && res.equals(Boolean.TRUE);
-            }));
+
+        participants.forEach(
+            p -> p.waitForCondition(() -> {
+                    Object res
+                        = p.executeScript(checkForConferenceLeftScript);
+
+                    return TestUtils.getBooleanResult(res);
+                },
+                // FIXME 200 seconds ? isn't that too much ?
+                200,
+                "Script: " + checkForConferenceLeftScript));
         
         print("Reload detected");
 
@@ -286,24 +291,9 @@ public class ReloadTest
             print("Wait for send data on the second "
                 + "participant side.");
             WebParticipant participant = getParticipant2();
-            new WebDriverWait(participant.getDriver(), 15)
-                .until((ExpectedCondition<Boolean>) d ->
-                {
-                    Map stats
-                        = (Map) participant.executeScript(
-                            "return APP.conference.getStats();");
 
-                    Map<String, Long> bitrate =
-                        (Map<String, Long>) stats.get("bitrate");
-
-                    if (bitrate != null)
-                    {
-                        long upload = bitrate.get("upload");
-                        return upload > 0;
-                    }
-
-                    return false;
-                });
+            participant.waitForSendReceiveData(
+                    true /* send */, false /* receive */);
         }
         else 
         {

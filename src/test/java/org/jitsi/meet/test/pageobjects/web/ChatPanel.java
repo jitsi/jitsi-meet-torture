@@ -100,22 +100,11 @@ public class ChatPanel
      */
     private void waitForOpenedOrClosed(boolean open)
     {
-        int timeout = 2;
-
-        WebDriverWait wait
-            = new WebDriverWait(participant.getDriver(), timeout);
-        try
-        {
-            wait.until((ExpectedCondition<Boolean>) d -> open == isOpen());
-        }
-        catch (TimeoutException exc)
-        {
-            fail(
+        participant.waitForCondition(
+                () -> open == isOpen(),
+                2,
                 String.format(
-                    "The chat panel was expected to be %s " +
-                        "(timed out after %d seconds).",
-                    open ? "open" : "closed",
-                    timeout));
-        }
+                        "The chat panel was expected to be %s.",
+                        open ? "open" : "closed"));
     }
 }

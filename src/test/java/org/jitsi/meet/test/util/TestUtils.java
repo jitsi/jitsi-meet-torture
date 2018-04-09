@@ -450,6 +450,8 @@ public class TestUtils
     }
 
     /**
+     * FIXME remove unused method
+     *
      * Waits until the given condition is fulfilled and fails the currently
      * running test if this doesn't happen within {@code timeoutSeconds} seconds.
      * @param driver the {@code WebDriver}.
