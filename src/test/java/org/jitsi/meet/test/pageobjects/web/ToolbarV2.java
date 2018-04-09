@@ -374,6 +374,8 @@ public class ToolbarV2 extends Toolbar {
         openOverflowMenu();
 
         clickButton(accessibilityLabel);
+
+        closeOverflowMenu();
     }
 
     /**
