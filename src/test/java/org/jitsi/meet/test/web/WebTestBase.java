@@ -24,7 +24,7 @@ import java.util.*;
  * Base class for web tests.
  */
 public class WebTestBase
-    extends AbstractBaseTest
+    extends AbstractBaseTest<WebParticipant>
 {
     /**
      * Default
@@ -37,7 +37,7 @@ public class WebTestBase
      * get its participants and room name.
      * @param baseTest the parent test.
      */
-    public WebTestBase(AbstractBaseTest baseTest)
+    public WebTestBase(AbstractBaseTest<WebParticipant> baseTest)
     {
         super(baseTest);
     }
@@ -49,7 +49,8 @@ public class WebTestBase
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantHelper createParticipantHelper(Properties config)
+    protected ParticipantHelper<WebParticipant> createParticipantHelper(
+            Properties config)
     {
         return new WebParticipantHelper(config);
     }
@@ -217,14 +218,7 @@ public class WebTestBase
      */
     public WebParticipant getParticipant(int id)
     {
-        Participant participant = participants.get(id - 1);
-        if (participant != null && !(participant instanceof WebParticipant))
-        {
-            throw new IllegalStateException(
-                "WebTestBase expects participants of type WebParticipant.");
-        }
-
-        return (WebParticipant) participant;
+        return participants.get(id - 1);
     }
 
     /**
@@ -290,7 +284,7 @@ public class WebTestBase
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)
     {
-        WebParticipant p = (WebParticipant) participants.get(index);
+        WebParticipant p = participants.get(index);
 
         if (p == null)
         {
@@ -310,8 +304,7 @@ public class WebTestBase
 
             String configPrefix = "web.participant" + (index + 1);
 
-            p= (WebParticipant) participants
-                .createParticipant(configPrefix, options);
+            p = participants.createParticipant(configPrefix, options);
 
             // Adds a print in the console/selenium-node logs
             // useful when checking crashes or failures in node logs
@@ -334,7 +327,7 @@ public class WebTestBase
      * Joins the first participant.
      * @return the participant which was created.
      */
-    public Participant joinFirstParticipant()
+    public WebParticipant joinFirstParticipant()
     {
         return joinParticipant(0, null, null);
     }

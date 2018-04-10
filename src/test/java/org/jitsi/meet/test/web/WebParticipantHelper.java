@@ -26,7 +26,7 @@ import java.util.*;
  * purpose of this class is to inject the type. To be figured out with the
  * templates.
  */
-public class WebParticipantHelper extends ParticipantHelper
+public class WebParticipantHelper extends ParticipantHelper<WebParticipant>
 {
     protected WebParticipantHelper(Properties config)
     {
@@ -34,7 +34,7 @@ public class WebParticipantHelper extends ParticipantHelper
     }
 
     @Override
-    protected ParticipantFactory createFactory()
+    protected ParticipantFactory<WebParticipant> createFactory()
     {
         return new WebParticipantFactory();
     }

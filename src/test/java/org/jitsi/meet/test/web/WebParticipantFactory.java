@@ -38,7 +38,7 @@ import java.util.logging.*;
  * Creates web specific participant.
  */
 public class WebParticipantFactory
-    extends ParticipantFactory<WebParticipantOptions>
+    extends ParticipantFactory<WebParticipant>
 {
     /**
      * The format string for the URL used to download an extension.
@@ -90,8 +90,7 @@ public class WebParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected Participant<? extends WebDriver> doCreateParticipant(
-        ParticipantOptions options)
+    protected WebParticipant doCreateParticipant(ParticipantOptions options)
     {
         WebParticipantOptions webOptions = new WebParticipantOptions();
 

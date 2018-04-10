@@ -15,27 +15,24 @@
  */
 package org.jitsi.meet.test.base;
 
-import org.openqa.selenium.*;
-
 import java.util.*;
 
 /**
  * Used to create participants. Based on the type of the participant we choose
  * to use WebParticipantFactory or MobileParticipantFactory.
- * @param <T> the type of the options (web or mobile).
+ *
+ * @param <P> the participant's type produced by the factory implementation.
  */
-public abstract class ParticipantFactory<T extends ParticipantOptions>
+public abstract class ParticipantFactory<P extends Participant>
 {
     /**
      * Creates participant the type is extracted from the configuration
      * using the supplied configPrefix.
      * @param options custom options to be used when creating the participant.
      */
-    public Participant<? extends WebDriver> createParticipant(
-            ParticipantOptions options)
+    public P createParticipant(ParticipantOptions options)
     {
-        Participant<? extends WebDriver> participant
-            = doCreateParticipant(options);
+        P participant = doCreateParticipant(options);
 
         participant.initialize();
 
@@ -65,6 +62,5 @@ public abstract class ParticipantFactory<T extends ParticipantOptions>
      *
      * @return new {@link Participant} for given set of config options.
      */
-    protected abstract Participant<? extends WebDriver> doCreateParticipant(
-            ParticipantOptions options);
+    protected abstract P doCreateParticipant(ParticipantOptions options);
 }
