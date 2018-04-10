@@ -25,23 +25,12 @@ import java.util.*;
  * A class of the test which utilizes {@link HybridParticipantFactory} which
  * means that it's capable of creating and operating on both
  * {@link MobileParticipant} and {@link WebParticipant}.
- *
- * FIXME work on the templates, so that it's obvious on what types of
- * participants each class of the tests is operating on and that the types are
- * enforced.
  */
 public class HybridTestBase
-    extends AbstractBaseTest<Participant>
+    extends TypedBaseTest<Participant, HybridParticipantFactory>
 {
-    /**
-     * Creates {@link HybridParticipantHelper}.
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    protected ParticipantHelper<Participant> createParticipantHelper(
-            Properties config)
+    public HybridTestBase()
     {
-        return new HybridParticipantHelper(config);
+        super(HybridParticipantFactory.class);
     }
 }

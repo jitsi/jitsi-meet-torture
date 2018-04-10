@@ -18,41 +18,31 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
-import java.util.*;
-
 /**
  * Base class for web tests.
  */
 public class WebTestBase
-    extends AbstractBaseTest<WebParticipant>
+    extends TypedBaseTest<WebParticipant, WebParticipantFactory>
 {
     /**
      * Default
      */
     public WebTestBase()
-    { }
+    {
+        super(WebParticipantFactory.class);
+    }
 
     /**
      * Constructs new AbstractBaseTest with predefined baseTest, to
      * get its participants and room name.
      * @param baseTest the parent test.
+     *
+     * @deprecated see
+     * {@link AbstractBaseTest#AbstractBaseTest(AbstractBaseTest)}
      */
     public WebTestBase(AbstractBaseTest<WebParticipant> baseTest)
     {
-        super(baseTest);
-    }
-
-    /**
-     * Web tests are expected to operate only on {@link WebParticipant}s, so
-     * create {@link WebParticipantFactory}.
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    protected ParticipantHelper<WebParticipant> createParticipantHelper(
-            Properties config)
-    {
-        return new WebParticipantHelper(config);
+        super(baseTest, WebParticipantFactory.class);
     }
 
     /**

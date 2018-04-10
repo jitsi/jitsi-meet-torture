@@ -27,7 +27,7 @@ import java.util.*;
  * @author Pawel Domas
  */
 public class MobileTestBase
-    extends AbstractBaseTest<MobileParticipant>
+    extends TypedBaseTest<MobileParticipant, MobileParticipantFactory>
 {
     /**
      * This prefix is used to configure properties consumed by
@@ -64,6 +64,14 @@ public class MobileTestBase
     }
 
     /**
+     * Creates new {@link MobileTestBase}.
+     */
+    public MobileTestBase()
+    {
+        super(MobileParticipantFactory.class);
+    }
+
+    /**
      * Creates the 1st mobile participant for
      * {@link #DEFAULT_PARTICIPANT_1_PREFIX} config prefix.
      * The {@link #PROP_PARTICIPANT_1_PREFIX} can be used to override it.
@@ -73,18 +81,5 @@ public class MobileTestBase
     protected MobileParticipant createParticipant1()
     {
         return participants.createParticipant(getParticipant1Prefix());
-    }
-
-    /**
-     * Mobile test are expected to operate only on {@link MobileParticipant}s,
-     * so create {@link MobileParticipantHelper} here.
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    protected ParticipantHelper<MobileParticipant> createParticipantHelper(
-            Properties config)
-    {
-        return new MobileParticipantHelper(config);
     }
 }

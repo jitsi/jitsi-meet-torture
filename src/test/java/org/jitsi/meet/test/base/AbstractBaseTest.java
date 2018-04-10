@@ -107,6 +107,17 @@ public abstract class AbstractBaseTest<P extends Participant>
      * get its participants and room name.
      *
      * @param baseTest the parent test.
+     *
+     * @deprecated Some test classes are instantiated in order to have their
+     * test methods reused which seems like a weird practice. It's weird,
+     * because a test has specific lifecycle and cloning a test can lead to
+     * unexpected side effects plus makes maintenance more complex, because
+     * cloning capability of the abstract test needs to be preserved in order to
+     * not break those tests.
+     * In most of the tests which use copy constructor a goal is to not
+     * duplicate procedures and assertions which could be achieved by providing
+     * dedicated page objects or methods in {@link Participant} / test / utility
+     * classes.
      */
     protected AbstractBaseTest(AbstractBaseTest<P> baseTest)
     {
