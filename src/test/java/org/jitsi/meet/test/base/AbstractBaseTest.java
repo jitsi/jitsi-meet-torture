@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test.base;
 
-import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -28,9 +27,11 @@ import static org.jitsi.meet.test.util.TestUtils.*;
 /**
  * The base of all tests, checks whether the tests is supposed to be executed
  * or skipped by checking the properties which tests to run, exclude or include.
+ *
+ * @param <P></P> the participant's type which can be used in the test's class.
  */
 @Listeners(FailureListener.class)
-public abstract class AbstractBaseTest
+public abstract class AbstractBaseTest<P extends Participant>
 {
     /**
      * The name of the property which controls the list of tests to be run.
@@ -83,7 +84,7 @@ public abstract class AbstractBaseTest
     /**
      * The participants pool created/used by this test instance.
      */
-    protected ParticipantHelper participants;
+    protected ParticipantHelper<P> participants;
 
     /**
      * Set to <tt>true</tt> or <tt>false</tt>, after
@@ -107,7 +108,7 @@ public abstract class AbstractBaseTest
      *
      * @param baseTest the parent test.
      */
-    protected AbstractBaseTest(AbstractBaseTest baseTest)
+    protected AbstractBaseTest(AbstractBaseTest<P> baseTest)
     {
         currentRoomName = baseTest.currentRoomName;
         participants = baseTest.participants;
@@ -122,7 +123,7 @@ public abstract class AbstractBaseTest
      *
      * @return a new helper initialized with the given config.
      */
-    protected abstract ParticipantHelper createParticipantHelper(
+    protected abstract ParticipantHelper<P> createParticipantHelper(
             Properties config);
 
     /**
@@ -206,7 +207,7 @@ public abstract class AbstractBaseTest
      * Returns all {@link Participant}s held by the underlying
      * {@link ParticipantHelper}.
      */
-    public List<Participant<? extends WebDriver>>  getAllParticipants()
+    public List<P>  getAllParticipants()
     {
         return participants.getAll();
     }

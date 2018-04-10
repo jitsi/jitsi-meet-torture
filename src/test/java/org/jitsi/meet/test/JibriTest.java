@@ -305,8 +305,7 @@ public class JibriTest
         print("Opening URL: " + url);
 
         WebParticipant participant
-            = (WebParticipant) participants.createParticipant(
-                    "web.participantOther");
+            = participants.createParticipant("web.participantOther");
 
         WebDriver driver = participant.getDriver();
 

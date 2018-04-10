@@ -17,7 +17,6 @@ package org.jitsi.meet.test.base;
 
 import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.util.*;
-import org.openqa.selenium.*;
 
 import java.util.*;
 
@@ -25,8 +24,10 @@ import static org.jitsi.meet.test.base.ParticipantOptions.GLOBAL_PROP_PREFIX;
 
 /**
  * Helper class for managing {@link Participant}s.
+ *
+ * @param <P> the type of participants supported by the helper.
  */
-public abstract class ParticipantHelper
+public abstract class ParticipantHelper<P extends Participant>
 {
     /**
      * The global config which will be used as a source for participant's
@@ -38,14 +39,14 @@ public abstract class ParticipantHelper
      * The factory which creates participants compatible with this helper's
      * instance.
      */
-    private ParticipantFactory participantFactory;
+    private ParticipantFactory<P> participantFactory;
 
     /**
      * The current test participant list, the order is important, as the
      * first to join is the owner of the conference, in some cases has more
      * options than the rest of the participants.
      */
-    private final List<Participant<? extends WebDriver>> participants;
+    private final List<P> participants;
 
     /**
      * Default.
@@ -84,7 +85,7 @@ public abstract class ParticipantHelper
      * @return new {@link ParticipantFactory} instance which will be used by
      * this helper instance to create new participants.
      */
-    protected abstract ParticipantFactory createFactory();
+    protected abstract ParticipantFactory<P> createFactory();
 
     /**
      * Joins a participant, created if does not exists.
@@ -93,7 +94,7 @@ public abstract class ParticipantHelper
      * the config properties which describe the new participant.
      * @return the participant which was created
      */
-    public Participant createParticipant(String configPrefix)
+    public P createParticipant(String configPrefix)
     {
         return this.createParticipant(configPrefix, null);
     }
@@ -106,8 +107,7 @@ public abstract class ParticipantHelper
      * @param options custom options to be used for the participant.
      * @return the participant which was created
      */
-    public Participant createParticipant(
-        String configPrefix, ParticipantOptions options)
+    public P createParticipant(String configPrefix, ParticipantOptions options)
     {
         assertInitialized();
 
@@ -144,8 +144,7 @@ public abstract class ParticipantHelper
             targetOptions.setName(configPrefix);
         }
 
-        Participant<? extends WebDriver> participant
-            = participantFactory.createParticipant(targetOptions);
+        P participant = participantFactory.createParticipant(targetOptions);
 
         participants.add(participant);
 
@@ -161,7 +160,7 @@ public abstract class ParticipantHelper
      * @param index the index of the participant.
      * @return the participant if it exists or null.
      */
-    public Participant get(int index)
+    public P get(int index)
     {
         return index < participants.size() ? participants.get(index) : null;
     }
@@ -198,7 +197,7 @@ public abstract class ParticipantHelper
      * Gets the list of all participants.
      * @return a copy of the list which holds all participants.
      */
-    public List<Participant<? extends WebDriver>> getAll()
+    public List<P> getAll()
     {
         return new LinkedList<>(participants);
     }

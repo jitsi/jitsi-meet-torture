@@ -30,7 +30,7 @@ import java.util.*;
  * Creates mobile participant.
  */
 public class MobileParticipantFactory
-    extends ParticipantFactory<MobileParticipantOptions>
+    extends ParticipantFactory<MobileParticipant>
 {
     /**
      * Include global properties specific to mobile.
@@ -56,8 +56,7 @@ public class MobileParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected Participant<? extends WebDriver> doCreateParticipant(
-            ParticipantOptions options)
+    protected MobileParticipant doCreateParticipant(ParticipantOptions options)
     {
         ParticipantType type = options.getParticipantType();
 

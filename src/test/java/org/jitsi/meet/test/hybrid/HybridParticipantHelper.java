@@ -27,7 +27,7 @@ import java.util.*;
  * templates.
  */
 public class HybridParticipantHelper
-    extends ParticipantHelper
+    extends ParticipantHelper<Participant>
 {
     public HybridParticipantHelper(Properties config)
     {
@@ -35,7 +35,7 @@ public class HybridParticipantHelper
     }
 
     @Override
-    protected ParticipantFactory createFactory()
+    protected ParticipantFactory<Participant> createFactory()
     {
         return new HybridParticipantFactory();
     }

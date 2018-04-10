@@ -31,7 +31,7 @@ import java.util.*;
  * enforced.
  */
 public class HybridTestBase
-    extends AbstractBaseTest
+    extends AbstractBaseTest<Participant>
 {
     /**
      * Creates {@link HybridParticipantHelper}.
@@ -39,7 +39,8 @@ public class HybridTestBase
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantHelper createParticipantHelper(Properties config)
+    protected ParticipantHelper<Participant> createParticipantHelper(
+            Properties config)
     {
         return new HybridParticipantHelper(config);
     }

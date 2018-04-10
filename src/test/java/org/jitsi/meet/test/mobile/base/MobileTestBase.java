@@ -27,7 +27,7 @@ import java.util.*;
  * @author Pawel Domas
  */
 public class MobileTestBase
-    extends AbstractBaseTest
+    extends AbstractBaseTest<MobileParticipant>
 {
     /**
      * This prefix is used to configure properties consumed by
@@ -72,9 +72,7 @@ public class MobileTestBase
      */
     protected MobileParticipant createParticipant1()
     {
-        return
-            (MobileParticipant) participants
-                .createParticipant(getParticipant1Prefix());
+        return participants.createParticipant(getParticipant1Prefix());
     }
 
     /**
@@ -84,7 +82,8 @@ public class MobileTestBase
      * {@inheritDoc}
      */
     @Override
-    protected ParticipantHelper createParticipantHelper(Properties config)
+    protected ParticipantHelper<MobileParticipant> createParticipantHelper(
+            Properties config)
     {
         return new MobileParticipantHelper(config);
     }

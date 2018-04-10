@@ -18,8 +18,6 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.hybrid.*;
 
-import org.openqa.selenium.*;
-
 import org.testng.annotations.*;
 
 import java.util.*;
@@ -58,7 +56,7 @@ public class SetupConferenceTest
     {
         // FIXME this will eventually end up as the ensureTwoParticipants call,
         // but one step at a time.
-        List<Participant<? extends WebDriver>> all = participants.getAll();
+        List<Participant> all = participants.getAll();
 
         all.forEach(p -> p.joinConference(getJitsiMeetUrl()));
 

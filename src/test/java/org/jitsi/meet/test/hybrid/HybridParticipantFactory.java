@@ -29,7 +29,7 @@ import java.util.*;
  * resolved after merging all config layers of the {@link ParticipantOptions}.
  */
 public class HybridParticipantFactory
-    extends ParticipantFactory<ParticipantOptions>
+    extends ParticipantFactory<Participant>
 {
     /**
      * The mobile participant factory.
@@ -70,8 +70,7 @@ public class HybridParticipantFactory
      * {@inheritDoc}
      */
     @Override
-    protected Participant<? extends WebDriver> doCreateParticipant(
-            ParticipantOptions options)
+    protected Participant doCreateParticipant(ParticipantOptions options)
     {
         ParticipantType type = options.getParticipantType();
 

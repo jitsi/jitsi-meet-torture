@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.mobile.base;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.mobile.*;
 
 import java.util.*;
 
@@ -27,15 +28,15 @@ import java.util.*;
  * templates.
  */
 public class MobileParticipantHelper
-    extends ParticipantHelper
+    extends ParticipantHelper<MobileParticipant>
 {
-    protected MobileParticipantHelper(Properties config)
+    MobileParticipantHelper(Properties config)
     {
         super(config);
     }
 
     @Override
-    protected ParticipantFactory createFactory()
+    protected ParticipantFactory<MobileParticipant> createFactory()
     {
         return new MobileParticipantFactory();
     }
