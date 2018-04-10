@@ -42,6 +42,8 @@ public class MuteTest
     /**
      * Constructs MuteTest with already allocated participants.
      * @param baseTest the parent test.
+     * @deprecated see
+     * {@link AbstractBaseTest#AbstractBaseTest(AbstractBaseTest)}
      */
     public MuteTest(AbstractBaseTest baseTest)
     {
