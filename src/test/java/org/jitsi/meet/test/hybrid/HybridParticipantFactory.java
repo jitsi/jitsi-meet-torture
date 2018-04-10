@@ -44,7 +44,7 @@ public class HybridParticipantFactory
     /**
      * The constructor of the factory.
      */
-    HybridParticipantFactory()
+    public HybridParticipantFactory()
     {
         this.webFactory = new WebParticipantFactory();
         this.mobileFactory = new MobileParticipantFactory();
