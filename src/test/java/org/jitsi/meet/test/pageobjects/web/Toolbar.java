@@ -24,39 +24,40 @@ import java.util.*;
 /**
  * Represents the toolbar in a particular {@link WebParticipant}.
  *
- * @author Hristo Terezov
+ * @author Leonard Kim
  */
 public class Toolbar {
     /**
-     * Button IDs to be used as selectors for finding WebElements within the
-     * {@link Toolbar}.
+     * Accessibility labels to be used as selectors for finding WebElements
+     * within the {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE_BUTTON_ID = "toolbar_button_mute";
-    private final static String CHAT_BUTTON_ID = "toolbar_button_chat";
-    private final static String CONTACT_LIST_BUTTON_ID
-            = "toolbar_contact_list";
-    private final static String DS_BUTTON_ID = "toolbar_button_desktopsharing";
-    private final static String ETHERPAD_BUTTON_ID = "toolbar_button_etherpad";
-    private final static String FILMSTRIP_ONLY_SETTINGS_BUTTON_ID
-        = "toolbar_button_fodeviceselection";
-    private final static String HANGUP_BUTTON_ID = "toolbar_button_hangup";
-    private final static String INFO_BUTTON_ID = "toolbar_button_info";
-    private final static String PROFILE_BUTTON_ID = "toolbar_button_profile";
-    private final static String RECORD_BUTTON_ID = "toolbar_button_record";
-    private final static String SETTINGS_BUTTON_ID = "toolbar_button_settings";
-    private final static String SHARED_VIDEO_BUTTON_ID
-        = "toolbar_button_sharedvideo";
-    private final static String VIDEO_MUTE_BUTTON_ID  = "toolbar_button_camera";
-    private final static String VIDEO_QUALITY_BUTTON_ID
-        = "toolbar_button_videoquality";
+    private final static String AUDIO_MUTE = "Audio mute";
+    private final static String CHAT = "Chat";
+    private final static String DESKTOP = "Screenshare";
+    private final static String ETHERPAD = "Etherpad";
+    private final static String HANGUP = "Hangup";
+    private final static String INFO = "Info";
+    private final static String OVERFLOW = "Overflow";
+    private final static String OVERFLOW_MENU = "Overflow menu";
+    private final static String PROFILE = "Profile";
+    private final static String RECORD = "Record";
+    private final static String SETTINGS = "Settings";
+    private final static String SHARE_VIDEO = "Shared video";
+    private final static String VIDEO_MUTE = "Video mute";
+    private final static String VIDEO_QUALITY = "Call quality";
 
     /**
-     * Xpaths to be used as selectors for finding WebElements within the
-     * {@link Toolbar}.
+     * The ID of the toolbar. To be used as a selector when trying to locate
+     * the toolbar on the page.
      */
-    private final static String AVATAR_IMAGE_XPATH = "//img[@id='avatar']";
-    private final static String DS_BUTTON_XPATH
-        = "//a[@id='" + DS_BUTTON_ID + "']";
+    private final static String TOOLBOX_ID = "new-toolbox";
+
+    /**
+     * The xpath for the desktop button icon. Its toggle class can determine
+     * if desktop sharing is active or not active.
+     */
+    private final static String DESKTOP_ICON_XPATH
+        = "//i[contains(@class, 'icon-share-desktop')]";
 
     /**
      * The participant.
@@ -78,10 +79,7 @@ public class Toolbar {
      */
     public void clickAudioMuteButton()
     {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            AUDIO_MUTE_BUTTON_ID,
-            true);
+        clickButton(AUDIO_MUTE);
     }
 
     /**
@@ -92,24 +90,20 @@ public class Toolbar {
     {
         WebDriver driver = participant.getDriver();
 
-        TestUtils.waitForElementByXPath(
-            driver,
-            DS_BUTTON_XPATH,
-            5);
+        waitForButtonDisplay(DESKTOP);
 
-        WebElement el = driver.findElement(By.xpath(DS_BUTTON_XPATH));
-        String classNames = el.getAttribute("class");
+        WebElement desktopIcon = driver.findElement(By.cssSelector(
+            getAccessibilityCSSSelector(DESKTOP_ICON_XPATH)));
+        String classNames = desktopIcon.getAttribute("class");
         boolean isToggled = classNames.contains("toggled");
 
-        MeetUIUtils.clickOnToolbarButton(
-            driver,
-            DS_BUTTON_ID);
+        clickButton(DESKTOP);
 
         if (isToggled)
         {
             TestUtils.waitForElementNotContainsClassByXPath(
                 driver,
-                DS_BUTTON_XPATH,
+                DESKTOP_ICON_XPATH,
                 "toggled",
                 2);
         }
@@ -117,7 +111,7 @@ public class Toolbar {
         {
             TestUtils.waitForElementContainsClassByXPath(
                 driver,
-                DS_BUTTON_XPATH,
+                DESKTOP_ICON_XPATH,
                 "toggled",
                 2);
         }
@@ -128,22 +122,7 @@ public class Toolbar {
      */
     public void clickChatButton()
     {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            CHAT_BUTTON_ID,
-            true);
-    }
-
-    /**
-     * Clicks on the contact list toolbar button which opens or closes the
-     * contact list.
-     */
-    public void clickContactListButton()
-    {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            CONTACT_LIST_BUTTON_ID,
-            true);
+        clickButton(CHAT);
     }
 
     /**
@@ -151,12 +130,7 @@ public class Toolbar {
      */
     public void clickEtherpadButton()
     {
-        // waits for etherpad button to be displayed in the toolbar
-        TestUtils.waitForDisplayedElementByID(
-            participant.getDriver(), ETHERPAD_BUTTON_ID, 15);
-
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(), ETHERPAD_BUTTON_ID);
+        clickButtonInOverflowMenu(ETHERPAD);
     }
 
     /**
@@ -165,9 +139,7 @@ public class Toolbar {
      */
     public void clickFilmstripOnlySettingsButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            FILMSTRIP_ONLY_SETTINGS_BUTTON_ID);
+        clickButton(SETTINGS);
     }
 
     /**
@@ -175,10 +147,7 @@ public class Toolbar {
      */
     public void clickHangUpButton()
     {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            HANGUP_BUTTON_ID,
-            false);
+        attemptToClickButton(HANGUP);
     }
 
     /**
@@ -186,10 +155,15 @@ public class Toolbar {
      */
     public void clickInfoButton()
     {
-        MeetUIUtils.clickOnButton(
-            participant.getDriver(),
-            INFO_BUTTON_ID,
-            true);
+        clickButton(INFO);
+    }
+
+    /**
+     * Clicks on the overflow toolbar button which opens or closes the overflow
+     * menu.
+     */
+    public void clickOverflowButton() {
+        clickButton(OVERFLOW);
     }
 
     /**
@@ -198,9 +172,7 @@ public class Toolbar {
      */
     public void clickProfileButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            PROFILE_BUTTON_ID);
+        clickButtonInOverflowMenu(PROFILE);
     }
 
     /**
@@ -209,9 +181,7 @@ public class Toolbar {
      */
     public void clickRecordButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            RECORD_BUTTON_ID);
+        clickButtonInOverflowMenu(RECORD);
     }
 
     /**
@@ -220,9 +190,7 @@ public class Toolbar {
      */
     public void clickSettingsButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            SETTINGS_BUTTON_ID);
+        clickButtonInOverflowMenu(SETTINGS);
     }
 
     /**
@@ -231,9 +199,7 @@ public class Toolbar {
      */
     public void clickSharedVideoButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            SHARED_VIDEO_BUTTON_ID);
+        clickButtonInOverflowMenu(SHARE_VIDEO);
     }
 
     /**
@@ -241,9 +207,7 @@ public class Toolbar {
      */
     public void clickVideoMuteButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            VIDEO_MUTE_BUTTON_ID);
+        clickButton(VIDEO_MUTE);
     }
 
     /**
@@ -252,17 +216,22 @@ public class Toolbar {
      */
     public void clickVideoQualityButton()
     {
-        MeetUIUtils.clickOnToolbarButton(
-            participant.getDriver(),
-            VIDEO_QUALITY_BUTTON_ID);
+        clickButtonInOverflowMenu(VIDEO_QUALITY);
     }
 
     /**
-     * Ensures the overflow menu is closed.
+     * Ensures the overflow menu is not displayed.
      */
-    public void closeOverflowMenu() {
-        // This method is intentionally not implemented. This Class in general
-        // is temporary while converting tests to use ToolbarV2.
+    public void closeOverflowMenu()
+    {
+        if (!isOverflowMenuOpen())
+        {
+            return;
+        }
+
+        clickOverflowButton();
+
+        waitForOverFlowMenu(false);
     }
 
     /**
@@ -272,19 +241,24 @@ public class Toolbar {
      */
     public WebElement getProfileImage()
     {
-        return participant.getDriver().findElement(
-            By.xpath(AVATAR_IMAGE_XPATH));
+        openOverflowMenu();
+
+        return participant.getDriver().findElement(By.cssSelector(
+            getAccessibilityCSSSelector(PROFILE) + " img"));
     }
 
     /**
      * Checks whether or not the recording button is present in the toolbar.
      *
-     * @return A boolean for whether or not the recording button is present.
+     * @return True if the recording button is present, false if it is not.
      */
     public boolean hasRecordButton()
     {
-        List<WebElement> elements = participant.getDriver().findElements(
-            By.id(RECORD_BUTTON_ID));
+        openOverflowMenu();
+
+        List<WebElement> elements
+            = participant.getDriver().findElements(By.cssSelector(
+                getAccessibilityCSSSelector(RECORD)));
 
         return !elements.isEmpty();
     }
@@ -293,11 +267,39 @@ public class Toolbar {
      * Returns whether or not this the participant is using the new toolbar.
      * This method is used to help transition tests over to the new toolbar.
      *
-     * @return false to indicate this is the old toolbar.
+     * @return true to indicate this is the new toolbar.
      */
     public boolean isNewToolbar()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Checks if the overflow menu is open and visible.
+     *
+     * @return True if the overflow menu is visible, false if it is not.
+     */
+    public boolean isOverflowMenuOpen()
+    {
+        List<WebElement> elements = participant.getDriver().findElements(
+            getOverflowMenuSelector());
+
+        return !elements.isEmpty();
+    }
+
+    /**
+     * Ensure the overflow menu is displayed.
+     */
+    public void openOverflowMenu()
+    {
+        if (isOverflowMenuOpen())
+        {
+            return;
+        }
+
+        clickOverflowButton();
+
+        waitForOverFlowMenu(true);
     }
 
     /**
@@ -306,10 +308,7 @@ public class Toolbar {
      */
     public void waitForSharedVideoButtonDisplay()
     {
-        TestUtils.waitForDisplayedElementByID(
-            participant.getDriver(),
-            SHARED_VIDEO_BUTTON_ID,
-            10);
+        clickButtonInOverflowMenu(SHARE_VIDEO);
     }
 
     /**
@@ -318,20 +317,124 @@ public class Toolbar {
      */
     public void waitForVideoMuteButtonDisplay()
     {
+        waitForButtonDisplay(VIDEO_MUTE);
+    }
+
+    /**
+     * Waits up to 3 seconds for the toolbar to be visible.
+     */
+    public void waitForVisible()
+    {
         TestUtils.waitForDisplayedElementByID(
             participant.getDriver(),
-            VIDEO_MUTE_BUTTON_ID,
+            TOOLBOX_ID,
+            3);
+    }
+
+    /**
+     * Try to click on a button but do not fail if it is not clickable.
+     *
+     * @param accessibilityLabel The accessibility label of the button to be
+     * clicked.
+     */
+    private void attemptToClickButton(String accessibilityLabel)
+    {
+        MeetUIUtils.clickOnElement(
+            participant.getDriver(),
+            getAccessibilityCSSSelector(accessibilityLabel),
+            false
+        );
+    }
+
+    /**
+     * Try to click on a button and fail if it cannot be clicked.
+     *
+     * @param accessibilityLabel The accessibility label of the button to be
+     * clicked.
+     */
+    private void clickButton(String accessibilityLabel)
+    {
+        MeetUIUtils.clickOnElement(
+            participant.getDriver(),
+            getAccessibilityCSSSelector(accessibilityLabel),
+            true
+        );
+    }
+
+    /**
+     * Ensure the overflow menu is open and clicks on a specified button.
+     *
+     * @param accessibilityLabel The accessibility label of the button to be
+     * clicked.
+     */
+    private void clickButtonInOverflowMenu(String accessibilityLabel)
+    {
+        openOverflowMenu();
+
+        clickButton(accessibilityLabel);
+
+        closeOverflowMenu();
+    }
+
+    /**
+     * Helper for formatting the string to be used as a CSS selector for
+     * an accessibility label.
+     *
+     * @param accessibilityLabel The accessibility label to be used to search
+     * for a WebElement on the page.
+     * @return String intended to be used with By#cssSelector.
+     */
+    private String getAccessibilityCSSSelector(String accessibilityLabel)
+    {
+        return String.format("[aria-label=\"%s\"]", accessibilityLabel);
+    }
+
+    /**
+     * Helper for retrieving the selector for the overflow menu.
+     *
+     * @return <tt>By</tt> to be used by WebDriver to locate the overflow menu.
+     */
+    private By getOverflowMenuSelector()
+    {
+        return By.cssSelector(getAccessibilityCSSSelector(OVERFLOW_MENU));
+    }
+
+    /**
+     * Waits up to 10 seconds for a button to be visible on the toolbar.
+     *
+     * @param accessibilityLabel The accessibility label of the button to be
+     * clicked.
+     */
+    private void waitForButtonDisplay(String accessibilityLabel)
+    {
+        TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(getAccessibilityCSSSelector(accessibilityLabel)),
             10);
     }
 
     /**
-     * Waits up to 3 seconds for the the toolbar to be visible on the page.
+     * Waits up to 10 seconds for the overflow menu to be visible or not
+     * visible.
+     *
+     * @param visible Whether to wait for the overflow menu to be visible or
+     * not visible.
      */
-    public void waitForVisible()
-    {
-        TestUtils.waitForDisplayedElementByXPath(
-            participant.getDriver(),
-            "//div[contains(@class, 'toolbar')]",
-            3);
+    private void waitForOverFlowMenu(boolean visible) {
+        By selector = getOverflowMenuSelector();
+        WebDriver driver = participant.getDriver();
+        int waitTime = 10;
+
+        if (visible) {
+            TestUtils.waitForElementBy(
+                driver,
+                selector,
+                waitTime);
+        } else {
+            TestUtils.waitForElementNotPresentBy(
+                driver,
+                selector,
+                waitTime);
+        }
     }
 }

@@ -31,11 +31,6 @@
             <class name="org.jitsi.meet.test.ConnectionTimeTest" />
         </classes>
     </test>-->
-    <test name="ContactListTest">
-        <classes>
-            <class name="org.jitsi.meet.test.ContactListTest" />
-        </classes>
-    </test>
     <test name="DataChannelTest">
         <classes>
             <class name="org.jitsi.meet.test.DataChannelTest" />
