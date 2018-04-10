@@ -490,26 +490,27 @@ public class BandwidthEstimationTest
         // seconds.
         String jvbStats = runScenario(participants,
                 true, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pLinearRegressionStats = runScenario(participants,
-                false, false, true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pKalmanFilterStats = runScenario(participants,
-                false, true, false, 200, TimeUnit.SECONDS, network, schedule);
-
         File jvbFile = getLogFile(
                 network.name + "JVB" + humanizeSchedule(schedule) + ".json");
+        writeFile(jvbFile, jvbStats);
+
+        String p2pLinearRegressionStats = runScenario(participants,
+                false, false, true, 200, TimeUnit.SECONDS, network, schedule);
         File p2pLinearRegressionFile = getLogFile(
                 network.name + "Regression"
                 + humanizeSchedule(schedule) + ".json");
+        writeFile(p2pLinearRegressionFile, p2pLinearRegressionStats);
+
+        String p2pKalmanFilterStats = runScenario(participants,
+                false, true, false, 200, TimeUnit.SECONDS, network, schedule);
         File p2pKalmanFilterFile = getLogFile(
                 network.name + "Kalman"
                 + humanizeSchedule(schedule) + ".json");
-        File analysisFile = getLogFile(
-                network.name + humanizeSchedule(schedule) + ".out");
-
-        writeFile(jvbFile, jvbStats);
-        writeFile(p2pLinearRegressionFile, p2pLinearRegressionStats);
         writeFile(p2pKalmanFilterFile, p2pKalmanFilterStats);
 
+        // TODO incorporate LR in the analysis.
+        File analysisFile = getLogFile(
+                network.name + humanizeSchedule(schedule) + ".out");
         int result = benchmark(jvbFile, p2pLinearRegressionFile, analysisFile);
         assertEquals(result, 0);
         }
