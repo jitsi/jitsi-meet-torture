@@ -56,6 +56,8 @@ public class DisplayNameTest
     /**
      * Constructs DisplayNameTest with already allocated test.
      * @param baseTest the parent test
+     * @deprecated see
+     * {@link AbstractBaseTest#AbstractBaseTest(AbstractBaseTest)}
      */
     public DisplayNameTest(AbstractBaseTest baseTest)
     {

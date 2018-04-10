@@ -41,6 +41,8 @@ public class SwitchVideoTest
 
     /**
      * Constructs SwitchVideoTest with already allocated participants.
+     * @deprecated see
+     * {@link AbstractBaseTest#AbstractBaseTest(AbstractBaseTest)}
      */
     public SwitchVideoTest(AbstractBaseTest baseTest)
     {
