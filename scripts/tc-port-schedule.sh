@@ -42,13 +42,15 @@ flowid=
 
 # Prints TC(8) debugging information.
 tc_internals() {
-    for i in {qdisc,class,filter}; do ${TC} -s -d ${i} show dev ${DEV}; done
+    for i in {qdisc,class,filter}; do
+        ${TC} -s -d ${i} show dev ${DEV}
+    done
 }
 
 # Resets the HTB(8) state.
 finish() {
     if [ -n "${qdiscid}" -a -n "${flowid}" ]; then
-        filterid=$(tc filter show dev ${DEV}|grep ${qdiscid}:${flowid}|cut -d' ' -f10)
+        local filterid=$(tc filter show dev ${DEV}|grep ${qdiscid}:${flowid}|cut -d' ' -f10)
     fi
 
     if [ -n "${filterid}" ]; then
