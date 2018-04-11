@@ -610,7 +610,7 @@ public class BandwidthEstimationTest
         WebDriver d2 = p2.getDriver();
 
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 10; i > 0; i--)
         {
             // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
             String localCandidateType
@@ -621,8 +621,8 @@ public class BandwidthEstimationTest
                 break;
             }
 
-            print("Waiting for a prflx local candidate type. Got: "
-                    + localCandidateType);
+            print(String.format("Waiting %d seconds for a prflx local "
+                        + "candidate type. Got: %s.", localCandidateType, i));
 
             Thread.sleep(1000);
         }
