@@ -16,7 +16,7 @@
 #
 # description: This script uses HTB(8) to schedule the egress bitrate towards a
 # specific port. This script requires HTB(8) to be configured on the host
-# machine with: tc qdisc add dev ${DEV} root default 1
+# machine with: tc qdisc add dev ${DEV} root htb default 1
 #
 # author: George Politis
 

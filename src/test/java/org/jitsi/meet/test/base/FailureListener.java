@@ -166,6 +166,11 @@ public class FailureListener
 
         try
         {
+            if (!(testResult.getInstance() instanceof AbstractBaseTest))
+            {
+                return;
+            }
+
             AbstractBaseTest testInstance
                 = (AbstractBaseTest)testResult.getInstance();
 
