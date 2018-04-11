@@ -401,41 +401,7 @@ public class MeetUIUtils
 
             TestUtils.waitForDisplayedElementByXPath(
                 driver, settingsXPath, 5);
-
-            if (participant.getToolbar().isNewToolbar()) {
-                participant.getToolbar().closeOverflowMenu();
-            }
         }
-    }
-
-    /**
-     * Opens the contact list panel, if not open.
-     *
-     * @param participant <tt>WebParticipant</tt> instance of the participant
-     * for whom we'll try to open the contact list panel.
-     * @throws TimeoutException if we fail to open the contact list panel
-     */
-    public static void displayContactListPanel(WebParticipant participant)
-    {
-        String contactListXPath = "//div[@id='contacts_container']";
-        WebDriver driver = participant.getDriver();
-
-        WebElement contactList
-            = driver.findElement(By.xpath(contactListXPath));
-
-        if (!contactList.isDisplayed())
-        {
-            participant.getToolbar().clickContactListButton();
-
-            TestUtils.waitForDisplayedElementByXPath(
-                driver, contactListXPath, 5);
-        }
-
-        // move away from the button as user will do, to remove the tooltips
-        Actions action = new Actions(driver);
-        action.moveToElement(
-            driver.findElement(By.id("largeVideoWrapper")));
-        action.perform();
     }
 
     /**
