@@ -543,7 +543,8 @@ public class BandwidthEstimationTest
             senderUrl = participants.getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
 
-            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
+            String ccName = enableRemb ? "Kalman" : "Regression";
+            String roomName = network.name + ccName + humanizeSchedule(schedule);
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
