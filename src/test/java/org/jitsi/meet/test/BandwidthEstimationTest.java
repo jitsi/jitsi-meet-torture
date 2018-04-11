@@ -507,12 +507,6 @@ public class BandwidthEstimationTest
                 network.name + "Kalman"
                 + humanizeSchedule(schedule) + ".json");
         writeFile(p2pKalmanFilterFile, p2pKalmanFilterStats);
-
-        // TODO incorporate LR in the analysis.
-        File analysisFile = getLogFile(
-                network.name + humanizeSchedule(schedule) + ".out");
-        int result = benchmark(jvbFile, p2pLinearRegressionFile, analysisFile);
-        assertEquals(result, 0);
         }
         finally
         {
