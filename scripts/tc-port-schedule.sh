@@ -42,9 +42,7 @@ flowid=
 
 # Prints TC(8) debugging information.
 tc_internals() {
-    ${TC} -s -d qdisc show dev ${DEV}
-    ${TC} -s -d class show dev ${DEV}
-    ${TC} -s -d filter show dev ${DEV}
+    for i in {qdisc,class,filter}; do ${TC} -s -d ${i} show dev ${DEV}; done
 }
 
 # Resets the HTB(8) state.
