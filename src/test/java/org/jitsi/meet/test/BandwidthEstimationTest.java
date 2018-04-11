@@ -610,19 +610,44 @@ public class BandwidthEstimationTest
         WebDriver d2 = p2.getDriver();
 
 
-        for (int i = 10; i > 0; i--)
+        if (!useJVB)
         {
-            // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
+            for (int i = 10; i > 0; i--)
+            {
+                // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
+                String localCandidateType
+                    = MeetUtils.getLocalCandidateType(d2, useJVB);
+
+                if ("prflx".equalsIgnoreCase(localCandidateType))
+                {
+                    break;
+                }
+
+                print(String.format("Waiting %d seconds for a prflx local "
+                            + "candidate type. Got: %s.", i, localCandidateType));
+
+                Thread.sleep(1000);
+            }
+
             String localCandidateType
                 = MeetUtils.getLocalCandidateType(d2, useJVB);
+            if (!"prflx".equalsIgnoreCase(localCandidateType))
+            {
+                throw new RuntimeException(
+                        "Failed to obrain a prflx local candidate.");
+            }
+        }
 
-            if ("prflx".equalsIgnoreCase(localCandidateType))
+        for (int i = 10; i > 0; i--)
+        {
+            int receiverPort = MeetUtils.getBundlePort(d2, useJVB);
+            if (receiverPort != -1)
             {
                 break;
             }
 
-            print(String.format("Waiting %d seconds for a prflx local "
-                        + "candidate type. Got: %s.", i, localCandidateType));
+            print(String.format("Waiting %d seconds for the bundle port."
+                            + " Got: %s.", i, receiverPort));
 
             Thread.sleep(1000);
         }
