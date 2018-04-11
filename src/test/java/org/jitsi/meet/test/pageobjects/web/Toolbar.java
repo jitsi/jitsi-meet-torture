@@ -92,8 +92,8 @@ public class Toolbar {
 
         waitForButtonDisplay(DESKTOP);
 
-        WebElement desktopIcon = driver.findElement(By.cssSelector(
-            getAccessibilityCSSSelector(DESKTOP)));
+        WebElement desktopIcon = driver.findElement(
+            By.xpath(DESKTOP_ICON_XPATH));
         String classNames = desktopIcon.getAttribute("class");
         boolean isToggled = classNames.contains("toggled");
 
