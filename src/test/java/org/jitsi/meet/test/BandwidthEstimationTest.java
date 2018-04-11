@@ -622,7 +622,7 @@ public class BandwidthEstimationTest
             }
 
             print(String.format("Waiting %d seconds for a prflx local "
-                        + "candidate type. Got: %s.", localCandidateType, i));
+                        + "candidate type. Got: %s.", i, localCandidateType));
 
             Thread.sleep(1000);
         }
