@@ -613,29 +613,25 @@ public class BandwidthEstimationTest
         for (int i = 0; i < 10; i++)
         {
             // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
-            try
-            {
-                String localCandidateType
-                    = MeetUtils.getLocalCandidateType(d2, useJVB);
+            String localCandidateType
+                = MeetUtils.getLocalCandidateType(d2, useJVB);
 
-                if ("prflx".equalsIgnoreCase(localCandidateType))
-                {
-                    break;
-                }
-
-                print("Waiting a sec for a prflx local candidate type. Got: "
-                        + localCandidateType);
-            }
-            catch (Exception ex)
+            if ("prflx".equalsIgnoreCase(localCandidateType))
             {
-                print("Waiting a sec for a prflx local candidate type. Got: "
-                        + "nothing...");
+                break;
             }
+
+            print("Waiting for a prflx local candidate type. Got: "
+                    + localCandidateType);
 
             Thread.sleep(1000);
         }
 
         int receiverPort = MeetUtils.getBundlePort(d2, useJVB);
+        if (receiverPort == -1)
+        {
+            throw new RuntimeException("Failed to obtain the bundle port.");
+        }
 
         print("Receiver port: " + receiverPort);
 
