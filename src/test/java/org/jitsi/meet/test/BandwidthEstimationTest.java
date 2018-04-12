@@ -55,7 +55,7 @@ import static org.jitsi.meet.test.util.TestUtils.*;
  * @author George Politis
  */
 public class BandwidthEstimationTest
-    extends WebTestBase
+    extends AbstractTest
 {
     /**
      * Name of the system property which point to the tc script used to
@@ -267,11 +267,6 @@ public class BandwidthEstimationTest
     private static String chromeWrapper;
 
     /**
-     * The options to launch the sender participant with.
-     */
-    private ParticipantOptions senderOptions;
-
-    /**
      * Utility method that calls {@link #tcScript} to rate-limit given port.
      *
      * @param portNumber the port number to be rate-limited.
@@ -384,9 +379,9 @@ public class BandwidthEstimationTest
     }
 
     @Override
-    public void setupClass()
+    public void setupClass(Properties config)
     {
-        super.setupClass();
+        super.setupClass(config);
 
         tcScript = System.getProperty(TC_SCRIPT_PROP_NAME);
         if (tcScript == null)
@@ -438,13 +433,9 @@ public class BandwidthEstimationTest
                 throw new SkipException("no tc script has been specified");
             }
         }
-
-        senderOptions
-            = new WebParticipantOptions().setFakeStreamVideoFile(
-                INPUT_VIDEO_FILE);
     }
 
-    @DataProvider(name = "dp")
+    @DataProvider(name = "dp", parallel = true)
     public Object[][] createData()
     {
         // These are bitrate,duration pairs. The units are important and are
@@ -477,25 +468,38 @@ public class BandwidthEstimationTest
     public void test(Network network, String[] schedule)
         throws Exception
     {
+        Properties config = TestSettings.initSettings();
+        ParticipantFactory factory = new WebParticipantFactory(config);
+        ParticipantHelper participants = new ParticipantHelper(factory);
+
+        try
+        {
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
-        String jvbStats = test(
-                true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pStats = test(
-                false, 200, TimeUnit.SECONDS, network, schedule);
-
+        String jvbStats = runScenario(participants,
+                true, false, true, 200, TimeUnit.SECONDS, network, schedule);
         File jvbFile = getLogFile(
                 network.name + "JVB" + humanizeSchedule(schedule) + ".json");
-        File p2pFile = getLogFile(
-                network.name + "P2P" + humanizeSchedule(schedule) + ".json");
-        File analysisFile = getLogFile(
-                network.name + humanizeSchedule(schedule) + ".out");
-
         writeFile(jvbFile, jvbStats);
-        writeFile(p2pFile, p2pStats);
 
-        int result = benchmark(jvbFile, p2pFile, analysisFile);
-        assertEquals(result, 0);
+        String p2pLinearRegressionStats = runScenario(participants,
+                false, false, true, 200, TimeUnit.SECONDS, network, schedule);
+        File p2pLinearRegressionFile = getLogFile(
+                network.name + "Regression"
+                + humanizeSchedule(schedule) + ".json");
+        writeFile(p2pLinearRegressionFile, p2pLinearRegressionStats);
+
+        String p2pKalmanFilterStats = runScenario(participants,
+                false, true, false, 200, TimeUnit.SECONDS, network, schedule);
+        File p2pKalmanFilterFile = getLogFile(
+                network.name + "Kalman"
+                + humanizeSchedule(schedule) + ".json");
+        writeFile(p2pKalmanFilterFile, p2pKalmanFilterStats);
+        }
+        finally
+        {
+            participants.cleanup();
+        }
     }
 
     /**
@@ -509,27 +513,38 @@ public class BandwidthEstimationTest
      *
      * @throws Exception if something goes wrong.
      */
-    private String test(
-            boolean useJVB, long timeout, TimeUnit unit,
+    private static String runScenario(ParticipantHelper participants,
+            boolean useJVB, boolean enableRemb, boolean enableTcc,
+            long timeout, TimeUnit unit,
             Network network, String[] schedule)
         throws Exception
     {
         JitsiMeetUrl senderUrl, receiverUrl;
         if (!useJVB)
         {
-            senderUrl = getJitsiMeetUrl();
+            senderUrl = participants.getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
 
-            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
+            String ccName = enableRemb ? "Kalman" : "Regression";
+            String roomName = network.name + ccName + humanizeSchedule(schedule);
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
 
-            receiverUrl = getJitsiMeetUrl();
+
+            receiverUrl = participants.getJitsiMeetUrl();
             receiverUrl.removeFragmentParam("config.callStatsID");
             receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
+            receiverUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            receiverUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
             // XXX we disable TURN server discovery in an attempt to fix a
             // situation where the receiver connects with the relay candidate
             // (so we get the port the TURN server has reserved for the
@@ -542,28 +557,23 @@ public class BandwidthEstimationTest
         else
         {
             String roomName = network.name + "JVB" + humanizeSchedule(schedule);
-            senderUrl = receiverUrl = getJitsiMeetUrl();
+            senderUrl = receiverUrl = participants.getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(enableTcc).toLowerCase());
             senderUrl.setRoomName(roomName);
         }
 
         WebParticipantOptions receiverOptions = new WebParticipantOptions();
 
-        boolean useCustomBinary = false;
-        if (network.uplink != null && network.uplink != "")
+        if ((network.uplink != null && network.uplink != "")
+            && (network.downlink != null && network.downlink != ""))
         {
             receiverOptions.setUplink(network.uplink);
-            useCustomBinary = true;
-        }
-
-        if (network.downlink != null && network.downlink != "")
-        {
             receiverOptions.setDownlink(network.downlink);
-            useCustomBinary = true;
-        }
 
-        if (useCustomBinary)
-        {
             receiverOptions.setBinary(chromeWrapper);
             // XXX The default behavior of the chromedriver is to SIGKILL the
             // launched chrome instance. However, we need the chromedriver to
@@ -573,40 +583,80 @@ public class BandwidthEstimationTest
             receiverOptions.setProfileDirectory("/tmp/bwe-receiver-data-dir");
         }
 
-        ensureTwoParticipants(
-                senderUrl, receiverUrl, senderOptions, receiverOptions);
+        final WebParticipantOptions senderOptions
+            = new WebParticipantOptions().setFakeStreamVideoFile(
+                INPUT_VIDEO_FILE);
 
-        WebDriver sender = getParticipant1().getDriver();
-        assertNotNull(sender);
-        WebDriver receiver = getParticipant2().getDriver();
-        assertNotNull(receiver);
+        Participant p1 = participants
+                .createParticipant("web.participant1", senderOptions);
+        p1.joinConference(senderUrl);
+        WebDriver d1 = p1.getDriver();
 
-        // Rate limit the media flow on the receiver and analyze the webrtc
-        // internals.
-        String localCandidateType
-            = MeetUtils.getLocalCandidateType(receiver, useJVB);
-        while (!"prflx".equalsIgnoreCase(localCandidateType))
+        Participant p2 = participants
+                .createParticipant("web.participant2", receiverOptions);
+        p2.joinConference(receiverUrl);
+        WebDriver d2 = p2.getDriver();
+
+
+        if (!useJVB)
         {
-            print("Waiting for a prflx local candidate type. Got: "
-                    + localCandidateType);
+            for (int i = 10; i > 0; i--)
+            {
+                // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
+                String localCandidateType
+                    = MeetUtils.getLocalCandidateType(d2, useJVB);
 
-            Thread.sleep(1000);
-            localCandidateType
-                = MeetUtils.getLocalCandidateType(receiver, useJVB);
+                if ("prflx".equalsIgnoreCase(localCandidateType))
+                {
+                    break;
+                }
+
+                print(String.format("Waiting %d seconds for a prflx local "
+                            + "candidate type. Got: %s.", i, localCandidateType));
+
+                Thread.sleep(1000);
+            }
+
+            String localCandidateType
+                = MeetUtils.getLocalCandidateType(d2, useJVB);
+            if (!"prflx".equalsIgnoreCase(localCandidateType))
+            {
+                throw new RuntimeException(
+                        "Failed to obrain a prflx local candidate.");
+            }
         }
 
-        int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
+        for (int i = 10; i > 0; i--)
+        {
+            int receiverPort = MeetUtils.getBundlePort(d2, useJVB);
+            if (receiverPort != -1)
+            {
+                break;
+            }
+
+            print(String.format("Waiting %d seconds for the bundle port."
+                            + " Got: %s.", i, receiverPort));
+
+            Thread.sleep(1000);
+        }
+
+        int receiverPort = MeetUtils.getBundlePort(d2, useJVB);
+        if (receiverPort == -1)
+        {
+            throw new RuntimeException("Failed to obtain the bundle port.");
+        }
 
         print("Receiver port: " + receiverPort);
 
+        // Rate limit the media flow towards the receiver and analyze the
+        // webrtc internals.
         // This will take a while (blocking), depending on the schedule.
         schedulePort(receiverPort, timeout, unit, schedule);
 
-        String rtcStats = MeetUtils.getRtpStats(receiver, useJVB);
+        String rtcStats = MeetUtils.getRtpStats(d2, useJVB);
 
         // XXX prevent ghosts
-        getParticipant1().hangUp();
-        getParticipant2().hangUp();
+        participants.hangUpAll();
         // XXX we want to actually quit the drivers because we may wish to
         // launch chrome with different parameters.
         participants.cleanup();

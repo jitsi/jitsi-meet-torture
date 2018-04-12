@@ -39,7 +39,7 @@ public class ParticipantHelper
      * @param factory - The participants factory which will be used to create
      * new {@link Participant}s.
      */
-    protected ParticipantHelper(ParticipantFactory factory)
+    public ParticipantHelper(ParticipantFactory factory)
     {
         participants = new LinkedList<>();
         participantFactory = Objects.requireNonNull(factory, "factory");
@@ -49,7 +49,7 @@ public class ParticipantHelper
      * Constructs with predefined room name and participants.
      * @param participants the participants to add.
      */
-    protected ParticipantHelper(ParticipantHelper participants)
+    public ParticipantHelper(ParticipantHelper participants)
     {
         this.participants = participants.getAll();
         this.participantFactory = participants.participantFactory;

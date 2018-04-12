@@ -25,22 +25,7 @@ import java.util.*;
  */
 public class WebTestBase
     extends AbstractBaseTest
-{
-    /**
-     * Default config for Web participants.
-     */
-    public static final String DEFAULT_CONFIG
-        = "config.requireDisplayName=false"
-        + "&config.debug=true"
-        + "&config.disableAEC=true"
-        + "&config.disableNS=true"
-        + "&config.callStatsID=false"
-        + "&config.alwaysVisibleToolbar=true"
-        + "&config.p2p.enabled=false"
-        + "&config.p2p.useStunTurn=false"
-        + "&config.gatherStats=true"
-        + "&config.disable1On1Mode=true";
-
+{ 
     /**
      * Default
      */
@@ -364,22 +349,5 @@ public class WebTestBase
         participant.waitForIceConnected();
 
         return participant;
-    }
-
-    /**
-     * Return new {@link JitsiMeetUrl} instance which has only
-     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link ParticipantFactory#JITSI_MEET_URL_PROP} system property.
-     *
-     * @return a new instance of {@link JitsiMeetUrl}.
-     */
-    @Override
-    public JitsiMeetUrl getJitsiMeetUrl()
-    {
-        JitsiMeetUrl url = super.getJitsiMeetUrl();
-
-        url.appendConfig(DEFAULT_CONFIG);
-
-        return url;
     }
 }

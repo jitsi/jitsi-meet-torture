@@ -205,6 +205,11 @@ public class PeerConnectionStatusTest
         // SDP contains only host candidates, whereas the nodes connect with
         // each other using peer reflexive candidates.
         bundlePort2 = MeetUtils.getBundlePort(driver2, true);
+        if (bundlePort2 == -1)
+        {
+            throw new RuntimeException("Failed to obtain the bundle port.");
+        }
+
         print("Local bundle port for participant2: " + bundlePort2);
         blockPort(bundlePort2);
 
