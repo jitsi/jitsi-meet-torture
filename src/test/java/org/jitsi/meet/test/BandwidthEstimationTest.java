@@ -379,18 +379,6 @@ public class BandwidthEstimationTest
     }
 
     @Override
-    public boolean saveDebugInformation()
-    {
-        // When a test method fails, the failure listener will try to get RTP
-        // stats, save screenshots, etc., but, in this particular test class,
-        // we quit the drivers/sessions after each bwe scenario run (because
-        // different bwe scenarios require different Chrome command line
-        // options), which would lead to an exception being raised.
-
-        return false;
-    }
-
-    @Override
     public void setupClass(Properties config)
     {
         super.setupClass(config);

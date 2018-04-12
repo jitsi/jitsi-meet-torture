@@ -205,15 +205,6 @@ public abstract class AbstractTest
     }
 
     /**
-     * Tests can override this to skip saving debug information (such as
-     * RTP stats, HTML source code, screenshots etc.)
-     */
-    public boolean saveDebugInformation()
-    {
-        return true;
-    }
-
-    /**
      * Tests can override this to be disabled by default and run only when
      * explicitly included in the tests to run using
      * {@link AbstractBaseTest#TESTS_TO_RUN_PNAME} or

@@ -174,11 +174,6 @@ public class FailureListener
             AbstractBaseTest testInstance
                 = (AbstractBaseTest)testResult.getInstance();
 
-            if (!testInstance.saveDebugInformation())
-            {
-                return;
-            }
-
             List<Participant<? extends WebDriver>> participants
                 = testInstance.getAllParticipants();
 
