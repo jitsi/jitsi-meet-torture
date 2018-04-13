@@ -257,6 +257,8 @@ public class DisplayNameTest
         WebDriver driver1 = participant1.getDriver();
         final String participant2EndpointId = participant2.getEndpointId();
 
+        getParticipant1().getInfoDialog().close();
+
         // first when checking make sure we click on video so we avoid
         // the situation of dominant speaker detection and changing display
         MeetUIUtils.clickOnRemoteVideo(
