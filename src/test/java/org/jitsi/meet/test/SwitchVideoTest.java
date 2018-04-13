@@ -73,6 +73,8 @@ public class SwitchVideoTest
     public void participant1ClickOnRemoteVideoAndTest()
     {
         getParticipant1().getToolbar().closeOverflowMenu();
+        getParticipant1().getInfoDialog().close();
+
         MeetUIUtils.selectRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
