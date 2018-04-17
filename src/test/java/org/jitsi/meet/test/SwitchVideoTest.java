@@ -74,8 +74,7 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = {"participant1ClickOnLocalVideoAndTest"})
     public void participant1ClickOnRemoteVideoAndTest()
     {
-        getParticipant1().getToolbar().closeOverflowMenu();
-        getParticipant1().getInfoDialog().close();
+        closeToolbarDialogs();
 
         MeetUIUtils.selectRemoteVideo(
             getParticipant1().getDriver(),
@@ -161,5 +160,18 @@ public class SwitchVideoTest
         MeetUIUtils.selectRemoteVideo(
             getParticipant2().getDriver(),
             getParticipant1().getEndpointId());
+    }
+
+    /**
+     * Ensures all participants do not have toolbar related dialogs open that
+     * could obstruct clicking of the filmstrip.
+     */
+    private void closeToolbarDialogs()
+    {
+        getParticipant1().getInfoDialog().close();
+        getParticipant1().getToolbar().closeOverflowMenu();
+
+        getParticipant2().getInfoDialog().close();
+        getParticipant2().getToolbar().closeOverflowMenu();
     }
 }
