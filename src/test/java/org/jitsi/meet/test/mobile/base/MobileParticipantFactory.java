@@ -20,7 +20,6 @@ import io.appium.java_client.android.*;
 import io.appium.java_client.ios.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
-import org.openqa.selenium.*;
 import org.openqa.selenium.remote.*;
 
 import java.net.*;
@@ -77,7 +76,7 @@ public class MobileParticipantFactory
         URL appiumUrl = targetOptions.getAppiumServerUrl();
         DesiredCapabilities capabilities = targetOptions.createCapabilities();
 
-        AppiumDriver<WebElement> driver
+        AppiumDriver<MobileElement> driver
             = type.isAndroid()
                 ? new AndroidDriver<>(appiumUrl, capabilities)
                 : new IOSDriver<>(appiumUrl, capabilities);

@@ -37,7 +37,7 @@ public class TestHint
     /**
      * The mobile participant's driver.
      */
-    private final AppiumDriver driver;
+    private final AppiumDriver<MobileElement> driver;
 
     /**
      * The test hint's id (key).
@@ -51,10 +51,34 @@ public class TestHint
      * @param id - The test hint's id (key) which identifies a hint in the app's
      * scope.
      */
-    public TestHint(AppiumDriver driver, String id)
+    public TestHint(AppiumDriver<MobileElement> driver, String id)
     {
         this.driver = driver;
         this.id = id;
+    }
+
+    /**
+     * Clicks on the {@link TestHint} which should execute the 'onPress' handler
+     * bound on the JavaScript side.
+     */
+    public void click()
+    {
+        getElement().click();
+    }
+
+    /**
+     * Finds the underlying {@link MobileElement} for this {@link TestHint}
+     * instance.
+     *
+     * @return {@link MobileElement}
+     * @throws NoSuchElementException if {@link MobileElement} could not be
+     * found on the current screen.
+     */
+    private MobileElement getElement()
+    {
+        return useAccessibilityForId()
+            ? driver.findElementByAccessibilityId(id)
+            : driver.findElementById(id);
     }
 
     /**
@@ -67,12 +91,7 @@ public class TestHint
      */
     public String getValue()
     {
-        WebElement element
-            = useAccessibilityForId()
-                ? driver.findElementByAccessibilityId(id)
-                : driver.findElementById(id);
-
-        return element.getText();
+        return getElement().getText();
     }
 
     /**
