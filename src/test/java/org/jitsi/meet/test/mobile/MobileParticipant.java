@@ -35,7 +35,7 @@ import java.util.logging.*;
  *
  * @author Pawel Domas
  */
-public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
+public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
 {
     /**
      * The default config part of the {@link JitsiMeetUrl} for every mobile
@@ -72,7 +72,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     /**
      * The Appium driver instance.
      */
-    private final AppiumDriver<WebElement> driver;
+    private final AppiumDriver<MobileElement> driver;
 
     /**
      * Initializes {@link MobileParticipant}.
@@ -86,7 +86,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
      * @param appBinaryFile - A full path to the app binary file which can be
      * used to install the app on the device.
      */
-    public MobileParticipant(AppiumDriver<WebElement> driver,
+    public MobileParticipant(AppiumDriver<MobileElement> driver,
                              String name,
                              ParticipantType type,
                              String appBundleId,
@@ -119,9 +119,9 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         }
     }
 
-    private AndroidDriver<WebElement> getAndroidDriver()
+    private AndroidDriver<MobileElement> getAndroidDriver()
     {
-        return type.isAndroid() ? (AndroidDriver<WebElement>) driver : null;
+        return type.isAndroid() ? (AndroidDriver<MobileElement>) driver : null;
     }
 
     /**
@@ -276,7 +276,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
         ConferenceView conference = new ConferenceView(this);
 
         // Just to make sure we're in the conference
-        conference.getRootView().getText();
+        conference.getLargeVideo().getValue();
     }
 
     /**
@@ -321,7 +321,7 @@ public class MobileParticipant extends Participant<AppiumDriver<WebElement>>
     /**
      * {@inheritDoc}
      */
-    public AppiumDriver<WebElement> getDriver()
+    public AppiumDriver<MobileElement> getDriver()
     {
         return driver;
     }

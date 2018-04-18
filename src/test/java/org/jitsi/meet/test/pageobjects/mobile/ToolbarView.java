@@ -80,7 +80,7 @@ public class ToolbarView extends AbstractMobilePage
     {
         if (!isOpen())
         {
-            conferenceView.getRootView().click();
+            conferenceView.getLargeVideo().click();
         }
     }
 }

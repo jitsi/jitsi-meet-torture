@@ -15,9 +15,6 @@
  */
 package org.jitsi.meet.test.pageobjects.mobile;
 
-import io.appium.java_client.*;
-import io.appium.java_client.pagefactory.*;
-
 import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
@@ -28,17 +25,16 @@ import org.jitsi.meet.test.pageobjects.mobile.base.*;
 public class ConferenceView extends AbstractMobilePage
 {
     /**
-     * Root element with "Conference" accessibility label.
-     */
-    @AndroidFindBy(accessibility = "Conference")
-    @iOSFindBy(accessibility = "Conference")
-    private MobileElement conference;
-
-    /**
-     * Root element with "Conference" accessibility label.
+     * The conference name test hint.
      */
     @TestHintLocator(id = "org.jitsi.meet.conference.name")
     private TestHint conferenceName;
+
+    /**
+     * The large video test hint.
+     */
+    @TestHintLocator(id = "org.jitsi.meet.LargeVideo")
+    private TestHint largeVideo;
 
     private ToolbarView toolbar;
 
@@ -63,13 +59,13 @@ public class ConferenceView extends AbstractMobilePage
     }
 
     /**
-     * Tries to obtain root container of the conference view.
+     * Gets the large video {@link TestHint}.
      *
-     * @return a <tt>MobileElement</tt> proxy object.
+     * @return a {@link TestHint} instance for the "large video" element.
      */
-    public MobileElement getRootView()
+    public TestHint getLargeVideo()
     {
-        return conference;
+        return largeVideo;
     }
 
     /**
