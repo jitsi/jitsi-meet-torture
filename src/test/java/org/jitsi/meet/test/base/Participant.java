@@ -401,7 +401,7 @@ public abstract class Participant<T extends WebDriver>
                 return (!checkSend || rtpStats.getUploadBitrate() > 0)
                     && (!checkReceive || rtpStats.getDownloadBitrate() > 0);
             },
-            15,
+            20,
             toString() + "#waitForSendReceiveData");
     }
 
