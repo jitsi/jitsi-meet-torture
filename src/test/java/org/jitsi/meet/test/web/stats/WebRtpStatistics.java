@@ -51,7 +51,7 @@ public class WebRtpStatistics
     @Override
     public long getDownloadBitrate()
     {
-        return bitrateMap != null ? bitrateMap.get("upload") : 0L;
+        return bitrateMap != null ? bitrateMap.get("download") : 0L;
     }
 
     /**
@@ -60,6 +60,6 @@ public class WebRtpStatistics
     @Override
     public long getUploadBitrate()
     {
-        return bitrateMap != null ? bitrateMap.get("download") : 0L;
+        return bitrateMap != null ? bitrateMap.get("upload") : 0L;
     }
 }
