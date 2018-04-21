@@ -96,6 +96,9 @@ public class DisplayNameTest
 
         doLocalDisplayNameCheck(randomName);
 
+        // There is a max of 2 seconds delay in the persistency throttling
+        TestUtils.waitMillis(2000);
+
         // now let's reload the second participant
         getParticipant2().hangUp();
         ensureTwoParticipants();
