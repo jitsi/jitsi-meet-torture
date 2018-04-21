@@ -18,6 +18,8 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 
+import java.util.*;
+
 /**
  * Base class for web tests.
  */
@@ -76,9 +78,11 @@ public class WebTestBase
     public void ensureOneParticipant(
         JitsiMeetUrl meetURL, ParticipantOptions options)
     {
-        Participant participant = joinParticipant(0, meetURL, options);
+        WebParticipant participant = joinParticipant(0, meetURL, options);
 
         participant.waitToJoinMUC();
+
+        ensureInfoDialogClosed();
     }
 
     /**
@@ -160,6 +164,8 @@ public class WebTestBase
         // FIXME missing a comment on why is it needed here (in case someone
         // would want to come up with a proper fix).
         TestUtils.waitMillis(500);
+
+        ensureInfoDialogClosed();
     }
 
     /**
@@ -191,6 +197,8 @@ public class WebTestBase
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();
         participant.waitForRemoteStreams(2);
+
+        ensureInfoDialogClosed();
     }
 
     /**
@@ -334,5 +342,15 @@ public class WebTestBase
         participant.waitForIceConnected();
 
         return participant;
+    }
+
+    /**
+     * Closes the info dialog for all participants if it is displayed.
+     */
+    private void ensureInfoDialogClosed()
+    {
+       List<WebParticipant> webParticipants = participants.getAll();
+       webParticipants.forEach(webParticipant ->
+           webParticipant.getInfoDialog().close());
     }
 }
