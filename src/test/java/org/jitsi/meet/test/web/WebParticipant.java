@@ -41,6 +41,7 @@ public class WebParticipant extends Participant<WebDriver>
     private static final String DEFAULT_CONFIG
         = "config.requireDisplayName=false"
             + "&config.debug=true"
+            + "&config.testing.testMode=true"
             + "&config.disableAEC=true"
             + "&config.disableNS=true"
             + "&config.callStatsID=false"
@@ -519,6 +520,17 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public List getBrowserLogs()
     {
-        return (List)executeScript("return APP.debugLogs.getLogs();");
+        try
+        {
+            return (List) executeScript("return APP.debugLogs.getLogs();");
+        }
+        catch (Throwable t)
+        {
+            // if APP is missing or debugLogs missing
+            Logger.getGlobal().log(
+                Level.SEVERE,
+                "Failed to obtain browser logs:" + t.getMessage());
+            return null;
+        }
     }
 }
