@@ -390,7 +390,7 @@ public class FailureListener
     {
         try
         {
-            LogEntries logs = p.getBrowserLogs();
+            List logs = p.getBrowserLogs();
 
             if (logs != null)
             {
@@ -403,14 +403,12 @@ public class FailureListener
                          = new BufferedWriter(
                                 new FileWriter(outputFile)))
                 {
-                    for (LogEntry e : logs)
+                    for (Object e : logs)
                     {
                         out.write(e.toString());
                         out.newLine();
-                        out.newLine();
                     }
                     out.flush();
-                    out.close();
                 }
             }
         }

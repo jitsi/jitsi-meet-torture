@@ -25,6 +25,7 @@ import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 
@@ -513,5 +514,11 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return filmstrip;
+    }
+
+    @Override
+    public List getBrowserLogs()
+    {
+        return (List)executeScript("return APP.debugLogs.getLogs();");
     }
 }

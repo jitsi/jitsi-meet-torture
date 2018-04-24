@@ -490,17 +490,7 @@ public abstract class Participant<T extends WebDriver>
      */
     public abstract String getRTPStats();
 
-    public LogEntries getBrowserLogs()
-    {
-        if (type.isFirefox())
-        {
-            // not currently supported in FF
-            // https://github.com/SeleniumHQ/selenium/issues/2910
-            return null;
-        }
-
-        return driver.manage().logs().get(LogType.BROWSER);
-    }
+    public abstract List getBrowserLogs();
 
     /**
      * Returns the value for the given <tt>key</tt> from the config.js loaded
