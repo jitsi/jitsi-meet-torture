@@ -490,6 +490,11 @@ public abstract class Participant<T extends WebDriver>
      */
     public abstract String getRTPStats();
 
+    /**
+     * A list of log entries, which toString can be written to a log file.
+     *
+     * @return a list of log entries.
+     */
     public abstract List getBrowserLogs();
 
     /**

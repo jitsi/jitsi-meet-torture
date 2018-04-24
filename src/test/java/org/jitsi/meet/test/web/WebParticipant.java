@@ -517,6 +517,12 @@ public class WebParticipant extends Participant<WebDriver>
         return filmstrip;
     }
 
+    /**
+     /**
+     * A list of log string entries.
+     *
+     * @return a list of log entries.
+     */
     @Override
     public List getBrowserLogs()
     {
@@ -524,7 +530,7 @@ public class WebParticipant extends Participant<WebDriver>
         {
             return (List) executeScript("return APP.debugLogs.getLogs();");
         }
-        catch (Throwable t)
+        catch (RuntimeException t)
         {
             // if APP is missing or debugLogs missing
             Logger.getGlobal().log(
