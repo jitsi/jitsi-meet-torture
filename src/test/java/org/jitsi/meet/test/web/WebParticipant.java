@@ -25,6 +25,7 @@ import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 
@@ -40,6 +41,7 @@ public class WebParticipant extends Participant<WebDriver>
     private static final String DEFAULT_CONFIG
         = "config.requireDisplayName=false"
             + "&config.debug=true"
+            + "&config.testing.testMode=true"
             + "&config.disableAEC=true"
             + "&config.disableNS=true"
             + "&config.callStatsID=false"
@@ -513,5 +515,28 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return filmstrip;
+    }
+
+    /**
+     /**
+     * A list of log string entries.
+     *
+     * @return a list of log entries.
+     */
+    @Override
+    public List getBrowserLogs()
+    {
+        try
+        {
+            return (List) executeScript("return APP.debugLogs.getLogs();");
+        }
+        catch (RuntimeException t)
+        {
+            // if APP is missing or debugLogs missing
+            Logger.getGlobal().log(
+                Level.SEVERE,
+                "Failed to obtain browser logs:" + t.getMessage());
+            return null;
+        }
     }
 }

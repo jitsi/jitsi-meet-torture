@@ -370,15 +370,15 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
     }
 
     @Override
-    public LogEntries getBrowserLogs()
+    public List getBrowserLogs()
     {
         if (type.isAndroid())
         {
-            return driver.manage().logs().get("logcat");
+            return driver.manage().logs().get("logcat").getAll();
         }
         else
         {
-            return super.getBrowserLogs();
+            return null;
         }
     }
 

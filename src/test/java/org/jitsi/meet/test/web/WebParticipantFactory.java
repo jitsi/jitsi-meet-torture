@@ -102,12 +102,6 @@ public class WebParticipantFactory
                     startWebDriver(webOptions),
                     webOptions.getParticipantType());
 
-        // Adds a print in the console/selenium-node logs
-        // useful when checking crashes or failures in node logs
-        webParticipant.executeScript(
-            "console.log('--- Will start test:"
-                + getClass().getSimpleName() + "')");
-
         return webParticipant;
     }
 
