@@ -257,31 +257,6 @@ public class WebParticipant extends Participant<WebDriver>
      * {@inheritDoc}
      */
     @Override
-    public String getRTPStats()
-    {
-        try
-        {
-            // we default all tests to not use p2p, so we default using jvb here
-            Object log
-                = MeetUtils.getRtpStats(this.getDriver(), true);
-
-            return log instanceof String ? (String) log : null;
-        }
-        catch (Exception e)
-        {
-            Logger.getGlobal().log(
-                    Level.SEVERE,
-                    "Failed to get meet rtp stats from " + name,
-                    e);
-
-            return null;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getProtocol()
     {
         Object protocol
