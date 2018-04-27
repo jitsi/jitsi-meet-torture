@@ -98,12 +98,12 @@ public class MeetUtils
      */
     private static String getLastStatValueJS(String statName, boolean useJVB)
     {
-        return "var stats = APP.conference._room."
+        return "try { var stats = APP.conference._room."
             + (useJVB
                 ? "jvbJingleSession.peerconnection.stats;"
                 : "p2pJingleSession.peerconnection.stats;")
             + "var values = stats['" + statName + "'].values;"
-            + "return values[values.length-1];";
+            + "return values[values.length-1]; } catch (err) { return null; }";
     }
 
     /**
@@ -127,13 +127,6 @@ public class MeetUtils
 
         String lastLocalCandidateType = TestUtils
             .executeScriptAndReturnString(driver, lastLocalCandidateTypeJS);
-
-        if (lastLocalCandidateType == null)
-        {
-            throw new RuntimeException(
-                "Failed to obtain the local candidate type through"
-                    + " the JS script(might be broken)");
-        }
 
         return lastLocalCandidateType;
     }
@@ -162,17 +155,14 @@ public class MeetUtils
 
         if (lastLocalAddress == null)
         {
-            throw new RuntimeException(
-                "Failed to obtain the bundle port through"
-                    + " the JS script(might be broken)");
+            return -1;
         }
 
         // Try to parse to see if it's a valid integer
         int portNumber = Integer.parseInt(lastLocalAddress.split(":")[1]);
         if (portNumber < 0 || portNumber > 65535)
         {
-            throw new RuntimeException(
-                "Invalid port number: " + portNumber);
+            return -1;
         }
 
         return portNumber;

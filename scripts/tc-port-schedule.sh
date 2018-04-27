@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 # description: This script uses HTB(8) to schedule the egress bitrate towards a
-# specific port.
+# specific port. This script requires HTB(8) to be configured on the host
+# machine with: tc qdisc add dev ${DEV} root htb default 1
 #
 # author: George Politis
 
@@ -36,29 +37,29 @@ readonly DEV=`ip addr | grep 2: | cut -d' ' -f2 | cut -d: -f1`
 readonly DST_PORT=${1}
 shift
 
-initialized=false
+qdiscid=
+flowid=
 
 # Prints TC(8) debugging information.
 tc_internals() {
-    ${TC} -s -d qdisc show dev ${DEV}
-    ${TC} -s -d class show dev ${DEV} parent 1:
-    ${TC} -s -d filter show dev ${DEV} parent 1:
+    for i in {qdisc,class,filter}; do
+        ${TC} -s -d ${i} show dev ${DEV}
+    done
 }
 
-# Resets the TC(8) state.
+# Resets the HTB(8) state.
 finish() {
-    if ${initialized}; then
+    if [ -n "${qdiscid}" -a -n "${flowid}" ]; then
+        local filterid=$(tc filter show dev ${DEV}|grep ${qdiscid}:${flowid}|cut -d' ' -f10)
+    fi
 
-        if ${DEBUG}; then
-            echo 'clear everything'
-        fi
+    if [ -n "${filterid}" ]; then
+        ${TC} filter del dev ${DEV} parent ${qdiscid}: \
+            handle ${filterid} prio 1 protocol ip u32
+    fi
 
-        ${TC} qdisc del dev ${DEV} root
-        initialized=false
-
-        if ${DEBUG}; then
-            tc_internals
-        fi
+    if [ -n "${flowid}" ]; then
+        ${TC} class del dev ${DEV} classid ${qdiscid}:${flowid}
     fi
 }
 # https://unix.stackexchange.com/questions/57940/trap-int-term-exit-really-necessary
@@ -75,14 +76,28 @@ for i in $*; do
         echo ts=`date +%s`,dev=${DEV},dport=${DST_PORT},rate=${rate},duration=${duration}
     fi
 
-    if ${initialized}; then
-        ${TC} class change dev ${DEV} parent 1: classid 1:3 htb rate ${rate}
+    if [ -n "${flowid}" ]; then
+        ${TC} class change dev ${DEV} parent ${qdiscid}: \
+            classid ${qdiscid}:${flowid} htb rate ${rate}
     else
-        ${TC} qdisc add dev ${DEV} root handle 1: htb default 1
-        initialized=true
-        ${TC} class add dev ${DEV} parent 1: classid 1:3 htb rate ${rate}
-        ${TC} filter add dev ${DEV} protocol ip parent 1:0 prio 1 u32 \
-            match ip dport ${DST_PORT} 0xffff classid 1:3
+        qdiscid=$(tc qdisc show dev ${DEV}|grep 'qdisc htb'|cut -d' ' -f3|cut -d':' -f1)
+        if [ -z "$qdiscid" ]; then
+            echo 'Do you have a properly configured HTB?'
+            exit 1
+        fi
+        flowid=3
+        while ! ${TC} class add dev ${DEV} parent ${qdiscid}: classid ${qdiscid}:${flowid} htb rate ${rate}
+        do
+            flowid=$((flowid+1))
+        done
+
+        # NOTE: the udp src and tcp src filter are EXACTLY the same.  To filter
+        # only UDP packets the transport protocol field in the ip header must
+        # be examined
+
+        ${TC} filter add dev ${DEV} protocol ip parent ${qdiscid}: prio 1 \
+            u32 match ip dport ${DST_PORT} 0xffff \
+            classid ${qdiscid}:${flowid}
     fi
 
     if ${DEBUG}; then
