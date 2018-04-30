@@ -166,15 +166,6 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
      * {@inheritDoc}
      */
     @Override
-    public String getRTPStats()
-    {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getProtocol()
     {
         throw new RuntimeException("Not implemented");

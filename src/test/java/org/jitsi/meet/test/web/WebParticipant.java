@@ -38,18 +38,31 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * Default config for Web participants.
      */
-    private static final String DEFAULT_CONFIG
-        = "config.requireDisplayName=false"
+    private static final String DEFAULT_CONFIG;
+
+    static
+    {
+        String defaultConfig
+            = "config.requireDisplayName=false"
             + "&config.debug=true"
             + "&config.testing.testMode=true"
             + "&config.disableAEC=true"
             + "&config.disableNS=true"
-            + "&config.callStatsID=false"
             + "&config.alwaysVisibleToolbar=true"
             + "&config.p2p.enabled=false"
             + "&config.p2p.useStunTurn=false"
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true";
+
+        Boolean allowCallStats
+            = Boolean.valueOf(System.getProperty("web.allowCallStats"));
+        if (!allowCallStats)
+        {
+            defaultConfig += "&config.callStatsID=false";
+        }
+
+        DEFAULT_CONFIG = defaultConfig;
+    }
 
     /**
      * The javascript code which returns {@code true} if we are joined in
@@ -247,31 +260,6 @@ public class WebParticipant extends Participant<WebDriver>
             Logger.getGlobal().log(
                     Level.SEVERE,
                     "Failed to get meet logs from " + name,
-                    e);
-
-            return null;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getRTPStats()
-    {
-        try
-        {
-            // we default all tests to not use p2p, so we default using jvb here
-            Object log
-                = MeetUtils.getRtpStats(this.getDriver(), true);
-
-            return log instanceof String ? (String) log : null;
-        }
-        catch (Exception e)
-        {
-            Logger.getGlobal().log(
-                    Level.SEVERE,
-                    "Failed to get meet rtp stats from " + name,
                     e);
 
             return null;

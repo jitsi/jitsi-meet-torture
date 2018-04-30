@@ -57,6 +57,15 @@ public class FailureListener
     }
 
     /**
+     * Returns a boolean indicating whether or not to skip saving debug
+     * information from a failed test (such as screenshots, logs, etc).
+     */
+    private static Boolean skipDebugInformation()
+    {
+        return Boolean.valueOf(System.getProperty("test.skipDebugInformation"));
+    }
+
+    /**
      * Gets the screenshots parent output folder.
      *
      * @return a <tt>File</tt> instance.
@@ -164,6 +173,11 @@ public class FailureListener
             error.printStackTrace();
         }
 
+        if (skipDebugInformation())
+        {
+            return;
+        }
+
         try
         {
             AbstractBaseTest testInstance
@@ -172,16 +186,13 @@ public class FailureListener
             List<Participant<? extends WebDriver>> participants
                 = testInstance.getAllParticipants();
 
-            String fileNamePrefix
-                = testResult.getTestClass().getRealClass().getCanonicalName();
+            String fileNamePrefix = testResult.getTestContext().getName();
 
             takeScreenshots(fileNamePrefix, participants);
 
             saveHtmlSources(fileNamePrefix, participants);
 
             saveMeetDebugLog(fileNamePrefix, participants);
-
-            saveMeetRTPStats(fileNamePrefix, participants);
 
             saveBrowserLogs(fileNamePrefix, participants);
 
@@ -293,44 +304,6 @@ public class FailureListener
                 .log(
                     Level.SEVERE,
                     "Failed to write meet logs for " + participant.getName(),
-                    e);
-        }
-    }
-
-    /**
-     * Saves the rtp stats from meet.
-     */
-    private void saveMeetRTPStats(
-        String fileNamePrefix,
-        List<Participant<? extends WebDriver>> participants)
-    {
-        participants
-            .forEach(
-                p -> saveMeetRTPStats(
-                    p,
-                    fileNamePrefix + "-rtpstats-" + p.getName() + ".json"));
-    }
-
-    /**
-     * Saves the rtp stats from meet.
-     */
-    private void saveMeetRTPStats(Participant participant, String fileName)
-    {
-        try
-        {
-            String log = participant.getRTPStats();
-            if (log != null)
-            {
-                FileUtils.write(
-                    new File(outputLogsParentFolder, fileName), log);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.getGlobal()
-                .log(
-                    Level.SEVERE,
-                    "Failed to write rtp stats for " + participant.getName(),
                     e);
         }
     }

@@ -51,6 +51,8 @@ import static org.jitsi.meet.test.util.TestUtils.*;
  *   the test.
  * - A recent version of the python pandas library needs to be installed.
  * - The grid nodes need to be powerful enough to achieve high target bitrates.
+ * - The JVB single port harvester needs to be disabled.
+ * - The HTB queueing discipline needs to be configured on the server.
  *
  * @author George Politis
  */
@@ -84,148 +86,6 @@ public class BandwidthEstimationTest
      */
     private static final String INPUT_VIDEO_FILE
         = "resources/FourPeople_1280x720_60.y4m";
-
-    /**
-     * The Verizon EVDO (driving) uplink packet delivery trace file.
-     *
-     * see /usr/share/mahimahi/traces/README for more information.
-     */
-    private static final String VERIZON_EVDO_DRIVING_UP
-        = "/usr/share/mahimahi/traces/Verizon-EVDO-driving.up";
-
-    /**
-     * The Verizon EVDO (driving) downlink packet delivery trace file.
-     */
-    private static final String VERIZON_EVDO_DRIVING_DOWN
-        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.down";
-
-    /**
-     * The Verizon LTE (short) uplink packet delivery trace file.
-     *
-     * see /usr/share/mahimahi/traces/README for more information.
-     */
-    private static final String VERIZON_LTE_SHORT_UP
-        = "/usr/share/mahimahi/traces/Verizon-LTE-short.up";
-
-    /**
-     * The Verizon LTE (short) downlink packet delivery trace file.
-     */
-    private static final String VERIZON_LTE_SHORT_DOWN
-        = "/usr/share/mahimahi/traces/Verizon-LTE-short.down";
-
-    /**
-     * The Verizon LTE (driving) uplink packet delivery trace file.
-     *
-     * see /usr/share/mahimahi/traces/README for more information.
-     */
-    private static final String VERIZON_LTE_DRIVING_UP
-        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.up";
-
-    /**
-     * The Verizon LTE (driving) downlink packet delivery trace file.
-     */
-    private static final String VERIZON_LTE_DRIVING_DOWN
-        = "/usr/share/mahimahi/traces/Verizon-LTE-driving.down";
-
-    /**
-     * The ATT LTE (driving) uplink packet delivery trace file.
-     */
-    private static final String ATT_LTE_DRIVING_UP
-        = "/usr/share/mahimahi/traces/ATT-LTE-driving.up";
-
-    /**
-     * The ATT LTE (driving) downlink packet delivery trace file.
-     */
-    private static final String ATT_LTE_DRIVING_DOWN
-        = "/usr/share/mahimahi/traces/ATT-LTE-driving.down";
-
-    /**
-     * The ATT LTE (driving in 2016) uplink packet delivery trace file.
-     */
-    private static final String ATT_LTE_DRIVING_2016_UP
-        = "/usr/share/mahimahi/traces/ATT-LTE-driving-2016.up";
-
-    /**
-     * The ATT LTE (driving in 2016) downlink packet delivery trace file.
-     */
-    private static final String ATT_LTE_DRIVING_2016_DOWN
-        = "/usr/share/mahimahi/traces/ATT-LTE-driving-2016.down";
-
-    /**
-     * The TMobile LTE (driving) uplink packet delivery trace file.
-     */
-    private static final String TMOBILE_LTE_DRIVING_UP
-        = "/usr/share/mahimahi/traces/TMobile-LTE-driving.up";
-
-    /**
-     * The TMobile LTE (driving) downlink packet delivery trace file.
-     */
-    private static final String TMOBILE_LTE_DRIVING_DOWN
-        = "/usr/share/mahimahi/traces/TMobile-LTE-driving.down";
-
-    /**
-     * The TMobile LTE (short) uplink packet delivery trace file.
-     */
-    private static final String TMOBILE_LTE_SHORT_UP
-        = "/usr/share/mahimahi/traces/TMobile-LTE-short.up";
-
-    /**
-     * The TMobile LTE (short) downlink packet delivery trace file.
-     */
-    private static final String TMOBILE_LTE_SHORT_DOWN
-        = "/usr/share/mahimahi/traces/TMobile-LTE-short.down";
-
-    /**
-     * The ATT LTE (driving) network descriptor.
-     */
-    private static final Network attLTEDriving = new Network(
-            "attLTEDriving", ATT_LTE_DRIVING_UP, ATT_LTE_DRIVING_DOWN);
-
-    /**
-     * The ATT LTE (driving in 2016) network descriptor.
-     */
-    private static final Network attLTEDriving2016 = new Network(
-            "attLTEDriving2016",
-            ATT_LTE_DRIVING_2016_UP, ATT_LTE_DRIVING_2016_DOWN);
-
-    /**
-     * The TMobile LTE (driving) network descriptor.
-     */
-    private static final Network tmobileLTEDriving = new Network(
-            "tmobileLTEDriving",
-            TMOBILE_LTE_DRIVING_UP, TMOBILE_LTE_DRIVING_DOWN);
-
-    /**
-     * The TMobile LTE (short) network descriptor.
-     */
-    private static final Network tmobileLTEShort = new Network(
-            "tmobileLTEShort",
-            TMOBILE_LTE_SHORT_UP, TMOBILE_LTE_SHORT_DOWN);
-
-    /**
-     * The Verizon LTE (short) network descriptor.
-     */
-    private static final Network verizonLTEShort = new Network(
-            "verizonLTEShort", VERIZON_LTE_SHORT_UP, VERIZON_LTE_SHORT_DOWN);
-
-    /**
-     * The Verizon LTE (driving) network descriptor.
-     */
-    private static final Network verizonLTEDriving = new Network(
-            "verizonLTEDriving",
-            VERIZON_LTE_DRIVING_UP, VERIZON_LTE_DRIVING_DOWN);
-
-    /**
-     * The Verizon EVDO (driving) network descriptor.
-     */
-    private static final Network verizonEVDODriving = new Network(
-            "verizonEVDODriving",
-            VERIZON_EVDO_DRIVING_UP, VERIZON_EVDO_DRIVING_DOWN);
-
-    /**
-     * The "default" network descriptor (no mahimahi emulation).
-     */
-    private static final Network def = new Network("def", null, null);
 
     /**
      * Default tc script which will work only on linux.
@@ -267,9 +127,14 @@ public class BandwidthEstimationTest
     private static String chromeWrapper;
 
     /**
-     * The options to launch the sender participant with.
+     * The options to launch the sending participant with.
      */
     private ParticipantOptions senderOptions;
+
+    /**
+     * The options to launch the receiving participant with.
+     */
+    private ParticipantOptions receiverOptions;
 
     /**
      * Utility method that calls {@link #tcScript} to rate-limit given port.
@@ -280,7 +145,7 @@ public class BandwidthEstimationTest
      * @throws Exception if anything goes wrong.
      */
     private static void schedulePort(
-            int portNumber, long timeout, TimeUnit unit, String ... schedule)
+            int portNumber, long timeout, TimeUnit unit, String schedule)
         throws Exception
     {
         if (portNumber == -1)
@@ -294,7 +159,7 @@ public class BandwidthEstimationTest
 
         cmdArgs.add(tcScript);
         cmdArgs.add(String.valueOf(portNumber));
-        Collections.addAll(cmdArgs, schedule);
+        Collections.addAll(cmdArgs, schedule.split(" "));
 
         // This will take a while (blocking), depending on the schedule.
         cmdExecutor.executeCmd(cmdArgs, timeout, unit);
@@ -306,9 +171,9 @@ public class BandwidthEstimationTest
      *
      * @param jvb the {@link File} to read the JVB webrtc-stats from.
      * @param p2p the {@link File} to read the webrtc-stats file from.
-     * @param analysisFile the {@link File} to store the analysis results in.
+     * @param resultFile the {@link File} to store the analysis results in.
      */
-    private static int benchmark(File jvbFile, File p2pFile, File analysisFile)
+    private static int benchmark(File jvbFile, File p2pFile, File resultFile)
         throws Exception
     {
         CmdExecutor cmdExecutor = new CmdExecutor()
@@ -316,7 +181,7 @@ public class BandwidthEstimationTest
             @Override
             public void configureProcessBuilder(ProcessBuilder processBuilder)
             {
-                processBuilder.redirectOutput(analysisFile);
+                processBuilder.redirectOutput(resultFile);
                 processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
             }
         };
@@ -342,15 +207,32 @@ public class BandwidthEstimationTest
      * @return the human readable name for the bottleneck schedule that is
      * passed in as a parameter.
      */
-    private static String humanizeSchedule(String[] schedule)
+    private static String humanizeSchedule(String schedule)
     {
-	StringBuilder sb = new StringBuilder();
-        for (String s : schedule)
+        String[] scheduleParts = schedule.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String s : scheduleParts)
         {
             sb.append(s.replaceAll(",", ""));
             sb.append("s"); // append an to indicate the duration unit.
         }
 	return sb.toString();
+    }
+
+    /**
+     * Gets the schedule duration in millis.
+     */
+    private static long getScheduleDurationMs(String schedule)
+    {
+        // The format that this method accepts is as follows:
+        // 10mbit,60 1mbit,20 ...
+        long durationMs = 0;
+        String[] scheduleParts = schedule.split(" ");
+        for (String s : scheduleParts)
+        {
+            durationMs += Long.parseLong(s.split(",")[1]) * 1000;
+        }
+        return durationMs;
     }
 
     /**
@@ -375,12 +257,6 @@ public class BandwidthEstimationTest
         {
             fileWriter.write(contents);
         }
-    }
-
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
     }
 
     @Override
@@ -439,97 +315,140 @@ public class BandwidthEstimationTest
             }
         }
 
-        senderOptions
-            = new WebParticipantOptions().setFakeStreamVideoFile(
-                INPUT_VIDEO_FILE);
+
+        WebParticipantOptions options = new WebParticipantOptions();
+        options.setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+        options.setProfileDirectory("/tmp/bwe-data-dir");
+        senderOptions = options;
     }
 
-    @DataProvider(name = "dp")
-    public Object[][] createData()
-    {
-        // These are bitrate,duration pairs. The units are important and are
-        // defined in TC(8). The test duration should be in seconds.
-        String[] schedule1 = { "100mbit,90" };
-        String[] schedule2 = { "10mbit,60", "1mbit,60", "10mbit,60" };
-
-        return new Object[][]
-        {
-            new Object[] { def, schedule1 },
-            new Object[] { def, schedule2 },
-            new Object[] { verizonLTEShort, schedule1 },
-            new Object[] { verizonLTEShort, schedule2 },
-            new Object[] { verizonLTEDriving, schedule1 },
-            new Object[] { verizonLTEDriving, schedule2 },
-            new Object[] { verizonEVDODriving, schedule1 },
-            new Object[] { verizonEVDODriving, schedule2 },
-            new Object[] { tmobileLTEDriving, schedule1 },
-            new Object[] { tmobileLTEDriving, schedule2 },
-            new Object[] { tmobileLTEShort, schedule1 },
-            new Object[] { tmobileLTEShort, schedule2 },
-            new Object[] { attLTEDriving, schedule1 },
-            new Object[] { attLTEDriving, schedule2 },
-            new Object[] { attLTEDriving2016, schedule1 },
-            new Object[] { attLTEDriving2016, schedule2 },
-        };
-    }
-
-    @Test(dataProvider = "dp")
-    public void test(Network network, String[] schedule)
+    @Parameters({ "receiverNetwork", "serverSchedule", "benchmarkScenarios" })
+    @Test
+    public void test(@org.testng.annotations.Optional("default")
+            String receiverNetwork,
+            String serverSchedule, String benchmarkScenarios)
         throws Exception
     {
+        if (receiverOptions == null
+                && receiverNetwork != null && receiverNetwork != "")
+        {
+            WebParticipantOptions options = new WebParticipantOptions();
+            options.setUplink(receiverNetwork + ".up");
+            options.setDownlink(receiverNetwork + ".down");
+
+            options.setBinary(chromeWrapper);
+            // XXX The default behavior of the chromedriver is to SIGKILL the
+            // launched chrome instance. However, we need the chromedriver to
+            // either SIGINT or SIGTERM the chrome wrapper to give it a chance
+            // to free up any resources it has allocated. Setting the profile
+            // directory does that..
+            options.setProfileDirectory("/tmp/bwe-data-dir");
+            receiverOptions = options;
+        }
+
         // XXX notice that the webrtc stats gathering default interval is 300
         // seconds.
-        String jvbStats = test(
-                true, 200, TimeUnit.SECONDS, network, schedule);
-        String p2pStats = test(
-                false, 200, TimeUnit.SECONDS, network, schedule);
 
-        File jvbFile = getLogFile(
-                network.name + "JVB" + humanizeSchedule(schedule) + ".json");
-        File p2pFile = getLogFile(
-                network.name + "P2P" + humanizeSchedule(schedule) + ".json");
-        File analysisFile = getLogFile(
-                network.name + humanizeSchedule(schedule) + ".out");
+        File baselineFile, benchmarkFile;
+        String benchmarkScenario;
+        if (benchmarkScenarios.contains("TURNTCCvsJVBTCC"))
+        {
+            benchmarkScenario = "TURNTCCvsJVBTCC";
+            benchmarkFile = test(
+                    true /* useJVB */,
+                    false /* enableRemb */ ,
+                    receiverNetwork, serverSchedule);
 
-        writeFile(jvbFile, jvbStats);
-        writeFile(p2pFile, p2pStats);
+            baselineFile = test(
+                    false, false, receiverNetwork, serverSchedule);
+        }
+        else if (benchmarkScenarios.contains("TURNTCCvsTURNREMB"))
+        {
+            benchmarkScenario = "TURNTCCvsTURNREMB";
+            baselineFile = test(
+                    false, false, receiverNetwork, serverSchedule);
 
-        int result = benchmark(jvbFile, p2pFile, analysisFile);
+            benchmarkFile = test(
+                    false, true, receiverNetwork, serverSchedule);
+        }
+        else if (benchmarkScenarios.contains("JVBTCCvsJVBREMB"))
+        {
+            benchmarkScenario = "JVBTCCvsJVBREMB";
+            baselineFile = test(
+                    true, false, receiverNetwork, serverSchedule);
+
+            benchmarkFile = test(
+                    true, true, receiverNetwork, serverSchedule);
+        }
+        else
+        {
+            throw new SkipException("No benchmark scenario is defined.");
+        }
+
+        String netName = (receiverNetwork == null || receiverNetwork == "")
+            ? ""
+            : new File(receiverNetwork).getName().replace("-", "");
+
+        File resultFile = getLogFile(netName + benchmarkScenario + ".out");
+        int result = benchmark(benchmarkFile, baselineFile, resultFile);
         assertEquals(result, 0);
+    }
+
+    private static String getRoomName(boolean useJVB, boolean enableRemb,
+            String receiverNetwork, String serverSchedule)
+    {
+        String netName = (receiverNetwork == null || receiverNetwork == "")
+            ? ""
+            : new File(receiverNetwork).getName().replace("-", "");
+        String ccName = enableRemb ? "REMB" : "TCC";
+        String boxName = useJVB ? "JVB" : "TURN";
+
+        return netName + boxName + ccName + humanizeSchedule(serverSchedule);
     }
 
     /**
      * This test evaluates a congestion control scenario.
      *
-     * @param useJVB
-     * @param timeout
-     * @param unit
-     * @param schedule
+     * @param useJVB setting this to true connects the two peers via the JVB,
+     * otherwise via TURN.
+     * @param enableRemb
+     * @param serverSchedule
+     * @param receiverNetwork
      * @return the file where the results where written.
      *
      * @throws Exception if something goes wrong.
      */
-    private String test(
-            boolean useJVB, long timeout, TimeUnit unit,
-            Network network, String[] schedule)
+    private File test(
+            boolean useJVB, boolean enableRemb,
+            String receiverNetwork, String serverSchedule)
         throws Exception
     {
+        String roomName
+            = getRoomName(useJVB, enableRemb, receiverNetwork, serverSchedule);
         JitsiMeetUrl senderUrl, receiverUrl;
         if (!useJVB)
         {
             senderUrl = getJitsiMeetUrl();
-            senderUrl.removeFragmentParam("config.callStatsID");
 
-            String roomName = network.name + "P2P" + humanizeSchedule(schedule);
+            // record this call in callstats.
+            senderUrl.removeFragmentParam("config.callStatsID");
             senderUrl.setRoomName(roomName);
             senderUrl.appendConfig("config.p2p.enabled=true");
             senderUrl.appendConfig("config.p2p.iceTransportPolicy=\"relay\"");
             senderUrl.appendConfig("config.p2p.useStunTurn=true");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(!enableRemb).toLowerCase());
 
             receiverUrl = getJitsiMeetUrl();
             receiverUrl.removeFragmentParam("config.callStatsID");
             receiverUrl.setRoomName(roomName);
             receiverUrl.appendConfig("config.p2p.enabled=true");
+            receiverUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            receiverUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(!enableRemb).toLowerCase());
             // XXX we disable TURN server discovery in an attempt to fix a
             // situation where the receiver connects with the relay candidate
             // (so we get the port the TURN server has reserved for the
@@ -541,90 +460,82 @@ public class BandwidthEstimationTest
         }
         else
         {
-            String roomName = network.name + "JVB" + humanizeSchedule(schedule);
             senderUrl = receiverUrl = getJitsiMeetUrl();
             senderUrl.removeFragmentParam("config.callStatsID");
+            receiverUrl.appendConfig("config.p2p.enabled=false");
+            senderUrl.appendConfig("config.enableRemb="
+                    + Boolean.toString(enableRemb).toLowerCase());
+            senderUrl.appendConfig("config.enableTcc="
+                    + Boolean.toString(!enableRemb).toLowerCase());
             senderUrl.setRoomName(roomName);
-        }
-
-        WebParticipantOptions receiverOptions = new WebParticipantOptions();
-
-        boolean useCustomBinary = false;
-        if (network.uplink != null && network.uplink != "")
-        {
-            receiverOptions.setUplink(network.uplink);
-            useCustomBinary = true;
-        }
-
-        if (network.downlink != null && network.downlink != "")
-        {
-            receiverOptions.setDownlink(network.downlink);
-            useCustomBinary = true;
-        }
-
-        if (useCustomBinary)
-        {
-            receiverOptions.setBinary(chromeWrapper);
-            // XXX The default behavior of the chromedriver is to SIGKILL the
-            // launched chrome instance. However, we need the chromedriver to
-            // either SIGINT or SIGTERM the chrome wrapper to give it a chance
-            // to free up any resources it has allocated. Setting the profile
-            // directory does that..
-            receiverOptions.setProfileDirectory("/tmp/bwe-receiver-data-dir");
         }
 
         ensureTwoParticipants(
                 senderUrl, receiverUrl, senderOptions, receiverOptions);
 
-        WebDriver sender = getParticipant1().getDriver();
-        assertNotNull(sender);
         WebDriver receiver = getParticipant2().getDriver();
-        assertNotNull(receiver);
 
-        // Rate limit the media flow on the receiver and analyze the webrtc
-        // internals.
-        String localCandidateType
-            = MeetUtils.getLocalCandidateType(receiver, useJVB);
-        while (!"prflx".equalsIgnoreCase(localCandidateType))
+        if (!useJVB)
         {
-            print("Waiting for a prflx local candidate type. Got: "
-                    + localCandidateType);
+            for (int i = 10; i >= 0; i--)
+            {
+                // Wait for up to 10 seconds (10*1000) for a "prflx" candidate.
+                String localCandidateType
+                    = MeetUtils.getLocalCandidateType(receiver, useJVB);
 
-            Thread.sleep(1000);
-            localCandidateType
-                = MeetUtils.getLocalCandidateType(receiver, useJVB);
+                if ("prflx".equalsIgnoreCase(localCandidateType))
+                {
+                    break;
+                }
+                else if (i == 0)
+                {
+                    throw new RuntimeException(
+                            "Failed to obrain a prflx local candidate.");
+                }
+
+                print(String.format("Waiting %d seconds for a prflx local "
+                            + "candidate type. Got: %s.", i, localCandidateType));
+
+                Thread.sleep(1000);
+            }
         }
 
-        int receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
+        int receiverPort = -1;
+        for (int i = 10; i >= 0; i--)
+        {
+            receiverPort = MeetUtils.getBundlePort(receiver, useJVB);
+            if (receiverPort != -1)
+            {
+                break;
+            }
+            else if (i == 0)
+            {
+                throw new RuntimeException("Failed to obtain the bundle port.");
+            }
+
+            print(String.format("Waiting %d seconds for the bundle port."
+                            + " Got: %s.", i, receiverPort));
+
+            Thread.sleep(1000);
+        }
 
         print("Receiver port: " + receiverPort);
 
+        // Rate limit the media flow towards the receiver and analyze the
+        // webrtc internals.
         // This will take a while (blocking), depending on the schedule.
-        schedulePort(receiverPort, timeout, unit, schedule);
+        long timeout = getScheduleDurationMs(serverSchedule) + 10 * 1000;
+        schedulePort(
+                receiverPort, timeout, TimeUnit.MILLISECONDS, serverSchedule);
 
         String rtcStats = MeetUtils.getRtpStats(receiver, useJVB);
 
         // XXX prevent ghosts
-        getParticipant1().hangUp();
-        getParticipant2().hangUp();
-        // XXX we want to actually quit the drivers because we may wish to
-        // launch chrome with different parameters.
-        participants.cleanup();
+        participants.hangUpAll();
 
-        return rtcStats;
-    }
+        File statsFile = getLogFile(roomName + ".json");
+        writeFile(statsFile, rtcStats);
 
-    static class Network
-    {
-        Network(String name, String uplink, String downlink)
-        {
-            this.name = name;
-            this.uplink = uplink;
-            this.downlink = downlink;
-        }
-
-        final String name;
-        final String uplink;
-        final String downlink;
+        return statsFile;
     }
 }

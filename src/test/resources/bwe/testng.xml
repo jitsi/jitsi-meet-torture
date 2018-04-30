@@ -1,0 +1,58 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="TortureSuite" parallel="tests" thread-count="1">
+    <test name="BandwidthEstimationTest1">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/Verizon-LTE-driving" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest6">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/Verizon-LTE-short" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest2">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/ATT-LTE-driving" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest3">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/ATT-LTE-driving-2016" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest4">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/TMobile-LTE-driving" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest5">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB,TURNTCCvsJVBTCC,TURNTCCvsTURNREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <parameter name="receiverNetwork" value="/usr/share/mahimahi/traces/TMobile-LTE-short" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+    <test name="BandwidthEstimationTest7">
+        <parameter name="benchmarkScenarios" value="JVBTCCvsJVBREMB" />
+        <parameter name="serverSchedule" value="100mbit,90" />
+        <classes>
+            <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
+        </classes>
+    </test>
+</suite>
