@@ -57,6 +57,15 @@ public class FailureListener
     }
 
     /**
+     * Returns a boolean indicating whether or not to skip saving debug
+     * information from a failed test (such as screenshots, logs, etc).
+     */
+    private static Boolean skipDebugInformation()
+    {
+        return Boolean.valueOf(System.getProperty("test.skipDebugInformation"));
+    }
+
+    /**
      * Gets the screenshots parent output folder.
      *
      * @return a <tt>File</tt> instance.
@@ -162,6 +171,11 @@ public class FailureListener
 
             TestUtils.print("TestFailure:");
             error.printStackTrace();
+        }
+
+        if (skipDebugInformation())
+        {
+            return;
         }
 
         try
