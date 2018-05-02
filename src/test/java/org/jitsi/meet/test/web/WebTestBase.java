@@ -17,8 +17,10 @@ package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.*;
 
 import java.util.*;
+import java.util.logging.*;
 
 /**
  * Base class for web tests.
@@ -78,9 +80,7 @@ public class WebTestBase
     public void ensureOneParticipant(
         JitsiMeetUrl meetURL, ParticipantOptions options)
     {
-        WebParticipant participant = joinParticipant(0, meetURL, options);
-
-        participant.waitToJoinMUC();
+        joinParticipantAndWait(0, meetURL, options);
 
         ensureInfoDialogClosed();
     }
@@ -154,9 +154,8 @@ public class WebTestBase
         ensureOneParticipant(participantOneMeetURL, participantOneOptions);
 
         Participant participant
-            = joinParticipant(1, participantTwoMeetURL, participantTwoOptions);
-
-        participant.waitToJoinMUC();
+            = joinParticipantAndWait(
+                1, participantTwoMeetURL, participantTwoOptions);
 
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();
@@ -188,11 +187,8 @@ public class WebTestBase
             participantTwoMeetURL,
             null, null);
 
-        Participant participant
-            = joinParticipant(
-                2, participantThreeMeetURL, null);
-
-        participant.waitToJoinMUC();
+        WebParticipant participant
+            = joinParticipantAndWait(2, participantThreeMeetURL, null);
 
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();
@@ -352,5 +348,45 @@ public class WebTestBase
        List<WebParticipant> webParticipants = participants.getAll();
        webParticipants.forEach(webParticipant ->
            webParticipant.getInfoDialog().close());
+    }
+
+    /**
+     * Joins a participant, and waits for it to join the room.
+     *
+     * @param index the participant index.
+     * @param meetURL a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part. For example:
+     * "https://server.com/conference1?login=true#config.debug=true"
+     * @param options the options to be used when creating the participant.
+     * @return the participant which was created
+     */
+    private WebParticipant joinParticipantAndWait(
+        int                     index,
+        JitsiMeetUrl            meetURL,
+        ParticipantOptions      options)
+    {
+        WebParticipant participant = joinParticipant(index, meetURL, options);
+
+        try
+        {
+            participant.waitToJoinMUC(10);
+        }
+        catch (TimeoutException ex)
+        {
+            Logger.getGlobal().log(
+                Level.WARNING,
+                "Participant did not join, retrying: " + participant.getName());
+
+            // Participant did not join, let's give it another try.
+            // This workarounds a problem where we see chrome waiting on media
+            // permissions screen
+            participant.hangUp();
+
+            participant = joinParticipant(index, meetURL, options);
+            participant.waitToJoinMUC();
+        }
+
+        return participant;
     }
 }
