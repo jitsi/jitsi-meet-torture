@@ -368,12 +368,20 @@ public class WebTestBase
     {
         WebParticipant participant = joinParticipant(index, meetURL, options);
 
+        // FIXME: remove this when chrome changes and we stop seeing the warning
+        // in the tests logs
         try
         {
             participant.waitToJoinMUC(10);
         }
         catch (TimeoutException ex)
         {
+            // workaround is only for chrome
+            if (!participant.getType().isChrome())
+            {
+                throw ex;
+            }
+
             Logger.getGlobal().log(
                 Level.WARNING,
                 "Participant did not join, retrying: " + participant.getName());
