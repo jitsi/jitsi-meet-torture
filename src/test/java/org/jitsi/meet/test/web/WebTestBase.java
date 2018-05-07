@@ -389,7 +389,9 @@ public class WebTestBase
             // Participant did not join, let's give it another try.
             // This workarounds a problem where we see chrome waiting on media
             // permissions screen
-            participant.hangUp();
+            // we close the driver in, case of browser stuck on grid, to move
+            // to new node
+            closeParticipant(participant);
 
             participant = joinParticipant(index, meetURL, options);
             participant.waitToJoinMUC();

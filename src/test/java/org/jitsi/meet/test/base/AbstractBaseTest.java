@@ -350,6 +350,16 @@ public abstract class AbstractBaseTest<P extends Participant>
     }
 
     /**
+     * Closes a participant's session/driver.
+     *
+     * @param participant the participant to close.
+     */
+    public void closeParticipant(P participant)
+    {
+        this.participants.closeParticipant(participant);
+    }
+
+    /**
      * Method called "AfterClass". Will clean up any dangling
      * {@link Participant}s held by the {@link ParticipantHelper}.
      */

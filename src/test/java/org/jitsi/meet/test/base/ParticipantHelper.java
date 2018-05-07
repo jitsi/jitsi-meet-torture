@@ -194,6 +194,18 @@ public abstract class ParticipantHelper<P extends Participant>
     }
 
     /**
+     * Closes a participant's session/driver. No exception is thrown if close
+     * do not work for some reason.
+     *
+     * @param participant the participant to close.
+     */
+    public void closeParticipant(P participant)
+    {
+        participant.closeSafely();
+        participants.remove(participant);
+    }
+
+    /**
      * Gets the list of all participants.
      * @return a copy of the list which holds all participants.
      */
