@@ -29,11 +29,9 @@ import org.testng.annotations.*;
 public class AudioOnlyTest
     extends WebTestBase
 {
-    private static String AUDIO_ONLY_ENABLED_ICON_XPATH
-        = "//div[@id='videoResolutionLabel']" +
-            "//i[contains(@class, 'icon-visibility-off')]";
+    private static String AUDIO_ONLY_ENABLED_LABEL_XPATH
+        = "//div[@id='videoResolutionLabel'][contains(@class, 'audio-only')]";
     private static String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
-    private static String MUTE_BUTTON_ID = "toolbar_button_camera";
     private static String VIDEO_QUALITY_SLIDER_CLASS
         = "video-quality-dialog-slider";
 
@@ -123,7 +121,7 @@ public class AudioOnlyTest
 
         TestUtils.waitForDisplayedOrNotByXPath(
             testee.getDriver(),
-            AUDIO_ONLY_ENABLED_ICON_XPATH,
+            AUDIO_ONLY_ENABLED_LABEL_XPATH,
             5,
             audioOnly);
     }
