@@ -603,10 +603,7 @@ public class MeetUIUtils
     }
 
     /**
-     * Makes sure that a user's display name is displayed, and that
-     * the user's thumbnail and avatar are not displayed. Allows for the these
-     * conditions to not hold immediately, but within a time interval of 5
-     * seconds.
+     * Makes sure that a user's display name is displayed.
      * @param driver instance of <tt>WebDriver</tt> on which we'll perform
      * the verification.
      * @param endpointId the resource part of MUC JID which identifies user's
@@ -615,24 +612,6 @@ public class MeetUIUtils
     public static void assertDisplayNameVisible(
             WebDriver driver, String endpointId)
     {
-        // Avatar image - hidden
-        TestUtils.waitForNotDisplayedElementByXPath(
-            driver,
-            "//span[@id='participant_" + endpointId + "']" +
-                   "//img[contains(@class, 'userAvatar')]",
-            5);
-
-        // User's video - hidden, if it is available
-        String videoElementXPath
-            = "//span[@id='participant_" + endpointId + "']/video";
-        List<WebElement> videoElems
-            = driver.findElements(By.xpath(videoElementXPath));
-        if (videoElems.size() > 0)
-        {
-            TestUtils.waitForNotDisplayedElementByXPath(
-                driver, videoElementXPath, 5);
-        }
-
         // Display name - visible
         TestUtils.waitForDisplayedElementByXPath(
             driver,
