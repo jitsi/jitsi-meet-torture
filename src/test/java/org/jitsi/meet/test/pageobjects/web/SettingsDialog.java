@@ -1,12 +1,10 @@
 package org.jitsi.meet.test.pageobjects.web;
 
-import org.jitsi.meet.test.util.TestUtils;
-import org.jitsi.meet.test.web.WebParticipant;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 
-import java.util.Objects;
+import java.util.*;
 
 public class SettingsDialog
 {
@@ -95,10 +93,10 @@ public class SettingsDialog
         openMoreTab();
 
         WebDriver driver = participant.getDriver();
-        WebElement followMeCheckbox
-            = driver.findElement(By.cssSelector(FOLLOW_ME_CHECKBOX));
+        List<WebElement> followMeCheckboxes
+            = driver.findElements(By.cssSelector(FOLLOW_ME_CHECKBOX));
 
-        return followMeCheckbox != null && followMeCheckbox.isDisplayed();
+        return followMeCheckboxes.size() > 0;
     }
 
     /**
