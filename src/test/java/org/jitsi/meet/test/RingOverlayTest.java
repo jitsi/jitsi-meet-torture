@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -109,29 +110,15 @@ public class RingOverlayTest
                 + "//img[@class='ringing__avatar']"));
         assertEquals(calleeAvatarElem.getAttribute("src"), CALLEE_AVATAR_URL);
 
-        // Test local user values that were set by the token string
-        // these are display name, email and avatar
-        String emailInput = "//input[@id='setEmail']";
         // wait for the toolbar to be visible before clicking on it
         getParticipant1().getToolbar().waitForVisible();
-        getParticipant1().getToolbar().clickProfileButton();
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, emailInput, 5);
-        assertEquals(
-            driver1.findElement(By.xpath(emailInput)).getAttribute("value"),
-            USER_EMAIL);
 
-        assertEquals(
-            driver1.findElement(By.xpath("//input[@id='setDisplayName']"))
-                .getAttribute("value"),
-            USER_NAME);
-
-        String profileImageSRC = getParticipant1()
-            .getToolbar()
-            .getProfileImage()
-            .getAttribute("src");
-
-        assertEquals(profileImageSRC, USER_AVATAR_URL);
+        getParticipant1().getToolbar().clickSettingsButton();
+        SettingsDialog settingsDialog = getParticipant1().getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        assertEquals(settingsDialog.getEmail(), USER_EMAIL);
+        assertEquals(settingsDialog.getDisplayName(), USER_NAME);
+        settingsDialog.close();
 
         // now let's join a second participant and check that there is no
         // ring overlay and the second participant sees the same display name

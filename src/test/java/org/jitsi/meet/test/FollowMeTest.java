@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -36,8 +37,6 @@ public class FollowMeTest
 {
     private final static String filmstripXPath = "//div[@id='remoteVideos']";
     private final static String etherpadXPath = "//div[@id='etherpad']/iframe";
-    private final static String followMeCheckboxXPath =
-            "//input[@id='followMeCheckBox']";
 
     @Override
     public void setupClass()
@@ -51,15 +50,13 @@ public class FollowMeTest
 
     private void oneTimeSetUp()
     {
-        MeetUIUtils.displaySettingsPanel(getParticipant1());
-        MeetUIUtils.displaySettingsPanel(getParticipant2());
+        WebParticipant participant1 = getParticipant1();
+        participant1.getToolbar().clickSettingsButton();
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        TestUtils.waitForDisplayedElementByXPath(
-                driver1, followMeCheckboxXPath, 5);
-
-        driver1.findElement(By.id("followMeCheckBox")).click();
+        SettingsDialog settingsDialog = participant1.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        settingsDialog.setFollowMe(true);
+        settingsDialog.submit();
 
         // give time for follow me to be enabled on all participants
         TestUtils.waitMillis(5000);
@@ -83,8 +80,11 @@ public class FollowMeTest
             return;
         }
 
-        TestUtils.waitForElementNotPresentByXPath(
-                participant2.getDriver(), followMeCheckboxXPath, 5);
+        participant2.getToolbar().clickSettingsButton();
+        SettingsDialog settingsDialog = participant2.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        assertFalse(settingsDialog.isFollowMeDisplayed());
+        settingsDialog.close();
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -46,16 +47,15 @@ public class StartMutedTest
     {
         WebDriver driver1 = getParticipant1().getDriver();
 
-        // Make sure settings panel is displayed
-        MeetUIUtils.displaySettingsPanel(getParticipant1());
-        // Wait for 'start muted' checkboxes
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, "//input[@id='startAudioMuted']", 5);
-        TestUtils.waitForDisplayedElementByXPath(
-                driver1, "//input[@id='startVideoMuted']", 5);
+        WebParticipant participant1 = getParticipant1();
 
-        driver1.findElement(By.id("startAudioMuted")).click();
-        driver1.findElement(By.id("startVideoMuted")).click();
+        participant1.getToolbar().clickSettingsButton();
+
+        SettingsDialog settingsDialog = participant1.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        settingsDialog.setStartAudioMuted(true);
+        settingsDialog.setStartVideoMuted(true);
+        settingsDialog.submit();
 
         WebParticipant participant2 = joinSecondParticipant();
 
