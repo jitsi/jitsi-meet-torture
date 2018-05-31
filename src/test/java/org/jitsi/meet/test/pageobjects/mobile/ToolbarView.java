@@ -27,7 +27,7 @@ import org.jitsi.meet.test.pageobjects.mobile.base.*;
  */
 public class ToolbarView extends AbstractMobilePage
 {
-    private static final String HANGUP_BTN_ACCESS_ID = "Hangup";
+    private static final String HANGUP_BTN_ACCESS_ID = "Leave the call";
 
     private final ConferenceView conferenceView;
 
