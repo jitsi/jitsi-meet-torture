@@ -34,7 +34,7 @@ public class Toolbar {
     private final static String AUDIO_MUTE = "Toggle mute audio";
     private final static String CHAT = "Toggle chat window";
     private final static String DESKTOP = "Toggle screenshare";
-    private final static String ETHERPAD = "Open / Close shared document";
+    private final static String ETHERPAD = "Toggle shared document";
     private final static String HANGUP = "Leave the call";
     private final static String INFO = "Show info";
     private final static String OVERFLOW = "Toggle more actions menu";
