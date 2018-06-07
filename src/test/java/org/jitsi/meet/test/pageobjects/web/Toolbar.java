@@ -31,20 +31,20 @@ public class Toolbar {
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE = "Audio mute";
-    private final static String CHAT = "Chat";
-    private final static String DESKTOP = "Screenshare";
-    private final static String ETHERPAD = "Etherpad";
-    private final static String HANGUP = "Hangup";
-    private final static String INFO = "Info";
-    private final static String OVERFLOW = "Overflow";
-    private final static String OVERFLOW_MENU = "Overflow menu";
-    private final static String PROFILE = "Profile";
-    private final static String RECORD = "Record";
-    private final static String SETTINGS = "Settings";
-    private final static String SHARE_VIDEO = "Shared video";
-    private final static String VIDEO_MUTE = "Video mute";
-    private final static String VIDEO_QUALITY = "Call quality";
+    private final static String AUDIO_MUTE = "Toggle mute audio";
+    private final static String CHAT = "Toggle chat window";
+    private final static String DESKTOP = "Toggle screenshare";
+    private final static String ETHERPAD = "Open / Close shared document";
+    private final static String HANGUP = "Leave the call";
+    private final static String INFO = "Show info";
+    private final static String OVERFLOW = "Toggle more actions menu";
+    private final static String OVERFLOW_MENU = "More actions menu";
+    private final static String PROFILE = "Edit your profile";
+    private final static String RECORD = "Toggle recording";
+    private final static String SETTINGS = "Toggle settings";
+    private final static String SHARE_VIDEO = "Toggle Youtube video sharing";
+    private final static String VIDEO_MUTE = "Toggle mute video";
+    private final static String VIDEO_QUALITY = "Manage call quality";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
