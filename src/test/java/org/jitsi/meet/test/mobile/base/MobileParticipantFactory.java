@@ -95,7 +95,7 @@ public class MobileParticipantFactory
         if (targetOptions.shouldReinstallApp()
                 && targetOptions.getBundleId() != null)
         {
-            participant.reinstallAppIfInstalled();
+            participant.reinstallApp();
         }
 
         return participant;
