@@ -68,6 +68,7 @@ public class WebParticipant extends Participant<WebDriver>
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
+    private SettingsDialog settingsDialog;
     private Toolbar toolbar;
     private WebFilmstrip filmstrip;
 
@@ -489,6 +490,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return infoDialog;
+    }
+
+    /**
+     * @return a representation of the settings dialog of this participant.
+     */
+    public SettingsDialog getSettingsDialog()
+    {
+        if (settingsDialog == null)
+        {
+            settingsDialog = new SettingsDialog(this);
+        }
+
+        return settingsDialog;
     }
 
     /**
