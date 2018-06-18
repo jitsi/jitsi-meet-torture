@@ -330,21 +330,17 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
     }
 
     /**
-     * Will reinstall the app if it's currently installed. Can be helpful when
-     * running locally to reproduce the media permissions alerts.
+     * Will reinstall the app Can be helpful when running locally to reproduce
+     * the media permissions alerts.
      */
-    public void reinstallAppIfInstalled()
+    public void reinstallApp()
     {
-        // FIXME driver.isAppInstalled does not work on iOS
-        if (!type.isAndroid() || driver.isAppInstalled(appBundleId))
-        {
-            Logger.getGlobal().log(Level.INFO, "Removing app...");
-            driver.removeApp(appBundleId);
-            Logger.getGlobal().log(Level.INFO, "Installing app...");
-            driver.installApp(appBinaryFile);
-            Logger.getGlobal().log(Level.INFO, "Launching app...");
-            driver.launchApp();
-        }
+        Logger.getGlobal().log(Level.INFO, "Removing app...");
+        driver.removeApp(appBundleId);
+        Logger.getGlobal().log(Level.INFO, "Installing app...");
+        driver.installApp(appBinaryFile);
+        Logger.getGlobal().log(Level.INFO, "Launching app...");
+        driver.launchApp();
     }
 
     /**
