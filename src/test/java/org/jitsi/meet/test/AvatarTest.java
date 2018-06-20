@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -191,15 +192,11 @@ public class AvatarTest
             return;
         }
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
         getParticipant1().getToolbar().clickProfileButton();
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, "//input[@id='setEmail']", 5);
 
         String currentEmailValue
-            = driver1.findElement(By.xpath("//input[@id='setEmail']"))
-                .getAttribute("value");
+            = getParticipant1().getSettingsDialog().getEmail();
+
         assertEquals(
             currentEmailValue,
             EMAIL,
@@ -209,15 +206,9 @@ public class AvatarTest
         ensureTwoParticipants();
 
         getParticipant1().getToolbar().clickProfileButton();
-        driver1 = getParticipant1().getDriver();
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1,
-            "//input[@id='setEmail']",
-            5);
-
         currentEmailValue
-            = driver1.findElement(By.xpath("//input[@id='setEmail']"))
-                .getAttribute("value");
+            = getParticipant1().getSettingsDialog().getEmail();
+
         assertEquals(
             currentEmailValue,
             EMAIL,
@@ -251,12 +242,11 @@ public class AvatarTest
 
         // change the email for participant1
         participant1.getToolbar().clickProfileButton();
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, "//input[@id='setEmail']", 5);
 
-        // set the value of the field through the jquery, or on FF we can
-        // activate the key listener and m can mute the call and break tests
-        participant1.executeScript("$('#setEmail').val('" + EMAIL + "').focusout();");
+        SettingsDialog settingsDialog = participant1.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        settingsDialog.setEmail(EMAIL);
+        settingsDialog.submit();
 
         //check if the local avatar in the settings menu has changed
         TestUtils.waitForCondition(
@@ -303,8 +293,6 @@ public class AvatarTest
                 String currentSrc = getLargeVideoSrc(driver2);
                 return currentSrc.contains(HASH);
             });
-
-        participant1.getToolbar().clickProfileButton();
 
         // we check whether avatar of participant2 is same on both sides
         // and we stored to check it after reload
