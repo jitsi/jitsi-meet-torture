@@ -129,16 +129,24 @@ public class StartMutedTest
     @Test(dependsOnMethods = { "configOptionsTest" })
     public void startWithVideoMutedCanUnmute()
     {
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        ParticipantType participant1Type = participant1.getType();
+        ParticipantType participant2Type = participant2.getType();
+
         /**
          * Firefox is known to have problems unmuting when starting muted.
+         * Safari does not support video.
          */
-        if (getParticipant1().getType().isFirefox()
-            || getParticipant2().getType().isFirefox())
+        if (participant1Type.isFirefox()
+            || participant2Type.isFirefox()
+            || participant1Type.isSafari()
+            || participant2Type.isSafari())
         {
             return;
         }
-
-
+        
         hangUpAllParticipants();
 
         // Explicitly enable P2P due to a regression with unmute not updating
@@ -149,8 +157,6 @@ public class StartMutedTest
                     "config.p2p.enabled=true");
         ensureTwoParticipants(url, url);
 
-        WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = getParticipant2();
 
         MeetUIUtils.assertMuteIconIsDisplayed(
             participant1.getDriver(),

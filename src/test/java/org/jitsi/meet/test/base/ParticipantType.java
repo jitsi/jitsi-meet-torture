@@ -88,6 +88,16 @@ public enum ParticipantType
     }
 
     /**
+     * Tells if this browser type is Safari.
+     *
+     * @return a boolean
+     */
+    public boolean isSafari()
+    {
+        return this == safari;
+    }
+
+    /**
      * Tells if this participant type instance is a web type of participant.
      *
      * @return a boolean
