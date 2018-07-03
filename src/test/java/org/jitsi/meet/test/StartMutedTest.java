@@ -194,13 +194,15 @@ public class StartMutedTest
     {
         hangUpAllParticipants();
 
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl().appendConfig(
+                "config.startWithAudioMuted=true");
+
         // Do not use ensureTwoParticipants() because it checks for send/rec
         // bitrate which should be 0 if both participants start audio muted.
-        ensureOneParticipant(getJitsiMeetUrl().appendConfig(
-                "config.startWithAudioMuted=true"));
+        ensureOneParticipant(meetUrl);
 
         WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = joinSecondParticipant();
+        WebParticipant participant2 = joinSecondParticipant(meetUrl);
 
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
