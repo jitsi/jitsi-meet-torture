@@ -508,6 +508,38 @@ public class TestUtils
     }
 
     /**
+     * Executes a specific (piece of) JavaScript script in the browser
+     * controlled by a specific {@code WebDriver} and returns the result of its
+     * execution as a {@code double} value.
+     *
+     * @param driver the {@code WebDriver} which controls the browser in
+     * which the specified {@code script} is to be executed
+     * @param script the script to execute in the browser controlled by
+     * {@code webDriver}
+     * @return the result of the execution of {@code script} in the browser
+     * controlled by {@code webDriver} as a {@code double} value
+     */
+    public static double executeScriptAndReturnDouble(
+        WebDriver driver,
+        String script)
+    {
+        Object o = ((JavascriptExecutor) driver).executeScript(script);
+
+        double d = 0;
+
+        if (o instanceof Double)
+        {
+            d = (Double) o;
+        }
+        else if (o instanceof Long)
+        {
+            d = (Long) o;
+        }
+
+        return d;
+    }
+
+    /**
      * Converts an arbitrary result of the JavaScript execution into primitive
      * <tt>boolean</tt> (null means <tt>false</tt>).
      *

@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -120,6 +121,114 @@ public class StartMutedTest
             driver2,
             "participant2",
             false /* unmuted */);
+    }
+
+    /**
+     * Join the conference while video muted and unmute the second participant.
+     */
+    @Test(dependsOnMethods = { "configOptionsTest" })
+    public void startWithVideoMutedCanUnmute()
+    {
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        ParticipantType participant1Type = participant1.getType();
+        ParticipantType participant2Type = participant2.getType();
+
+        /**
+         * Firefox is known to have problems unmuting when starting muted.
+         * Safari does not support video.
+         */
+        if (participant1Type.isFirefox()
+            || participant2Type.isFirefox()
+            || participant1Type.isSafari()
+            || participant2Type.isSafari())
+        {
+            return;
+        }
+        
+        hangUpAllParticipants();
+
+        // Explicitly enable P2P due to a regression with unmute not updating
+        // large video while in P2P.
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig(
+                "config.startWithVideoMuted=true&" +
+                    "config.p2p.enabled=true");
+        ensureTwoParticipants(url, url);
+
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            participant1.getDriver(),
+            participant2.getDriver(),
+            true,
+            true,
+            "participant2"
+        );
+
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            participant2.getDriver(),
+            participant1.getDriver(),
+            true,
+            true,
+            "participant1"
+        );
+
+        MeetUIUtils.waitsForLargeVideoSwitch(
+            participant1.getDriver(),
+            participant2.getEndpointId());
+
+        MeetUIUtils.waitsForLargeVideoSwitch(
+            participant2.getDriver(),
+            participant1.getEndpointId());
+
+        MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
+
+        participant1.getLargeVideo().isVideoPlaying();
+    }
+
+    /**
+     * Join the conference while audio muted and unmute the second participant.
+     */
+    @Test(dependsOnMethods = { "startWithVideoMutedCanUnmute" })
+    public void startWithAudioMutedCanUnmute()
+    {
+        hangUpAllParticipants();
+
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl().appendConfig(
+                "config.startWithAudioMuted=true");
+
+        // Do not use ensureTwoParticipants() because it checks for send/rec
+        // bitrate which should be 0 if both participants start audio muted.
+        ensureOneParticipant(meetUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = joinSecondParticipant(meetUrl);
+
+        MeetUIUtils.waitForAudioMuted(
+            participant1.getDriver(),
+            participant2.getDriver(),
+            "participant2",
+            true);
+
+        MeetUIUtils.waitForAudioMuted(
+            participant2.getDriver(),
+            participant1.getDriver(),
+            "participant1",
+            true);
+
+        participant1.getToolbar().clickAudioMuteButton();
+
+        MeetUIUtils.waitForAudioMuted(
+            participant1.getDriver(),
+            participant2.getDriver(),
+            "participant2",
+            true);
+
+        MeetUIUtils.waitForAudioMuted(
+            participant2.getDriver(),
+            participant1.getDriver(),
+            "participant1",
+            false);
     }
 
     /**
