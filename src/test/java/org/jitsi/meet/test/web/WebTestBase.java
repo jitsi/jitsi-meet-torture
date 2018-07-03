@@ -327,17 +327,30 @@ public class WebTestBase
     }
 
     /**
-     * Joins the second participant.
+     * Joins the second participant to a specified {@link JitsiMeetUrl}.
+     *
+     * @param meetUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
      * @return the participant which was created.
      */
-    public WebParticipant joinSecondParticipant()
+    public WebParticipant joinSecondParticipant(JitsiMeetUrl meetUrl)
     {
-        WebParticipant participant = joinParticipant(1, null, null);
+        WebParticipant participant = joinParticipant(1, meetUrl, null);
 
         participant.waitToJoinMUC(10);
         participant.waitForIceConnected();
 
         return participant;
+    }
+
+    /**
+     * Joins the second participant.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinSecondParticipant()
+    {
+        return joinSecondParticipant(null);
     }
 
     /**
