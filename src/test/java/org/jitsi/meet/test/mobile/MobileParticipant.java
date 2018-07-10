@@ -336,7 +336,7 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
     public void reinstallAppIfInstalled()
     {
         // FIXME driver.isAppInstalled does not work on iOS
-        if (!type.isAndroid() || driver.isAppInstalled(appBundleId))
+        if (type.isIOS() || driver.isAppInstalled(appBundleId))
         {
             Logger.getGlobal().log(Level.INFO, "Removing app...");
             driver.removeApp(appBundleId);

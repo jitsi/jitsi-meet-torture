@@ -71,6 +71,16 @@ public enum ParticipantType
     }
 
     /**
+     * Tells if this participant is iOS.
+     *
+     * @return a boolean
+     */
+    public boolean isIOS()
+    {
+        return this == ios;
+    }
+
+    /**
      * Tells if this participant type is a mobile device type of driver.
      *
      * @return a boolean
