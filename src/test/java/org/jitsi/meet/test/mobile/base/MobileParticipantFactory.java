@@ -24,7 +24,6 @@ import org.openqa.selenium.remote.*;
 
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * Creates mobile participant.
@@ -81,8 +80,6 @@ public class MobileParticipantFactory
             = type.isAndroid()
                 ? new AndroidDriver<>(appiumUrl, capabilities)
                 : new IOSDriver<>(appiumUrl, capabilities);
-
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 
         MobileParticipant participant
             = new MobileParticipant(
