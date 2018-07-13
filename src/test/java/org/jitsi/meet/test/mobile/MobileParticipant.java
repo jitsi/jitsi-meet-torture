@@ -270,11 +270,7 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
             maybeAcceptOverlayPermissions();
         }
 
-        // ALLOW to use camera and the calendar
-        // Due to the async nature of Redux we don't know which permission will
-        // pop up first.
-        acceptPermissionAlert();
-        acceptPermissionAlert();
+        // XXX: No need to accept permissions on the welcome page now.
 
         WelcomePageView welcomePageView = new WelcomePageView(this);
 
@@ -297,7 +293,8 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
 
         takeScreenshot("roomNameTextEntered");
 
-        // ALLOW to use mic
+        // ALLOW to use mic and camera.
+        acceptPermissionAlert();
         acceptPermissionAlert();
 
         ConferenceView conference = new ConferenceView(this);
