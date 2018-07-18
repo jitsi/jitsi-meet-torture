@@ -194,6 +194,11 @@
             <class name="org.jitsi.meet.test.MaxUsersTest" />
         </classes>
     </test>
+    <test name="MultipleConferencesTest">
+        <classes>
+            <class name="org.jitsi.meet.test.MalleusJitsificus" />
+        </classes>
+    </test>
     <test name="PeerConnectionStatusTest">
         <classes>
             <class name="org.jitsi.meet.test.PeerConnectionStatusTest" />
