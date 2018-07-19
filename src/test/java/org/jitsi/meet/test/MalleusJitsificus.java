@@ -105,40 +105,74 @@ public class MalleusJitsificus
     @Test(dataProvider = "dp")
     public void testMain(
         JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders)
+        throws InterruptedException
     {
         WebParticipant[] participants = new WebParticipant[numberOfParticipants];
-        try
-        {
-            WebParticipantOptions ops
-                = new WebParticipantOptions().setFakeStreamVideoFile(
-                    INPUT_VIDEO_FILE);
+        Thread[] runThreads = new Thread[numberOfParticipants];
 
-            for(int i = 0; i < participants.length; i++)
+        WebParticipantOptions ops
+            = new WebParticipantOptions().setFakeStreamVideoFile(
+                INPUT_VIDEO_FILE);
+
+        for(int i = 0; i < participants.length; i++)
+        {
+            participants[i] =
+                this.participants
+                    .createParticipant("web.participant" + (i + 1), ops);
+        }
+
+        for(int i = 0; i < participants.length; i++)
+        {
+            runThreads[i]
+                = runAsync(
+                    participants[i],
+                    url,
+                    waitTime,
+                    i >= numSenders /* no video */);
+        }
+
+        for (Thread t : runThreads)
+        {
+            if (t != null)
             {
-                participants[i] =
-                    this.participants
-                        .createParticipant("web.participant" + (i + 1), ops);
-                participants[i].joinConference(url);
-                if (i >= numSenders)
-                {
-                    participants[i].getToolbar().clickVideoMuteButton();
-                }
+                t.join();
+            }
+        }
+    }
+
+    private Thread runAsync(final WebParticipant p,
+                            JitsiMeetUrl url,
+                            long waitTime,
+                            boolean muteVideo)
+    {
+        JitsiMeetUrl _url = url.copy();
+
+        Thread joinThread = new Thread(() -> {
+
+            if (muteVideo)
+            {
+                _url.appendConfig("startWithVideoMuted=true");
             }
 
-            TestUtils.waitMillis(waitTime);
-        }
-        catch(Exception e)
-        {
-            // There was no dialog, so we fail the test !
-            e.printStackTrace();
-        }
-        finally
-        {
-            // Clean up the participants in participants array
-            Arrays.stream(participants)
-                .filter(Objects::nonNull)
-                .forEach(Participant::hangUp);
-        }
+            p.joinConference(_url);
+
+            try
+            {
+                Thread.sleep(waitTime);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                p.hangUp();
+            }
+        });
+
+        joinThread.start();
+
+        return joinThread;
     }
 
     private void print(String s)
