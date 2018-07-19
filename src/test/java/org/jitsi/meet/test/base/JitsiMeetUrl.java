@@ -184,6 +184,16 @@ public class JitsiMeetUrl
     }
 
     /**
+     * Clones this instance.
+     *
+     * @return a filed-to-field copy of this instance.
+     */
+    public JitsiMeetUrl copy()
+    {
+        return (JitsiMeetUrl) this.clone();
+    }
+
+    /**
      * A {@link URL} constructed from the result of {@link #toString()}
      *
      * @return a full Jitsi Meet conference <tt>URL</tt>.
