@@ -135,7 +135,9 @@ public class MalleusJitsificus
         finally
         {
             // Clean up the participants in participants array
-            Arrays.stream(participants).filter(Objects::nonNull).forEach(Participant::close);
+            Arrays.stream(participants)
+                .filter(Objects::nonNull)
+                .forEach(Participant::hangUp);
         }
     }
 
