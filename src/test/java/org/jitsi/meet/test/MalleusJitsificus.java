@@ -62,7 +62,7 @@ public class MalleusJitsificus
 
         int timeoutMs = 1000 * Integer.valueOf(System.getProperty(DURATION_PNAME));
 
-        String roomNamePrefix = System.getProperty(SENDERS_PNAME);
+        String roomNamePrefix = System.getProperty(ROOM_NAME_PREFIX_PNAME);
         if (roomNamePrefix == null)
         {
             roomNamePrefix = "anvil-";
