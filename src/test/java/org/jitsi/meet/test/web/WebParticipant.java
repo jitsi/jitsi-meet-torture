@@ -68,6 +68,8 @@ public class WebParticipant extends Participant<WebDriver>
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
+    private LargeVideo largeVideo;
+    private SettingsDialog settingsDialog;
     private Toolbar toolbar;
     private WebFilmstrip filmstrip;
 
@@ -489,6 +491,32 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return infoDialog;
+    }
+
+    /**
+     * @return a representation of the large video of this participant.
+     */
+    public LargeVideo getLargeVideo()
+    {
+        if (largeVideo == null)
+        {
+            largeVideo = new LargeVideo(this);
+        }
+
+        return largeVideo;
+    }
+
+    /**
+     * @return a representation of the settings dialog of this participant.
+     */
+    public SettingsDialog getSettingsDialog()
+    {
+        if (settingsDialog == null)
+        {
+            settingsDialog = new SettingsDialog(this);
+        }
+
+        return settingsDialog;
     }
 
     /**

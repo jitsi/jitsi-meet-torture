@@ -112,11 +112,6 @@
             <class name="org.jitsi.meet.test.ReloadTest" />
         </classes>
     </test>
-    <test name="RingOverlayTest">
-        <classes>
-            <class name="org.jitsi.meet.test.RingOverlayTest" />
-        </classes>
-    </test>
     <test name="SharedVideoTest">
         <classes>
             <class name="org.jitsi.meet.test.SharedVideoTest" />

@@ -29,15 +29,15 @@ public class WelcomePageView extends AbstractMobilePage
     /**
      * Conference room name input locator.
      */
-    @AndroidFindBy(accessibility = "Input room name.")
-    @iOSFindBy(accessibility = "Input room name.")
+    @AndroidFindBy(accessibility = "Enter room name")
+    @iOSFindBy(accessibility = "Enter room name")
     private MobileElement roomNameInput;
 
     /**
      * Join conference room button.
      */
-    @AndroidFindBy(accessibility = "Tap to Join.")
-    @iOSFindBy(accessibility = "Tap to Join.")
+    @AndroidFindBy(accessibility = "Tap to join")
+    @iOSFindBy(accessibility = "Tap to join")
     private MobileElement joinRoomButton;
 
     /**

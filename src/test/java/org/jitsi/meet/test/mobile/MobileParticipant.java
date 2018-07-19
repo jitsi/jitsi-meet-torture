@@ -25,7 +25,6 @@ import org.jitsi.meet.test.pageobjects.mobile.permissions.*;
 import org.jitsi.meet.test.pageobjects.mobile.stats.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.logging.*;
 
 import java.util.*;
 import java.util.logging.*;
@@ -116,6 +115,31 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
                 Level.SEVERE,
                 "Allow button not found ! Page source: "
                     + driver.getPageSource());
+        }
+    }
+
+    /**
+     * Tries to switch to alert and dismiss it.
+     *
+     * @return {@code true} if alert has been dismissed or {@code false} either
+     * if it failed or no dialog was displayed.
+     */
+    private boolean dismissAlertIfAny()
+    {
+        try
+        {
+            Alert alert = driver.switchTo().alert();
+            logger.info("Will try to dismiss the alert: " + alert.getText());
+            alert.dismiss();
+
+            return true;
+
+        }
+        catch (WebDriverException exc)
+        {
+            // the switchTo() method will throw WebDriverException if there is
+            // no dialog open.
+            return false;
         }
     }
 
@@ -246,7 +270,10 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
             maybeAcceptOverlayPermissions();
         }
 
-        // ALLOW to use camera
+        // ALLOW to use camera and the calendar
+        // Due to the async nature of Redux we don't know which permission will
+        // pop up first.
+        acceptPermissionAlert();
         acceptPermissionAlert();
 
         WelcomePageView welcomePageView = new WelcomePageView(this);
@@ -310,11 +337,28 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
     {
         try
         {
-            driver.quit();
+            // There are issues on iOS where a leftover permission alert can
+            // cause troubles starting the app or Appium's WDA.
+            if (type.isIOS())
+            {
+                while (dismissAlertIfAny())
+                {
+                    // keep on closing...
+                }
+
+                // Uninstall the app. While removing the app does not clear
+                // the alert (observed on iPhone 6) it does not hurt to remove
+                // it. It was also observed that the method for dismissing
+                // dialog used above did not work on older Appium versions, so
+                // maybe removing the app will do in some cases.
+                removeAppIfInstalled();
+            }
         }
-        catch (Exception e)
+        finally
         {
-            logger.log(Level.SEVERE, "Failed to close driver", e);
+            // Still make an attempt to close the driver if something goes wrong
+            // above.
+            super.close();
         }
     }
 
@@ -332,16 +376,34 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
      */
     public void reinstallAppIfInstalled()
     {
-        // FIXME driver.isAppInstalled does not work on iOS
-        if (!type.isAndroid() || driver.isAppInstalled(appBundleId))
+        if (removeAppIfInstalled())
         {
-            Logger.getGlobal().log(Level.INFO, "Removing app...");
-            driver.removeApp(appBundleId);
             Logger.getGlobal().log(Level.INFO, "Installing app...");
             driver.installApp(appBinaryFile);
             Logger.getGlobal().log(Level.INFO, "Launching app...");
             driver.launchApp();
         }
+    }
+
+    /**
+     * Removes the app if it's installed.
+     *
+     * @return {@code true} if the app has been removed or {@code false} if it
+     * was not installed. Note that currently it always returns {@code true} for
+     * iOS, as the app detection doesn't work as expected yet.
+     */
+    public boolean removeAppIfInstalled()
+    {
+        // FIXME driver.isAppInstalled does not work on iOS
+        if (type.isIOS() || driver.isAppInstalled(appBundleId))
+        {
+            Logger.getGlobal().log(Level.INFO, "Removing app...");
+            driver.removeApp(appBundleId);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

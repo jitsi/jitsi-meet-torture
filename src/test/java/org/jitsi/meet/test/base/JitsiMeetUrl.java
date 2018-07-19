@@ -264,7 +264,14 @@ public class JitsiMeetUrl
      */
     public void setServerUrl(String serverUrl)
     {
-        this.serverUrl = serverUrl;
+        if (serverUrl != null && serverUrl.endsWith("/"))
+        {
+            this.serverUrl = serverUrl.substring(0, serverUrl.length() -1);
+        }
+        else
+        {
+            this.serverUrl = serverUrl;
+        }
     }
 
     /**
