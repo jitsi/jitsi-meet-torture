@@ -19,6 +19,7 @@ import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.util.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import static org.jitsi.meet.test.base.ParticipantOptions.GLOBAL_PROP_PREFIX;
 
@@ -57,7 +58,7 @@ public abstract class ParticipantHelper<P extends Participant>
     protected ParticipantHelper(Properties config)
     {
         this.config = Objects.requireNonNull(config, "config");
-        this.participants = new LinkedList<>();
+        this.participants = new CopyOnWriteArrayList<>();
         this.participantFactory = null;
     }
 

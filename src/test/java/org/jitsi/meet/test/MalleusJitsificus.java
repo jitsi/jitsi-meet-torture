@@ -107,25 +107,13 @@ public class MalleusJitsificus
         JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders)
         throws InterruptedException
     {
-        WebParticipant[] participants = new WebParticipant[numberOfParticipants];
         Thread[] runThreads = new Thread[numberOfParticipants];
 
-        WebParticipantOptions ops
-            = new WebParticipantOptions().setFakeStreamVideoFile(
-                INPUT_VIDEO_FILE);
-
-        for(int i = 0; i < participants.length; i++)
-        {
-            participants[i] =
-                this.participants
-                    .createParticipant("web.participant" + (i + 1), ops);
-        }
-
-        for(int i = 0; i < participants.length; i++)
+        for(int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
                 = runAsync(
-                    participants[i],
+                    i,
                     url,
                     waitTime,
                     i >= numSenders /* no video */);
@@ -140,7 +128,7 @@ public class MalleusJitsificus
         }
     }
 
-    private Thread runAsync(final WebParticipant p,
+    private Thread runAsync(int i,
                             JitsiMeetUrl url,
                             long waitTime,
                             boolean muteVideo)
@@ -149,12 +137,21 @@ public class MalleusJitsificus
 
         Thread joinThread = new Thread(() -> {
 
+            WebParticipantOptions ops
+                = new WebParticipantOptions()
+                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+
+            WebParticipant participant
+                = participants
+                    .createParticipant("web.participant" + (i + 1), ops);
+
+
             if (muteVideo)
             {
                 _url.appendConfig("startWithVideoMuted=true");
             }
 
-            p.joinConference(_url);
+            participant.joinConference(_url);
 
             try
             {
@@ -166,7 +163,7 @@ public class MalleusJitsificus
             }
             finally
             {
-                p.hangUp();
+                participant.hangUp();
             }
         });
 
