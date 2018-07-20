@@ -148,7 +148,7 @@ public class MalleusJitsificus
 
             if (muteVideo)
             {
-                _url.appendConfig("startWithVideoMuted=true");
+                _url.appendConfig("config.startWithVideoMuted=true");
             }
 
             participant.joinConference(_url);
