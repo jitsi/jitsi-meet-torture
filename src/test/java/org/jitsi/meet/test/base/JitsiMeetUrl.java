@@ -38,7 +38,7 @@ public class JitsiMeetUrl
      * {@link #setHashConfigPart(String)}. For convenience
      * {@link #appendConfig(String)} will do that automatically.
      */
-    private final Map<String, String> fragmentParams = new HashMap<>();
+    private Map<String, String> fragmentParams = new HashMap<>();
 
     /**
      * In the example URL:
@@ -173,7 +173,12 @@ public class JitsiMeetUrl
     {
         try
         {
-            return super.clone();
+            JitsiMeetUrl clone = (JitsiMeetUrl) super.clone();
+
+            clone.fragmentParams = new HashMap<>(this.fragmentParams);
+
+            return clone;
+
         }
         catch (CloneNotSupportedException e)
         {
