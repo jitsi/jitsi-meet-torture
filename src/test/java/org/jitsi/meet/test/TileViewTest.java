@@ -89,11 +89,14 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testTileViewVisible" })
     public void testEtherpadExistsTileView()
     {
-        getParticipant1().getToolbar().clickEtherpadButton();
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        if (MeetUtils.isEtherpadEnabled(getParticipant1().getDriver()))
+        {
+            getParticipant1().getToolbar().clickEtherpadButton();
+            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
 
-        getParticipant1().getToolbar().clickEtherpadButton();
-        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+            getParticipant1().getToolbar().clickEtherpadButton();
+            assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+        }
     }
 
     /**
