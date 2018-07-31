@@ -281,6 +281,14 @@ public class InfoDialog
         open();
 
         WebDriver driver = participant.getDriver();
+
+        // waits for the element to be available before getting the text
+        // PHONE_NUMBER for example can take time before shown
+        TestUtils.waitForElementBy(
+            driver,
+            By.className(className),
+            5);
+
         String fullText
             = driver.findElement(By.className(className)).getText();
 
