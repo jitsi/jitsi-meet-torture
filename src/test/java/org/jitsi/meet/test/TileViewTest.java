@@ -48,37 +48,17 @@ public class TileViewTest
     {
         super.setupClass();
 
-        ensureOneParticipant();
+        ensureTwoParticipants();
     }
 
     /**
-     * Tests tile view is not entered when in a lonely call.
+     * Tests tile view is entered.
      */
     @Test
-    public void testTileViewNotVisibleInLonelyCall()
-    {
-        getParticipant1().getToolbar().clickTileViewButton();
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
-    }
-
-    /**
-     * Tests tile view is not entered when in a 1:1 call.
-     */
-    @Test(dependsOnMethods = { "testTileViewNotVisibleInLonelyCall" })
-    public void testTileViewNotVisibleInOneOnOne()
-    {
-        joinSecondParticipant();
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
-    }
-
-    /**
-     * Tests tile view is entered when 2 or more remote participants are in the
-     * call.
-     */
-    @Test(dependsOnMethods = { "testTileViewNotVisibleInOneOnOne" })
     public void testTileViewVisible()
     {
-        joinThirdParticipant();
+        getParticipant1().getToolbar().clickTileViewButton();
+
         assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
     }
 
