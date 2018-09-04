@@ -18,10 +18,10 @@ public class SettingsDialog
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
     private final static String MORE_TAB
-        = ".modal-dialog-form [role='tab'][aria-posinset='3'";
+        =  "//div[contains(@class, 'settings-dialog')]//li[text()='More']";
     private final static String OK_BUTTON = "#modal-dialog-ok-button";
     private final static String PROFILE_TAB
-        = ".modal-dialog-form [role='tab'][aria-posinset='2'";
+        =  "//div[contains(@class, 'settings-dialog')]//li[text()='Profile']";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String START_AUDIO_MUTED_CHECKBOX
         = "[name='start-audio-muted'] ~ div";
@@ -178,10 +178,10 @@ public class SettingsDialog
     /**
      * Displays a specific tab in the settings dialog.
      */
-    private void openTab(String cssSelectorForTab)
+    private void openTab(String xPathSelectorForTab)
     {
         WebDriver driver = participant.getDriver();
-        driver.findElement(By.cssSelector(cssSelectorForTab)).click();
+        driver.findElement(By.xpath(xPathSelectorForTab)).click();
     }
 
     /**
