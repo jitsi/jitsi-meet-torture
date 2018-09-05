@@ -9,7 +9,7 @@ import java.util.*;
 public class SettingsDialog
 {
     /**
-     * CSS selectorsto be used for finding WebElements within the
+     * CSS selectors to be used for finding WebElements within the
      * {@link SettingsDialog}.
      */
     private final static String CANCEL_BUTTON = "#modal-dialog-cancel-button";
@@ -17,17 +17,23 @@ public class SettingsDialog
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
-    private final static String MORE_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//li[text()='More']";
     private final static String OK_BUTTON = "#modal-dialog-ok-button";
-    private final static String PROFILE_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//li[text()='Profile']";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String START_AUDIO_MUTED_CHECKBOX
         = "[name='start-audio-muted'] ~ div";
     private final static String START_VIDEO_MUTED_CHECKBOX
         = "[name='start-video-muted'] ~ div";
-    
+
+    /**
+     * XPath selectors to be used for finding tab label elements within the
+     * {@link SettingsDialog}. XPath is used so tabs can be found based on tab
+     * text, which CSS selectors cannot do.
+     */
+    private final static String MORE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
+    private final static String PROFILE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='Profile']";
+
     /**
      * The participant.
      */
