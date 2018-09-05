@@ -178,4 +178,23 @@ public class FollowMeTest
             MeetUIUtils.getVideoElementID(driver2, localVideoThumb),
             MeetUIUtils.getLargeVideoID(driver2));
     }
+
+    /**
+     * Tests if all participants enter and exit tile view.
+     */
+    @Test(dependsOnMethods = { "testNextOnStageCommandsAreFollowed" })
+    public void testTileViewCommandsAreFollowed()
+    {
+        joinThirdParticipant();
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        getAllParticipants().forEach(participant -> assertTrue(
+            MeetUIUtils.isInTileView(participant)));
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        getAllParticipants().forEach(participant -> assertFalse(
+            MeetUIUtils.isInTileView(participant)));
+    }
 }

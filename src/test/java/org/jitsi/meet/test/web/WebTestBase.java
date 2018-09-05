@@ -354,6 +354,15 @@ public class WebTestBase
     }
 
     /**
+     * Joins the third participant.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinThirdParticipant()
+    {
+        return joinParticipantAndWait(2, null, null);
+    }
+
+    /**
      * Closes the info dialog for all participants if it is displayed.
      */
     private void ensureInfoDialogClosed()

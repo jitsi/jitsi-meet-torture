@@ -1075,4 +1075,18 @@ public class MeetUIUtils
                 "");
         }
     }
+
+    /**
+     * Checks whether a participant is viewing the conference in tile view.
+     *
+     * @param participant the <tt>WebParticipant</tt> of the participant for
+     *                    whom we're check is in tile view.
+     */
+    public static boolean isInTileView(WebParticipant participant)
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement appRoot = driver.findElement(By.id("videoconference_page"));
+
+        return appRoot.getAttribute("class").contains("tile-view");
+    }
 }

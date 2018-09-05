@@ -137,6 +137,11 @@
             <class name="org.jitsi.meet.test.SwitchVideoTest" />
         </classes>
     </test>
+    <test name="TileViewTest">
+        <classes>
+            <class name="org.jitsi.meet.test.TileViewTest" />
+        </classes>
+    </test>
     <test name="TCPTest">
         <classes>
             <class name="org.jitsi.meet.test.TCPTest" />
