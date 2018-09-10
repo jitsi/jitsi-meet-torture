@@ -155,7 +155,7 @@ public class FollowMeTest
     /**
      * Tests if all participants enter and exit tile view.
      */
-    @Test(dependsOnMethods = { "testNextOnStageCommandsAreFollowed" })
+    @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
     public void testTileViewCommandsAreFollowed()
     {
         joinThirdParticipant();
@@ -175,7 +175,7 @@ public class FollowMeTest
      * Checks if selecting a video for moderator selects large video for the
      * second participant.
      */
-    @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
+    @Test(dependsOnMethods = { "testTileViewCommandsAreFollowed" })
     public void testNextOnStageCommandsAreFollowed()
     {
         WebParticipant participant1 = getParticipant1();
