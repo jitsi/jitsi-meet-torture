@@ -153,6 +153,25 @@ public class FollowMeTest
     }
 
     /**
+     * Tests if all participants enter and exit tile view.
+     */
+    @Test(dependsOnMethods = { "testNextOnStageCommandsAreFollowed" })
+    public void testTileViewCommandsAreFollowed()
+    {
+        joinThirdParticipant();
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        getAllParticipants().forEach(participant -> assertTrue(
+            MeetUIUtils.isInTileView(participant)));
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        getAllParticipants().forEach(participant -> assertFalse(
+            MeetUIUtils.isInTileView(participant)));
+    }
+
+    /**
      * Checks if selecting a video for moderator selects large video for the
      * second participant.
      */
@@ -177,24 +196,5 @@ public class FollowMeTest
         assertEquals(
             MeetUIUtils.getVideoElementID(driver2, localVideoThumb),
             MeetUIUtils.getLargeVideoID(driver2));
-    }
-
-    /**
-     * Tests if all participants enter and exit tile view.
-     */
-    @Test(dependsOnMethods = { "testNextOnStageCommandsAreFollowed" })
-    public void testTileViewCommandsAreFollowed()
-    {
-        joinThirdParticipant();
-
-        getParticipant1().getToolbar().clickTileViewButton();
-
-        getAllParticipants().forEach(participant -> assertTrue(
-            MeetUIUtils.isInTileView(participant)));
-
-        getParticipant1().getToolbar().clickTileViewButton();
-
-        getAllParticipants().forEach(participant -> assertFalse(
-            MeetUIUtils.isInTileView(participant)));
     }
 }
