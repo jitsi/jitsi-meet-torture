@@ -67,7 +67,7 @@ public class TileViewTest
      * automatically re-entered when etherpad is exited.
      */
     @Test(dependsOnMethods = { "testTileViewVisible" })
-    public void testEtherpadExistsTileView()
+    public void testEtherpadExitsTileView()
     {
         if (MeetUtils.isEtherpadEnabled(getParticipant1().getDriver()))
         {
@@ -80,10 +80,30 @@ public class TileViewTest
     }
 
     /**
+     * Tests tile view is exited if a participant is pinned but re-enters
+     * on unpin.
+     */
+    @Test(dependsOnMethods = { "testEtherpadExitsTileView" })
+    public void testPinningExitsTileView()
+    {
+        MeetUIUtils.clickOnRemoteVideo(
+            getParticipant1().getDriver(),
+            getParticipant2().getEndpointId());
+
+        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+
+        MeetUIUtils.clickOnRemoteVideo(
+            getParticipant1().getDriver(),
+            getParticipant2().getEndpointId());
+
+        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+    }
+
+    /**
      * Tests local video has been successfully moved to the end of the remote
      * videos, so it should be displayed as the last video in tile view.
      */
-    @Test(dependsOnMethods = { "testEtherpadExistsTileView" })
+    @Test(dependsOnMethods = { "testPinningExitsTileView" })
     public void testLocalVideoDisplaysAtEnd()
     {
         WebDriver driver = getParticipant1().getDriver();
@@ -98,7 +118,6 @@ public class TileViewTest
             By.cssSelector(FILMSTRIP_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
             5
         );
-
     }
 
     /**
