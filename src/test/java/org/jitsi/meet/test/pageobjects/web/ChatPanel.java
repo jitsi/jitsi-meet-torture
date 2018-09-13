@@ -51,8 +51,9 @@ public class ChatPanel
      */
     public boolean isOpen()
     {
-        Object o = participant.executeScript("return APP.UI.isChatVisible();");
-        return o != null && Boolean.parseBoolean(o.toString());
+        return this.participant.getDriver()
+            .findElement(By.id("sideToolbarContainer"))
+            .isDisplayed();
     }
 
     /**
