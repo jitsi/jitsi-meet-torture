@@ -9,8 +9,10 @@ import java.util.*;
 public class SettingsDialog
 {
     /**
-     * CSS selectors to be used for finding WebElements within the
-     * {@link SettingsDialog}.
+     * Selectors to be used for finding WebElements within the
+     * {@link SettingsDialog}. While most are CSS selectors, some are XPath
+     * selectors, and prefixed as such, due to the extra functionality XPath
+     * provides.
      */
     private final static String CANCEL_BUTTON = "#modal-dialog-cancel-button";
     private final static String DISPLAY_NAME_FIELD
@@ -23,15 +25,9 @@ public class SettingsDialog
         = "[name='start-audio-muted'] ~ div";
     private final static String START_VIDEO_MUTED_CHECKBOX
         = "[name='start-video-muted'] ~ div";
-
-    /**
-     * XPath selectors to be used for finding tab label elements within the
-     * {@link SettingsDialog}. XPath is used so tabs can be found based on tab
-     * text, which CSS selectors cannot do.
-     */
-    private final static String MORE_TAB
+    private final static String X_PATH_MORE_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
-    private final static String PROFILE_TAB
+    private final static String X_PATH_PROFILE_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='Profile']";
 
     /**
@@ -110,7 +106,7 @@ public class SettingsDialog
      */
     public void openMoreTab()
     {
-        openTab(MORE_TAB);
+        openTab(X_PATH_MORE_TAB);
     }
 
     /**
@@ -118,7 +114,7 @@ public class SettingsDialog
      */
     public void openProfileTab()
     {
-       openTab(PROFILE_TAB);
+       openTab(X_PATH_PROFILE_TAB);
     }
 
     /**
