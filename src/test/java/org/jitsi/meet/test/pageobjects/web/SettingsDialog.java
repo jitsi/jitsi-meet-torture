@@ -9,25 +9,27 @@ import java.util.*;
 public class SettingsDialog
 {
     /**
-     * CSS selectorsto be used for finding WebElements within the
-     * {@link SettingsDialog}.
+     * Selectors to be used for finding WebElements within the
+     * {@link SettingsDialog}. While most are CSS selectors, some are XPath
+     * selectors, and prefixed as such, due to the extra functionality XPath
+     * provides.
      */
     private final static String CANCEL_BUTTON = "#modal-dialog-cancel-button";
     private final static String DISPLAY_NAME_FIELD
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
-    private final static String MORE_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//li[text()='More']";
     private final static String OK_BUTTON = "#modal-dialog-ok-button";
-    private final static String PROFILE_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//li[text()='Profile']";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String START_AUDIO_MUTED_CHECKBOX
         = "[name='start-audio-muted'] ~ div";
     private final static String START_VIDEO_MUTED_CHECKBOX
         = "[name='start-video-muted'] ~ div";
-    
+    private final static String X_PATH_MORE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
+    private final static String X_PATH_PROFILE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='Profile']";
+
     /**
      * The participant.
      */
@@ -104,7 +106,7 @@ public class SettingsDialog
      */
     public void openMoreTab()
     {
-        openTab(MORE_TAB);
+        openTab(X_PATH_MORE_TAB);
     }
 
     /**
@@ -112,7 +114,7 @@ public class SettingsDialog
      */
     public void openProfileTab()
     {
-       openTab(PROFILE_TAB);
+       openTab(X_PATH_PROFILE_TAB);
     }
 
     /**
