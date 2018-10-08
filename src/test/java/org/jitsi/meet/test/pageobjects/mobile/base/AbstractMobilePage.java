@@ -22,8 +22,8 @@ import org.jitsi.meet.test.pageobjects.base.*;
 import org.openqa.selenium.support.*;
 
 import java.lang.reflect.*;
+import java.time.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * Base class for mobile page objects.
@@ -53,7 +53,7 @@ public class AbstractMobilePage
     {
         PageFactory.initElements(
                 new AppiumFieldDecorator(
-                        participant.getDriver(), 10, TimeUnit.SECONDS),
+                        participant.getDriver(), Duration.ofSeconds(10)),
                 this);
         initTestHintFields();
     }
