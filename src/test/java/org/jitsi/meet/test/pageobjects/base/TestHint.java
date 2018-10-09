@@ -107,6 +107,14 @@ public class TestHint
      */
     private boolean useAccessibilityForId()
     {
-        return driver.getCapabilities().getPlatform().is(Platform.ANDROID);
+        Platform driversPlatform = driver.getCapabilities().getPlatform();
+
+        // FIXME This looks like a bug, but I don't want to deal with this right
+        // now.
+        // Not sure if it's only when running appium from source or does it
+        // sometimes report Android as LINUX platform. Also iOS is translated to
+        // MAC ???
+        return driversPlatform.is(Platform.ANDROID)
+            || driversPlatform.is(Platform.LINUX);
     }
 }
