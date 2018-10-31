@@ -15,10 +15,10 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
 /**
@@ -29,12 +29,6 @@ import org.testng.annotations.*;
 public class AudioOnlyTest
     extends WebTestBase
 {
-    private static String AUDIO_ONLY_ENABLED_LABEL_XPATH
-        = "//div[@id='videoResolutionLabel'][contains(@class, 'audio-only')]";
-    private static String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
-    private static String VIDEO_QUALITY_SLIDER_CLASS
-        = "video-quality-dialog-slider";
-
     @Override
     public void setupClass()
     {
@@ -76,12 +70,10 @@ public class AudioOnlyTest
     @Test(dependsOnMethods = { "videoUnmuteDisabledInAudioOnly" })
     public void avatarsDisplayForParticipants()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
+        getParticipant1().getLargeVideo().waitForAvatarToDisplay();
 
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1, LARGE_AVATAR_XPATH, 2);
-
-        MeetUIUtils.assertLocalThumbnailShowsAvatar(driver1);
+        MeetUIUtils.assertLocalThumbnailShowsAvatar(
+            getParticipant1().getDriver());
     }
 
     /**
@@ -119,11 +111,7 @@ public class AudioOnlyTest
 
         verifyVideoMute(testee, observer, audioOnly);
 
-        TestUtils.waitForDisplayedOrNotByXPath(
-            testee.getDriver(),
-            AUDIO_ONLY_ENABLED_LABEL_XPATH,
-            5,
-            audioOnly);
+        testee.getStatusLabels().waitForAudioOnlyDisplayStatus(audioOnly);
     }
 
     /**
@@ -135,56 +123,14 @@ public class AudioOnlyTest
      */
     private void setAudioOnly(WebParticipant participant, boolean audioOnly)
     {
-        WebDriver participantDriver = participant.getDriver();
+        VideoQualityDialog videoQualityDialog
+            = participant.getVideoQualityDialog();
 
-        // Open the video quality dialog.
-        setVideoQualityDialogVisible(participant, true);
+        videoQualityDialog.open();
 
-        // Calculate how far to move the quality slider and in which direction.
-        WebElement videoQualitySlider = participantDriver.findElement(
-            By.className(VIDEO_QUALITY_SLIDER_CLASS));
+        videoQualityDialog.setAudioOnly(audioOnly);
 
-        int audioOnlySliderValue
-            = Integer.parseInt(videoQualitySlider.getAttribute("min"));
-        int maxDefinitionSliderValue
-            = Integer.parseInt(videoQualitySlider.getAttribute("max"));
-
-        int activeValue
-            = Integer.parseInt(videoQualitySlider.getAttribute("value"));
-        int targetValue
-            = audioOnly ? audioOnlySliderValue : maxDefinitionSliderValue;
-
-        int distanceToTargetValue = targetValue - activeValue;
-        Keys keyDirection = distanceToTargetValue > 0 ? Keys.RIGHT : Keys.LEFT;
-
-        // Move the slider to the target value.
-        for (int i = 0; i < Math.abs(distanceToTargetValue); i++)
-        {
-            videoQualitySlider.sendKeys(keyDirection);
-        }
-
-        // Close the video quality dialog.
-        setVideoQualityDialogVisible(participant, false);
-    }
-
-    /**
-     * Sets whether or not the video quality dialog is displayed.
-     *
-     * @param participant the {@code WebParticipant}.
-     * @param visible whether or not the dialog should be displayed.
-     */
-    private void setVideoQualityDialogVisible(
-        WebParticipant participant, boolean visible)
-    {
-        boolean isDialogSliderVisible
-            = !participant.getDriver().findElements(
-                By.className(VIDEO_QUALITY_SLIDER_CLASS)).isEmpty();
-
-        if ((isDialogSliderVisible && !visible)
-            || (!isDialogSliderVisible && visible))
-        {
-            participant.getToolbar().clickVideoQualityButton();
-        }
+        videoQualityDialog.close();
     }
 
     /**

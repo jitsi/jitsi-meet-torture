@@ -32,6 +32,11 @@ import static org.testng.Assert.*;
 public class LargeVideo
 {
     /**
+     * XPath selectors for finding WebElements within {@link LargeVideo}.
+     */
+    private final String AVATAR_XPATH = "//div[@id='dominantSpeaker']";
+
+    /**
      * The participant used to interact with the large video.
      */
     private final WebParticipant participant;
@@ -79,6 +84,16 @@ public class LargeVideo
             participant.getDriver(),
             "return document.getElementById('largeVideo').currentTime");
     }
+
+    /**
+     * Polls this {@link LargeVideo} until a participant avatar is visible.
+     */
+    public void waitForAvatarToDisplay()
+    {
+        TestUtils.waitForDisplayedElementByXPath(
+            participant.getDriver(), AVATAR_XPATH, 2);
+    }
+
 
     /**
      * Polls this {@link LargeVideo} until the participant with the passed

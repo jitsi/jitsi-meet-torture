@@ -70,7 +70,9 @@ public class WebParticipant extends Participant<WebDriver>
     private InfoDialog infoDialog;
     private LargeVideo largeVideo;
     private SettingsDialog settingsDialog;
+    private StatusLabels statusLabels;
     private Toolbar toolbar;
+    private VideoQualityDialog videoQualityDialog;
     private WebFilmstrip filmstrip;
 
     /**
@@ -520,6 +522,19 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * @return a representation of the video status labels of this participant.
+     */
+    public StatusLabels getStatusLabels()
+    {
+        if (statusLabels == null)
+        {
+            statusLabels = new StatusLabels(this);
+        }
+
+        return statusLabels;
+    }
+
+    /**
      * @return a representation of the toolbar of this participant.
      */
     public Toolbar getToolbar()
@@ -530,6 +545,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return toolbar;
+    }
+
+    /**
+     * @return a representation of the video quality dialog of this participant.
+     */
+    public VideoQualityDialog getVideoQualityDialog()
+    {
+        if (videoQualityDialog == null)
+        {
+            videoQualityDialog = new VideoQualityDialog(this);
+        }
+
+        return videoQualityDialog;
     }
 
     /**
