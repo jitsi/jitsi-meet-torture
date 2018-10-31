@@ -69,6 +69,7 @@ public class WebParticipant extends Participant<WebDriver>
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
     private LargeVideo largeVideo;
+    private PasswordPromptDialog passwordPromptDialog;
     private SettingsDialog settingsDialog;
     private StatusLabels statusLabels;
     private Toolbar toolbar;
@@ -506,6 +507,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return largeVideo;
+    }
+
+    /**
+     * @return a representation of password prompt dialog of this participant.
+     */
+    public PasswordPromptDialog getPasswordPromptDialog()
+    {
+        if (passwordPromptDialog == null)
+        {
+            passwordPromptDialog = new PasswordPromptDialog(this);
+        }
+
+        return passwordPromptDialog;
     }
 
     /**

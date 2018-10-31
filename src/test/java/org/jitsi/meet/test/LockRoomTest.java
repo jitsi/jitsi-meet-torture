@@ -15,9 +15,8 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
-
-import org.jitsi.meet.test.pageobjects.web.InfoDialog;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -104,9 +103,10 @@ public class LockRoomTest
         {}
 
         WebParticipant participant2 = getParticipant2();
-        WebDriver driver2 = participant2.getDriver();
+        PasswordPromptDialog dialog = participant2.getPasswordPromptDialog();
 
-        submitPassword(driver2, ROOM_KEY + "1234");
+        assertTrue(dialog.isOpen());
+        dialog.submitPassword(ROOM_KEY + "1234");
 
         try
         {
@@ -116,7 +116,7 @@ public class LockRoomTest
         catch(TimeoutException e)
         {}
 
-        submitPassword(driver2, ROOM_KEY);
+        dialog.submitPassword(ROOM_KEY);
 
         participant2.waitToJoinMUC(5);
 
@@ -221,9 +221,10 @@ public class LockRoomTest
         {}
 
         WebParticipant participant2 = getParticipant2();
-        WebDriver driver2 = participant2.getDriver();
+        PasswordPromptDialog dialog = participant2.getPasswordPromptDialog();
 
-        submitPassword(driver2, ROOM_KEY + "1234");
+        assertTrue(dialog.isOpen());
+        dialog.submitPassword(ROOM_KEY + "1234");
 
         try
         {
@@ -239,7 +240,7 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waitMillis(500);
 
-        driver2.findElement(By.id("modal-dialog-ok-button")).click();
+        dialog.submitPassword("");
 
         participant2.waitToJoinMUC(5);
 
