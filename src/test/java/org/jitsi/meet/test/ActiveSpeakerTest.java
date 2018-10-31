@@ -15,17 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
-import java.util.*;
-
-import static org.testng.Assert.*;
 import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
@@ -75,36 +69,9 @@ public class ActiveSpeakerTest
         testActiveSpeaker(participant2, participant1, participant3);
 
         // check the displayed speakers, there should be only one speaker
-        assertOneDominantSpeaker(participant1.getDriver());
-        assertOneDominantSpeaker(participant2.getDriver());
-        assertOneDominantSpeaker(participant3.getDriver());
-    }
-
-    /**
-     * Asserts that the number of small videos with the dominant speaker
-     * indicator displayed equals 1.
-     * @param driver the participant to check
-     */
-    private void assertOneDominantSpeaker(WebDriver driver)
-    {
-        List<WebElement> dominantSpeakerIndicators =
-            driver.findElements(By.xpath(
-                "//span[contains(@id,'dominantspeakerindicator')]"
-                ));
-
-        int speakers = 0;
-        for (WebElement el : dominantSpeakerIndicators)
-        {
-            if (el.isDisplayed())
-            {
-                speakers++;
-            }
-        }
-
-        assertEquals(
-            speakers,
-            1,
-            "Wrong number of dominant speaker indicators.");
+        participant1.getFilmstrip().assertOneDominantSpeaker();
+        participant2.getFilmstrip().assertOneDominantSpeaker();
+        participant3.getFilmstrip().assertOneDominantSpeaker();
     }
 
     private void muteAllParticipants()
@@ -141,7 +108,6 @@ public class ActiveSpeakerTest
         print("Start testActiveSpeaker for participant: "
             + activeSpeaker.getName());
 
-        WebDriver driver2 = participant2.getDriver();
         final String speakerEndpoint = activeSpeaker.getEndpointId();
 
         // just a debug print to go in logs
@@ -163,19 +129,8 @@ public class ActiveSpeakerTest
 
         // Verify that the user is now an active speaker from participant2's
         // perspective
-        try
-        {
-            new WebDriverWait(driver2, 10).until(
-                (ExpectedCondition<Boolean>) d -> speakerEndpoint.equals(
-                    MeetUIUtils.getLargeVideoResource(d)));
-        }
-        catch (TimeoutException exc)
-        {
-            assertEquals(
-                MeetUIUtils.getLargeVideoResource(driver2),
-                speakerEndpoint,
-                "Active speaker not displayed on large video " + new Date());
-        }
+        participant2.getLargeVideo()
+            .waitForParticipantToDisplay(speakerEndpoint);
 
         // just a debug print to go in logs
         activeSpeaker.executeScript(

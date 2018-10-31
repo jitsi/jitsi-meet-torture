@@ -18,8 +18,11 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 
 import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Represents the filmstrip with all the videos - remotes and local one.
@@ -29,6 +32,12 @@ import java.util.*;
 public class WebFilmstrip
     implements Filmstrip<WebParticipant>
 {
+    /**
+     * Xpath selectors for finding WebElements within the {@link WebFilmstrip}.
+     */
+    private final static String DOMINANT_SPEAKER_ICON
+        = "//span[contains(@id,'dominantspeakerindicator')]";
+
     /**
      * The participant.
      */
@@ -64,6 +73,22 @@ public class WebFilmstrip
             false, // audio
             participantToCheck.getName()
         );
+    }
+
+    /**
+     * Asserts that the number of small videos with the dominant speaker
+     * indicator displayed equals 1.
+     */
+    public void assertOneDominantSpeaker()
+    {
+        List<WebElement> dominantSpeakerIndicators
+            = participant.getDriver().findElements(
+                By.xpath(DOMINANT_SPEAKER_ICON));
+
+        assertEquals(
+            dominantSpeakerIndicators.size(),
+            1,
+            "Wrong number of dominant speaker indicators.");
     }
 
     /**

@@ -19,7 +19,10 @@ import java.util.*;
 
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Represents the large video view for a particular {@link WebParticipant}.
@@ -75,5 +78,41 @@ public class LargeVideo
         return TestUtils.executeScriptAndReturnDouble(
             participant.getDriver(),
             "return document.getElementById('largeVideo').currentTime");
+    }
+
+    /**
+     * Polls this {@link LargeVideo} until the participant with the passed
+     * participantId is actively being displayed.
+     *
+     * @param participantId the participantId of the participant expected to be
+     * displayed on this {@link LargeVideo}.
+     */
+    public void waitForParticipantToDisplay(String participantId)
+    {
+        try
+        {
+            new WebDriverWait(participant.getDriver(), 10).until(
+                (ExpectedCondition<Boolean>) d -> participantId.equals(
+                    getDisplayedParticipantId()));
+        }
+        catch (TimeoutException exc)
+        {
+            assertEquals(
+                getDisplayedParticipantId(),
+                participantId,
+                "Active speaker not displayed on large video " + new Date());
+        }
+    }
+
+    /**
+     * Returns the ID of the participant who is currently displayed in this
+     * {@link LargeVideo}
+     *
+     * @return {@code String } The resource part of the JID of the user who is
+     * currently displayed in the large video area in {@code participant}.
+     */
+    private String getDisplayedParticipantId()
+    {
+        return MeetUIUtils.getLargeVideoResource(participant.getDriver());
     }
 }
