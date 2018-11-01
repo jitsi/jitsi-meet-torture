@@ -16,11 +16,10 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 import org.testng.annotations.*;
 
 /**
@@ -31,12 +30,6 @@ import org.testng.annotations.*;
 public class OneOnOneTest
     extends WebTestBase
 {
-    /**
-     * The duration to wait, in seconds, remote videos in filmstrip to display
-     * and complete animations.
-     */
-    private static final int FILMSTRIP_VISIBILITY_WAIT = 5;
-
     /**
      * Parameters to attach to the meeting url to enable One-On-One behavior
      * and have toolbars dismiss faster, as remote video visibility is also
@@ -65,8 +58,8 @@ public class OneOnOneTest
         configureToolbarsToHideQuickly(participant1);
         configureToolbarsToHideQuickly(participant2);
 
-        verifyRemoteVideosDisplay(participant1, false);
-        verifyRemoteVideosDisplay(participant2, false);
+        participant1.getFilmstrip().assertRemoteVideosDisplay(false);
+        participant2.getFilmstrip().assertRemoteVideosDisplay(false);
     }
 
     /**
@@ -79,12 +72,11 @@ public class OneOnOneTest
             null, null,
             getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES));
 
-        WebParticipant participant3 = getParticipant3();
-        configureToolbarsToHideQuickly(participant3);
+        configureToolbarsToHideQuickly(getParticipant3());
 
-        verifyRemoteVideosDisplay(getParticipant1(), true);
-        verifyRemoteVideosDisplay(getParticipant2(), true);
-        verifyRemoteVideosDisplay(participant3, true);
+        getParticipant1().getFilmstrip().assertRemoteVideosDisplay(true);
+        getParticipant2().getFilmstrip().assertRemoteVideosDisplay(true);
+        getParticipant3().getFilmstrip().assertRemoteVideosDisplay(true);
     }
 
     /**
@@ -99,8 +91,8 @@ public class OneOnOneTest
 
         getParticipant3().hangUp();
 
-        verifyRemoteVideosDisplay(getParticipant1(), false);
-        verifyRemoteVideosDisplay(getParticipant2(), true);
+        getParticipant1().getFilmstrip().assertRemoteVideosDisplay(false);
+        getParticipant2().getFilmstrip().assertRemoteVideosDisplay(true);
     }
 
     /**
@@ -110,12 +102,13 @@ public class OneOnOneTest
     @Test(dependsOnMethods = { "testFilmstripDisplayWhenReturningToOneOnOne" })
     public void testFilmstripVisibleOnSelfViewFocus()
     {
-        Participant participant1 = getParticipant1();
-        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
-        verifyRemoteVideosDisplay(participant1, true);
+        WebParticipant participant1 = getParticipant1();
 
-        MeetUIUtils.clickOnLocalVideo(participant1.getDriver());
-        verifyRemoteVideosDisplay(participant1, false);
+        participant1.getFilmstrip().setLocalParticipantPin(true);
+        getParticipant1().getFilmstrip().assertRemoteVideosDisplay(true);
+
+        participant1.getFilmstrip().setLocalParticipantPin(false);
+        getParticipant1().getFilmstrip().assertRemoteVideosDisplay(false);
     }
 
     /**
@@ -125,36 +118,10 @@ public class OneOnOneTest
     @Test(dependsOnMethods = { "testFilmstripVisibleOnSelfViewFocus" })
     public void testFilmstripHoverShowsVideos()
     {
-        Participant participant1 = getParticipant1();
-        WebDriver driver1 = participant1.getDriver();
+        WebFilmstrip filmstrip = getParticipant1().getFilmstrip();
 
-        WebElement toolbar = driver1.findElement(By.id("localVideoContainer"));
-        Actions hoverOnToolbar = new Actions(driver1);
-        hoverOnToolbar.moveToElement(toolbar);
-        hoverOnToolbar.perform();
-
-        verifyRemoteVideosDisplay(participant1, true);
-    }
-
-    /**
-     * Check if remote videos in filmstrip are visible.
-     *
-     * @param testee the <tt>WebDriver</tt> of the participant for whom we're
-     *               checking the status of filmstrip remote video visibility.
-     * @param isDisplayed whether or not filmstrip remote videos should be
-     *                    visible
-     */
-    private void verifyRemoteVideosDisplay(
-        Participant testee, boolean isDisplayed)
-    {
-        String filmstripRemoteVideosXpath
-            = "//div[@id='filmstripRemoteVideosContainer']";
-
-        TestUtils.waitForDisplayedOrNotByXPath(
-            testee.getDriver(),
-            filmstripRemoteVideosXpath,
-            FILMSTRIP_VISIBILITY_WAIT,
-            isDisplayed);
+        filmstrip.triggerDisplay();
+        filmstrip.assertRemoteVideosDisplay(true);
     }
 
     /**

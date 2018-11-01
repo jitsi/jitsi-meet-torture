@@ -19,6 +19,7 @@ import org.jitsi.meet.test.pageobjects.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 
 import java.util.*;
 
@@ -33,10 +34,15 @@ public class WebFilmstrip
     implements Filmstrip<WebParticipant>
 {
     /**
-     * Xpath selectors for finding WebElements within the {@link WebFilmstrip}.
+     * Selectors for finding WebElements within the {@link WebFilmstrip}.
      */
-    private final static String DOMINANT_SPEAKER_ICON
-        = "//span[contains(@id,'dominantspeakerindicator')]";
+    private final static String DOMINANT_SPEAKER_ICON_XPATH
+        = "//*[contains(@id,'dominantspeakerindicator')]";
+    private final static String LOCAL_VIDEO_XPATH
+        = "//*[contains(@id,'localVideoContainer')]";
+    private final static String PINNED_CLASS = "videoContainerFocused";
+    private final static String REMOTE_VIDEOS_XPATH
+        = "//div[@id='filmstripRemoteVideosContainer']";
 
     /**
      * The participant.
@@ -83,12 +89,28 @@ public class WebFilmstrip
     {
         List<WebElement> dominantSpeakerIndicators
             = participant.getDriver().findElements(
-                By.xpath(DOMINANT_SPEAKER_ICON));
+                By.xpath(DOMINANT_SPEAKER_ICON_XPATH));
 
         assertEquals(
             dominantSpeakerIndicators.size(),
             1,
             "Wrong number of dominant speaker indicators.");
+    }
+
+    /**
+     * Polls to asserts the remote thumbnails are either displayed or not
+     * displayed.
+     *
+     * @param isDisplayed {@code} true to assert the thumbnails are displayed,
+     * {@false} to assert the thumbnails are not displayed.
+     */
+    public void assertRemoteVideosDisplay(boolean isDisplayed)
+    {
+        TestUtils.waitForDisplayedOrNotByXPath(
+            participant.getDriver(),
+            REMOTE_VIDEOS_XPATH,
+            5,
+            isDisplayed);
     }
 
     /**
@@ -111,5 +133,43 @@ public class WebFilmstrip
             true, // video
             participantToCheck.getName()
         );
+    }
+
+    /**
+     * Clicks the local participant thumbnail to pin or unpin the local
+     * participant. No action will be taken if the local participant thumbnail
+     * is detected as already being in the desired pinned state.
+     *
+     * @param pin {@code true} if the participant should be pinned,
+     * {@code false} otherwise.
+     */
+    public void setLocalParticipantPin(boolean pin)
+    {
+        WebElement localThumbnail
+            = participant.getDriver().findElement(By.xpath(LOCAL_VIDEO_XPATH));
+        String classNames = localThumbnail.getAttribute("class");
+        boolean isPinned = classNames.contains(PINNED_CLASS);
+
+        if (isPinned == pin) {
+            return;
+        }
+
+        MeetUIUtils.clickOnLocalVideo(participant.getDriver());
+    }
+
+    /**
+     * Attempts to make sure the filmstrip is displayed by mouse hovering over
+     * it. The assumption is that the filmstrip should be displayed whenever
+     * it is being hovered.
+     */
+    public void triggerDisplay()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement localThumbnail
+                = driver.findElement(By.xpath(LOCAL_VIDEO_XPATH));
+
+        Actions hoverOnToolbar = new Actions(driver);
+        hoverOnToolbar.moveToElement(localThumbnail);
+        hoverOnToolbar.perform();
     }
 }
