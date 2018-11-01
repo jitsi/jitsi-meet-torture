@@ -35,6 +35,7 @@ public class LargeVideo
      * XPath selectors for finding WebElements within {@link LargeVideo}.
      */
     private final String AVATAR_XPATH = "//div[@id='dominantSpeaker']";
+    private final String CONTAINER_XPATH = "//*[@id='largeVideo']";
 
     /**
      * The participant used to interact with the large video.
@@ -94,6 +95,15 @@ public class LargeVideo
             participant.getDriver(), AVATAR_XPATH, 2);
     }
 
+    /**
+     * Polls this {@link LargeVideo} until its element is no longer visible on
+     * screen.
+     */
+    public void waitForHidden()
+    {
+        TestUtils.waitForNotDisplayedElementByXPath(
+            participant.getDriver(), CONTAINER_XPATH, 20);
+    }
 
     /**
      * Polls this {@link LargeVideo} until the participant with the passed
@@ -118,6 +128,17 @@ public class LargeVideo
                 "Active speaker not displayed on large video " + new Date());
         }
     }
+
+    /**
+     * Polls this {@link LargeVideo} until its element is displayed and visible
+     * on screen.
+     */
+    public void waitForVisible()
+    {
+        TestUtils.waitForDisplayedElementByXPath(
+            participant.getDriver(), CONTAINER_XPATH, 20);
+    }
+
 
     /**
      * Returns the ID of the participant who is currently displayed in this

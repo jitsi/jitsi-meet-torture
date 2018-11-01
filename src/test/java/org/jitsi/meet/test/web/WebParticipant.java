@@ -67,6 +67,7 @@ public class WebParticipant extends Participant<WebDriver>
 
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
+    private Etherpad etherpad;
     private InfoDialog infoDialog;
     private LargeVideo largeVideo;
     private PasswordPromptDialog passwordPromptDialog;
@@ -481,6 +482,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return dialInNumbersPage;
+    }
+
+    /**
+     * @return a representation of the etherpad feature of this participant.
+     */
+    public Etherpad getEtherpad()
+    {
+        if (etherpad == null)
+        {
+            etherpad = new Etherpad(this);
+        }
+
+        return etherpad;
     }
 
     /**

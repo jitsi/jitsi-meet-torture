@@ -15,11 +15,11 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -70,12 +70,11 @@ public class EtherpadTest
                 "No etherpad configuration detected. Disabling test.");
         }
 
-        getParticipant1().getToolbar().clickEtherpadButton();
+        getParticipant1().getEtherpad().open();
 
         TestUtils.waitMillis(5000);
 
-        TestUtils.waitForNotDisplayedElementByID(
-            driver1, "largeVideo", 20);
+        getParticipant1().getLargeVideo().waitForHidden();
     }
 
     /**
@@ -96,34 +95,17 @@ public class EtherpadTest
             // give time for the internal frame to load and attach to the page.
             TestUtils.waitMillis(2000);
 
-            WebDriverWait wait = new WebDriverWait(driver1, 30);
-            wait.until(
-                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                    By.id("etherpadIFrame")));
-
-            wait = new WebDriverWait(driver1, 30);
-            wait.until(
-                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                    By.name("ace_outer")));
-
-            wait = new WebDriverWait(driver1, 30);
-            wait.until(
-                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                    By.name("ace_inner")));
+            Etherpad etherpad = getParticipant1().getEtherpad();
+            etherpad.waitForLoadComplete();
 
             String textToEnter = "SomeTestText";
 
-            // Give etherpad some time to complete loading its editor content.
-            TestUtils.waitForDisplayedElementByID(driver1, "innerdocbody", 5);
-
-            driver1.findElement(By.id("innerdocbody")).sendKeys(textToEnter);
+            etherpad.enterText(textToEnter);
 
             TestUtils.waitMillis(2000);
 
             // now search and check the text
-            String txt
-                = driver1.findElement(
-                    By.xpath("//span[contains(@class, 'author')]")).getText();
+            String txt = etherpad.getParticipantEnteredText();
 
             assertEquals(txt, textToEnter, "Texts do not match");
         }
@@ -144,13 +126,11 @@ public class EtherpadTest
             return;
         }
 
-        getParticipant1().getToolbar().clickEtherpadButton();
+        getParticipant1().getEtherpad().close();
 
         TestUtils.waitMillis(5000);
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        TestUtils.waitForDisplayedElementByID(driver1, "largeVideo", 10);
+        getParticipant1().getLargeVideo().waitForVisible();
     }
 
     /**
