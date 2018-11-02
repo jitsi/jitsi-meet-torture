@@ -132,6 +132,7 @@ public class Toolbar {
     public void clickEtherpadButton()
     {
         clickButtonInOverflowMenu(ETHERPAD);
+        closeOverflowMenu();
     }
 
     /**

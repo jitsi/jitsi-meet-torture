@@ -35,6 +35,7 @@ public class Etherpad
     private final static String EDITOR_CONTENT_NAME = "ace_inner";
     private final static String EDITOR_TEXT_AREA_ID = "innerdocbody";
     private final static String ETHERPAD_CONTAINER_ID = "etherpadIFrame";
+    private final static String ETHERPAD_XPATH = "//div[@id='etherpad']/iframe";
     private final static String ENTERED_TEXT_XPATH
         = "//span[contains(@class, 'author')]";
 
@@ -65,6 +66,8 @@ public class Etherpad
         }
 
         participant.getToolbar().clickEtherpadButton();
+
+        waitForClose();
     }
 
     /**
@@ -74,14 +77,13 @@ public class Etherpad
      */
     public void enterText(String text)
     {
-        TestUtils.waitForDisplayedElementByID(
-            participant.getDriver(),
-            "innerdocbody",
-            5);
+        focusOnEditorContext();
 
         participant.getDriver()
             .findElement(By.id(EDITOR_TEXT_AREA_ID))
             .sendKeys(text);
+
+        participant.getDriver().switchTo().defaultContent();
     }
 
     /**
@@ -93,7 +95,7 @@ public class Etherpad
     public WebElement get()
     {
         List<WebElement> elements = participant.getDriver().findElements(
-                By.id(ETHERPAD_CONTAINER_ID));
+            By.xpath(ETHERPAD_XPATH));
 
         return elements.isEmpty() ? null : elements.get(0);
     }
@@ -105,9 +107,9 @@ public class Etherpad
      */
     public boolean isOpen()
     {
-        WebElement dialog = get();
+        WebElement etherpad = get();
 
-        return  dialog != null && dialog.isDisplayed();
+        return  etherpad != null && etherpad.isDisplayed();
     }
 
     /**
@@ -120,9 +122,15 @@ public class Etherpad
 
     public String getParticipantEnteredText()
     {
-        return participant.getDriver()
+        focusOnEditorContext();
+
+        String enteredText = participant.getDriver()
             .findElement(By.xpath(ENTERED_TEXT_XPATH))
             .getText();
+
+        participant.getDriver().switchTo().defaultContent();
+
+        return enteredText;
     }
 
     /**
@@ -133,7 +141,6 @@ public class Etherpad
     {
         if (isOpen())
         {
-            System.out.println("opening!");
             return;
         }
 
@@ -145,6 +152,16 @@ public class Etherpad
      * interaction.
      */
     public void waitForLoadComplete()
+    {
+        focusOnEditorContext();
+        participant.getDriver().switchTo().defaultContent();
+    }
+
+    /**
+     * Changes interaction context to the iframe of the Etherpad editor context.
+     * This is necessary of finding elements and interacting with Etherpad.
+     */
+    private void focusOnEditorContext()
     {
         WebDriver driver = participant.getDriver();
 
@@ -159,5 +176,17 @@ public class Etherpad
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.name(EDITOR_CONTENT_NAME)));
+    }
+
+    /**
+     * Waits for the iframe container the Etherpad feature to have hidden
+     * visibility.
+     */
+    public void waitForClose()
+    {
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+            participant.getDriver(),
+            ETHERPAD_XPATH,
+            5);
     }
 }

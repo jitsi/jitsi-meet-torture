@@ -43,6 +43,8 @@ public class WebFilmstrip
     private final static String PINNED_CLASS = "videoContainerFocused";
     private final static String REMOTE_VIDEOS_XPATH
         = "//div[@id='filmstripRemoteVideosContainer']";
+    private final static String VISIBLE_FILMSTRIP_XPATH
+        = "//*[@id='remoteVideos' and not(contains(@class, 'hidden'))]";
 
     /**
      * The participant.
@@ -57,6 +59,20 @@ public class WebFilmstrip
     public WebFilmstrip(WebParticipant participant)
     {
         this.participant = Objects.requireNonNull(participant, "participant");
+    }
+
+    /**
+     * Checks whether or not video thumbnails in the filmstrip are displayed.
+     *
+     * @return {@code true} if video thumbnails are visible on screen,
+     * {@code false} otherwise.
+     */
+    public boolean areVideoThumbnailsVisible()
+    {
+        WebDriver driver = participant.getDriver();
+        By visibleVideosSelector = By.xpath(VISIBLE_FILMSTRIP_XPATH);
+
+        return driver.findElements(visibleVideosSelector).size() > 0;
     }
 
     /**
@@ -136,6 +152,32 @@ public class WebFilmstrip
     }
 
     /**
+     * Asserts the {@code participant} can or cannot see the videos of the this
+     * {@link WebFilmstrip}.
+     *
+     * @param shouldBeVisible if {@code true}, the method will assert the
+     * visibility of the filmstrip videos, otherwise it will assert they are
+     * hidden.
+     */
+    public void assertVideoThumbnailVisibility(boolean shouldBeVisible)
+    {
+        if (shouldBeVisible)
+        {
+            TestUtils.waitForDisplayedElementByXPath(
+                participant.getDriver(),
+                VISIBLE_FILMSTRIP_XPATH,
+                5);
+        }
+        else
+        {
+            TestUtils.waitForElementNotPresentByXPath(
+                participant.getDriver(),
+                VISIBLE_FILMSTRIP_XPATH,
+                5);
+        }
+    }
+
+    /**
      * Clicks the local participant thumbnail to pin or unpin the local
      * participant. No action will be taken if the local participant thumbnail
      * is detected as already being in the desired pinned state.
@@ -155,6 +197,25 @@ public class WebFilmstrip
         }
 
         MeetUIUtils.clickOnLocalVideo(participant.getDriver());
+    }
+
+    /**
+     * Toggles video thumbnails to be hidden or visible.
+     *
+     * @param newVisibility {@code true} if thumbnails should be visible,
+     * {@code false} if thumbnails should be hidden.
+     */
+    public void setVideoThumbnailVisibility(boolean newVisibility)
+    {
+        if (newVisibility == areVideoThumbnailsVisible())
+        {
+            return;
+        }
+
+        WebDriver driver = participant.getDriver();
+        driver.findElement(By.id("toggleFilmstripButton")).click();
+
+        assertVideoThumbnailVisibility(newVisibility);
     }
 
     /**

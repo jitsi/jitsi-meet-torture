@@ -95,7 +95,6 @@ public class FollowMeTest
     public void testShareDocumentCommandsAreFollowed()
     {
         WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
 
         if (!MeetUtils.isEtherpadEnabled(driver1))
         {
@@ -103,17 +102,14 @@ public class FollowMeTest
             return;
         }
 
-        getParticipant1().getToolbar().clickEtherpadButton();
+        Etherpad participant1Etherpad = getParticipant1().getEtherpad();
 
-        TestUtils.waitForDisplayedElementByXPath(driver1, etherpadXPath, 5);
-        TestUtils.waitForDisplayedElementByXPath(driver2, etherpadXPath, 5);
+        participant1Etherpad.open();
+        participant1Etherpad.waitForLoadComplete();
+        getParticipant2().getEtherpad().waitForLoadComplete();
 
-        getParticipant1().getToolbar().clickEtherpadButton();
-
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            driver1, etherpadXPath, 5);
-        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
-            driver2, etherpadXPath, 5);
+        participant1Etherpad.close();
+        getParticipant2().getEtherpad().waitForClose();
     }
 
     /**
@@ -123,33 +119,13 @@ public class FollowMeTest
     @Test(dependsOnMethods = { "testShareDocumentCommandsAreFollowed" })
     public void testFilmstripCommandsAreFollowed()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        WebDriver driver2 = getParticipant2().getDriver();
+        getParticipant1().getFilmstrip().setVideoThumbnailVisibility(false);
+        getParticipant1().getFilmstrip().assertVideoThumbnailVisibility(false);
+        getParticipant2().getFilmstrip().assertVideoThumbnailVisibility(false);
 
-        MeetUIUtils.displayFilmstripPanel(driver1);
-        MeetUIUtils.displayFilmstripPanel(driver2);
-
-        driver1.findElement(By.id("toggleFilmstripButton")).click();
-
-        TestUtils.waitForElementContainsClassByXPath(
-                driver1, filmstripXPath, "hidden", 10);
-        TestUtils.waitForElementContainsClassByXPath(
-                driver2, filmstripXPath, "hidden", 10);
-
-        driver1.findElement(By.id("toggleFilmstripButton")).click();
-
-        TestUtils.waitForElementAttributeValueByXPath(
-                driver1,
-                filmstripXPath,
-                "class",
-                "filmstrip__videos",
-                10);
-        TestUtils.waitForElementAttributeValueByXPath(
-                driver2,
-                filmstripXPath,
-                "class",
-                "filmstrip__videos",
-                10);
+        getParticipant1().getFilmstrip().setVideoThumbnailVisibility(true);
+        getParticipant1().getFilmstrip().assertVideoThumbnailVisibility(true);
+        getParticipant2().getFilmstrip().assertVideoThumbnailVisibility(true);
     }
 
     /**
