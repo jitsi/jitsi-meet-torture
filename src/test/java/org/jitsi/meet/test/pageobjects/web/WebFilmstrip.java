@@ -178,6 +178,44 @@ public class WebFilmstrip
     }
 
     /**
+     * Gets the video src for the video element in the local participant's
+     * thumbnail.
+     *
+     * @return The src used to play local video.
+     */
+    public String getVideoSrcForLocalParticipant()
+    {
+        WebElement localVideoElem
+                = participant.getDriver().findElement(
+                By.xpath("//span[@id='localVideoWrapper']//video"));
+
+        return MeetUIUtils.getVideoElementID(
+                participant.getDriver(), localVideoElem);
+    }
+
+    /**
+     * Gets the video src for the video element in a remote participant's
+     * thumbnail.
+     *
+     * @return The src used to play a remote participant's video.
+     */
+    public String getVideoSrcForRemoteParticipant(
+        WebParticipant remoteParticipant)
+    {
+        String remoteThumbVideoXpath  = getThumbnailXpath(remoteParticipant)
+            + "//video[starts-with(@id, 'remoteVideo_')]";
+        WebElement remoteThumbnailVideo
+                = TestUtils.waitForElementByXPath(
+                participant.getDriver(),
+                remoteThumbVideoXpath,
+                5,
+                "Remote video not found: " + remoteThumbVideoXpath);
+
+        return MeetUIUtils.getVideoElementID(
+                participant.getDriver(), remoteThumbnailVideo);
+    }
+
+    /**
      * Clicks the local participant thumbnail to pin or unpin the local
      * participant. No action will be taken if the local participant thumbnail
      * is detected as already being in the desired pinned state.
@@ -197,6 +235,64 @@ public class WebFilmstrip
         }
 
         MeetUIUtils.clickOnLocalVideo(participant.getDriver());
+    }
+
+    /**
+     * Clicks the remote participant thumbnail to pin or unpin the participant.
+     * No action will be taken if the participant thumbnail is detected as
+     * already being in the desired pinned state.
+     *
+     * @param remoteParticipant The {@link WebParticipant} for the remote
+     * participant that should be pinned.
+     * @param pin {@code true} if the participant should be pinned,
+     * {@code false} otherwise.
+     */
+    public void setRemoteParticipantPin(
+        WebParticipant remoteParticipant, boolean pin)
+    {
+        String endpointId = remoteParticipant.getEndpointId();
+        String remoteThumbXpath = getThumbnailXpath(remoteParticipant);
+        WebElement remoteThumbnail = TestUtils.waitForElementByXPath(
+            participant.getDriver(),
+            remoteThumbXpath,
+            5,
+            "Remote thumbnail not found: " + remoteThumbXpath);
+
+        boolean isCurrentlyPinned = remoteThumbnail.getAttribute("class")
+            .contains("videoContainerFocused");
+
+        if (isCurrentlyPinned == pin)
+        {
+            return;
+        }
+
+        remoteThumbnail.click();
+
+        try
+        {
+            String pinnedThumbXpath
+                = "//span[ @id='participant_" + endpointId + "'" +
+                    "        and contains(@class,'videoContainerFocused') ]";
+
+            if (pin)
+            {
+                TestUtils.waitForElementByXPath(
+                    participant.getDriver(),
+                    pinnedThumbXpath,
+                    2);
+            }
+            else
+            {
+                TestUtils.waitForElementNotPresentByXPath(
+                    participant.getDriver(),
+                    pinnedThumbXpath,
+                    2);
+            }
+        }
+        catch (TimeoutException exc)
+        {
+            fail("Failed set pin to " + pin + " for " + endpointId);
+        }
     }
 
     /**
@@ -232,5 +328,19 @@ public class WebFilmstrip
         Actions hoverOnToolbar = new Actions(driver);
         hoverOnToolbar.moveToElement(localThumbnail);
         hoverOnToolbar.perform();
+    }
+
+    /**
+     * Generates the Xpath to find the thumbnail within {@link WebFilmstrip}
+     * for the passed in {@link WebParticipant}.
+     *
+     * @param participant
+     * @return The Xpath for finding the participant's thumbnail.
+     */
+    private String getThumbnailXpath(WebParticipant participant)
+    {
+        return "//span[starts-with(@id, 'participant_"
+            + participant.getEndpointId() + "') "
+            + " and contains(@class,'videocontainer')]";
     }
 }

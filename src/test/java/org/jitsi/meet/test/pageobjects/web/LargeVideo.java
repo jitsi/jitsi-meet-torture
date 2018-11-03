@@ -139,7 +139,6 @@ public class LargeVideo
             participant.getDriver(), CONTAINER_XPATH, 20);
     }
 
-
     /**
      * Returns the ID of the participant who is currently displayed in this
      * {@link LargeVideo}
@@ -150,5 +149,25 @@ public class LargeVideo
     private String getDisplayedParticipantId()
     {
         return MeetUIUtils.getLargeVideoResource(participant.getDriver());
+    }
+
+    /**
+     * Polls this {@link LargeVideo} until its video element is displaying the
+     * passed in video src.
+     *
+     * @param expectedVideoSrc The src expected to be playing in the video
+     * element of this {@link LargeVideo}.
+     */
+    public void waitForVideoToDisplay(String expectedVideoSrc)
+    {
+        WebDriver driver = participant.getDriver();
+
+        new WebDriverWait(driver, 3)
+            .withMessage("Failed to switch the large video at: "
+                + MeetUtils.getResourceJid(driver)
+                + " to : " + expectedVideoSrc)
+            .until(
+                (ExpectedCondition<Boolean>) where -> expectedVideoSrc.equals(
+                    MeetUIUtils.getLargeVideoID(where)));
     }
 }

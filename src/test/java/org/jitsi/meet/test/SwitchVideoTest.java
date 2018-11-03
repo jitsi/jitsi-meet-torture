@@ -16,13 +16,9 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
 import org.testng.annotations.*;
-
-import static org.testng.Assert.*;
 
 /**
  * Tests switching video of participants.
@@ -64,7 +60,17 @@ public class SwitchVideoTest
     @Test
     public void participant1ClickOnLocalVideoAndTest()
     {
-        MeetUIUtils.selectLocalVideo(getParticipant1().getDriver());
+        getParticipant1()
+            .getFilmstrip()
+            .setLocalParticipantPin(true);
+
+        String localVideoSrc = getParticipant1()
+            .getFilmstrip()
+            .getVideoSrcForLocalParticipant();
+
+        getParticipant1()
+            .getLargeVideo()
+            .waitForVideoToDisplay(localVideoSrc);
     }
 
     /**
@@ -76,9 +82,17 @@ public class SwitchVideoTest
     {
         closeToolbarDialogs();
 
-        MeetUIUtils.selectRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
+        getParticipant1()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant2(), true);
+
+        String removeVideoSrc = getParticipant1()
+            .getFilmstrip()
+            .getVideoSrcForRemoteParticipant(getParticipant2());
+
+        getParticipant1()
+            .getLargeVideo()
+            .waitForVideoToDisplay(removeVideoSrc);
     }
 
     /**
@@ -88,9 +102,9 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = {"participant1ClickOnRemoteVideoAndTest"})
     public void participant1UnpinRemoteVideoAndTest()
     {
-        unpinRemoteVideoAndTest(
-            getParticipant1(),
-            getParticipant2().getEndpointId());
+        getParticipant1()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant2(), false);
     }
 
     /**
@@ -100,44 +114,9 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = { "participantClickOnRemoteVideoAndTest" })
     public void participant2UnpinRemoteVideo()
     {
-        unpinRemoteVideoAndTest(
-            getParticipant2(),
-            getParticipant1().getEndpointId());
-    }
-
-    /**
-     * Unpins the remote video with a given endpoint ID.
-     *
-     * @param participant the {@link Participant} which will do the unpinning.
-     * @param endpointId the endpoint ID to unpin.
-     */
-    private void unpinRemoteVideoAndTest(Participant participant, String endpointId)
-    {
-        // Remote video with 'videoContainerFocused' is the pinned one
-        String pinnedThumbXpath
-            = "//span[ @id='participant_" + endpointId + "'" +
-              "        and contains(@class,'videoContainerFocused') ]";
-
-        WebElement pinnedThumb
-            = participant.getDriver().findElement(By.xpath(pinnedThumbXpath));
-
-        assertNotNull(
-            pinnedThumb,
-            "Pinned remote video not found for " + endpointId);
-
-        // click on remote
-        participant.getDriver().findElement(By.xpath(pinnedThumbXpath)).click();
-
-        // Wait for the video to unpin
-        try
-        {
-            TestUtils.waitForElementNotPresentByXPath(
-                participant.getDriver(), pinnedThumbXpath, 2);
-        }
-        catch (TimeoutException exc)
-        {
-            fail("Failed to unpin video for " + endpointId);
-        }
+        getParticipant2()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant1(), false);
     }
 
     /**
@@ -147,7 +126,15 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = {"participant1UnpinRemoteVideoAndTest"})
     public void participantClickOnLocalVideoAndTest()
     {
-        MeetUIUtils.selectLocalVideo(getParticipant2().getDriver());
+        getParticipant2().getFilmstrip().setLocalParticipantPin(true);
+
+        String localVideoSrc = getParticipant2()
+            .getFilmstrip()
+            .getVideoSrcForLocalParticipant();
+
+        getParticipant2()
+            .getLargeVideo()
+            .waitForVideoToDisplay(localVideoSrc);
     }
 
     /**
@@ -157,9 +144,17 @@ public class SwitchVideoTest
     @Test(dependsOnMethods = { "participantClickOnLocalVideoAndTest" })
     public void participantClickOnRemoteVideoAndTest()
     {
-        MeetUIUtils.selectRemoteVideo(
-            getParticipant2().getDriver(),
-            getParticipant1().getEndpointId());
+        getParticipant2()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant1(), true);
+
+        String remoteVideoSrc = getParticipant2()
+            .getFilmstrip()
+            .getVideoSrcForRemoteParticipant(getParticipant1());
+
+        getParticipant2()
+            .getLargeVideo()
+            .waitForVideoToDisplay(remoteVideoSrc);
     }
 
     /**
