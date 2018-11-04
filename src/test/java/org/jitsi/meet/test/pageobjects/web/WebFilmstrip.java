@@ -36,6 +36,8 @@ public class WebFilmstrip
     /**
      * Selectors for finding WebElements within the {@link WebFilmstrip}.
      */
+    private final static String DOCKED_LOCAL_THUMBNAIL
+        = "#filmstripLocalVideo #localVideoContainer";
     private final static String DOMINANT_SPEAKER_ICON_XPATH
         = "//*[contains(@id,'dominantspeakerindicator')]";
     private final static String LOCAL_VIDEO_XPATH
@@ -43,8 +45,11 @@ public class WebFilmstrip
     private final static String PINNED_CLASS = "videoContainerFocused";
     private final static String REMOTE_VIDEOS_XPATH
         = "//div[@id='filmstripRemoteVideosContainer']";
+    private final static String SCROLLABLE_LOCAL_THUMBNAIL
+        = "#filmstripRemoteVideosContainer #localVideoContainer";
     private final static String VISIBLE_FILMSTRIP_XPATH
         = "//*[@id='remoteVideos' and not(contains(@class, 'hidden'))]";
+
 
     /**
      * The participant.
@@ -117,7 +122,7 @@ public class WebFilmstrip
      * Polls to asserts the remote thumbnails are either displayed or not
      * displayed.
      *
-     * @param isDisplayed {@code} true to assert the thumbnails are displayed,
+     * @param isDisplayed {@code true} to assert the thumbnails are displayed,
      * {@false} to assert the thumbnails are not displayed.
      */
     public void assertRemoteVideosDisplay(boolean isDisplayed)
@@ -127,6 +132,43 @@ public class WebFilmstrip
             REMOTE_VIDEOS_XPATH,
             5,
             isDisplayed);
+    }
+
+    /**
+     * Polls to verify if the local participant thumbnail is docked so it
+     * displays separately from remote thumbnails or if it displays along with
+     * the other remote participant thumbnails. This is used to detect a tile
+     * view state in which the the local thumbnail is at the end of the
+     * filmstrip and can be scrolled off screen.
+     *
+     * @param isDocked {@code true} to assert the local thumbnail is displayed
+     * apart from remote thumbnails, which should prevent it from being scrolled
+     * off screen, {@code false} to assert the local thumbnail is placed along
+     * side the remote thumbnails.
+     * @returns Whether or not the local thumbnail is displayed independently.
+     */
+
+    public void assertLocalThumbnailDock(boolean isDocked)
+    {
+        String selectorToMatch = isDocked
+            ? DOCKED_LOCAL_THUMBNAIL
+            : SCROLLABLE_LOCAL_THUMBNAIL;
+        String selectorNotToMatch = isDocked
+            ? SCROLLABLE_LOCAL_THUMBNAIL
+            : DOCKED_LOCAL_THUMBNAIL;
+
+        WebDriver driver = participant.getDriver();
+
+        TestUtils.waitForElementNotPresentBy(
+            driver,
+            By.cssSelector(selectorNotToMatch),
+            5);
+
+        TestUtils.waitForElementBy(
+            driver,
+            By.cssSelector(selectorToMatch),
+            5
+        );
     }
 
     /**

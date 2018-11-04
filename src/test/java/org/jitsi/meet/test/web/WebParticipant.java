@@ -365,6 +365,21 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * Checks whether this participant is currently viewing the conference in
+     * the tile view layout.
+     *
+     * @return {@code true} if the this participant is in tile view; otherwise,
+     * {@code false}
+     */
+    public boolean isInTileView()
+    {
+        return getDriver()
+            .findElement(By.id("videoconference_page"))
+            .getAttribute("class")
+            .contains("tile-view");
+    }
+
+    /**
      * Waits 15 sec for the given participant to enter the ICE 'connected'
      * state.
      */

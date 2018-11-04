@@ -19,7 +19,6 @@ package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -27,22 +26,6 @@ import static org.testng.Assert.*;
 public class TileViewTest
     extends WebTestBase
 {
-
-    /**
-     * The CSS selector for local video when outside of tile view. It should
-     * be in a container separate from remote videos so remote videos can
-     * scroll while local video stays docked.
-     */
-    private static final String FILMSTRIP_VIEW_LOCAL_VIDEO_CSS_SELECTOR
-        = "#filmstripLocalVideo #localVideoContainer";
-
-    /**
-     * The CSS selector for local video tile view is enabled. It should display
-     * at the end of all the other remote videos, as the last tile.
-     */
-    private static final String TILE_VIEW_LOCAL_VIDEO_CSS_SELECTOR
-        = "#filmstripRemoteVideosContainer #localVideoContainer";
-
     @Override
     public void setupClass()
     {
@@ -51,21 +34,21 @@ public class TileViewTest
         ensureTwoParticipants();
     }
 
+
     /**
-     * Tests tile view is automatically exited when etherpad is opened.
+     * Tests tile view is automatically exited when etherpad is open and it
+     * automatically re-entered when etherpad is exited.
      */
     @Test
     public void testEtherpadExitsTileView()
     {
         if (MeetUtils.isEtherpadEnabled(getParticipant1().getDriver()))
         {
-            enterTileView();
+            getParticipant1().getEtherpad().open();
+            assertFalse(getParticipant1().isInTileView());
 
-            getParticipant1().getToolbar().clickEtherpadButton();
-            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
-
-            getParticipant1().getToolbar().clickEtherpadButton();
-            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+            getParticipant1().getEtherpad().close();
+            assertFalse(getParticipant1().isInTileView());
         }
     }
 
@@ -75,19 +58,17 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testEtherpadExitsTileView" })
     public void testPinningExitsTileView()
     {
-        enterTileView();
+        getParticipant1()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant2(), true);
 
-        MeetUIUtils.clickOnRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
+        assertFalse(getParticipant1().isInTileView());
 
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        getParticipant1()
+            .getFilmstrip()
+            .setRemoteParticipantPin(getParticipant2(), false);
 
-        MeetUIUtils.clickOnRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
-
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        assertFalse(getParticipant1().isInTileView());
     }
 
     /**
@@ -99,18 +80,7 @@ public class TileViewTest
     {
         enterTileView();
 
-        WebDriver driver = getParticipant1().getDriver();
-
-        TestUtils.waitForElementBy(
-            driver,
-            By.cssSelector(TILE_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
-            5);
-
-        TestUtils.waitForElementNotPresentBy(
-            driver,
-            By.cssSelector(FILMSTRIP_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
-            5
-        );
+        getParticipant1().getFilmstrip().assertLocalThumbnailDock(false);
     }
 
     /**
@@ -120,7 +90,7 @@ public class TileViewTest
     public void testCanExitTileView()
     {
         getParticipant1().getToolbar().clickTileViewButton();
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        assertFalse(getParticipant1().isInTileView());
     }
 
     /**
@@ -130,18 +100,7 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testCanExitTileView" })
     public void testLocalVideoDisplaysIndependentlyFromRemote()
     {
-        WebDriver driver = getParticipant1().getDriver();
-
-        TestUtils.waitForElementNotPresentBy(
-            driver,
-            By.cssSelector(TILE_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
-            5);
-
-        TestUtils.waitForElementBy(
-            driver,
-            By.cssSelector(FILMSTRIP_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
-            5
-        );
+        getParticipant1().getFilmstrip().assertLocalThumbnailDock(true);
     }
 
     /**
