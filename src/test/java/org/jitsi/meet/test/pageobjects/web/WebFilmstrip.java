@@ -116,6 +116,8 @@ public class WebFilmstrip
             dominantSpeakerIndicators.size(),
             1,
             "Wrong number of dominant speaker indicators.");
+
+        assertTrue(dominantSpeakerIndicators.get(0).isDisplayed());
     }
 
     /**
