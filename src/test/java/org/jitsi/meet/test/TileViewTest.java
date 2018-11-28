@@ -52,40 +52,31 @@ public class TileViewTest
     }
 
     /**
-     * Tests tile view is entered.
+     * Tests tile view is automatically exited when etherpad is opened.
      */
     @Test
-    public void testTileViewVisible()
-    {
-        getParticipant1().getToolbar().clickTileViewButton();
-
-        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
-    }
-
-    /**
-     * Tests tile view is automatically exited when etherpad is open and it
-     * automatically re-entered when etherpad is exited.
-     */
-    @Test(dependsOnMethods = { "testTileViewVisible" })
     public void testEtherpadExitsTileView()
     {
         if (MeetUtils.isEtherpadEnabled(getParticipant1().getDriver()))
         {
+            enterTileView();
+
             getParticipant1().getToolbar().clickEtherpadButton();
             assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
 
             getParticipant1().getToolbar().clickEtherpadButton();
-            assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
         }
     }
 
     /**
-     * Tests tile view is exited if a participant is pinned but re-enters
-     * on unpin.
+     * Tests tile view is exited on participant pin.
      */
     @Test(dependsOnMethods = { "testEtherpadExitsTileView" })
     public void testPinningExitsTileView()
     {
+        enterTileView();
+
         MeetUIUtils.clickOnRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
@@ -96,7 +87,7 @@ public class TileViewTest
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
-        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
     }
 
     /**
@@ -106,6 +97,8 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testPinningExitsTileView" })
     public void testLocalVideoDisplaysAtEnd()
     {
+        enterTileView();
+
         WebDriver driver = getParticipant1().getDriver();
 
         TestUtils.waitForElementBy(
@@ -149,5 +142,15 @@ public class TileViewTest
             By.cssSelector(FILMSTRIP_VIEW_LOCAL_VIDEO_CSS_SELECTOR),
             5
         );
+    }
+
+    /**
+     * Attemps to enter tile view and verifies tile view has been entered.
+     */
+    private void enterTileView()
+    {
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
     }
 }
