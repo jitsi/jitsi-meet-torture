@@ -636,6 +636,24 @@ public class MeetUIUtils
     }
 
     /**
+     * Double clicks on a given participant's (identified by the resource part
+     * of it's JID) video thumbnail.
+     * @param driver instance of <tt>WebDriver</tt> where we'll perform the
+     * click.
+     * @param endpointId the resource part of MUC JID which identifies user's
+     * video thumbnail.
+     */
+    public static void doubleClickOnRemoteVideo(
+            WebDriver driver, String endpointId)
+    {
+        Actions action = new Actions(driver);
+        WebElement element = driver.findElement(
+            By.xpath("//span[@id='participant_" + endpointId + "']"));
+
+        action.doubleClick(element).perform();
+    }
+
+    /**
      * Clicks on the local video thumbnail.
      * @param driver the instance of <tt>WebDriver</tt> where we'll
      * perform the click.
