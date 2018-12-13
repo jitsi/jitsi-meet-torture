@@ -19,8 +19,10 @@ public class SettingsDialog
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
+    private final static String MORE_TAB_CONTENT = ".more-tab";
     private final static String OK_BUTTON = "#modal-dialog-ok-button";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
+    private final static String SETTINGS_DIALOG_CONTENT = ".settings-pane";
     private final static String START_AUDIO_MUTED_CHECKBOX
         = "[name='start-audio-muted'] ~ div";
     private final static String START_VIDEO_MUTED_CHECKBOX
@@ -107,6 +109,11 @@ public class SettingsDialog
     public void openMoreTab()
     {
         openTab(X_PATH_MORE_TAB);
+
+        TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(MORE_TAB_CONTENT),
+            5);
     }
 
     /**
@@ -175,6 +182,11 @@ public class SettingsDialog
             participant.getDriver(),
             By.cssSelector(SETTINGS_DIALOG),
             5);
+
+        TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(SETTINGS_DIALOG_CONTENT),
+            5);
     }
 
     /**
@@ -183,6 +195,8 @@ public class SettingsDialog
     private void openTab(String xPathSelectorForTab)
     {
         WebDriver driver = participant.getDriver();
+
+        TestUtils.waitForElementBy(driver, By.xpath(xPathSelectorForTab), 5);
         driver.findElement(By.xpath(xPathSelectorForTab)).click();
     }
 
@@ -192,7 +206,9 @@ public class SettingsDialog
     private void setCheckbox(String cssSelector, boolean check)
     {
         WebDriver driver = participant.getDriver();
+        TestUtils.waitForElementBy(driver, By.cssSelector(cssSelector), 5);
         WebElement checkbox = driver.findElement(By.cssSelector(cssSelector));
+
         boolean isChecked = checkbox.isSelected();
 
         if (check != isChecked) {
