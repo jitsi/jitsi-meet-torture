@@ -183,7 +183,10 @@ public class SettingsDialog
     private void openTab(String xPathSelectorForTab)
     {
         WebDriver driver = participant.getDriver();
-        driver.findElement(By.xpath(xPathSelectorForTab)).click();
+        By tabElement = By.xpath(xPathSelectorForTab);
+
+        TestUtils.waitForElementBy(driver, tabElement, 5);
+        driver.findElement(tabElement).click();
     }
 
     /**
@@ -192,7 +195,9 @@ public class SettingsDialog
     private void setCheckbox(String cssSelector, boolean check)
     {
         WebDriver driver = participant.getDriver();
-        WebElement checkbox = driver.findElement(By.cssSelector(cssSelector));
+        By checkboxElement = By.cssSelector(cssSelector);
+        TestUtils.waitForElementBy(driver, checkboxElement, 5);
+        WebElement checkbox = driver.findElement(checkboxElement);
         boolean isChecked = checkbox.isSelected();
 
         if (check != isChecked) {
