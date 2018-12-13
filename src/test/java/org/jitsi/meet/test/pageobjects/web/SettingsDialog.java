@@ -3,6 +3,9 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.*;
 
@@ -197,7 +200,11 @@ public class SettingsDialog
         WebDriver driver = participant.getDriver();
 
         TestUtils.waitForElementBy(driver, By.xpath(xPathSelectorForTab), 5);
-        driver.findElement(By.xpath(xPathSelectorForTab)).click();
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(
+            By.xpath(xPathSelectorForTab)));
+
+        element.click();
     }
 
     /**
