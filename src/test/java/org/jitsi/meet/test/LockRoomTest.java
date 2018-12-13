@@ -106,9 +106,7 @@ public class LockRoomTest
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
-        driver2.findElement(
-            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
-        driver2.findElement(By.id("modal-dialog-ok-button")).click();
+        submitPassword(driver2, ROOM_KEY + "1234");
 
         try
         {
@@ -118,9 +116,7 @@ public class LockRoomTest
         catch(TimeoutException e)
         {}
 
-        driver2.findElement(
-            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY);
-        driver2.findElement(By.id("modal-dialog-ok-button")).click();
+        submitPassword(driver2, ROOM_KEY);
 
         participant2.waitToJoinMUC(5);
 
@@ -227,9 +223,7 @@ public class LockRoomTest
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
-        driver2.findElement(
-            By.xpath("//input[@name='lockKey']")).sendKeys(ROOM_KEY + "1234");
-        driver2.findElement(By.id("modal-dialog-ok-button")).click();
+        submitPassword(driver2, ROOM_KEY + "1234");
 
         try
         {
@@ -252,5 +246,23 @@ public class LockRoomTest
         InfoDialog infoDialog = participant2.getInfoDialog();
         infoDialog.open();
         assertFalse(infoDialog.isLocked());
+    }
+
+    /**
+     * Interacts with the password modal to enter and submit a password.
+     *
+     * @param driver the participant that should be used to interact with the
+     * password modal
+     * @param password the password to enter and submit
+     */
+    private void submitPassword(WebDriver driver, String password) {
+        TestUtils.waitForElementBy(
+            driver,
+            By.xpath("//input[@name='lockKey']"),
+            5);
+
+        driver.findElement(
+            By.xpath("//input[@name='lockKey']")).sendKeys(password);
+        driver.findElement(By.id("modal-dialog-ok-button")).click();
     }
 }
