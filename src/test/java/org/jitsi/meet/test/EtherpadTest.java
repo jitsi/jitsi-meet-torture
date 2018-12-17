@@ -113,6 +113,9 @@ public class EtherpadTest
 
             String textToEnter = "SomeTestText";
 
+            // Give etherpad some time to complete loading its editor content.
+            TestUtils.waitForDisplayedElementByID(driver1, "innerdocbody", 5);
+
             driver1.findElement(By.id("innerdocbody")).sendKeys(textToEnter);
 
             TestUtils.waitMillis(2000);
