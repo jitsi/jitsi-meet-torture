@@ -75,12 +75,6 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testEtherpadExitsTileView" })
     public void testPinningExitsTileView()
     {
-        // TODO: stop skipping Firefox once Firefox 59 is used. Previous
-        // versions cannot double click.
-        if (getParticipant1().getType().isFirefox()) {
-            return;
-        }
-
         enterTileView();
 
         MeetUIUtils.clickOnRemoteVideo(
