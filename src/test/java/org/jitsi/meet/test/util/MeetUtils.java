@@ -239,9 +239,15 @@ public class MeetUtils
      */
     public static void waitForPageToLoad(WebDriver driver)
     {
+        String checkPageLoadScript = "" +
+            "var state = ''; " +
+            "try { state = document.readyState; } " +
+            "catch (e) { console.warn(e); } " +
+            "return state;";
+
         ExpectedCondition<Boolean> expectation
             = d-> ((JavascriptExecutor) d)
-                .executeScript("return document.readyState")
+                .executeScript(checkPageLoadScript)
                 .equals("complete");
         Wait<WebDriver> wait = new WebDriverWait(driver, 10);
         try
