@@ -19,15 +19,15 @@ public class SettingsDialog
     private final static String DISPLAY_NAME_FIELD
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
-    private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
+    private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me']";
     private final static String MORE_TAB_CONTENT = ".more-tab";
     private final static String OK_BUTTON = "#modal-dialog-ok-button";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String SETTINGS_DIALOG_CONTENT = ".settings-pane";
     private final static String START_AUDIO_MUTED_CHECKBOX
-        = "[name='start-audio-muted'] ~ div";
+        = "[name='start-audio-muted']";
     private final static String START_VIDEO_MUTED_CHECKBOX
-        = "[name='start-video-muted'] ~ div";
+        = "[name='start-video-muted']";
     private final static String X_PATH_MORE_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
     private final static String X_PATH_PROFILE_TAB
