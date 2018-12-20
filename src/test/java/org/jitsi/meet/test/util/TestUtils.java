@@ -302,30 +302,12 @@ public class TestUtils
         long             timeout,
         final boolean    isDisplayed)
     {
-        new WebDriverWait(driver, timeout)
-            .withMessage(
-                "Is " + (isDisplayed ? "" : "not") + "displayed: " + xpath)
-            .until((ExpectedCondition<Boolean>) d -> {
-                List<WebElement> elList = d.findElements(By.xpath(xpath));
-
-                WebElement el = elList.isEmpty() ? null : elList.get(0);
-
-                boolean expectedConditionMet = false;
-
-                try
-                {
-                    expectedConditionMet = isDisplayed
-                        ? el != null && el.isDisplayed()
-                        : el == null || !el.isDisplayed();
-                }
-                catch (StaleElementReferenceException e)
-                {
-                    // if the element is detached in a process of checking
-                    // its display status, means its not visible anymore
-                }
-
-                return expectedConditionMet;
-            });
+        waitForElementDisplayToBe(
+            driver,
+            By.xpath(xpath),
+            timeout,
+            isDisplayed
+        );
     }
 
     /**
@@ -409,11 +391,7 @@ public class TestUtils
         final String xpath,
         long timeout)
     {
-        new WebDriverWait(driver, timeout)
-            .until((ExpectedCondition<Boolean>) d -> {
-                WebElement el = d.findElement(By.xpath(xpath));
-                return el == null || !el.isDisplayed();
-            });
+        waitForElementDisplayToBe(driver, By.xpath(xpath), timeout, false);
     }
 
     /**
@@ -427,11 +405,7 @@ public class TestUtils
         final String id,
         long timeout)
     {
-        new WebDriverWait(driver, timeout)
-            .until((ExpectedCondition<Boolean>) d -> {
-                WebElement el = d.findElement(By.id(id));
-                return el == null || !el.isDisplayed();
-            });
+        waitForElementDisplayToBe(driver, By.id(id), timeout, false);
     }
 
     /**
@@ -445,10 +419,48 @@ public class TestUtils
         final String id,
         long timeout)
     {
+        waitForElementDisplayToBe(driver, By.id(id), timeout, true);
+    }
+
+    /**
+     * Waits until an element becomes available and displayed or not available
+     * and not displayed.
+     *
+     * @param driver the {@code WebDriver}.
+     * @param by the selector to use for finding the element.
+     * @param timeout the time to wait for the element in seconds.
+     * @param isDisplayed determines type of the check. <tt>true</tt> means
+     * we're waiting for the element to become available and <tt>false</tt>
+     * means the element must either be hidden or unavailable.
+     */
+    public static void waitForElementDisplayToBe(
+        WebDriver driver,
+        By by,
+        long timeout,
+        final boolean isDisplayed)
+    {
         new WebDriverWait(driver, timeout)
+            .withMessage(
+                "Is " + (isDisplayed ? "" : "not")
+                    + "displayed: " + by.toString())
             .until((ExpectedCondition<Boolean>) d -> {
-                WebElement el = d.findElement(By.id(id));
-                return el != null && el.isDisplayed();
+                WebElement el = d.findElement(by);
+
+                boolean expectedConditionMet = false;
+
+                try
+                {
+                    expectedConditionMet = isDisplayed
+                            ? el != null && el.isDisplayed()
+                            : el == null || !el.isDisplayed();
+                }
+                catch (StaleElementReferenceException e)
+                {
+                    // if the element is detached in a process of checking
+                    // its display status, means its not visible anymore
+                }
+
+                return expectedConditionMet;
             });
     }
 
