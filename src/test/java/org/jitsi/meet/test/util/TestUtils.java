@@ -444,7 +444,8 @@ public class TestUtils
                 "Is " + (isDisplayed ? "" : "not")
                     + "displayed: " + by.toString())
             .until((ExpectedCondition<Boolean>) d -> {
-                WebElement el = d.findElement(by);
+                List<WebElement> elList = d.findElements(by);
+                WebElement el = elList.isEmpty() ? null : elList.get(0);
 
                 boolean expectedConditionMet = false;
 
