@@ -245,14 +245,20 @@ public class MeetUtils
             "catch (e) { console.warn(e); } " +
             "return state;";
 
-        ExpectedCondition<Boolean> expectation
-            = d-> ((JavascriptExecutor) d)
-                .executeScript(checkPageLoadScript)
-                .equals("complete");
         Wait<WebDriver> wait = new WebDriverWait(driver, 10);
         try
         {
-            wait.until(expectation);
+            wait.until(driverInstance -> {
+                try {
+                    return ((JavascriptExecutor) driverInstance)
+                        .executeScript(checkPageLoadScript)
+                        .equals("complete");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            });
         }
         catch(TimeoutException error)
         {
