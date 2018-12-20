@@ -65,6 +65,23 @@ public class TestUtils
     }
 
     /**
+     * Click an element on the page by first checking for visibility and then
+     * checking for clickability.
+     *
+     * @param driver the {@code WebDriver}.
+     * @param by the search query for the element
+     */
+    public static void click(WebDriver driver, final By by)
+    {
+        waitForElementBy(driver, by, 10);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement element = wait.until(
+            ExpectedConditions.elementToBeClickable(by));
+
+        element.click();
+    }
+
+    /**
      * Injects JS script into given <tt>participant</tt> <tt>WebDriver</tt>.
      * @param driver the <tt>WebDriver</tt> where the script will be
      * injected.
