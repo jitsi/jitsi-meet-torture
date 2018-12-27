@@ -263,6 +263,7 @@ public class LockRoomTest
 
         driver.findElement(
             By.xpath("//input[@name='lockKey']")).sendKeys(password);
-        driver.findElement(By.id("modal-dialog-ok-button")).click();
+
+        TestUtils.click(driver, By.id("modal-dialog-ok-button"));
     }
 }
