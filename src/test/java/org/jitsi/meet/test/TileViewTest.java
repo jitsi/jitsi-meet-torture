@@ -81,6 +81,13 @@ public class TileViewTest
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
+        // Pinning should require double clicking
+        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+
+        MeetUIUtils.doubleClickOnRemoteVideo(
+            getParticipant1().getDriver(),
+            getParticipant2().getEndpointId());
+
         assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
 
         MeetUIUtils.clickOnRemoteVideo(
