@@ -62,10 +62,11 @@ public class TileViewTest
             enterTileView();
 
             getParticipant1().getToolbar().clickEtherpadButton();
-            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+            MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
 
             getParticipant1().getToolbar().clickEtherpadButton();
-            assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+            MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
+
         }
     }
 
@@ -81,20 +82,20 @@ public class TileViewTest
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
-        // Pinning should require double clicking
-        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
 
         MeetUIUtils.doubleClickOnRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
 
         MeetUIUtils.clickOnRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
     }
 
     /**
@@ -127,7 +128,7 @@ public class TileViewTest
     public void testCanExitTileView()
     {
         getParticipant1().getToolbar().clickTileViewButton();
-        assertFalse(MeetUIUtils.isInTileView(getParticipant1()));
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
     }
 
     /**
@@ -157,7 +158,6 @@ public class TileViewTest
     private void enterTileView()
     {
         getParticipant1().getToolbar().clickTileViewButton();
-
-        assertTrue(MeetUIUtils.isInTileView(getParticipant1()));
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
     }
 }
