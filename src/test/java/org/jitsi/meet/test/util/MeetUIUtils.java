@@ -1099,12 +1099,23 @@ public class MeetUIUtils
      *
      * @param participant the <tt>WebParticipant</tt> of the participant for
      *                    whom we're check is in tile view.
+     * @param isDisplayed true if the expectation is tile view is to be visible.
      */
-    public static boolean isInTileView(WebParticipant participant)
+    public static void waitForTileViewDisplay(
+        WebParticipant participant,
+        boolean isDisplayed)
     {
-        WebDriver driver = participant.getDriver();
-        WebElement appRoot = driver.findElement(By.id("videoconference_page"));
+        TestUtils.waitForCondition(
+            participant.getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> {
+                WebDriver driver = participant.getDriver();
+                WebElement appRoot
+                    = driver.findElement(By.id("videoconference_page"));
+                boolean currentDisplay
+                    = appRoot.getAttribute("class").contains("tile-view");
 
-        return appRoot.getAttribute("class").contains("tile-view");
+                return currentDisplay == isDisplayed;
+            });
     }
 }

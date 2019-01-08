@@ -162,13 +162,13 @@ public class FollowMeTest
 
         getParticipant1().getToolbar().clickTileViewButton();
 
-        getAllParticipants().forEach(participant -> assertTrue(
-            MeetUIUtils.isInTileView(participant)));
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, true));
 
         getParticipant1().getToolbar().clickTileViewButton();
 
-        getAllParticipants().forEach(participant -> assertFalse(
-            MeetUIUtils.isInTileView(participant)));
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, false));
     }
 
     /**
