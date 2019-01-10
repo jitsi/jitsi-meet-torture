@@ -18,9 +18,9 @@ package org.jitsi.meet.test.base;
 import org.apache.commons.io.*;
 import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.logging.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
@@ -543,4 +543,23 @@ public abstract class Participant<T extends WebDriver>
      * @return a representation of the filmstrip of this participant.
      */
     public abstract Filmstrip<? extends Participant> getFilmstrip();
+
+    /**
+     * @return a list of representation of the remote participants thumbnails.
+     */
+    public abstract List<RemoteParticipant<T>> getRemoteParticipants();
+
+    /**
+     * Returns a remote participant by id.
+     * @param id the id to use when searching for remote participant.
+     * @return <tt>RemoteParticipant</tt> instance if found,
+     * <tt>null</tt> otherwise.
+     */
+    public RemoteParticipant<T> getRemoteParticipantById(String id)
+    {
+        return getRemoteParticipants().stream()
+            .filter(p -> p.getEndpointId().equals(id))
+            .findFirst()
+            .orElse(null);
+    }
 }

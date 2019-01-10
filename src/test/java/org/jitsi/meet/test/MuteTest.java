@@ -19,8 +19,6 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 import org.testng.annotations.*;
 
 /**
@@ -151,46 +149,13 @@ public class MuteTest
     @Test(dependsOnMethods = {"unmuteParticipant2AndCheck"})
     public void participant1MutesParticipant2AndCheck()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-        String participant2EndpointId = getParticipant2().getEndpointId();
-
-        // Open the remote video menu
-        WebElement cntElem
-            = driver1.findElement(
-                By.id("participant_" + participant2EndpointId));
-        String remoteVideoMenuButtonXPath
-            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu");
-        WebElement elem
-            = driver1.findElement(By.xpath(remoteVideoMenuButtonXPath));
-
-        Actions action = new Actions(driver1);
-        action.moveToElement(cntElem);
-        action.moveToElement(elem);
-        action.perform();
-
-        // give time for the menu to appear
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1,
-            "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
-            5);
-
-        // click the button
-        MeetUIUtils.clickOnElement(driver1, "ul.popupmenu a.mutelink", true);
-
-        // wait for confirm muting to display
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1,
-            "//button[@id='modal-dialog-ok-button']",
-            5);
-
-        // confirm muting
-        MeetUIUtils.clickOnButton(driver1, "modal-dialog-ok-button", true);
+        getParticipant1()
+            .getRemoteParticipantById(getParticipant2().getEndpointId())
+            .mute();
 
         // and now check whether second participant is muted
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(getParticipant2(), true);
-
-        action.release();
     }
 
     /**
