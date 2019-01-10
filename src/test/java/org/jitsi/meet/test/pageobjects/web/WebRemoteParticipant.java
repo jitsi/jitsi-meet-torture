@@ -41,11 +41,27 @@ public class WebRemoteParticipant
     @Override
     public void mute()
     {
+        clickOnRemoteMenuLink("mutelink");
+    }
+
+    @Override
+    public void kick()
+    {
+        clickOnRemoteMenuLink("kicklink");
+    }
+
+    /**
+     * Opens the remote menu and waits for the desired link to appear.
+     * @param linkClassname the class name to use identifying the link.
+     */
+    private void clickOnRemoteMenuLink(String linkClassname)
+    {
         // Open the remote video menu
         WebElement cntElem
             = driver.findElement(By.id("participant_" + this.getEndpointId()));
         String remoteVideoMenuButtonXPath
-            = TestUtils.getXPathStringForClassName("//span", "remotevideomenu");
+            = TestUtils.getXPathStringForClassName(
+                "//span", "remotevideomenu");
         WebElement elem
             = driver.findElement(By.xpath(remoteVideoMenuButtonXPath));
 
@@ -57,11 +73,13 @@ public class WebRemoteParticipant
         // give time for the menu to appear
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
+            "//ul[@class='popupmenu']//a[contains(@class, '"
+                + linkClassname + "')]",
             5);
 
         // click the button
-        MeetUIUtils.clickOnElement(driver, "ul.popupmenu a.mutelink", true);
+        MeetUIUtils.clickOnElement(driver,
+            "ul.popupmenu a." + linkClassname, true);
 
         // wait for confirm muting to display
         TestUtils.waitForDisplayedElementByXPath(
@@ -70,14 +88,9 @@ public class WebRemoteParticipant
             5);
 
         // confirm muting
-        MeetUIUtils.clickOnButton(driver, "modal-dialog-ok-button", true);
+        MeetUIUtils.clickOnButton(driver,
+            "modal-dialog-ok-button", true);
 
         action.release();
-    }
-
-    @Override
-    public void kick()
-    {
-        // @todo
     }
 }
