@@ -17,6 +17,7 @@ package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.base.stats.*;
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.stats.*;
@@ -28,6 +29,7 @@ import org.openqa.selenium.support.ui.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
+import java.util.stream.*;
 
 /**
  * The web specific participant implementation.
@@ -64,6 +66,12 @@ public class WebParticipant extends Participant<WebDriver>
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
         "return APP.conference.getConnectionState() === 'connected';";
+
+    /**
+     *  The javascript code which returns an array of remote participant IDs.
+     */
+    public static final String GET_REMOTE_PARTICIPANT_IDS =
+        "return APP.conference._room.getParticipants().map(p => p._id);";
 
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
@@ -543,6 +551,17 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return filmstrip;
+    }
+
+    @Override
+    public List<RemoteParticipant<WebDriver>> getRemoteParticipants()
+    {
+        List<String> remoteParticipantIDs
+            = (List) executeScript(GET_REMOTE_PARTICIPANT_IDS);
+
+        return remoteParticipantIDs.stream()
+            .map(id -> new WebRemoteParticipant(this.getDriver(), id))
+            .collect(Collectors.toList());
     }
 
     /**

@@ -437,15 +437,13 @@ public class MeetUIUtils
             id = "localVideoContainer";
         }
 
-
-        String icon = isVideo
-            ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']"
-            : TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']";
-
         String mutedIconXPath
-            = "//span[@id='" + id +"']" + icon;
+            = "//span[@id='%s']//span[contains(@class, '%sMuted')]"
+                + "/i[@class='icon-%s-disabled']";
+
+        mutedIconXPath = isVideo ?
+            String.format(mutedIconXPath, id, "video", "camera")
+            : String.format(mutedIconXPath, id, "audio", "mic");
 
         try
         {

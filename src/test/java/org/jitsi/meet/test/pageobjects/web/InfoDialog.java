@@ -162,7 +162,8 @@ public class InfoDialog
      */
     public String getPinNumber()
     {
-        return this.getValueAfterColon(CONFERENCE_ID);
+        // we need to remove the last character from the pin which is '#'
+        return this.getValueAfterColon(CONFERENCE_ID).replaceAll("#", "");
     }
 
     /**

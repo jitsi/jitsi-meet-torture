@@ -15,13 +15,11 @@ public class SettingsDialog
      * selectors, and prefixed as such, due to the extra functionality XPath
      * provides.
      */
-    private final static String CANCEL_BUTTON = "#modal-dialog-cancel-button";
     private final static String DISPLAY_NAME_FIELD
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me']";
     private final static String MORE_TAB_CONTENT = ".more-tab";
-    private final static String OK_BUTTON = "#modal-dialog-ok-button";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String SETTINGS_DIALOG_CONTENT = ".settings-pane";
     private final static String START_AUDIO_MUTED_CHECKBOX
@@ -53,9 +51,7 @@ public class SettingsDialog
      */
     public void close()
     {
-        participant.getDriver()
-            .findElement(By.cssSelector(CANCEL_BUTTON))
-            .click();
+        ModalDialogHelper.clickCancelButton(participant.getDriver());
     }
 
     /**
@@ -169,9 +165,7 @@ public class SettingsDialog
      */
     public void submit()
     {
-        participant.getDriver()
-            .findElement(By.cssSelector(OK_BUTTON))
-            .click();
+        ModalDialogHelper.clickOKButton(participant.getDriver());
     }
 
     /**

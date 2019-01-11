@@ -41,6 +41,11 @@
             <class name="org.jitsi.meet.test.DesktopSharingTest" />
         </classes>
     </test>
+    <test name="DialInAudioTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DialInAudioTest" />
+        </classes>
+    </test>
     <test name="DisplayNameTest">
         <classes>
             <class name="org.jitsi.meet.test.DisplayNameTest" />

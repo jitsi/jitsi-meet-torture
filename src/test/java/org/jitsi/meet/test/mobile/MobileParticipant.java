@@ -20,6 +20,7 @@ import io.appium.java_client.android.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.pageobjects.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.permissions.*;
 import org.jitsi.meet.test.pageobjects.mobile.stats.*;
@@ -479,6 +480,13 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
 
     @Override
     public Filmstrip<MobileParticipant> getFilmstrip()
+    {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public List<RemoteParticipant<AppiumDriver<MobileElement>>>
+        getRemoteParticipants()
     {
         throw new RuntimeException("Not implemented");
     }
