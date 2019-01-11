@@ -545,7 +545,7 @@ public abstract class Participant<T extends WebDriver>
     public abstract Filmstrip<? extends Participant> getFilmstrip();
 
     /**
-     * @return a list of representation of the remote participants thumbnails.
+     * @return a list of remote participants thumbnails.
      */
     public abstract List<RemoteParticipant<T>> getRemoteParticipants();
 

@@ -57,17 +57,14 @@ public class WebRemoteParticipant
     private void clickOnRemoteMenuLink(String linkClassname)
     {
         // Open the remote video menu
-        WebElement cntElem
+        WebElement remoteVideoElement
             = driver.findElement(By.id("participant_" + this.getEndpointId()));
-        String remoteVideoMenuButtonXPath
-            = TestUtils.getXPathStringForClassName(
-                "//span", "remotevideomenu");
-        WebElement elem
-            = driver.findElement(By.xpath(remoteVideoMenuButtonXPath));
+        WebElement menuElement
+            = driver.findElement(By.xpath("//span[contains(@class, 'remotevideomenu')]"));
 
         Actions action = new Actions(driver);
-        action.moveToElement(cntElem);
-        action.moveToElement(elem);
+        action.moveToElement(remoteVideoElement);
+        action.moveToElement(menuElement);
         action.perform();
 
         // give time for the menu to appear
@@ -81,13 +78,13 @@ public class WebRemoteParticipant
         MeetUIUtils.clickOnElement(driver,
             "ul.popupmenu a." + linkClassname, true);
 
-        // wait for confirm muting to display
+        // wait for confirm action dialog to display
         TestUtils.waitForDisplayedElementByXPath(
             driver,
             "//button[@id='modal-dialog-ok-button']",
             5);
 
-        // confirm muting
+        // confirm the action
         MeetUIUtils.clickOnButton(driver,
             "modal-dialog-ok-button", true);
 

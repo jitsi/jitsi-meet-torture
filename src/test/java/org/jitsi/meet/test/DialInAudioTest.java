@@ -89,18 +89,15 @@ public class DialInAudioTest
         infoDialog.open();
 
         // get the dial-in pin
-        String displayedPin = infoDialog.getPinNumber();
-        assertTrue(displayedPin.length() > 1);
+        dialInPin = infoDialog.getPinNumber();
+        assertTrue(dialInPin.length() > 1);
 
         infoDialog.close();
-
-        // we need to remove the last character from the pin which is '#'
-        dialInPin = displayedPin.substring(0, displayedPin.length() - 1);
     }
 
     /**
-     * Executes the rest configured web call, replacing the dial-in pin the url
-     * and waits 10 seconds for the participant to join.
+     * Executes the REST-configured web call, replacing the dial-in pin in the
+     * url and waits 10 seconds for the participant to join.
      */
     @Test(dependsOnMethods = { "enterAndReadDialInPin" })
     public void enterDialInParticipant()

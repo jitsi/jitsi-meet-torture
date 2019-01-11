@@ -607,10 +607,10 @@ public class TestUtils
 
         return (o instanceof String) ? (String) o : null;
     }
-    
+
     /**
      * Executes a specific (piece of) JavaScript script in the browser
-     * controlled by a specific {@code WebDriver} 
+     * controlled by a specific {@code WebDriver}
      *
      * @param driver the {@code WebDriver} which controls the browser in
      * which the specified {@code script} is to be executed
@@ -622,24 +622,6 @@ public class TestUtils
         String script)
     {
         ((JavascriptExecutor) driver).executeScript(script);
-    }
-
-    /**
-     * Checks if the given className is contained in the class list of the given
-     * element.
-     *
-     * @param elementName the name of the element, e.g. span, div, etc. It can
-     *                    also start with '/' for direct children and '//' for
-     *                    any child element
-     * @param className the name of the class we're looking for
-     * @return the XPath String for the given element and class names
-     */
-    public static String getXPathStringForClassName(String elementName,
-                                                    String className)
-    {
-        return elementName
-                + "[contains(concat(' ', normalize-space(@class), ' '), ' "
-                + className + " ')]";
     }
 
     /**
