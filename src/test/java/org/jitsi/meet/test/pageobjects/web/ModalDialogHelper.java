@@ -37,7 +37,7 @@ public class ModalDialogHelper
      */
     public static void clickOKButton(WebDriver driver)
     {
-        driver.findElement(By.id(OK_BUTTON)).click();
+        TestUtils.click(driver, By.id(OK_BUTTON));
     }
 
     /**
@@ -46,18 +46,6 @@ public class ModalDialogHelper
      */
     public static void clickCancelButton(WebDriver driver)
     {
-        driver.findElement(By.id(CANCEL_BUTTON)).click();
-    }
-
-    /**
-     * Waits 5 seconds for the ok button to appear in the modal dialog.
-     * @param driver the page driver.
-     */
-    public static void waitForDisplayedOKButton(WebDriver driver)
-    {
-        TestUtils.waitForDisplayedElementByXPath(
-            driver,
-            "//button[@id='" + OK_BUTTON +"']",
-            5);
+        TestUtils.click(driver, By.id(CANCEL_BUTTON));
     }
 }

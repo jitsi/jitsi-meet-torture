@@ -59,8 +59,8 @@ public class WebRemoteParticipant
         // Open the remote video menu
         WebElement remoteVideoElement
             = driver.findElement(By.id("participant_" + this.getEndpointId()));
-        WebElement menuElement
-            = driver.findElement(By.xpath("//span[contains(@class, 'remotevideomenu')]"));
+        WebElement menuElement = driver.findElement(
+            By.xpath("//span[contains(@class, 'remotevideomenu')]"));
 
         Actions action = new Actions(driver);
         action.moveToElement(remoteVideoElement);
@@ -77,9 +77,6 @@ public class WebRemoteParticipant
         // click the button
         MeetUIUtils.clickOnElement(driver,
             "ul.popupmenu a." + linkClassname, true);
-
-        // wait for confirm action dialog to display
-        ModalDialogHelper.waitForDisplayedOKButton(driver);
 
         // confirm the action
         ModalDialogHelper.clickOKButton(driver);
