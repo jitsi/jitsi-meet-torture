@@ -15,9 +15,9 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 
-import org.jitsi.meet.test.pageobjects.web.InfoDialog;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
@@ -239,7 +239,7 @@ public class LockRoomTest
         // just in case wait
         TestUtils.waitMillis(500);
 
-        driver2.findElement(By.id("modal-dialog-ok-button")).click();
+        ModalDialogHelper.clickOKButton(driver2);
 
         participant2.waitToJoinMUC(5);
 
@@ -267,6 +267,6 @@ public class LockRoomTest
         passwordInput.clear();
         passwordInput.sendKeys(password);
 
-        TestUtils.click(driver, By.id("modal-dialog-ok-button"));
+        ModalDialogHelper.clickOKButton(driver);
     }
 }

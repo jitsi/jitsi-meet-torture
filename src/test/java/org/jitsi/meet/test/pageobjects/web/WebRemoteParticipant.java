@@ -79,14 +79,10 @@ public class WebRemoteParticipant
             "ul.popupmenu a." + linkClassname, true);
 
         // wait for confirm action dialog to display
-        TestUtils.waitForDisplayedElementByXPath(
-            driver,
-            "//button[@id='modal-dialog-ok-button']",
-            5);
+        ModalDialogHelper.waitForDisplayedOKButton(driver);
 
         // confirm the action
-        MeetUIUtils.clickOnButton(driver,
-            "modal-dialog-ok-button", true);
+        ModalDialogHelper.clickOKButton(driver);
 
         action.release();
     }
