@@ -363,6 +363,6 @@ public class AvatarTest
     {
         return getSrcByXPath(
             perspective,
-            "//div[@id='dominantSpeaker']/img[@id='dominantSpeakerAvatar']");
+            "//img[@id='dominantSpeakerAvatar']");
     }
 }
