@@ -232,6 +232,7 @@ public class WebParticipantFactory
             if (options.isChromeSandboxDisabled())
             {
                 ops.addArguments("no-sandbox");
+                ops.addArguments("disable-dev-shm-usage");
                 ops.addArguments("disable-setuid-sandbox");
             }
 
