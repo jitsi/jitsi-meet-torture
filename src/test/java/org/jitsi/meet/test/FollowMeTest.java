@@ -71,11 +71,12 @@ public class FollowMeTest
     {
         WebParticipant participant2 = getParticipant2();
 
-        Boolean allModeratorsEnabled = (Boolean)(
+        Boolean allModeratorsEnabled = (Boolean) (
             participant2.executeScript(
                 "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;"));
         // if all are moderators skip this check
-        if (allModeratorsEnabled) {
+        if (allModeratorsEnabled)
+        {
             print("All moderators enabled, skipping check!");
             return;
         }
@@ -132,30 +133,30 @@ public class FollowMeTest
         driver1.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementContainsClassByXPath(
-                driver1, filmstripXPath, "hidden", 10);
+            driver1, filmstripXPath, "hidden", 10);
         TestUtils.waitForElementContainsClassByXPath(
-                driver2, filmstripXPath, "hidden", 10);
+            driver2, filmstripXPath, "hidden", 10);
 
         driver1.findElement(By.id("toggleFilmstripButton")).click();
 
         TestUtils.waitForElementAttributeValueByXPath(
-                driver1,
-                filmstripXPath,
-                "class",
-                "filmstrip__videos",
-                10);
+            driver1,
+            filmstripXPath,
+            "class",
+            "filmstrip__videos",
+            10);
         TestUtils.waitForElementAttributeValueByXPath(
-                driver2,
-                filmstripXPath,
-                "class",
-                "filmstrip__videos",
-                10);
+            driver2,
+            filmstripXPath,
+            "class",
+            "filmstrip__videos",
+            10);
     }
 
     /**
      * Tests if all participants enter and exit tile view.
      */
-    @Test(dependsOnMethods = { "testFilmstripCommandsAreFollowed" })
+    @Test(dependsOnMethods = {"testFilmstripCommandsAreFollowed"})
     public void testTileViewCommandsAreFollowed()
     {
         joinThirdParticipant();
@@ -175,7 +176,7 @@ public class FollowMeTest
      * Checks if selecting a video for moderator selects large video for the
      * second participant.
      */
-    @Test(dependsOnMethods = { "testTileViewCommandsAreFollowed" })
+    @Test(dependsOnMethods = {"testTileViewCommandsAreFollowed"})
     public void testNextOnStageCommandsAreFollowed()
     {
         WebParticipant participant1 = getParticipant1();
@@ -196,5 +197,29 @@ public class FollowMeTest
         assertEquals(
             MeetUIUtils.getVideoElementID(driver2, localVideoThumb),
             MeetUIUtils.getLargeVideoID(driver2));
+    }
+
+    /**
+     * Enables tile view and when a participant joins checks whether
+     * tile view is enabled.
+     */
+    @Test(dependsOnMethods = {"testNextOnStageCommandsAreFollowed"})
+    public void testTileViewIsOnWhenJoining()
+    {
+        ensureTwoParticipants();
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        joinThirdParticipant();
+
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, true));
+
+        getParticipant1().getToolbar().clickTileViewButton();
+
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, false));
+
+        TestUtils.waitMillis(20000);
     }
 }
