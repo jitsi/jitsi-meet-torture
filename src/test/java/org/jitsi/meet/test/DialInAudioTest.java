@@ -159,11 +159,22 @@ public class DialInAudioTest
         participant.waitForIceConnected();
         participant.waitForRemoteStreams(1);
         participant.waitForSendReceiveData();
+    }
 
-        // now let's kick the participant
-
-        // we should have at least one remote participant, as we are receiving
-        // media
-        participant.getRemoteParticipants().get(0).kick();
+    /**
+     * Cleanups the participant we had created through the rest api.
+     */
+    @AfterClass
+    public void cleanupClass()
+    {
+        try
+        {
+            // now let's kick the participant
+            getParticipant1().getRemoteParticipants().get(0).kick();
+        }
+        finally
+        {
+            super.cleanupClass();
+        }
     }
 }
