@@ -204,6 +204,10 @@ public class DialInAudioTest
                 participant.getRemoteParticipants().get(0).kick();
             }
         }
+        catch(Exception e)
+        {
+            // ignore if we cannot kick participant
+        }
         finally
         {
             super.cleanupClass();
