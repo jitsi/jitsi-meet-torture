@@ -392,6 +392,20 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * Waits for number of participants.
+     * @param n number of participants to wait for.
+     */
+    public void waitForParticipants(int n)
+    {
+        waitForCondition(
+            () -> (Boolean) executeScript(
+                "return APP.conference"
+                    + ".listMembers().length >= " + n + ";"),
+                15,
+                "waitForParticipants:" + n);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
