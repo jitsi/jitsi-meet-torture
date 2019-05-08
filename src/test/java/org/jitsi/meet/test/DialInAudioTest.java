@@ -184,6 +184,8 @@ public class DialInAudioTest
 
         WebParticipant participant = getParticipant1();
 
+        participant.waitForParticipants(1);
+
         participant.waitForIceConnected();
         participant.waitForRemoteStreams(1);
         participant.waitForSendReceiveData();
