@@ -51,7 +51,9 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.p2p.enabled=false"
             + "&config.p2p.useStunTurn=false"
             + "&config.gatherStats=true"
-            + "&config.disable1On1Mode=true";
+            + "&config.disable1On1Mode=true"
+            + "&config.analytics.amplitudeAPPKey=\"\""
+            + "&config.analytics.scriptURLs=[]";
 
     /**
      * The javascript code which returns {@code true} if we are joined in
