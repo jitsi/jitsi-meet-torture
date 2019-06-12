@@ -17,6 +17,7 @@ package org.jitsi.meet.test.mobile;
 
 import io.appium.java_client.*;
 import io.appium.java_client.android.*;
+import io.appium.java_client.android.nativekey.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
@@ -283,7 +284,7 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
         {
             roomNameInput.click();
 
-            getAndroidDriver().pressKeyCode(AndroidKeyCode.ENTER);
+            getAndroidDriver().pressKey(new KeyEvent(AndroidKey.ENTER));
         }
         else
         {
