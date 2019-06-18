@@ -78,14 +78,9 @@ public class TileViewTest
     {
         enterTileView();
 
-        MeetUIUtils.clickOnRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
-
-
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
 
-        MeetUIUtils.doubleClickOnRemoteVideo(
+        MeetUIUtils.clickOnRemoteVideo(
             getParticipant1().getDriver(),
             getParticipant2().getEndpointId());
 
