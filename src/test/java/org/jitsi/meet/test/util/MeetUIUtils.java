@@ -584,7 +584,7 @@ public class MeetUIUtils
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='participant_" + endpointId + "']" +
-                    "//img[@class='userAvatar']",
+                    "//img[contains(@class,'userAvatar')]",
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -655,7 +655,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForNotDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
             5);
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -671,7 +671,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
