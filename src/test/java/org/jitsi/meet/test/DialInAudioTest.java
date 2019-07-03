@@ -109,6 +109,10 @@ public class DialInAudioTest
 
         // get the dial-in pin
         dialInPin = infoDialog.getPinNumber();
+
+        // removes any blanks
+        dialInPin.replaceAll(" ", "");
+
         assertTrue(dialInPin.length() > 1);
 
         infoDialog.close();
