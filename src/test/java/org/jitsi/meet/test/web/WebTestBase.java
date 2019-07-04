@@ -18,7 +18,9 @@ package org.jitsi.meet.test.web;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
+import org.testng.annotations.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -28,6 +30,39 @@ import java.util.logging.*;
 public class WebTestBase
     extends TypedBaseTest<WebParticipant, WebParticipantFactory>
 {
+    /**
+     * The name of the property which specifies the location of the JVB series.
+     */
+    private static final String JVB_SERIES_JSON_PATH_PNAME = "jvb.series.json";
+
+    /**
+     * The name of the property which specifies the location of the JVB series
+     * command line tool.
+     */
+    private static final String JVB_SERIES_TOOL_PATH_PNAME = "jvb.series.tool";
+
+    /**
+     * The path of the JVB time series json file.
+     */
+    private static final File jvbSeriesJson
+        = new File(System.getProperty(JVB_SERIES_JSON_PATH_PNAME, ""));
+
+    /**
+     * The path of the JVB time series cli tool that will be used in the JVB
+     * performance test bellow (see {@link #testJvbPerformance()}).
+     */
+    private static final File jvbSeriesTool
+        = new File(System.getProperty(JVB_SERIES_TOOL_PATH_PNAME, ""));
+
+    /**
+     * The format of the command that will check the performance of the JVB. The
+     * general form is:
+     *
+     *     timeseries-cli.py series.json check --endpoint-id e8ef4657
+     */
+    private static final String JVB_CHECK_COMMAND_FORMAT = String.format(
+        "%s %s check --endpoint-id", jvbSeriesTool, jvbSeriesJson) + " %s";
+
     /**
      * Default
      */
@@ -340,6 +375,7 @@ public class WebTestBase
 
         participant.waitToJoinMUC(10);
         participant.waitForIceConnected();
+        endpointIds.add(participant.getEndpointId());
 
         return participant;
     }
@@ -372,6 +408,8 @@ public class WebTestBase
            webParticipant.getInfoDialog().close());
     }
 
+    private Set<String> endpointIds = new HashSet<>();
+
     /**
      * Joins a participant, and waits for it to join the room.
      *
@@ -395,6 +433,7 @@ public class WebTestBase
         try
         {
             participant.waitToJoinMUC(10);
+            endpointIds.add(participant.getEndpointId());
         }
         catch (TimeoutException ex)
         {
@@ -420,5 +459,67 @@ public class WebTestBase
         }
 
         return participant;
+    }
+
+    /**
+     * A test that runs after all other tests in the class (priority=1) and
+     * "checks" the JVB performance for every participant of this test class.
+     * The actual check is opaque to torture and implemented in the JVB time
+     * series tool (see {@link #jvbSeriesTool}).
+     *
+     * In order for this test to run, one has to configure the location of the
+     * JVB time series cli tool and the location of the JVB series. The JVB
+     * series file needs to be valid JSON Lines text format, also called
+     * newline-delimited JSON, otherwise parsing will fail. This can be achieved
+     * with the following logging.properties settings:
+     *
+     * java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
+     * java.util.logging.FileHandler.pattern=series.json
+     * java.util.logging.FileHandler.limit=1000000000
+     * java.util.logging.FileHandler.count=1
+     * java.util.logging.FileHandler.append=false
+     * java.util.logging.FileHandler.level=ALL
+     *
+     * timeseries.level=ALL
+     * timeseries.useParentHandlers=false
+     * timeseries.handlers=java.util.logging.FileHandler
+     */
+    @Test(priority=1)
+    public void testJvbPerformance()
+    {
+        if (!jvbSeriesTool.canExecute() || !jvbSeriesJson.exists())
+        {
+            return;
+        }
+
+        for (String endpointId : endpointIds)
+        {
+            try
+            {
+                Runtime runtime = Runtime.getRuntime();
+                String jvbCheckCommand
+                    = String.format(JVB_CHECK_COMMAND_FORMAT, endpointId);
+                TestUtils.print(jvbCheckCommand);
+                Process jvbSeriesToolProcess = runtime.exec(jvbCheckCommand);
+
+                jvbSeriesToolProcess.waitFor();
+                BufferedReader b = new BufferedReader(
+                    new InputStreamReader(jvbSeriesToolProcess.getInputStream()));
+                String line = "";
+
+                while ((line = b.readLine()) != null)
+                {
+                    System.out.println(line);
+                }
+
+                assert jvbSeriesToolProcess.exitValue() == 0;
+
+                b.close();
+            }
+            catch (IOException | InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }
