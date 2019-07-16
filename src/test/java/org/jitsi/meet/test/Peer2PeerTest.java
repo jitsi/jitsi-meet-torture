@@ -35,7 +35,7 @@ public class Peer2PeerTest
     /**
      * The config fragment which enables P2P test mode.
      */
-    private final static String MANUAL_P2P_MODE_FRAGMENT
+    public final static String MANUAL_P2P_MODE_FRAGMENT
         = "config.testing.p2pTestMode=true";
 
     /**
