@@ -17,9 +17,11 @@ package org.jitsi.meet.test.mobile;
 
 import io.appium.java_client.*;
 import io.appium.java_client.android.*;
+import io.appium.java_client.android.nativekey.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
+import org.jitsi.meet.test.pageobjects.base.*;
 import org.jitsi.meet.test.pageobjects.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.permissions.*;
 import org.jitsi.meet.test.pageobjects.mobile.stats.*;
@@ -270,11 +272,7 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
             maybeAcceptOverlayPermissions();
         }
 
-        // ALLOW to use camera and the calendar
-        // Due to the async nature of Redux we don't know which permission will
-        // pop up first.
-        acceptPermissionAlert();
-        acceptPermissionAlert();
+        // XXX: No need to accept permissions on the welcome page now.
 
         WelcomePageView welcomePageView = new WelcomePageView(this);
 
@@ -286,7 +284,7 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
         {
             roomNameInput.click();
 
-            getAndroidDriver().pressKeyCode(AndroidKeyCode.ENTER);
+            getAndroidDriver().pressKey(new KeyEvent(AndroidKey.ENTER));
         }
         else
         {
@@ -297,7 +295,8 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
 
         takeScreenshot("roomNameTextEntered");
 
-        // ALLOW to use mic
+        // ALLOW to use mic and camera.
+        acceptPermissionAlert();
         acceptPermissionAlert();
 
         ConferenceView conference = new ConferenceView(this);
@@ -482,6 +481,13 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
 
     @Override
     public Filmstrip<MobileParticipant> getFilmstrip()
+    {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public List<RemoteParticipant<AppiumDriver<MobileElement>>>
+        getRemoteParticipants()
     {
         throw new RuntimeException("Not implemented");
     }

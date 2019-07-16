@@ -116,9 +116,9 @@ public class SharedVideoTest
 
         currentVideoId = expectedId;
 
-        driver1.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"))
-            .click();
+        TestUtils.click(
+            driver1,
+            By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"));
 
         // give time for the internal frame to load and attach to the page.
         TestUtils.waitMillis(2000);
@@ -360,9 +360,11 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "switchVideoTest" })
     public void backToSharedVideoTest()
     {
-        getParticipant2().getDriver()
-            .findElement(By.id("sharedVideoContainer"))
-            .click();
+        TestUtils.click(
+            getParticipant2().getDriver(),
+            By.id("sharedVideoContainer")
+        );
+
         TestUtils.waitMillis(1000);
 
         assertTrue(
@@ -384,16 +386,11 @@ public class SharedVideoTest
 
         WebDriver driver1 = getParticipant1().getDriver();
 
-        TestUtils.waitForElementByXPath(
-            driver1,
-            "//button[@name="
-                + "'jqi_state0_buttonspandatai18ndialogCancelCancelspan']",
-            5);
-
         // let's cancel
-        driver1.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogCancelCancelspan"))
-            .click();
+        executeClickWorkaroundScript(
+            getParticipant1(),
+            "jqi_state0_buttonspandatai18ndialogCancelCancelspan"
+        );
 
         // video should be visible on both sides
         WebDriver driver2 = getParticipant2().getDriver();
@@ -406,15 +403,10 @@ public class SharedVideoTest
 
         getParticipant1().getToolbar().clickSharedVideoButton();
 
-        // now lets stop sharing
-        TestUtils.waitForElementByXPath(
-            driver1,
-            "//button[@name="
-                + "'jqi_state0_buttonspandatai18ndialogRemoveRemovespan']",
-            5);
-        driver1.findElement(
-            By.name("jqi_state0_buttonspandatai18ndialogRemoveRemovespan"))
-            .click();
+        executeClickWorkaroundScript(
+            getParticipant1(),
+            "jqi_state0_buttonspandatai18ndialogRemoveRemovespan"
+        );
 
         try
         {
@@ -563,5 +555,32 @@ public class SharedVideoTest
         checkUrls();
 
         stopSharingTest();
+    }
+
+    /**
+     * Clicks on an element with the passed in name using javascript. This works
+     * around: https://bugs.chromium.org/p/chromedriver/issues/detail?id=2758.
+     * Chromedriver fails to click on buttons that are over a cross domain
+     * iframe, which would be the case with the YouTube video iframe.
+     *
+     * @param participant <tt>Participant</tt> of the participant who will
+     * be clicking the element.
+     * @param name The name attribute value of the element to be clicked.
+     */
+    private void executeClickWorkaroundScript(
+        WebParticipant participant,
+        String name)
+    {
+        new WebDriverWait(participant.getDriver(), 5)
+            .until((ExpectedCondition<Boolean>) d -> {
+                Object res = participant.executeScript(
+                    "return document.getElementsByName('" +
+                    name +
+                    "').length > 0;");
+                return TestUtils.getBooleanResult(res);
+            });
+
+        participant.executeScript(
+            "return document.getElementsByName('" + name + "')[0].click();");
     }
 }

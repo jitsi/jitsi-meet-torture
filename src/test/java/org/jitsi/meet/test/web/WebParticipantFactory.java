@@ -122,7 +122,7 @@ public class WebParticipantFactory
         // by default we load chrome, but we can load safari or firefox
         if (participantType.isFirefox())
         {
-            FirefoxDriverManager.getInstance().setup();
+            WebDriverManager.getInstance(DriverManagerType.FIREFOX).setup();
 
             if (browserBinaryAPath != null
                     && (browserBinaryAPath.exists() || isRemote))
@@ -180,7 +180,7 @@ public class WebParticipantFactory
         }
         else if (participantType == ParticipantType.edge)
         {
-            InternetExplorerDriverManager.getInstance().setup();
+            WebDriverManager.getInstance(DriverManagerType.EDGE).setup();
 
             InternetExplorerOptions ieOptions = new InternetExplorerOptions();
             ieOptions.ignoreZoomSettings();
@@ -191,7 +191,7 @@ public class WebParticipantFactory
         }
         else
         {
-            ChromeDriverManager.getInstance().setup();
+            WebDriverManager.getInstance(DriverManagerType.CHROME).setup();
 
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty(
@@ -232,6 +232,7 @@ public class WebParticipantFactory
             if (options.isChromeSandboxDisabled())
             {
                 ops.addArguments("no-sandbox");
+                ops.addArguments("disable-dev-shm-usage");
                 ops.addArguments("disable-setuid-sandbox");
             }
 

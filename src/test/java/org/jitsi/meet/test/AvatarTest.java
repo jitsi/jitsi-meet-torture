@@ -31,8 +31,8 @@ import static org.testng.Assert.*;
 public class AvatarTest
     extends WebTestBase
 {
-    public static String EMAIL = "example@jitsi.org";
-    public static String HASH = "dc47c9b1270a4a25a60bab7969e7632d";
+    public static String EMAIL = "support@jitsi.org";
+    public static String HASH = "38f014e4b7dde0f64f8157d26a8c812e";
 
     /**
      * We store participant2's avatar src when running
@@ -231,7 +231,7 @@ public class AvatarTest
 
         String participant1AvatarXPath
             = "//span[@id='participant_" + participant1EndpointId
-                + "']//img[@class='userAvatar']";
+                + "']//img[contains(@class,'userAvatar')]";
 
         // Wait for the avatar element to be created
         TestUtils.waitForElementByXPath(
@@ -339,7 +339,7 @@ public class AvatarTest
         return getSrcByXPath(
             perspective,
             "//span[@id='participant_" + endpointId
-                + "']//img[@class='userAvatar']");
+                + "']//img[contains(@class,'userAvatar')]");
     }
 
     /**
@@ -351,7 +351,7 @@ public class AvatarTest
     {
         return getSrcByXPath(
             perspective,
-            "//span[@id='localVideoContainer']//img[@class='userAvatar']");
+            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]");
     }
 
     /**
@@ -363,6 +363,6 @@ public class AvatarTest
     {
         return getSrcByXPath(
             perspective,
-            "//div[@id='dominantSpeaker']/img[@id='dominantSpeakerAvatar']");
+            "//img[@id='dominantSpeakerAvatar']");
     }
 }

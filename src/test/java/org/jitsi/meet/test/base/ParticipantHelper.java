@@ -226,9 +226,15 @@ public abstract class ParticipantHelper<P extends Participant>
     {
         JitsiMeetUrl url = new JitsiMeetUrl();
 
-        url.setServerUrl(
-                config.getProperty(ParticipantOptions.JITSI_MEET_URL_PROP));
+        String serverUrl = config.getProperty(ParticipantOptions.JITSI_MEET_URL_PROP);
+        if (serverUrl == null)
+        {
+            throw new RuntimeException(
+                "No server URL configured. Set one with " +
+                        "-Djitsi-meet.instance.url=https://example.com");
+        }
 
+        url.setServerUrl(serverUrl);
         return url;
     }
 

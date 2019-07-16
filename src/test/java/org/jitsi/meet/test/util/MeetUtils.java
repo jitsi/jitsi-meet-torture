@@ -239,14 +239,26 @@ public class MeetUtils
      */
     public static void waitForPageToLoad(WebDriver driver)
     {
-        ExpectedCondition<Boolean> expectation
-            = d-> ((JavascriptExecutor) d)
-                .executeScript("return document.readyState")
-                .equals("complete");
+        String checkPageLoadScript = "" +
+            "var state = ''; " +
+            "try { state = document.readyState; } " +
+            "catch (e) { console.warn(e); } " +
+            "return state;";
+
         Wait<WebDriver> wait = new WebDriverWait(driver, 10);
         try
         {
-            wait.until(expectation);
+            wait.until(driverInstance -> {
+                try {
+                    return ((JavascriptExecutor) driverInstance)
+                        .executeScript(checkPageLoadScript)
+                        .equals("complete");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            });
         }
         catch(TimeoutException error)
         {

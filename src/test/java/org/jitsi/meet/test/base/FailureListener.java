@@ -18,7 +18,6 @@ package org.jitsi.meet.test.base;
 import org.apache.commons.io.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.logging.*;
 import org.testng.*;
 
 import java.io.*;
@@ -30,6 +29,13 @@ public class FailureListener
     implements ITestListener,
                IConfigurationListener
 {
+    /**
+     * A script to be executed on failure. The script will be executed
+     * and the test will cleanup and finish once the script finishes executing.
+     */
+    private static final String ON_FAILURE_SCRIPT
+        = "test.failure.script";
+
     /**
      * The folder where the logs will be saved.
      */
@@ -162,6 +168,20 @@ public class FailureListener
 
             TestUtils.print("TestFailure:");
             error.printStackTrace();
+        }
+
+        String cmd = System.getProperty(ON_FAILURE_SCRIPT);
+        if (cmd != null && cmd.trim().length() > 0)
+        {
+            try
+            {
+                Process p = Runtime.getRuntime().exec(cmd);
+                p.waitFor();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
         try

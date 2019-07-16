@@ -3,31 +3,34 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
 
 public class SettingsDialog
 {
     /**
-     * CSS selectorsto be used for finding WebElements within the
-     * {@link SettingsDialog}.
+     * Selectors to be used for finding WebElements within the
+     * {@link SettingsDialog}. While most are CSS selectors, some are XPath
+     * selectors, and prefixed as such, due to the extra functionality XPath
+     * provides.
      */
-    private final static String CANCEL_BUTTON = "#modal-dialog-cancel-button";
     private final static String DISPLAY_NAME_FIELD
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
-    private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me'] ~ div";
-    private final static String MORE_TAB
-        = ".modal-dialog-form [role='tab'][aria-posinset='3'";
-    private final static String OK_BUTTON = "#modal-dialog-ok-button";
-    private final static String PROFILE_TAB
-        = ".modal-dialog-form [role='tab'][aria-posinset='2'";
+    private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me']";
+    private final static String MORE_TAB_CONTENT = ".more-tab";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
+    private final static String SETTINGS_DIALOG_CONTENT = ".settings-pane";
     private final static String START_AUDIO_MUTED_CHECKBOX
-        = "[name='start-audio-muted'] ~ div";
+        = "[name='start-audio-muted']";
     private final static String START_VIDEO_MUTED_CHECKBOX
-        = "[name='start-video-muted'] ~ div";
-    
+        = "[name='start-video-muted']";
+    private final static String X_PATH_MORE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
+    private final static String X_PATH_PROFILE_TAB
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='Profile']";
+
     /**
      * The participant.
      */
@@ -48,9 +51,7 @@ public class SettingsDialog
      */
     public void close()
     {
-        participant.getDriver()
-            .findElement(By.cssSelector(CANCEL_BUTTON))
-            .click();
+        ModalDialogHelper.clickCancelButton(participant.getDriver());
     }
 
     /**
@@ -104,7 +105,12 @@ public class SettingsDialog
      */
     public void openMoreTab()
     {
-        openTab(MORE_TAB);
+        openTab(X_PATH_MORE_TAB);
+
+        TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(MORE_TAB_CONTENT),
+            5);
     }
 
     /**
@@ -112,7 +118,7 @@ public class SettingsDialog
      */
     public void openProfileTab()
     {
-       openTab(PROFILE_TAB);
+       openTab(X_PATH_PROFILE_TAB);
     }
 
     /**
@@ -159,9 +165,7 @@ public class SettingsDialog
      */
     public void submit()
     {
-        participant.getDriver()
-            .findElement(By.cssSelector(OK_BUTTON))
-            .click();
+        ModalDialogHelper.clickOKButton(participant.getDriver());
     }
 
     /**
@@ -173,15 +177,26 @@ public class SettingsDialog
             participant.getDriver(),
             By.cssSelector(SETTINGS_DIALOG),
             5);
+
+        TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(SETTINGS_DIALOG_CONTENT),
+            5);
     }
 
     /**
      * Displays a specific tab in the settings dialog.
      */
-    private void openTab(String cssSelectorForTab)
+    private void openTab(String xPathSelectorForTab)
     {
         WebDriver driver = participant.getDriver();
-        driver.findElement(By.cssSelector(cssSelectorForTab)).click();
+
+        TestUtils.waitForElementBy(driver, By.xpath(xPathSelectorForTab), 5);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(
+            By.xpath(xPathSelectorForTab)));
+
+        element.click();
     }
 
     /**
@@ -190,7 +205,9 @@ public class SettingsDialog
     private void setCheckbox(String cssSelector, boolean check)
     {
         WebDriver driver = participant.getDriver();
+        TestUtils.waitForElementBy(driver, By.cssSelector(cssSelector), 5);
         WebElement checkbox = driver.findElement(By.cssSelector(cssSelector));
+
         boolean isChecked = checkbox.isSelected();
 
         if (check != isChecked) {

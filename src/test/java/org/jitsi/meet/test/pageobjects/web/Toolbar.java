@@ -43,8 +43,9 @@ public class Toolbar {
     private final static String RECORD = "Toggle recording";
     private final static String SETTINGS = "Toggle settings";
     private final static String SHARE_VIDEO = "Toggle Youtube video sharing";
+    private final static String TILE_VIEW_BUTTON = "Toggle tile view";
     private final static String VIDEO_MUTE = "Toggle mute video";
-    private final static String VIDEO_QUALITY = "Manage call quality";
+    private final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -200,6 +201,14 @@ public class Toolbar {
     public void clickSharedVideoButton()
     {
         clickButtonInOverflowMenu(SHARE_VIDEO);
+    }
+
+    /**
+     * Clicks on the tile view button which enables or disables tile layout.
+     */
+    public void clickTileViewButton()
+    {
+        clickButton(TILE_VIEW_BUTTON);
     }
 
     /**

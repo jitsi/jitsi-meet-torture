@@ -29,11 +29,11 @@ Note that `SetupConference` will always be run as the first test, and `DisposeCo
  - ``appium``
 ### Start tests
 - pass settings as params
-  * mobile.participant (android or ios)
-  * mobile.caps.deviceName
-  * mobile.caps.app (path to apk or ipa file of jitsi-meet to test)
+  * mobile.participant (mobile.[android|ios])
+  * mobile.deviceName
+  * mobile.app (path to apk or ipa file of jitsi-meet to test)
 - start tests
-``mvn test -Dmobile.participant=android -Dmobile.caps.deviceName=Android -Dmobile.caps.app=../path-to-apk-file.apk``
+``mvn test -Dmobile.participant=mobile.android -Dmobile.deviceName=your_device_name -Dmobile.app=absolute/path/to/app.apk -Djitsi-meet.instance.url="https://beta.meet.jit.si" -Phybrid -Dmobile.android.reinstallApp=true``
 
 ### Package mobile tests
 ``mvn package -Dmobile.participant=android ... -Pmobile`` 

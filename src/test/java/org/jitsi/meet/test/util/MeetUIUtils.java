@@ -437,15 +437,13 @@ public class MeetUIUtils
             id = "localVideoContainer";
         }
 
-
-        String icon = isVideo
-            ? TestUtils.getXPathStringForClassName("//span", "videoMuted")
-                + "/i[@class='icon-camera-disabled']"
-            : TestUtils.getXPathStringForClassName("//span", "audioMuted")
-                + "/i[@class='icon-mic-disabled']";
-
         String mutedIconXPath
-            = "//span[@id='" + id +"']" + icon;
+            = "//span[@id='%s']//span[contains(@class, '%sMuted')]"
+                + "/i[@class='icon-%s-disabled']";
+
+        mutedIconXPath = isVideo ?
+            String.format(mutedIconXPath, id, "video", "camera")
+            : String.format(mutedIconXPath, id, "audio", "mic");
 
         try
         {
@@ -586,7 +584,7 @@ public class MeetUIUtils
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='participant_" + endpointId + "']" +
-                    "//img[@class='userAvatar']",
+                    "//img[contains(@class,'userAvatar')]",
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -657,7 +655,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForNotDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
             5);
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -673,7 +671,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[@class='userAvatar']",
+            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -1074,5 +1072,30 @@ public class MeetUIUtils
                 true,
                 "");
         }
+    }
+
+    /**
+     * Checks whether a participant is viewing the conference in tile view.
+     *
+     * @param participant the <tt>WebParticipant</tt> of the participant for
+     *                    whom we're check is in tile view.
+     * @param isDisplayed true if the expectation is tile view is to be visible.
+     */
+    public static void waitForTileViewDisplay(
+        WebParticipant participant,
+        boolean isDisplayed)
+    {
+        TestUtils.waitForCondition(
+            participant.getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> {
+                WebDriver driver = participant.getDriver();
+                WebElement appRoot
+                    = driver.findElement(By.id("videoconference_page"));
+                boolean currentDisplay
+                    = appRoot.getAttribute("class").contains("tile-view");
+
+                return currentDisplay == isDisplayed;
+            });
     }
 }

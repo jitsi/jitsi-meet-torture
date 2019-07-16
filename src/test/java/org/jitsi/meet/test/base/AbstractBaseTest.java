@@ -266,6 +266,9 @@ public abstract class AbstractBaseTest<P extends Participant>
                     config.getProperty(TESTS_TO_EXCLUDE_PNAME));
                 testsToInclude = getStringTokens(
                     config.getProperty(TESTS_TO_INCLUDE_PNAME));
+                print("testsToRun=" + testsToRun);
+                print("testsToExclude=" + testsToExclude);
+                print("testsToInclude=" + testsToInclude);
             }
         }
 
