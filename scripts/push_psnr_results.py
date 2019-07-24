@@ -21,31 +21,36 @@
 # jenkins build, so if run elsewhere the caller should make sure those variables
 # are defined.
 # Usage example:
-# ./push_psnr_results.py ./psnr.out http://my.dashboard.service/psnrPushEndpoint
+# ./push_psnr_results.py ./psnr.out jvb_1.0 http://my.dashboard.service/psnrPushEndpoint
 
 import os
 import json
 import pprint
 import requests
 import sys
+import datetime
 
 if len(sys.argv) < 2:
-    print("Usage: %s <psnr_output_file_path> <dashboard_service_url> \n" % (sys.argv[0]))
+    print("Usage: %s <psnr_output_file_path> <project_name> <dashboard_service_url> \n" % (sys.argv[0]))
     sys.exit(1)
 
 psnr_output_file_path = sys.argv[1]
-dashboard_service_url = sys.argv[2]
+project_name = sys.argv[2]
+dashboard_service_url = sys.argv[3]
 jenkins_build_number = os.environ["BUILD_NUMBER"]
 jenkins_build_url = os.environ["BUILD_URL"]
+build_date = str(datetime.datetime.now())
 
 with open(psnr_output_file_path, "r") as f:
     json_data = json.load(f)
 
 json_data["buildNum"] = jenkins_build_number
 json_data["buildUrl"] = jenkins_build_number
+json_data["buildDate"] = build_date
+json_data["projectName"] = project_name
 
-print("got psnr result data jenkins job %s, build number %s:\n%s\n"
-        % (jenkins_build_url, jenkins_build_number, pprint.pformat(json_data, indent=2)))
+print("got psnr result data jenkins job %s, build number %s, project name %s:\n%s\n"
+        % (jenkins_build_url, jenkins_build_number, project_name, pprint.pformat(json_data, indent=2)))
 
 r = requests.post(dashboard_service_url, json=json_data)
 if r.status_code != requests.codes.ok:
