@@ -35,7 +35,8 @@ public class MalleusJitsificus
      */
     private static final String INPUT_VIDEO_FILE
         = "resources/FourPeople_1280x720_60.y4m";
-
+    private static final String INPUT_AUDIO_FILE
+        = "resources/fakeAudioStream.wav";
     public static final String CONFERENCES_PNAME
         = "org.jitsi.malleus.conferences";
     public static final String PARTICIPANTS_PNAME
@@ -48,6 +49,12 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.duration";
     public static final String ROOM_NAME_PREFIX_PNAME
         = "org.jitsi.malleus.room_name_prefix";
+    public static final String INTERVAL
+        = "org.jitsi.malleus.interval";
+    public static final String FAKE_AUDIO
+        = "org.jitsi.malleus.fake_audio";
+    public static final String FAKE_VIDEO
+        = "org.jitsi.malleus.fake_video";
 
 
     @DataProvider(name = "dp", parallel = true)
@@ -56,6 +63,11 @@ public class MalleusJitsificus
         int numConferences = Integer.valueOf(System.getProperty(CONFERENCES_PNAME));
         int numParticipants = Integer.valueOf(System.getProperty(PARTICIPANTS_PNAME));
         String numSendersStr = System.getProperty(SENDERS_PNAME);
+        String fakeAudio = System.getProperty(FAKE_AUDIO);
+        String fakeVideo = System.getProperty(FAKE_VIDEO);
+        int interval = 0;
+        if (System.getProperty(INTERVAL) != null && !System.getProperty(INTERVAL).isEmpty())
+            interval = Integer.valueOf(System.getProperty(INTERVAL));
         int numSenders = numSendersStr == null
             ? numParticipants
             : Integer.valueOf(numSendersStr);
@@ -83,6 +95,9 @@ public class MalleusJitsificus
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
+        print("fake_audio=" + fakeAudio);
+		print("fake_video=" + fakeVideo);
+        print("interval=" + interval);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -96,7 +111,7 @@ public class MalleusJitsificus
                 .appendConfig("config.disable1On1Mode=false")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders};
+            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, fakeAudio, fakeVideo, interval};
         }
 
         return ret;
@@ -104,7 +119,7 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders)
+        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders, String fakeAudio, String fakeVideo, int interval)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
@@ -116,8 +131,11 @@ public class MalleusJitsificus
                     i,
                     url,
                     waitTime,
-                    i >= numSenders /* no video */);
+                    i >= numSenders /* no video */,
+                    fakeAudio,
+                    fakeVideo);
         }
+        Thread.sleep(interval);
 
         for (Thread t : runThreads)
         {
@@ -131,7 +149,9 @@ public class MalleusJitsificus
     private Thread runAsync(int i,
                             JitsiMeetUrl url,
                             long waitTime,
-                            boolean muteVideo)
+                            boolean muteVideo,
+                            String fakeAudio,
+                            String fakeVideo)
     {
         JitsiMeetUrl _url = url.copy();
 
@@ -139,7 +159,8 @@ public class MalleusJitsificus
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
-                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+                    .setFakeStreamVideoFile(fakeVideo != null && !fakeVideo.isEmpty() ? fakeVideo : INPUT_VIDEO_FILE)
+                    .setFakeStreamAudioFile(fakeAudio != null && !fakeAudio.isEmpty() ? fakeAudio : INPUT_AUDIO_FILE);
 
             WebParticipant participant
                 = participants
