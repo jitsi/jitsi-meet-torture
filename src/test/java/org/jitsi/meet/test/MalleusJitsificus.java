@@ -183,4 +183,13 @@ public class MalleusJitsificus
     {
         System.err.println(s);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean skipTestByDefault()
+    {
+        // Skip by default.
+        return true;
+    }
 }

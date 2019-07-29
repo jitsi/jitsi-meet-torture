@@ -246,14 +246,11 @@ public abstract class AbstractBaseTest<P extends Participant>
     }
 
     /**
-     * Checks whether the current test need to be skiped and throw SkipException
-     * if this is true.
+     * Checks whether the current test needs to be skipped.
      *
      * @param config - The torture tests config.
-     * @throws SkipException thrown when test execution needs to be skipped
      */
     private boolean checkForSkip(Properties config)
-        throws SkipException
     {
         // protect static members, initialize them once
         synchronized (TESTS_TO_RUN_PNAME)
