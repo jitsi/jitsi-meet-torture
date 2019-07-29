@@ -53,6 +53,13 @@ public class MalleusJitsificus
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
     {
+        // If the tests is not in the list of tests to be executed,
+        // skip executing the DataProvider.
+        if (isSkipped())
+        {
+            return new Object[0][0];
+        }
+
         int numConferences = Integer.valueOf(System.getProperty(CONFERENCES_PNAME));
         int numParticipants = Integer.valueOf(System.getProperty(PARTICIPANTS_PNAME));
         String numSendersStr = System.getProperty(SENDERS_PNAME);
