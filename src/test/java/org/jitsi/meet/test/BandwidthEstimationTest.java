@@ -447,6 +447,13 @@ public class BandwidthEstimationTest
     @DataProvider(name = "dp")
     public Object[][] createData()
     {
+        // If the tests is not in the list of tests to be executed,
+        // skip executing the DataProvider.
+        if (isSkipped())
+        {
+            return new Object[0][0];
+        }
+
         // These are bitrate,duration pairs. The units are important and are
         // defined in TC(8). The test duration should be in seconds.
         String[] schedule1 = { "100mbit,90" };
