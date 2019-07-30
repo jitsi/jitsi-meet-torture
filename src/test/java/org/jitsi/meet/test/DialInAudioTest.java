@@ -30,6 +30,7 @@ import org.testng.annotations.*;
 import java.net.*;
 import java.text.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
 
 /**
@@ -114,6 +115,7 @@ public class DialInAudioTest
         dialInPin = dialInPin.replaceAll(" ", "");
 
         assertTrue(dialInPin.length() > 1);
+        print("Dial-in pin retrieved:" + dialInPin);
 
         infoDialog.close();
     }
@@ -156,6 +158,10 @@ public class DialInAudioTest
                 if (response.getStatusLine().getStatusCode() != 200)
                 {
                     fail("REST returned error:" + response.getStatusLine());
+                }
+                else
+                {
+                    print("Rest api returned:" + response.getStatusLine());
                 }
 
                 HttpEntity entity = response.getEntity();
