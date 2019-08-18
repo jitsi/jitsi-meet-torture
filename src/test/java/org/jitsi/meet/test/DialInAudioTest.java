@@ -214,6 +214,8 @@ public class DialInAudioTest
             if (participant != null)
             {
                 participant.getRemoteParticipants().get(0).kick();
+
+                participant.waitForParticipants(0);
             }
         }
         catch(Exception e)
