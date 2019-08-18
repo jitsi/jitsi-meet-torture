@@ -401,7 +401,7 @@ public class WebParticipant extends Participant<WebDriver>
         waitForCondition(
             () -> (Boolean) executeScript(
                 "return APP.conference"
-                    + ".listMembers().length >= " + n + ";"),
+                    + ".listMembers().length === " + n + ";"),
                 15,
                 "waitForParticipants:" + n);
     }
