@@ -303,7 +303,7 @@ public class SharedVideoTest
 
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return c.player.setVolume(" + volumeToSet + ");");
+                + "c.player.setVolume(" + volumeToSet + ");");
 
         // now check for volume on both sides
         String checkVolumeScript
@@ -329,7 +329,7 @@ public class SharedVideoTest
         WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return c.player.mute();");
+                + "c.player.mute();");
         // now check for volume on both sides
         TestUtils.waitForBoolean(
             participant1.getDriver(),
