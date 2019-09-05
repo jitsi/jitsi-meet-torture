@@ -58,7 +58,7 @@ public class Toolbar {
      * if desktop sharing is active or not active.
      */
     private final static String DESKTOP_ICON_XPATH
-        = "//i[contains(@class, 'icon-share-desktop')]";
+        = "//*[local-name() = 'svg' and @id = 'share-desktop']";
 
     /**
      * The participant.

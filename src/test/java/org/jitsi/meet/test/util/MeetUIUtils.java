@@ -439,7 +439,7 @@ public class MeetUIUtils
 
         String mutedIconXPath
             = "//span[@id='%s']//span[contains(@class, '%sMuted')]"
-                + "/i[@class='icon-%s-disabled']";
+                + "//*[local-name() = 'svg' and @id = '%s-disabled']";
 
         mutedIconXPath = isVideo ?
             String.format(mutedIconXPath, id, "video", "camera")
