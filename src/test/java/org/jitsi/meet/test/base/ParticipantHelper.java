@@ -145,6 +145,14 @@ public abstract class ParticipantHelper<P extends Participant>
             targetOptions.setName(configPrefix);
         }
 
+        // Provide some default name if wasn't specified neither in
+        // the arguments nor in the config.
+        if (StringUtils.isBlank(targetOptions.getName()))
+        {
+            targetOptions.setName("web.participant"
+                + (new Random().nextInt() & Integer.MAX_VALUE));
+        }
+
         P participant = participantFactory.createParticipant(targetOptions);
 
         participants.add(participant);
