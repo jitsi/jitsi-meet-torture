@@ -117,11 +117,10 @@ public class MalleusJitsificus
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
 
-        for(int i = 0; i < numberOfParticipants; i++)
+        for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
                 = runAsync(
-                    i,
                     url,
                     waitTime,
                     i >= numSenders /* no video */);
@@ -136,8 +135,7 @@ public class MalleusJitsificus
         }
     }
 
-    private Thread runAsync(int i,
-                            JitsiMeetUrl url,
+    private Thread runAsync(JitsiMeetUrl url,
                             long waitTime,
                             boolean muteVideo)
     {
@@ -149,17 +147,12 @@ public class MalleusJitsificus
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
-            WebParticipant participant
-                = participants
-                    .createParticipant("web.participant" + (i + 1), ops);
-
-
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
             }
 
-            participant.joinConference(_url);
+            WebParticipant participant = joinNextParticipant(_url, ops);
 
             try
             {

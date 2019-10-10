@@ -289,11 +289,11 @@ public class WebTestBase
             if (index != size)
             {
                 throw new IllegalArgumentException(
-                    String.format(
-                        "New participant would have been inserted at different "
-                            + "index than expected. Index: %d, size %d.",
-                        index,
-                        size));
+                        String.format(
+                                "New participant would have been inserted at different "
+                                        + "index than expected. Index: %d, size %d.",
+                                index,
+                                size));
             }
 
             String configPrefix = "web.participant" + (index + 1);
@@ -304,7 +304,7 @@ public class WebTestBase
             // useful when checking crashes or failures in node logs
             p.executeScript(
                     "console.log('--- Will start test:"
-                        + getClass().getSimpleName() + "')");
+                            + getClass().getSimpleName() + "')");
         }
 
         if (meetURL == null)
@@ -360,6 +360,30 @@ public class WebTestBase
     public WebParticipant joinThirdParticipant()
     {
         return joinParticipantAndWait(2, null, null);
+    }
+
+    /**
+     * Joins the "next" participant. Creating a participant and joining a
+     * conference takes significant time. This method can be run in parallel
+     * in order to create multiple participants as quickly as possible. The new
+     * participant will be inserted last in the participant list.
+     *
+     * Note that setting a configuration prefix for the created participant is
+     * currently not supported. If that becomes necessary in the future, a
+     * parameter can be added to this method call hierarchy.
+     *
+     * @param jitsiMeetUrlmeet a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
+     * @param participantOptions the options to be used when creating the
+     * participant.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinNextParticipant(
+        JitsiMeetUrl jitsiMeetUrlmeet,
+        ParticipantOptions participantOptions)
+    {
+        return joinParticipantAndWait(-1, jitsiMeetUrlmeet, participantOptions);
     }
 
     /**
