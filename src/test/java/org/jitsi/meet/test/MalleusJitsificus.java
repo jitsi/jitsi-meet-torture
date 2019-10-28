@@ -165,6 +165,7 @@ public class MalleusJitsificus
             finally
             {
                 participant.hangUp();
+                closeParticipant(participant);
             }
         });
 
