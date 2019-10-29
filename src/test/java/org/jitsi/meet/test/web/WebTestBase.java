@@ -412,37 +412,38 @@ public class WebTestBase
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)
     {
-        WebParticipant participant = joinParticipant(index, meetURL, options);
+        // FIXME: Try up to 10 times to rejoin the call. Remove this when
+        //  chrome changes and we stop seeing the warning in the tests logs
+        for (int i = 0; i < 10; i++)
+        {
+            WebParticipant participant = joinParticipant(index, meetURL, options);
 
-        // FIXME: remove this when chrome changes and we stop seeing the warning
-        // in the tests logs
-        try
-        {
-            participant.waitToJoinMUC(10);
-        }
-        catch (TimeoutException ex)
-        {
-            // workaround is only for chrome
-            if (!participant.getType().isChrome())
+            try
             {
-                throw ex;
+                participant.waitToJoinMUC(10);
+                return participant;
             }
+            catch (TimeoutException ex)
+            {
+                // workaround is only for chrome
+                if (!participant.getType().isChrome())
+                {
+                    throw ex;
+                }
 
-            Logger.getGlobal().log(
-                Level.WARNING,
-                "Participant did not join, retrying: " + participant.getName());
+                Logger.getGlobal().log(
+                    Level.WARNING,
+                    String.format("Participant %s failed to join the muc (%d). I'll retry, but are you sure you aren't reaching the max participant limit?", participant.getName(), i));
 
-            // Participant did not join, let's give it another try.
-            // This workarounds a problem where we see chrome waiting on media
-            // permissions screen
-            // we close the driver in, case of browser stuck on grid, to move
-            // to new node
-            closeParticipant(participant);
-
-            participant = joinParticipant(index, meetURL, options);
-            participant.waitToJoinMUC();
+                // Participant did not join, let's give it another try.
+                // This workarounds a problem where we see chrome waiting on media
+                // permissions screen
+                // we close the driver in, case of browser stuck on grid, to move
+                // to new node
+                closeParticipant(participant);
+            }
         }
 
-        return participant;
+        throw new RuntimeException("Chrome is stuck.");
     }
 }
