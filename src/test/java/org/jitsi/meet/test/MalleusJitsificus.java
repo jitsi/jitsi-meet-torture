@@ -21,6 +21,7 @@ import org.jitsi.meet.test.web.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.net.*;
 import java.util.*;
 
 /**
@@ -95,15 +96,13 @@ public class MalleusJitsificus
         for (int i = 0; i < numConferences; i++)
         {
             String roomName = roomNamePrefix + i;
-            JitsiMeetUrl url
-                = participants.getJitsiMeetUrl()
-                .setRoomName(roomName)
-                // XXX I don't remember if/why these are needed.
-                .appendConfig("config.p2p.useStunTurn=true")
-                .appendConfig("config.disable1On1Mode=false")
-                .appendConfig("config.testing.noAutoPlayVideo=true")
+            JitsiMeetUrl url = new JitsiMeetUrl();
 
-                .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
+            url
+                .setServerUrl("https://george-perf.jitsi.net/static/load-test");
+            url.setRoomName("load-test-participant.html")
+                .appendConfig("roomName="+ URLEncoder.encode("\"" + roomName + "\""));
+
             ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders};
         }
 
@@ -147,9 +146,15 @@ public class MalleusJitsificus
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
-            if (muteVideo)
+            if (!muteVideo)
             {
-                _url.appendConfig("config.startWithVideoMuted=true");
+                _url.appendConfig("localVideo=true");
+                _url.appendConfig("localAudio=true");
+                ops.setApplicationName("ljmSender");
+            }
+            else
+            {
+                ops.setApplicationName("ljmReceiver");
             }
 
             WebParticipant participant = joinNextParticipant(_url, ops);

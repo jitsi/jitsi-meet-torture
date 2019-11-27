@@ -374,4 +374,17 @@ public class WebParticipantOptions
     {
         return getProperty(PROP_CHROME_EXTENSION_ID);
     }
+
+    public void setApplicationName(String applicationName)
+    {
+        this.applicationName = applicationName;
+    }
+
+    private String applicationName;
+
+    public String getApplicationName()
+    {
+        return applicationName;
+    }
+
 }

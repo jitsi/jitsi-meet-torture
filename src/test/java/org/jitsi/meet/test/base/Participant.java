@@ -134,7 +134,7 @@ public abstract class Participant<T extends WebDriver>
     {
         meetURL = Objects.requireNonNull(meetURL, "meetURL");
 
-        meetURL.appendConfig(defaultConfig, false /* do not override */);
+        // meetURL.appendConfig(defaultConfig, false /* do not override */);
 
         TestUtils.print(getName() + " is opening URL: " + meetURL);
 

@@ -428,7 +428,7 @@ public class WebTestBase
 
             try
             {
-                participant.waitToJoinMUC(10);
+                // participant.waitToJoinMUC(10);
                 return participant;
             }
             catch (TimeoutException ex)
