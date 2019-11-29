@@ -61,6 +61,7 @@ public class MalleusJitsificus
             return new Object[0][0];
         }
 
+        String serverUrl = System.getProperty(ParticipantOptions.JITSI_MEET_URL_PROP);
         int numConferences = Integer.valueOf(System.getProperty(CONFERENCES_PNAME));
         int numParticipants = Integer.valueOf(System.getProperty(PARTICIPANTS_PNAME));
         String numSendersStr = System.getProperty(SENDERS_PNAME);
@@ -96,12 +97,9 @@ public class MalleusJitsificus
         for (int i = 0; i < numConferences; i++)
         {
             String roomName = roomNamePrefix + i;
-            JitsiMeetUrl url = new JitsiMeetUrl();
-
-            url
-                .setServerUrl("https://george-perf.jitsi.net/static/load-test");
-            url.setRoomName("load-test-participant.html")
-                .appendConfig("roomName="+ URLEncoder.encode("\"" + roomName + "\""));
+            String url = serverUrl
+                + "/static/load-test/load-test-participant.html#roomName="
+                + URLEncoder.encode("\"" + roomName + "\"");
 
             ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders};
         }
@@ -111,7 +109,7 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders)
+        String url, int numberOfParticipants, long waitTime, int numSenders)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
@@ -134,30 +132,29 @@ public class MalleusJitsificus
         }
     }
 
-    private Thread runAsync(JitsiMeetUrl url,
+    private Thread runAsync(String url,
                             long waitTime,
                             boolean muteVideo)
     {
-        JitsiMeetUrl _url = url.copy();
-
         Thread joinThread = new Thread(() -> {
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
+            WebParticipant participant;
             if (!muteVideo)
             {
-                _url.appendConfig("localVideo=true");
-                _url.appendConfig("localAudio=true");
                 ops.setApplicationName("ljmSender");
+                participant = new WebParticipantFactory().createParticipant(ops);
+                participant.getDriver().get(url + "&localVideo=true&localAudio=true");
             }
             else
             {
                 ops.setApplicationName("ljmReceiver");
+                participant = new WebParticipantFactory().createParticipant(ops);
+                participant.getDriver().get(url);
             }
-
-            WebParticipant participant = joinNextParticipant(_url, ops);
 
             try
             {
@@ -169,8 +166,7 @@ public class MalleusJitsificus
             }
             finally
             {
-                participant.hangUp();
-                closeParticipant(participant);
+                participant.closeSafely();
             }
         });
 

@@ -375,13 +375,24 @@ public class WebParticipantOptions
         return getProperty(PROP_CHROME_EXTENSION_ID);
     }
 
+    /**
+     * Sets the app name capability that the node must have.
+     *
+     * @param applicationName the app name capability that the node must have.
+     */
     public void setApplicationName(String applicationName)
     {
         this.applicationName = applicationName;
     }
 
+    /**
+     * The app name capability that the node must have.
+     */
     private String applicationName;
 
+    /**
+     * @return the app name capability that the node must have.
+     */
     public String getApplicationName()
     {
         return applicationName;
