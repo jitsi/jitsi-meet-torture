@@ -41,6 +41,8 @@ public class WebParticipantOptions
 
     private static final String PROP_BINARY = "binary";
 
+    private static final String PROP_APP_NAME = "applicationName";
+
     /**
      * The id of the chrome extension that will be loaded
      * on opening participant driver.
@@ -284,6 +286,17 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets the app name capability that the node must have.
+     *
+     * @param applicationName the app name capability that the node must have.
+     */
+    public WebParticipantOptions setApplicationName(String applicationName)
+    {
+        setProperty(PROP_APP_NAME, applicationName);
+        return this;
+    }
+
+    /**
      * Returns version for the driver, if available.
      * @return version for the driver, if available.
      */
@@ -376,26 +389,11 @@ public class WebParticipantOptions
     }
 
     /**
-     * Sets the app name capability that the node must have.
-     *
-     * @param applicationName the app name capability that the node must have.
-     */
-    public void setApplicationName(String applicationName)
-    {
-        this.applicationName = applicationName;
-    }
-
-    /**
-     * The app name capability that the node must have.
-     */
-    private String applicationName;
-
-    /**
      * @return the app name capability that the node must have.
      */
     public String getApplicationName()
     {
-        return applicationName;
+        return getProperty(PROP_APP_NAME);
     }
 
 }
