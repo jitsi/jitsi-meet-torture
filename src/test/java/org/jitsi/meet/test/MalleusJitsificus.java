@@ -16,13 +16,11 @@
 package org.jitsi.meet.test;
 
 import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
 import java.net.*;
-import java.util.*;
 
 /**
  * @author Damian Minkov
@@ -118,6 +116,7 @@ public class MalleusJitsificus
         {
             runThreads[i]
                 = runAsync(
+                    i,
                     url,
                     waitTime,
                     i >= numSenders /* no video */);
@@ -132,7 +131,8 @@ public class MalleusJitsificus
         }
     }
 
-    private Thread runAsync(String url,
+    private Thread runAsync(int i,
+                            String url,
                             long waitTime,
                             boolean muteVideo)
     {
@@ -146,13 +146,13 @@ public class MalleusJitsificus
             if (!muteVideo)
             {
                 ops.setApplicationName("ljmSender");
-                participant = new WebParticipantFactory().createParticipant(ops);
+                participant =  participants.createParticipant("web.participant" + (i + 1), ops);
                 participant.getDriver().get(url + "&localVideo=true&localAudio=true");
             }
             else
             {
                 ops.setApplicationName("ljmReceiver");
-                participant = new WebParticipantFactory().createParticipant(ops);
+                participant =  participants.createParticipant("web.participant" + (i + 1), ops);
                 participant.getDriver().get(url);
             }
 
