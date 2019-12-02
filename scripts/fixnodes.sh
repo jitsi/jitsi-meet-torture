@@ -1,5 +1,13 @@
 #!/bin/sh
 
+set -x
+GRID=$1
+if [ -z "$GRID" ]
+then
+  echo "Usage: $0 GRID_NAME" 1>&2
+  exit 1
+fi
+
 SSH="ssh -F $HOME/.ssh/config.d/jitsi64.config"
 
 fix_node() {
@@ -11,13 +19,7 @@ fix_node() {
   fi
 }
 
-if [ -z "$1" ]; then
-  GRID=perf
-  echo "Querying $region..." 1>&2
-  for node in `aws ec2 describe-instances --region 'us-west-2' --filters Name=tag:Environment,Values=prod Name=tag:grid-role,Values=node Name=tag:grid,Values=$GRID --query "Reservations[].Instances[][PrivateIpAddress]" --output text`; do
-    fix_node
-  done
-else
-  node=$1
+echo "Querying $region..." 1>&2
+for node in `aws ec2 describe-instances --region 'us-west-2' --filters Name=tag:Environment,Values=prod Name=tag:grid-role,Values=node Name=tag:grid,Values=$GRID --query "Reservations[].Instances[][PrivateIpAddress]" --output text`; do
   fix_node
-fi
+done
