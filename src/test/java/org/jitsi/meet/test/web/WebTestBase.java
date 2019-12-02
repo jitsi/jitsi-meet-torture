@@ -278,42 +278,34 @@ public class WebTestBase
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)
     {
-        WebParticipant p;
-        if (index > -1)
-        {
-            p = participants.get(index);
+        WebParticipant p = participants.get(index);
 
-            if (p == null)
+        if (p == null)
+        {
+            // There's an assumption that the participants are created
+            // starting from 0, 1, 2, so throw an Exception if they happen to be
+            // created in different order.
+            int size = participants.getAll().size();
+            if (index != size)
             {
-                // There's an assumption that the participants are created
-                // starting from 0, 1, 2, so throw an Exception if they happen to be
-                // created in different order.
-                int size = participants.getAll().size();
-                if (index != size)
-                {
-                    throw new IllegalArgumentException(
+                throw new IllegalArgumentException(
                         String.format(
-                            "New participant would have been inserted at different "
-                                + "index than expected. Index: %d, size %d.",
-                            index,
-                            size));
-                }
-
-                String configPrefix = "web.participant" + (index + 1);
-
-                p = participants.createParticipant(configPrefix, options);
+                                "New participant would have been inserted at different "
+                                        + "index than expected. Index: %d, size %d.",
+                                index,
+                                size));
             }
-        }
-        else
-        {
-            p = participants.createParticipant("", options);
-        }
 
-        // Adds a print in the console/selenium-node logs
-        // useful when checking crashes or failures in node logs
-        p.executeScript(
-            "console.log('--- Will start test:"
-                + getClass().getSimpleName() + "')");
+            String configPrefix = "web.participant" + (index + 1);
+
+            p = participants.createParticipant(configPrefix, options);
+
+            // Adds a print in the console/selenium-node logs
+            // useful when checking crashes or failures in node logs
+            p.executeScript(
+                    "console.log('--- Will start test:"
+                            + getClass().getSimpleName() + "')");
+        }
 
         if (meetURL == null)
         {
