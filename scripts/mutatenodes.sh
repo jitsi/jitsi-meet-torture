@@ -1,17 +1,32 @@
 #!/bin/bash
 
-GRID=$1
-if [ -z "$GRID" ]
-then
-  echo "Usage: $0 GRID_NAME NUM_SENDERS" 1>&2
-  exit 1
-fi
+SEND_APP_NAME='ljmSender'
+RECV_APP_NAME='ljmReceiver'
 
-NUM_SENDERS=$2
-if [ -z "$NUM_SENDERS" ]
-then
-  echo "Usage: $0 GRID_NAME NUM_SENDERS" 1>&2
+usage() {
+  echo 'Usage: $0 --grid-name=GRID_NAME --num-senders=NUM_SENDERS --send-node-max-sessions=SEND_NODE_MAX_SESSIONS --recv-node-max-sessions=RECV_NODE_MAX_SESSIONS' >&2
   exit 1
+}
+
+# new arg parsing code that includes default values for the different options.
+for arg in "$@"; do
+  optname=`echo $arg | cut -d= -f1`
+  optvalue=`echo $arg | cut -d= -f2`
+  case $optname in
+    --grid-name) GRID=$optvalue;;
+    --num-senders) NUM_SENDERS=$optvalue;;
+    --send-node-max-sessions) SEND_NODE_MAX_SESSIONS=$optvalue;;
+    --recv-node-max-sessions) RECV_NODE_MAX_SESSIONS=$optvalue;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+
+if [ -z "$GRID" -o -z "$NUM_SENDERS" -o -z "$SEND_NODE_MAX_SESSIONS" -o -z "$RECV_NODE_MAX_SESSIONS" ]
+then
+  usage
 fi
 
 if [ -z "$SSH" ]
@@ -29,22 +44,21 @@ mutate_node() {
   then
     return
   fi
-  # instance_type=$($SSH wget -O- http://169.254.169.254/latest/dynamic/instance-identity/document | jq .instanceType)
-  # app_name=${instance_type_to_app[instance_type]}
-  node_config=$(mktemp)
-  if [ $NUM_SENDERS -gt 0 ]
+
+  if [ $1 -gt 0 ]
   then
     # mutate the node into a sender.
-    max_instances=1
-    max_session=1
-    application_name='ljmSender'
-    NUM_SENDERS=$(echo "$NUM_SENDERS-1" | bc)
+    max_instances=$SEND_NODE_MAX_SESSIONS
+    max_session=$SEND_NODE_MAX_SESSIONS
+    application_name=$SEND_APP_NAME
   else
     # mutate the node into a receiver.
-    max_instances=20
-    max_session=20
-    application_name='ljmReceiver'
+    max_instances=$RECV_NODE_MAX_SESSIONS
+    max_session=$RECV_NODE_MAX_SESSIONS
+    application_name=$RECV_APP_NAME
   fi
+
+  node_config=$(mktemp)
   $SSH $node cat /opt/selenium_grid_extras/node_5555.json \
       | jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" > $node_config
 
@@ -55,5 +69,8 @@ mutate_node() {
 
 for node in `aws ec2 describe-instances --region 'us-west-2' --filters Name=tag:Environment,Values=prod Name=tag:grid-role,Values=node Name=tag:grid,Values=$GRID --query "Reservations[].Instances[][PrivateIpAddress]" --output text`
 do
-  mutate_node
+  mutate_node $NUM_SENDERS
+  NUM_SENDERS=$(echo "$NUM_SENDERS-1" | bc)
 done
+
+wait

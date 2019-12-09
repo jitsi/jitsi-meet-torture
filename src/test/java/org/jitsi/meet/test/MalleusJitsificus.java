@@ -25,6 +25,7 @@ import java.net.*;
 /**
  * @author Damian Minkov
  * @author Boris Grozev
+ * @author George Politis
  */
 public class MalleusJitsificus
     extends WebTestBase
