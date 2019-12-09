@@ -40,10 +40,6 @@ then
 fi
 
 mutate_node() {
-  if [ $node == "None" ]
-  then
-    return
-  fi
 
   if [ $1 -gt 0 ]
   then
@@ -59,18 +55,21 @@ mutate_node() {
   fi
 
   node_config=$(mktemp)
-  $SSH $node cat /opt/selenium_grid_extras/node_5555.json \
+  $SSH $2 cat /opt/selenium_grid_extras/node_5555.json \
       | jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" > $node_config
 
-  $SCP $node_config $node:node_5555.json
-  $SSH $node "sudo mv node_5555.json /opt/selenium_grid_extras/; sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json; sudo chmod 644 /opt/selenium_grid_extras/node_5555.json; sudo systemctl restart selenium-grid-extras-node"
+  $SCP $node_config $2:node_5555.json
+  $SSH $2 "sudo mv node_5555.json /opt/selenium_grid_extras/; sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json; sudo chmod 644 /opt/selenium_grid_extras/node_5555.json; sudo systemctl restart selenium-grid-extras-node"
   rm $node_config
 }
 
 for node in `aws ec2 describe-instances --region 'us-west-2' --filters Name=tag:Environment,Values=prod Name=tag:grid-role,Values=node Name=tag:grid,Values=$GRID --query "Reservations[].Instances[][PrivateIpAddress]" --output text`
 do
-  mutate_node $NUM_SENDERS
-  NUM_SENDERS=$(echo "$NUM_SENDERS-1" | bc)
+  if [ $node != 'None' ]
+  then
+    mutate_node $NUM_SENDERS $node
+    NUM_SENDERS=$(echo "$NUM_SENDERS-1" | bc)
+  fi
 done
 
 wait
