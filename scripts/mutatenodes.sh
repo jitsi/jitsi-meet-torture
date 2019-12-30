@@ -29,14 +29,19 @@ then
   usage
 fi
 
+if [ -z "$JITSI_SSH_CONFIG" ]
+then
+  JITSI_SSH_CONFIG="$HOME/.ssh/config.d/jitsi64.config"
+fi
+
 if [ -z "$SSH" ]
 then
-  SSH="ssh -F $HOME/.ssh/config.d/jitsi64.config"
+  SSH="ssh -F $JITSI_SSH_CONFIG"
 fi
 
 if [ -z "$SCP" ]
 then
-  SCP="scp -F $HOME/.ssh/config.d/jitsi64.config"
+  SCP="scp -F $JITSI_SSH_CONFIG"
 fi
 
 mutate_node() {

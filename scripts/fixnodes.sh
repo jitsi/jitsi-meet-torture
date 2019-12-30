@@ -7,7 +7,12 @@ then
   exit 1
 fi
 
-SSH="ssh -F $HOME/.ssh/config.d/jitsi64.config"
+if [ -z "$JITSI_SSH_CONFIG" ]
+then
+  JITSI_SSH_CONFIG="$HOME/.ssh/config.d/jitsi64.config"
+fi
+
+SSH="ssh -F $JITSI_SSH_CONFIG"
 
 fix_node() {
   if ! $SSH $1 unzip -l /tmp/webdriver/3.141.59.jar > /dev/null 2>&1; then
@@ -20,7 +25,10 @@ fix_node() {
 
 echo "Querying $region..." 1>&2
 for node in `aws ec2 describe-instances --region 'us-west-2' --filters Name=tag:Environment,Values=prod Name=tag:grid-role,Values=node Name=tag:grid,Values=$GRID --query "Reservations[].Instances[][PrivateIpAddress]" --output text`; do
-  fix_node $node
+  if [ $node != 'None' ]
+  then
+    fix_node $node
+  fi
 done
 
 wait
