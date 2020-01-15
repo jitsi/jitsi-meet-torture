@@ -89,4 +89,5 @@ mvn \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
 -Djitsi-meet.instance.url=$INSTANCE_URL \
 -Djitsi-meet.isRemote=true \
+-Dchrome.disable.nosanbox=true \
 test
