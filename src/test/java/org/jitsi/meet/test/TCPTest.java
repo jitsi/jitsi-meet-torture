@@ -47,6 +47,16 @@ public class TCPTest
     public static final String DISABLE_TCP_URL_FRAGMENT
         = "config.webrtcIceTcpDisable=true";
 
+    /**
+     * The test is disabled by default, because TCP is disabled by default in
+     * jitsi-meet.
+     */
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
+
     @Override
     public void setupClass()
     {
