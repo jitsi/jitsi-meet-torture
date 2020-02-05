@@ -51,7 +51,8 @@ public class IFrameAPITest
         + "\"callStatsID\":false,"
         + "\"alwaysVisibleToolbar\":true,"
         + "\"p2p.enabled\":false,"
-        + "\"disable1On1Mode\":true"
+        + "\"disable1On1Mode\":true,"
+        + "\"analytics.disabled\":true"
         + "}";
 
     @Test

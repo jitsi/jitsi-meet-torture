@@ -82,8 +82,8 @@ public class MeetUtils
     public static String getRtpStats(WebDriver driver, boolean useJVB)
     {
         String script = String.format(
-                "return JSON.stringify("
-                + "APP.conference._room.%s.peerconnection.stats)",
+                "return APP.conference._room ? JSON.stringify("
+                + "APP.conference._room.%s.peerconnection.stats) : null",
                 useJVB ? "jvbJingleSession" : "p2pJingleSession");
 
         return TestUtils.executeScriptAndReturnString(driver, script);

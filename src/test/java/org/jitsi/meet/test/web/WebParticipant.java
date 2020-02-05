@@ -591,7 +591,7 @@ public class WebParticipant extends Participant<WebDriver>
     {
         try
         {
-            return (List) executeScript("return APP.debugLogs.getLogs();");
+            return (List) executeScript("return APP.debugLogs ? APP.debugLogs.getLogs() : [];");
         }
         catch (RuntimeException t)
         {
