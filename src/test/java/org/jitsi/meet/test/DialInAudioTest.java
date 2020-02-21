@@ -74,6 +74,17 @@ public class DialInAudioTest
     }
 
     /**
+     * Checks whether dial-in is enabled.
+     *
+     * @param participant The participant to check.
+     * @return true if dial-in is enabled for this participant.
+     */
+    protected boolean isDialInEnabled(WebParticipant participant)
+    {
+        return MeetUtils.isDialInEnabled(participant.getDriver());
+    }
+
+    /**
      * Creates a web participant to enter a room and read the dial-in info.
      */
     @Test
@@ -100,7 +111,7 @@ public class DialInAudioTest
 
         WebParticipant participant = getParticipant1();
 
-        if (!MeetUtils.isDialInEnabled(participant.getDriver()))
+        if (!isDialInEnabled(participant))
         {
             throw new SkipException(
                 "No dial in configuration detected. Disabling test.");

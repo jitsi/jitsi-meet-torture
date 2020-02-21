@@ -15,6 +15,8 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.web.*;
+
 /**
  * A test that overrides DialInAudioTest so we do not depend
  * on external service for running the test.
@@ -37,6 +39,20 @@ public class FakeDialInAudioTest
 
         super.enterAndReadDialInPin();
     }
+
+    /**
+     * We always return that dial-in is enabled as we are faking normal
+     * and dial-in participant.
+     *
+     * @param participant The participant to check.
+     * @return true.
+     */
+    @Override
+    protected boolean isDialInEnabled(WebParticipant participant)
+    {
+        return true;
+    }
+
     @Override
     public void enterDialInParticipant()
     {
