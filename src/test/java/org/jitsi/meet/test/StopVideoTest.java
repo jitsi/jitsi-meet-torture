@@ -188,7 +188,6 @@ public class StopVideoTest
         TestUtils.waitMillis(500);
 
         ensureTwoParticipants();
-        WebDriver driver2 = getParticipant2().getDriver();
 
         getParticipant2().getFilmstrip()
             .assertVideoMuteIcon(getParticipant1(), true);

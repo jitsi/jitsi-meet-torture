@@ -51,7 +51,7 @@ public class DialInAudioTest
      * The url can contain {0}, to pass the conference pin.
      * For example: {"pin":"{0}"}, needs to be: %7B%22pin%22%3A%22{0}%22%7D
      */
-    private static final String DIAL_IN_PARTICIPANT_REST_URL
+    protected static final String DIAL_IN_PARTICIPANT_REST_URL
         = "dialIn.rest.url";
 
     private String dialInPin = null;

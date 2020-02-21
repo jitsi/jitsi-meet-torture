@@ -61,6 +61,11 @@
             <class name="org.jitsi.meet.test.EtherpadTest" />
         </classes>
     </test>
+    <test name="FakeDialInAudioTest">
+        <classes>
+            <class name="org.jitsi.meet.test.FakeDialInAudioTest" />
+        </classes>
+    </test>
     <test name="FilmstripOnlyTest">
         <classes>
             <class name="org.jitsi.meet.test.FilmstripOnlyTest" />
