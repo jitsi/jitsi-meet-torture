@@ -85,6 +85,30 @@ public class DialInAudioTest
     }
 
     /**
+     * Extracts the conference pin from the info dialog.
+     * @param participant The participant which info dialog to use.
+     * @return the retrieved pin with no spaces.
+     */
+    protected String retrievePin(WebParticipant participant)
+    {
+        InfoDialog infoDialog = participant.getInfoDialog();
+        try
+        {
+            infoDialog.open();
+
+            // get the dial-in pin
+            String dialInPin = infoDialog.getPinNumber();
+
+            // removes any blanks
+            return dialInPin.replaceAll(" ", "");
+        }
+        finally
+        {
+            infoDialog.close();
+        }
+    }
+
+    /**
      * Creates a web participant to enter a room and read the dial-in info.
      */
     @Test
@@ -116,19 +140,12 @@ public class DialInAudioTest
             throw new SkipException(
                 "No dial in configuration detected. Disabling test.");
         }
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
 
         // get the dial-in pin
-        dialInPin = infoDialog.getPinNumber();
-
-        // removes any blanks
-        dialInPin = dialInPin.replaceAll(" ", "");
+        dialInPin = retrievePin(participant);
 
         assertTrue(dialInPin.length() > 1);
         print("Dial-in pin retrieved:" + dialInPin);
-
-        infoDialog.close();
     }
 
     /**

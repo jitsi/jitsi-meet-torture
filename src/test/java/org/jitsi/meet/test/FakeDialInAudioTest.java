@@ -53,6 +53,18 @@ public class FakeDialInAudioTest
         return true;
     }
 
+    /**
+     * Returns a dummy pin.
+     *
+     * @param participant The participant which info dialog to use.
+     * @return
+     */
+    @Override
+    protected String retrievePin(WebParticipant participant)
+    {
+        return "2131271746";
+    }
+
     @Override
     public void enterDialInParticipant()
     {
