@@ -51,7 +51,7 @@ public class DialInAudioTest
      * The url can contain {0}, to pass the conference pin.
      * For example: {"pin":"{0}"}, needs to be: %7B%22pin%22%3A%22{0}%22%7D
      */
-    private static final String DIAL_IN_PARTICIPANT_REST_URL
+    protected static final String DIAL_IN_PARTICIPANT_REST_URL
         = "dialIn.rest.url";
 
     private String dialInPin = null;
@@ -71,6 +71,41 @@ public class DialInAudioTest
     public boolean skipTestByDefault()
     {
         return true;
+    }
+
+    /**
+     * Checks whether dial-in is enabled.
+     *
+     * @param participant The participant to check.
+     * @return true if dial-in is enabled for this participant.
+     */
+    protected boolean isDialInEnabled(WebParticipant participant)
+    {
+        return MeetUtils.isDialInEnabled(participant.getDriver());
+    }
+
+    /**
+     * Extracts the conference pin from the info dialog.
+     * @param participant The participant which info dialog to use.
+     * @return the retrieved pin with no spaces.
+     */
+    protected String retrievePin(WebParticipant participant)
+    {
+        InfoDialog infoDialog = participant.getInfoDialog();
+        try
+        {
+            infoDialog.open();
+
+            // get the dial-in pin
+            String dialInPin = infoDialog.getPinNumber();
+
+            // removes any blanks
+            return dialInPin.replaceAll(" ", "");
+        }
+        finally
+        {
+            infoDialog.close();
+        }
     }
 
     /**
@@ -100,24 +135,17 @@ public class DialInAudioTest
 
         WebParticipant participant = getParticipant1();
 
-        if (!MeetUtils.isDialInEnabled(participant.getDriver()))
+        if (!isDialInEnabled(participant))
         {
             throw new SkipException(
                 "No dial in configuration detected. Disabling test.");
         }
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
 
         // get the dial-in pin
-        dialInPin = infoDialog.getPinNumber();
-
-        // removes any blanks
-        dialInPin = dialInPin.replaceAll(" ", "");
+        dialInPin = retrievePin(participant);
 
         assertTrue(dialInPin.length() > 1);
         print("Dial-in pin retrieved:" + dialInPin);
-
-        infoDialog.close();
     }
 
     /**
