@@ -10,13 +10,14 @@ case $1 in
         --conferences) CONFERENCES=$optvalue;;
         --participants) PARTICIPANTS=$optvalue;;
         --senders) SENDERS=$optvalue;;
+        --audio-senders) AUDIO_SENDERS=$optvalue;;
         --duration) DURATION=$optvalue;;
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
         *)
-          echo 'Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS]' >&2
+          echo 'Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS]' >&2
           exit 1
           ;;
       esac
@@ -32,6 +33,10 @@ case $1 in
 
     if [ -z "$SENDERS" ]; then
       SENDERS=$PARTICIPANTS
+    fi
+
+    if [ -z "$AUDIO_SENDERS" ]; then
+      AUDIO_SENDERS=$PARTICIPANTS
     fi
 
     if [ -z "$DURATION" ]; then
@@ -82,6 +87,7 @@ mvn \
 -Dorg.jitsi.malleus.conferences=$CONFERENCES \
 -Dorg.jitsi.malleus.participants=$PARTICIPANTS \
 -Dorg.jitsi.malleus.senders=$SENDERS \
+-Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \
 -Dorg.jitsi.malleus.duration=$DURATION \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \

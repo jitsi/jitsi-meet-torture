@@ -42,6 +42,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.participants";
     public static final String SENDERS_PNAME
         = "org.jitsi.malleus.senders";
+    public static final String AUDIO_SENDERS_PNAME
+            = "org.jitsi.malleus.audio_senders";
     public static final String ENABLE_P2P_PNAME
         = "org.jitsi.malleus.enable_p2p";
     public static final String DURATION_PNAME
@@ -68,6 +70,11 @@ public class MalleusJitsificus
         int numSenders = numSendersStr == null
             ? numParticipants
             : Integer.valueOf(numSendersStr);
+
+        String numAudioSendersStr = System.getProperty(AUDIO_SENDERS_PNAME);
+        int numAudioSenders = numAudioSendersStr == null
+                ? numParticipants
+                : Integer.valueOf(numAudioSendersStr);
 
         int timeoutMs = 1000 * Integer.valueOf(System.getProperty(DURATION_PNAME));
 
@@ -96,6 +103,7 @@ public class MalleusJitsificus
         print("conferences="+ numConferences);
         print("participants=" + numParticipants);
         print("senders=" + numSenders);
+        print("audio senders=" + numAudioSenders);
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
@@ -114,7 +122,7 @@ public class MalleusJitsificus
                 .appendConfig("config.testing.noAutoPlayVideo=true")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, regions};
+            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
         }
 
         return ret;
@@ -122,7 +130,7 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders, String[] regions)
+        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
@@ -134,6 +142,7 @@ public class MalleusJitsificus
                     url,
                     waitTime,
                     i >= numSenders /* no video */,
+                    i >= numAudioSenders /* no audio */,
                     regions == null ? null : regions[i % regions.length]);
         }
 
@@ -149,6 +158,7 @@ public class MalleusJitsificus
     private Thread runAsync(JitsiMeetUrl url,
                             long waitTime,
                             boolean muteVideo,
+                            boolean muteAudio,
                             String region)
     {
         JitsiMeetUrl _url = url.copy();
@@ -162,6 +172,10 @@ public class MalleusJitsificus
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
+            }
+            if (muteAudio)
+            {
+                _url.appendConfig("config.startWithAudioMuted=true");
             }
 
             if (region != null)
