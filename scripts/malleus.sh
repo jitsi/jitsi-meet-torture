@@ -14,8 +14,9 @@ case $1 in
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
+        --regions) REGIONS=$optvalue;;
         *)
-          echo 'Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL' >&2
+          echo 'Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS]' >&2
           exit 1
           ;;
       esac
@@ -83,6 +84,7 @@ mvn \
 -Dorg.jitsi.malleus.senders=$SENDERS \
 -Dorg.jitsi.malleus.duration=$DURATION \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
+-Dorg.jitsi.malleus.regions=$REGIONS \
 -Dremote.address=$HUB_URL \
 -Djitsi-meet.tests.toRun=MalleusJitsificus \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
