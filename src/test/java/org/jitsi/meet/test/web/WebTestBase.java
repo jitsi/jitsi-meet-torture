@@ -363,30 +363,6 @@ public class WebTestBase
     }
 
     /**
-     * Joins the "next" participant. Creating a participant and joining a
-     * conference takes significant time. This method can be run in parallel
-     * in order to create multiple participants as quickly as possible. The new
-     * participant will be inserted last in the participant list.
-     *
-     * Note that setting a configuration prefix for the created participant is
-     * currently not supported. If that becomes necessary in the future, a
-     * parameter can be added to this method call hierarchy.
-     *
-     * @param jitsiMeetUrlmeet a {@link JitsiMeetUrl} which represents the full
-     * conference URL which includes server, conference parameters and
-     * the config part.
-     * @param participantOptions the options to be used when creating the
-     * participant.
-     * @return the participant which was created.
-     */
-    public WebParticipant joinNextParticipant(
-        JitsiMeetUrl jitsiMeetUrlmeet,
-        ParticipantOptions participantOptions)
-    {
-        return joinParticipantAndWait(-1, jitsiMeetUrlmeet, participantOptions);
-    }
-
-    /**
      * Closes the info dialog for all participants if it is displayed.
      */
     private void ensureInfoDialogClosed()

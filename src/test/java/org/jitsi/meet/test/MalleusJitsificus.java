@@ -139,6 +139,7 @@ public class MalleusJitsificus
         {
             runThreads[i]
                 = runAsync(
+                    i,
                     url,
                     waitTime,
                     i >= numSenders /* no video */,
@@ -155,7 +156,8 @@ public class MalleusJitsificus
         }
     }
 
-    private Thread runAsync(JitsiMeetUrl url,
+    private Thread runAsync(int i,
+                            JitsiMeetUrl url,
                             long waitTime,
                             boolean muteVideo,
                             boolean muteAudio,
@@ -183,7 +185,7 @@ public class MalleusJitsificus
                 _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
             }
 
-            WebParticipant participant = joinNextParticipant(_url, ops);
+            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
 
             try
             {
