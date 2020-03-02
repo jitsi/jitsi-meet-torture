@@ -34,7 +34,7 @@ public class MalleusJitsificus
      * The video file to use as input for the first participant (the sender).
      */
     private static final String INPUT_VIDEO_FILE
-        = "resources/FourPeople_1280x720_60.y4m";
+        = "resources/FourPeople_1280x720_30.y4m";
 
     public static final String CONFERENCES_PNAME
         = "org.jitsi.malleus.conferences";
@@ -42,12 +42,16 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.participants";
     public static final String SENDERS_PNAME
         = "org.jitsi.malleus.senders";
+    public static final String AUDIO_SENDERS_PNAME
+            = "org.jitsi.malleus.audio_senders";
     public static final String ENABLE_P2P_PNAME
         = "org.jitsi.malleus.enable_p2p";
     public static final String DURATION_PNAME
         = "org.jitsi.malleus.duration";
     public static final String ROOM_NAME_PREFIX_PNAME
         = "org.jitsi.malleus.room_name_prefix";
+    public static final String REGIONS_PNAME
+            = "org.jitsi.malleus.regions";
 
 
     @DataProvider(name = "dp", parallel = true)
@@ -67,7 +71,19 @@ public class MalleusJitsificus
             ? numParticipants
             : Integer.valueOf(numSendersStr);
 
+        String numAudioSendersStr = System.getProperty(AUDIO_SENDERS_PNAME);
+        int numAudioSenders = numAudioSendersStr == null
+                ? numParticipants
+                : Integer.valueOf(numAudioSendersStr);
+
         int timeoutMs = 1000 * Integer.valueOf(System.getProperty(DURATION_PNAME));
+
+        String[] regions = null;
+        String regionsStr = System.getProperty(REGIONS_PNAME);
+        if (regionsStr != null && !"".equals(regionsStr))
+        {
+            regions = regionsStr.split(",");
+        }
 
         String roomNamePrefix = System.getProperty(ROOM_NAME_PREFIX_PNAME);
         if (roomNamePrefix == null)
@@ -87,9 +103,11 @@ public class MalleusJitsificus
         print("conferences="+ numConferences);
         print("participants=" + numParticipants);
         print("senders=" + numSenders);
+        print("audio senders=" + numAudioSenders);
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
+        print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -101,9 +119,10 @@ public class MalleusJitsificus
                 // XXX I don't remember if/why these are needed.
                 .appendConfig("config.p2p.useStunTurn=true")
                 .appendConfig("config.disable1On1Mode=false")
+                .appendConfig("config.testing.noAutoPlayVideo=true")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders};
+            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
         }
 
         return ret;
@@ -111,19 +130,21 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders)
+        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
 
-        for(int i = 0; i < numberOfParticipants; i++)
+        for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
                 = runAsync(
                     i,
                     url,
                     waitTime,
-                    i >= numSenders /* no video */);
+                    i >= numSenders /* no video */,
+                    i >= numAudioSenders /* no audio */,
+                    regions == null ? null : regions[i % regions.length]);
         }
 
         for (Thread t : runThreads)
@@ -138,7 +159,9 @@ public class MalleusJitsificus
     private Thread runAsync(int i,
                             JitsiMeetUrl url,
                             long waitTime,
-                            boolean muteVideo)
+                            boolean muteVideo,
+                            boolean muteAudio,
+                            String region)
     {
         JitsiMeetUrl _url = url.copy();
 
@@ -148,17 +171,21 @@ public class MalleusJitsificus
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
-            WebParticipant participant
-                = participants
-                    .createParticipant("web.participant" + (i + 1), ops);
-
-
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
             }
+            if (muteAudio)
+            {
+                _url.appendConfig("config.startWithAudioMuted=true");
+            }
 
-            participant.joinConference(_url);
+            if (region != null)
+            {
+                _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
+            }
+
+            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
 
             try
             {
@@ -171,6 +198,7 @@ public class MalleusJitsificus
             finally
             {
                 participant.hangUp();
+                closeParticipant(participant);
             }
         });
 

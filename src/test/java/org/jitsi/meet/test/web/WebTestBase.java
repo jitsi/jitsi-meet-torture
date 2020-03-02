@@ -289,11 +289,11 @@ public class WebTestBase
             if (index != size)
             {
                 throw new IllegalArgumentException(
-                    String.format(
-                        "New participant would have been inserted at different "
-                            + "index than expected. Index: %d, size %d.",
-                        index,
-                        size));
+                        String.format(
+                                "New participant would have been inserted at different "
+                                        + "index than expected. Index: %d, size %d.",
+                                index,
+                                size));
             }
 
             String configPrefix = "web.participant" + (index + 1);
@@ -304,7 +304,7 @@ public class WebTestBase
             // useful when checking crashes or failures in node logs
             p.executeScript(
                     "console.log('--- Will start test:"
-                        + getClass().getSimpleName() + "')");
+                            + getClass().getSimpleName() + "')");
         }
 
         if (meetURL == null)
