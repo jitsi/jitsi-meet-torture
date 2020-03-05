@@ -186,6 +186,7 @@ public class MalleusJitsificus
             }
 
             WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            participant.joinConference(_url);
 
             try
             {
