@@ -320,12 +320,8 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public boolean isP2pConnected()
     {
-        // FIXME hmm this checks for ICE connected state which does not
-        // necessarily mean that the conference is currently in the P2P mode.
-        // It may turn out we're not really checking if P2P is connected
-        // and the method name may be confusing.
         return TestUtils.getBooleanResult(
-                executeScript(MeetUtils.ICE_CONNECTED_CHECK_SCRIPT));
+                executeScript(MeetUtils.P2P_ICE_CONNECTED_CHECK_SCRIPT));
     }
 
     /**
