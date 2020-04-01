@@ -36,7 +36,7 @@ public class MeetUtils
      * is in state 'connected'.
      */
     public static final String ICE_CONNECTED_CHECK_SCRIPT =
-        "return APP.conference.getP2PConnectionState() === 'connected';";
+        "return APP.conference.getConnectionState() === 'connected';";
 
     public static final String START_P2P_SCRIPT =
         "APP.conference._startP2P();";
