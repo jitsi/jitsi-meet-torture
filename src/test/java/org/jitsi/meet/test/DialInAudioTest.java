@@ -91,20 +91,20 @@ public class DialInAudioTest
      */
     protected String retrievePin(WebParticipant participant)
     {
-        InfoDialog infoDialog = participant.getInfoDialog();
+        InviteDialog inviteDialog = participant.getInviteDialog();
         try
         {
-            infoDialog.open();
+            inviteDialog.open();
 
             // get the dial-in pin
-            String dialInPin = infoDialog.getPinNumber();
+            String dialInPin = inviteDialog.getPinNumber();
 
             // removes any blanks
             return dialInPin.replaceAll(" ", "");
         }
         finally
         {
-            infoDialog.close();
+            inviteDialog.close();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright @ 2015-2018 Atlassian Pty Ltd
+ * Copyright @ 2020-present 8x8, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,32 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 
 /**
- * Represents the info dialog in a particular {@link WebParticipant}.
- *
- * @author Leonard Kim
+ * Represents the security dialog in a particular {@link WebParticipant}.
  */
-public class InfoDialog
+public class SecurityDialog
 {
     /**
      * Class names to be used as selectors for finding WebElements within the
-     * {@link InfoDialog}.
+     * {@link SecurityDialog}.
      */
     private final static String ADD_PASSWORD_LINK = "add-password";
     private final static String ADD_PASSWORD_FIELD = "info-password-input";
-    private final static String CONFERENCE_URL = "info-dialog-conference-url";
-    private final static String INFO_DIALOG_CONTAINER = "info-dialog";
+    private final static String DIALOG_CONTAINER = "security-dialog";
     private final static String LOCAL_LOCK = "info-password-local";
-    private final static String MORE_NUMBERS = "more-numbers";
-    private final static String PHONE_NUMBER = "phone-number";
-    private final static String CONFERENCE_ID = "conference-id";
     private final static String REMOTE_LOCK = "info-password-remote";
     private final static String REMOVE_PASSWORD = "remove-password";
 
     /**
-     * The participant used to interact with the info dialog.
+     * The participant used to interact with the security dialog.
      */
     private final WebParticipant participant;
 
     /**
-     * Initializes a new {@link InfoDialog} instance.
+     * Initializes a new {@link SecurityDialog} instance.
      *
-     * @param participant the participant for this {@link InfoDialog}.
+     * @param participant the participant for this {@link SecurityDialog}.
      */
-    public InfoDialog(WebParticipant participant)
+    public SecurityDialog(WebParticipant participant)
     {
         this.participant = Objects.requireNonNull(participant, "participant");
     }
@@ -83,29 +77,15 @@ public class InfoDialog
     }
 
     /**
-     * Clicks the link to open a page to show all available dial in numbers.
-     */
-    public void openDialInNumbersPage()
-    {
-        open();
-
-        WebDriver driver = participant.getDriver();
-        WebElement moreNumbersElement
-            = driver.findElement(By.className(MORE_NUMBERS));
-
-        moreNumbersElement.click();
-    }
-
-    /**
-     * Clicks the "info" toolbar button which opens or closes the info dialog.
+     * Clicks the "info" toolbar button which opens or closes the security dialog.
      */
     private void clickToolbarButton()
     {
-        participant.getToolbar().clickInfoButton();
+        participant.getToolbar().clickSecurityButton();
     }
 
     /**
-     * Clicks the "info" toolbar button to close the info dialog, if the info
+     * Clicks the "info" toolbar button to close the security dialog, if the info
      * dialog is open.
      */
     public void close()
@@ -119,59 +99,26 @@ public class InfoDialog
     }
 
     /**
-     * Finds and returns the info dialog.
+     * Finds and returns the security dialog.
      *
-     * @return The {@code WebElement} for the info dialog or null if it cannot
+     * @return The {@code WebElement} for the security dialog or null if it cannot
      * be found.
      */
     public WebElement get()
     {
         List<WebElement> elements
             = participant.getDriver().findElements(
-                By.className(INFO_DIALOG_CONTAINER));
+                By.className(DIALOG_CONTAINER));
 
         return elements.isEmpty() ? null : elements.get(0);
     }
 
     /**
-     * Gets the string that contains the url to the current conference.
-     *
-     * @return {@code String} for the current conference's url.
-     */
-    public String getMeetingURL()
-    {
-        return this.getValueAfterColon(CONFERENCE_URL);
-    }
-
-    /**
-     * Gets the string that contains the dial in number for the current
-     * conference.
-     *
-     * @return {@code String} for the current conference's dial in number.
-     */
-    public String getDialInNumber()
-    {
-        return this.getValueAfterColon(PHONE_NUMBER);
-    }
-
-    /**
-     * Gets the string that contains the pin number needed for dialing into
-     * the current conference.
-     *
-     * @return {@code String} for the current conference's pin number.
-     */
-    public String getPinNumber()
-    {
-        // we need to remove the last character from the pin which is '#'
-        return this.getValueAfterColon(CONFERENCE_ID).replaceAll("#", "");
-    }
-
-    /**
-     * Checks if the current conference is locked based on the info dialog's
+     * Checks if the current conference is locked based on the security dialog's
      * display state.
      *
      * @return {@code true} if the conference is displayed as locked in the
-     * info dialog, {@code false} otherwise.
+     * security dialog, {@code false} otherwise.
      */
     public boolean isLocked()
     {
@@ -182,7 +129,7 @@ public class InfoDialog
      * Checks if the current conference is locked with a locally set password.
      *
      * @return {@code true} if the conference is displayed as locked locally in
-     * the info dialog, {@code false} otherwise.
+     * the security dialog, {@code false} otherwise.
      */
     private boolean isLockedLocally()
     {
@@ -193,7 +140,7 @@ public class InfoDialog
      * Checks if the current conference is locked with a locally set password.
      *
      * @return {@code true}  if the conference is displayed as locked remotely
-     * in the info dialog, {@code false} otherwise.
+     * in the security dialog, {@code false} otherwise.
      */
     private boolean isLockedRemotely()
     {
@@ -201,9 +148,9 @@ public class InfoDialog
     }
 
     /**
-     * Checks if the info dialog is currently displayed.
+     * Checks if the security dialog is currently displayed.
      *
-     * @return {@code true} if the info dialog is displayed, {@code false}
+     * @return {@code true} if the security dialog is displayed, {@code false}
      * otherwise.
      */
     public boolean isOpen()
@@ -214,7 +161,7 @@ public class InfoDialog
     }
 
     /**
-     * Clicks the "info" toolbar button to open the info dialog, if the info
+     * Clicks the "info" toolbar button to open the security dialog, if the info
      * dialog is closed.
      */
     public void open()
@@ -228,7 +175,7 @@ public class InfoDialog
     }
 
     /**
-     * Removes the password from the current conference through the info dialog,
+     * Removes the password from the current conference through the security dialog,
      * if a password is set.
      */
     public void removePassword()
@@ -253,11 +200,11 @@ public class InfoDialog
     /**
      * Private helper to determine if the passed in className is displayed.
      * Used internally to determine if what kind of conference lock state the
-     * info dialog is display.
+     * security dialog is display.
      *
      * @param className - The class name to search for that signifies the
      *                  current lock state of the conference.
-     * @return {@code true} if the info dialog has the passed in class,
+     * @return {@code true} if the security dialog has the passed in class,
      * {@code false} otherwise.
      */
     private boolean getLockStateByClass(String className)
@@ -266,33 +213,5 @@ public class InfoDialog
 
         WebDriver driver = participant.getDriver();
         return driver.findElements(By.className(className)).size() != 0;
-    }
-
-    /**
-     * Private helper to get values after colons. The info dialog lists
-     * conference specific information after a label, followed by a colon.
-     *
-     * @param className - The class name to search for that signifies the
-     *                  current lock state of the conference.
-     * @return {@code true} if the info dialog has the passed in class,
-     * {@code false} otherwise.
-     */
-    private String getValueAfterColon(String className)
-    {
-        open();
-
-        WebDriver driver = participant.getDriver();
-
-        // waits for the element to be available before getting the text
-        // PHONE_NUMBER for example can take time before shown
-        TestUtils.waitForElementBy(
-            driver,
-            By.className(className),
-            5);
-
-        String fullText
-            = driver.findElement(By.className(className)).getText();
-
-        return fullText.split(":")[1].trim();
     }
 }
