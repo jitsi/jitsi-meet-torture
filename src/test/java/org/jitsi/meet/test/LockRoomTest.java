@@ -70,17 +70,17 @@ public class LockRoomTest
         ROOM_KEY = String.valueOf((int) (Math.random() * 1_000_000));
 
         WebParticipant participant1 = getParticipant1();
-        InfoDialog infoDialog = participant1.getInfoDialog();
-        infoDialog.open();
+        SecurityDialog securityDialog = participant1.getSecurityDialog();
+        securityDialog.open();
 
-        assertFalse(infoDialog.isLocked());
+        assertFalse(securityDialog.isLocked());
 
-        infoDialog.addPassword(ROOM_KEY);
+        securityDialog.addPassword(ROOM_KEY);
         TestUtils.waitMillis(1000);
-        infoDialog.close();
-        infoDialog.open();
+        securityDialog.close();
+        securityDialog.open();
 
-        assertTrue(infoDialog.isLocked());
+        assertTrue(securityDialog.isLocked());
     }
 
     /**
@@ -90,9 +90,9 @@ public class LockRoomTest
     public void enterParticipantInLockedRoom()
     {
         WebParticipant participant1 = getParticipant1();
-        InfoDialog infoDialog1 = participant1.getInfoDialog();
-        infoDialog1.open();
-        assertTrue(infoDialog1.isLocked());
+        SecurityDialog securityDialog1 = participant1.getSecurityDialog();
+        securityDialog1.open();
+        assertTrue(securityDialog1.isLocked());
 
         try
         {
@@ -120,9 +120,9 @@ public class LockRoomTest
 
         participant2.waitToJoinMUC(5);
 
-        InfoDialog infoDialog2 = participant2.getInfoDialog();
-        infoDialog2.open();
-        assertTrue(infoDialog2.isLocked());
+        SecurityDialog securityDialog2 = participant2.getSecurityDialog();
+        securityDialog2.open();
+        assertTrue(securityDialog2.isLocked());
     }
 
     /**
@@ -138,8 +138,8 @@ public class LockRoomTest
         TestUtils.waitMillis(1000);
 
         WebParticipant participant1 = getParticipant1();
-        InfoDialog infoDialog = participant1.getInfoDialog();
-        infoDialog.removePassword();
+        SecurityDialog securityDialog = participant1.getSecurityDialog();
+        securityDialog.removePassword();
     }
 
     /**
@@ -149,14 +149,14 @@ public class LockRoomTest
     private void participant1UnlockRoom()
     {
         WebParticipant participant1 = getParticipant1();
-        InfoDialog infoDialog = participant1.getInfoDialog();
-        infoDialog.open();
-        infoDialog.removePassword();
+        SecurityDialog securityDialog = participant1.getSecurityDialog();
+        securityDialog.open();
+        securityDialog.removePassword();
 
         // just in case wait
         TestUtils.waitMillis(1000);
 
-        assertFalse(infoDialog.isLocked());
+        assertFalse(securityDialog.isLocked());
     }
 
     /**
@@ -170,10 +170,10 @@ public class LockRoomTest
         ensureTwoParticipants();
 
         WebParticipant participant2 = getParticipant2();
-        InfoDialog infoDialog = participant2.getInfoDialog();
-        infoDialog.open();
+        SecurityDialog securityDialog = participant2.getSecurityDialog();
+        securityDialog.open();
 
-        assertFalse(infoDialog.isLocked());
+        assertFalse(securityDialog.isLocked());
     }
 
     /**
@@ -186,13 +186,13 @@ public class LockRoomTest
         participant1LockRoom();
 
         WebParticipant participant = getParticipant2();
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
-        assertTrue(infoDialog.isLocked());
+        SecurityDialog securityDialog = participant.getSecurityDialog();
+        securityDialog.open();
+        assertTrue(securityDialog.isLocked());
 
         participant1UnlockRoom();
 
-        assertFalse(infoDialog.isLocked());
+        assertFalse(securityDialog.isLocked());
     }
 
     /**
@@ -243,9 +243,9 @@ public class LockRoomTest
 
         participant2.waitToJoinMUC(5);
 
-        InfoDialog infoDialog = participant2.getInfoDialog();
-        infoDialog.open();
-        assertFalse(infoDialog.isLocked());
+        SecurityDialog securityDialog = participant2.getSecurityDialog();
+        securityDialog.open();
+        assertFalse(securityDialog.isLocked());
     }
 
     /**

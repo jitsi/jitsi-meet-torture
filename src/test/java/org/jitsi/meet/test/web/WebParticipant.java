@@ -77,8 +77,9 @@ public class WebParticipant extends Participant<WebDriver>
 
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
-    private InfoDialog infoDialog;
+    private InviteDialog inviteDialog;
     private LargeVideo largeVideo;
+    private SecurityDialog securityDialog;
     private SettingsDialog settingsDialog;
     private Toolbar toolbar;
     private WebFilmstrip filmstrip;
@@ -501,16 +502,16 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     * @return a representation of the info dialog of this participant.
+     * @return a representation of the invite dialog of this participant.
      */
-    public InfoDialog getInfoDialog()
+    public InviteDialog getInviteDialog()
     {
-        if (infoDialog == null)
+        if (inviteDialog == null)
         {
-            infoDialog = new InfoDialog(this);
+            inviteDialog = new InviteDialog(this);
         }
 
-        return infoDialog;
+        return inviteDialog;
     }
 
     /**
@@ -524,6 +525,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return largeVideo;
+    }
+
+    /**
+     * @return a representation of the security dialog of this participant.
+     */
+    public SecurityDialog getSecurityDialog()
+    {
+        if (securityDialog == null)
+        {
+            securityDialog = new SecurityDialog(this);
+        }
+
+        return securityDialog;
     }
 
     /**

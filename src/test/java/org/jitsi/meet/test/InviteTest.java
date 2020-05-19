@@ -1,5 +1,5 @@
 /*
- * Copyright @ 2015-2018 Atlassian Pty Ltd
+ * Copyright @ 2015-present 8x8, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,11 @@ public class InviteTest extends WebTestBase
     @Test
     public void testInviteURLDisplays()
     {
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
+        InviteDialog inviteDialog = participant.getInviteDialog();
+        inviteDialog.open();
 
         String currentUrl = participant.getDriver().getCurrentUrl();
-        String displayedUrl = infoDialog.getMeetingURL();
+        String displayedUrl = inviteDialog.getMeetingURL();
 
         assertTrue(currentUrl.contains(displayedUrl));
     }
@@ -73,13 +73,13 @@ public class InviteTest extends WebTestBase
             throw new SkipException(
                 "No dial in configuration detected. Disabling test.");
         }
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
+        InviteDialog inviteDialog = participant.getInviteDialog();
+        inviteDialog.open();
 
-        String displayedNumber = infoDialog.getDialInNumber();
+        String displayedNumber = inviteDialog.getDialInNumber();
         assertTrue(displayedNumber.length() > 0);
 
-        String displayedPin = infoDialog.getPinNumber();
+        String displayedPin = inviteDialog.getPinNumber();
         assertTrue(displayedPin.length() > 1);
     }
 
@@ -90,13 +90,13 @@ public class InviteTest extends WebTestBase
     @Test(dependsOnMethods = { "testDialInDisplays" })
     public void testViewMoreNumbers()
     {
-        InfoDialog infoDialog = participant.getInfoDialog();
-        infoDialog.open();
+        InviteDialog inviteDialog = participant.getInviteDialog();
+        inviteDialog.open();
 
-        String displayedNumber = infoDialog.getDialInNumber();
-        String displayedPin = infoDialog.getPinNumber();
+        String displayedNumber = inviteDialog.getDialInNumber();
+        String displayedPin = inviteDialog.getPinNumber();
 
-        infoDialog.openDialInNumbersPage();
+        inviteDialog.openDialInNumbersPage();
 
         // give some time for the window to open and load
         TestUtils.waitMillis(2000);

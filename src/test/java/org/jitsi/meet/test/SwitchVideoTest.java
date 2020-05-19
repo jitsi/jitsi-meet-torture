@@ -168,10 +168,7 @@ public class SwitchVideoTest
      */
     private void closeToolbarDialogs()
     {
-        getParticipant1().getInfoDialog().close();
         getParticipant1().getToolbar().closeOverflowMenu();
-
-        getParticipant2().getInfoDialog().close();
         getParticipant2().getToolbar().closeOverflowMenu();
     }
 }

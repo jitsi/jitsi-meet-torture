@@ -81,8 +81,6 @@ public class WebTestBase
         JitsiMeetUrl meetURL, ParticipantOptions options)
     {
         joinParticipantAndWait(0, meetURL, options);
-
-        ensureInfoDialogClosed();
     }
 
     /**
@@ -163,8 +161,6 @@ public class WebTestBase
         // FIXME missing a comment on why is it needed here (in case someone
         // would want to come up with a proper fix).
         TestUtils.waitMillis(500);
-
-        ensureInfoDialogClosed();
     }
 
     /**
@@ -193,8 +189,6 @@ public class WebTestBase
         participant.waitForIceConnected();
         participant.waitForSendReceiveData();
         participant.waitForRemoteStreams(2);
-
-        ensureInfoDialogClosed();
     }
 
     /**
@@ -360,16 +354,6 @@ public class WebTestBase
     public WebParticipant joinThirdParticipant()
     {
         return joinParticipantAndWait(2, null, null);
-    }
-
-    /**
-     * Closes the info dialog for all participants if it is displayed.
-     */
-    private void ensureInfoDialogClosed()
-    {
-       List<WebParticipant> webParticipants = participants.getAll();
-       webParticipants.forEach(webParticipant ->
-           webParticipant.getInfoDialog().close());
     }
 
     /**
