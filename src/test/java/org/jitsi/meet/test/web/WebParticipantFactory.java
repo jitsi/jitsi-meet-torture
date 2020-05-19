@@ -203,6 +203,7 @@ public class WebParticipantFactory
             logPrefs.enable(LogType.BROWSER, Level.ALL);
 
             final ChromeOptions ops = new ChromeOptions();
+            ops.addArguments("allow-insecure-localhost");
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
             ops.addArguments("disable-plugins");
