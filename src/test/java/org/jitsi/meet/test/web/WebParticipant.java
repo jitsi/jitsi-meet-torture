@@ -79,6 +79,7 @@ public class WebParticipant extends Participant<WebDriver>
     private DialInNumbersPage dialInNumbersPage;
     private InfoDialog infoDialog;
     private LargeVideo largeVideo;
+    private SecurityDialog securityDialog;
     private SettingsDialog settingsDialog;
     private Toolbar toolbar;
     private WebFilmstrip filmstrip;
@@ -524,6 +525,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return largeVideo;
+    }
+
+    /**
+     * @return a representation of the security dialog of this participant.
+     */
+    public SecurityDialog getSecurityDialog()
+    {
+        if (securityDialog == null)
+        {
+            securityDialog = new SecurityDialog(this);
+        }
+
+        return securityDialog;
     }
 
     /**

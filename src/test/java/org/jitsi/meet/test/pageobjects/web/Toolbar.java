@@ -38,9 +38,10 @@ public class Toolbar {
     private final static String HANGUP = "Leave the call";
     private final static String INFO = "Show info";
     private final static String OVERFLOW = "Toggle more actions menu";
-    private final static String OVERFLOW_MENU = "More actions menu";
+    private final static String OVERFLOW_MENU = "More actions menu" ;
     private final static String PROFILE = "Edit your profile";
     private final static String RECORD = "Toggle recording";
+    private final static String SECURITY = "Security options";
     private final static String SETTINGS = "Toggle settings";
     private final static String SHARE_VIDEO = "Toggle Youtube video sharing";
     private final static String TILE_VIEW_BUTTON = "Toggle tile view";
@@ -183,6 +184,14 @@ public class Toolbar {
     public void clickRecordButton()
     {
         clickButtonInOverflowMenu(RECORD);
+    }
+
+    /**
+     * Clicks on the security toolbar button which opens or closes the security dialog.
+     */
+    public void clickSecurityButton()
+    {
+        clickButton(SECURITY);
     }
 
     /**

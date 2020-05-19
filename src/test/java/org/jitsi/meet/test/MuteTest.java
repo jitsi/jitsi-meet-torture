@@ -54,11 +54,6 @@ public class MuteTest
         super.setupClass();
 
         ensureTwoParticipants();
-
-        // Make sure the info dialog is closed because it may overlap the
-        // remove video menus.
-        getParticipant1().getInfoDialog().close();
-        getParticipant2().getInfoDialog().close();
     }
 
     /**
