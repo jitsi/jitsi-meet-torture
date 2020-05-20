@@ -53,7 +53,8 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
             + "&config.analytics.disabled=true"
-            + "&interfaceConfig.SHOW_CHROME_EXTENSION_BANNER=false";
+            + "&interfaceConfig.SHOW_CHROME_EXTENSION_BANNER=false"
+            + "&interfaceConfig.DISABLE_FOCUS_INDICATOR=true";
 
     /**
      * The javascript code which returns {@code true} if we are joined in
