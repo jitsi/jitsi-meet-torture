@@ -46,6 +46,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.testing.testMode=true"
             + "&config.disableAEC=true"
             + "&config.disableNS=true"
+            + "&config.enableTalkWhileMuted=false"
             + "&config.callStatsID=false"
             + "&config.alwaysVisibleToolbar=true"
             + "&config.p2p.enabled=false"
