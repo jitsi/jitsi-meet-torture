@@ -208,7 +208,7 @@ public class WebParticipantFactory
             final ChromeOptions ops = new ChromeOptions();
             // Force chrome to use English instead of system language.
             // At least work at version 83.0.4103.61 on win 10
-            ops.addArguments("--lang=en");
+            ops.addArguments("lang=en");
             ops.addArguments("allow-insecure-localhost");
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
