@@ -222,6 +222,27 @@ public class JitsiMeetUrl
     }
 
     /**
+     * @return a port part of the URL returned by {@link #toUrl()}.
+     * @throws MalformedURLException the same as in {@link #toUrl()}.
+     */
+    public int getPort()
+        throws MalformedURLException
+    {
+        return toUrl().getPort();
+    }
+
+    public String getHostWithPort()
+        throws MalformedURLException
+    {
+        int port = getPort();
+        if (port != 443) {
+            return getHost() + ":" + port;
+        } else {
+            return getHost();
+        }
+    }
+
+    /**
      * @return obtains {@link #roomName} part of the conference URL.
      */
     public String getRoomName()
