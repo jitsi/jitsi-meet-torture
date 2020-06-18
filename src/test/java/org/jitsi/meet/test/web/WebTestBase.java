@@ -310,6 +310,14 @@ public class WebTestBase
         return p;
     }
 
+    protected synchronized WebParticipant createNextParticipant(ParticipantOptions options) {
+        int index = participants.getAll().size();
+
+        String configPrefix = "web.participant" + (index + 1);
+
+        return participants.createParticipant(configPrefix, options);
+    }
+
     /**
      * Joins the first participant.
      * @return the participant which was created.
@@ -373,7 +381,7 @@ public class WebTestBase
      * @param options the options to be used when creating the participant.
      * @return the participant which was created
      */
-    private WebParticipant joinParticipantAndWait(
+    protected WebParticipant joinParticipantAndWait(
         int                     index,
         JitsiMeetUrl            meetURL,
         ParticipantOptions      options)

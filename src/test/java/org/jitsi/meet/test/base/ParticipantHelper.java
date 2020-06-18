@@ -234,6 +234,15 @@ public abstract class ParticipantHelper<P extends Participant>
                         "-Djitsi-meet.instance.url=https://example.com");
         }
 
+        if (!serverUrl.endsWith("/")) {
+            int slashIdx = serverUrl.lastIndexOf("/");
+            String roomName = serverUrl.substring(slashIdx);
+
+            serverUrl = serverUrl.substring(0, slashIdx);
+
+            url.setRoomName(roomName);
+        }
+
         url.setServerUrl(serverUrl);
         return url;
     }

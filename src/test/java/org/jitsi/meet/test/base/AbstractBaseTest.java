@@ -79,7 +79,7 @@ public abstract class AbstractBaseTest<P extends Participant>
     /**
      * The current room name used.
      */
-    protected final String currentRoomName;
+    protected String currentRoomName;
 
     /**
      * The participants pool created/used by this test instance.
@@ -233,7 +233,17 @@ public abstract class AbstractBaseTest<P extends Participant>
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+        JitsiMeetUrl url = participants.getJitsiMeetUrl();
+
+        if (url.getRoomName() != null) {
+            currentRoomName = url.getRoomName();
+        }
+        else
+        {
+            url.setRoomName(currentRoomName);
+        }
+
+        return url;
     }
 
     /**

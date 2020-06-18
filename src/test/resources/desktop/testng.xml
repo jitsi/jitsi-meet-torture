@@ -204,6 +204,11 @@
             <class name="org.jitsi.meet.test.ConferenceMigrationTest" />
         </classes>
     </test>
+    <test name="ClientPerformanceTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ClientPerformanceTest" />
+        </classes>
+    </test>
     <test name="JVBConferencesCheck">
         <classes>
             <class name="org.jitsi.meet.test.JVBConferencesCheck" />
