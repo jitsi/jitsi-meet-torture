@@ -95,4 +95,11 @@ public class IFrameAPITest
         muteTest.muteParticipant2AndCheck();
         muteTest.muteParticipant3AndCheck();
     }
+
+    // FIXME when the web resource is back
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
 }
