@@ -33,10 +33,10 @@ public class IFrameAPITest
     extends WebTestBase
 {
     private static final String IFRAME_SERVER_URL
-        = "https://cdn.jitsi.net";
+        = "https://web-cdn.jitsi.net";
 
     private static final String IFRAME_ROOM_NAME
-        = "jitsi-meet-torture/v1/iframeAPITest.html";
+        = "jitsi-meet-torture/v2/iframeAPITest.html";
 
     /**
      * A url for a page that loads the iframe API.
@@ -52,7 +52,8 @@ public class IFrameAPITest
         + "\"alwaysVisibleToolbar\":true,"
         + "\"p2p.enabled\":false,"
         + "\"disable1On1Mode\":true,"
-        + "\"analytics.disabled\":true"
+        + "\"analytics.disabled\":true,"
+        + "\"prejoinPageEnabled\":false"
         + "}";
 
     @Test
@@ -94,12 +95,5 @@ public class IFrameAPITest
         muteTest.muteParticipant1AndCheck();
         muteTest.muteParticipant2AndCheck();
         muteTest.muteParticipant3AndCheck();
-    }
-
-    // FIXME when the web resource is back
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
     }
 }
