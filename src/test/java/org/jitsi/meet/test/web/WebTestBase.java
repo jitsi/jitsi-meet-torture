@@ -383,7 +383,9 @@ public class WebTestBase
         catch (TimeoutException ex)
         {
             // workaround is only for chrome
-            if (!participant.getType().isChrome())
+            boolean skipRetry = options != null ?
+                options.getBooleanProperty(WebParticipantOptions.PROP_CHROME_SKIP_RETRY_JOIN) : false;
+            if (!participant.getType().isChrome() || skipRetry)
             {
                 throw ex;
             }

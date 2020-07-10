@@ -96,7 +96,10 @@ public class LockRoomTest
 
         try
         {
-            ensureTwoParticipants();
+            WebParticipantOptions secondParticipantOptions = new WebParticipantOptions();
+            secondParticipantOptions.setChromeSkipRetry(true);
+
+            ensureTwoParticipants(null, null, null, secondParticipantOptions);
 
             fail("participant2 must not be able to join the room.");
         }
@@ -213,7 +216,10 @@ public class LockRoomTest
 
         try
         {
-            ensureTwoParticipants();
+            WebParticipantOptions secondParticipantOptions = new WebParticipantOptions();
+            secondParticipantOptions.setChromeSkipRetry(true);
+
+            ensureTwoParticipants(null, null, null, secondParticipantOptions);
 
             fail("participant2 must not be able to join the room.");
         }
