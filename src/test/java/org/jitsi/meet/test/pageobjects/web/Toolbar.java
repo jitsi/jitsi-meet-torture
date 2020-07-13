@@ -26,7 +26,8 @@ import java.util.*;
  *
  * @author Leonard Kim
  */
-public class Toolbar {
+public class Toolbar
+{
     /**
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
@@ -443,12 +444,15 @@ public class Toolbar {
         WebDriver driver = participant.getDriver();
         int waitTime = 10;
 
-        if (visible) {
+        if (visible)
+        {
             TestUtils.waitForElementBy(
                 driver,
                 selector,
                 waitTime);
-        } else {
+        }
+        else
+        {
             TestUtils.waitForElementNotPresentBy(
                 driver,
                 selector,

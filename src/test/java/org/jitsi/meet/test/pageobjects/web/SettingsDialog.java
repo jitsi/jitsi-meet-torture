@@ -210,7 +210,8 @@ public class SettingsDialog
 
         boolean isChecked = checkbox.isSelected();
 
-        if (check != isChecked) {
+        if (check != isChecked)
+        {
             checkbox.click();
         }
     }

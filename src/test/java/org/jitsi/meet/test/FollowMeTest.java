@@ -75,7 +75,8 @@ public class FollowMeTest
             participant2.executeScript(
                 "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;"));
         // if all are moderators skip this check
-        if (allModeratorsEnabled) {
+        if (allModeratorsEnabled)
+        {
             print("All moderators enabled, skipping check!");
             return;
         }

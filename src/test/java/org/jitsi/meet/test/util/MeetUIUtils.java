@@ -263,7 +263,8 @@ public class MeetUIUtils
             // there is no element, so its not visible, just continue
             // cause failOnMissing is false
             TestUtils.print("Element is missing:" + selector);
-        } else if (clickResult != null
+        }
+        else if (clickResult != null
             && !clickResult.equals(Boolean.TRUE))
         {
             TestUtils.print("Error clicking element:" + selector
@@ -369,7 +370,8 @@ public class MeetUIUtils
         try
         {
             filmstrip = driver.findElement(By.xpath(filmstripXPath));
-        } catch (NoSuchElementException ex)
+        }
+        catch (NoSuchElementException ex)
         {
             filmstrip = null;
         }
@@ -760,7 +762,8 @@ public class MeetUIUtils
         final String expectedJid =
             MeetUtils.getResourceJid(testee);
 
-        try {
+        try
+        {
             TestUtils.waitForCondition(
                 observer,
                 5,

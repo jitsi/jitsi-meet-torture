@@ -249,12 +249,14 @@ public class MeetUtils
         try
         {
             wait.until(driverInstance -> {
-                try {
+                try
+                {
                     return ((JavascriptExecutor) driverInstance)
                         .executeScript(checkPageLoadScript)
                         .equals("complete");
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     e.printStackTrace();
                     return false;
                 }
