@@ -296,6 +296,25 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
+     * Waits 5 seconds for this participant to become a moderator.
+     */
+    public void waitToBecomeModerator() {
+        waitToBecomeModerator(5);
+    }
+
+    /**
+     * Waits until this participant becomes a moderator.
+     * @param timeout the maximum time to wait in seconds.
+     */
+    public void waitToBecomeModerator(int timeout)
+    {
+        waitForCondition(
+                this::isModerator,
+                timeout,
+                toString() + "#waitToBecomeModerator");
+    }
+
+    /**
      * Waits 15 seconds until this participant joins the MUC.
      */
     public void waitToJoinMUC()
@@ -322,6 +341,23 @@ public abstract class Participant<T extends WebDriver>
      * room; otherwise, {@code false}
      */
     public abstract boolean isInMuc();
+
+    /**
+     * Checks whether this participant is a moderator.
+     *
+     * @return {@code true} if the this participant is a moderator; otherwise,
+     * {@code false}
+     */
+    public abstract boolean isModerator();
+
+    /**
+     * Checks whether this participant has the grant moderator functionality
+     * available.
+     *
+     * @return {@code true} if the this participant has grant moderator
+     * functionality otherwise, {@code false}
+     */
+    public abstract boolean hasGrantModerator();
 
     /**
      * Waits 15 sec for the given participant to enter the ICE 'connected'

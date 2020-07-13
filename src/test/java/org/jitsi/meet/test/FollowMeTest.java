@@ -15,6 +15,8 @@
  */
 package org.jitsi.meet.test;
 
+import java.util.stream.*;
+
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -71,9 +73,10 @@ public class FollowMeTest
     {
         WebParticipant participant2 = getParticipant2();
 
-        Boolean allModeratorsEnabled = (Boolean)(
-            participant2.executeScript(
-                "return !!interfaceConfig.DISABLE_FOCUS_INDICATOR;"));
+        Boolean allModeratorsEnabled = Stream
+            .of(getParticipant1(), participant2)
+            .allMatch(WebParticipant::isModerator);
+
         // if all are moderators skip this check
         if (allModeratorsEnabled)
         {
