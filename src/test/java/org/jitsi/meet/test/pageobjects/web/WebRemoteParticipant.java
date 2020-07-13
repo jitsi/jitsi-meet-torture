@@ -39,6 +39,12 @@ public class WebRemoteParticipant
     }
 
     @Override
+    public void grantModerator()
+    {
+        clickOnRemoteMenuLink("grantmoderatorlink");
+    }
+
+    @Override
     public void mute()
     {
         clickOnRemoteMenuLink("mutelink");

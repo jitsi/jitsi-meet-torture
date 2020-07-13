@@ -66,6 +66,13 @@ public class WebParticipant extends Participant<WebDriver>
         "return APP.conference.isJoined();";
 
     /**
+     * The javascript code which returns {@code true} if we are a moderator.
+     */
+    private static final String IS_MODERATOR =
+        "return APP.store.getState()['features/base/participants']"
+            + ".find(p => p.local)?.role === 'moderator'";
+
+    /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
@@ -368,6 +375,19 @@ public class WebParticipant extends Participant<WebDriver>
     {
         Object res = executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * Checks whether this participant is a moderator.
+     *
+     * @return {@code true} if the this participant is a moderator; otherwise,
+     * {@code false}
+     */
+    @Override
+    public boolean isModerator()
+    {
+        Object res = executeScript(IS_MODERATOR);
+        return Boolean.TRUE.equals(res);
     }
 
     /**

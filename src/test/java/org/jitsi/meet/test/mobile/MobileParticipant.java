@@ -430,6 +430,15 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
         return new TestConnectionInfo(this).isConferenceJoined();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isModerator()
+    {
+        return new TestConnectionInfo(this).isLocalParticipantModerator();
+    }
+
     @Override
     public List getBrowserLogs()
     {

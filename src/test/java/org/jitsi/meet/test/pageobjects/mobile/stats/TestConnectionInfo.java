@@ -48,6 +48,13 @@ public class TestConnectionInfo
         = "org.jitsi.meet.conference.joinedState";
 
     /**
+     * The id of the {@link TestHint} that reflects he role of the local
+     * participant.
+     */
+    private static final String ID_LOCAL_PARTICIPANT_ROLE
+        = "org.jitsi.meet.conference.localParticipantRole";
+
+    /**
      * The id of the {@link TestHint} which stores the current RTP statistics.
      * See {@link RtpStatistics} for more info.
      */
@@ -66,6 +73,13 @@ public class TestConnectionInfo
      */
     @TestHintLocator(id = ID_CONFERENCE_JOINED_STATE)
     private TestHint conferenceJoinedState;
+
+    /**
+     * Is the local participant a moderator?
+     * See {@link #ID_IS_MODERATOR}.
+     */
+    @TestHintLocator(id = ID_LOCAL_PARTICIPANT_ROLE)
+    private TestHint localParticipantRole;
 
     /**
      * The RTP stats test hint which provides the data for
@@ -99,6 +113,14 @@ public class TestConnectionInfo
     public boolean isConferenceJoined()
     {
         return Boolean.parseBoolean(conferenceJoinedState.getValue());
+    }
+
+    /**
+     * @return {@code true} if the local participant is a moderator.
+     */
+    public boolean isLocalParticipantModerator()
+    {
+        return localParticipantRole.getValue().equals("moderator");
     }
 
     /**
