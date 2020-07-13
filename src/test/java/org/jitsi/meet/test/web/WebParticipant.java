@@ -67,6 +67,20 @@ public class WebParticipant extends Participant<WebDriver>
         "return APP.conference.isJoined();";
 
     /**
+     * The javascript code which returns {@code true} if we are a moderator.
+     */
+    private static final String IS_MODERATOR =
+        "return APP.store.getState()['features/base/participants']"
+            + ".find(p => p.local).role === 'moderator'";
+
+    /**
+     * The javascript code which returns {@code true} if we have the
+     * functionality to grant moderator.
+     */
+    private static final String HAS_GRANT_MODERATOR =
+        "return typeof APP.conference._room.grantOwner === 'function'";
+
+    /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
@@ -369,6 +383,26 @@ public class WebParticipant extends Participant<WebDriver>
     {
         Object res = executeScript(IS_MUC_JOINED);
         return res != null && res.equals(Boolean.TRUE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isModerator()
+    {
+        Object res = executeScript(IS_MODERATOR);
+        return Boolean.TRUE.equals(res);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasGrantModerator()
+    {
+        Object res = executeScript(HAS_GRANT_MODERATOR);
+        return Boolean.TRUE.equals(res);
     }
 
     /**

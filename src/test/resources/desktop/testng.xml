@@ -102,6 +102,11 @@
             <class name="org.jitsi.meet.test.LockRoomTest" />
         </classes>
     </test>
+    <test name="ModeratorTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ModeratorTest" />
+        </classes>
+    </test>
     <test name="MuteTest">
         <classes>
             <class name="org.jitsi.meet.test.MuteTest" />
