@@ -130,7 +130,8 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
+        JitsiMeetUrl url,
+        int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
