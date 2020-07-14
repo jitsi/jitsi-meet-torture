@@ -65,6 +65,10 @@ public class SecurityDialog
 
         open();
 
+        // we see failures where clicking the password link does not propagate
+        // and does not show the password input field. Adding a wait trying to fix this
+        TestUtils.waitMillis(1000);
+
         WebElement addPasswordLink = driver.findElement(By.className(ADD_PASSWORD_LINK));
 
         new WebDriverWait(driver, 5).until(ExpectedConditions.elementToBeClickable(addPasswordLink));
