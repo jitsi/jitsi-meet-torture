@@ -21,6 +21,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Represents the security dialog in a particular {@link WebParticipant}.
@@ -64,7 +65,11 @@ public class SecurityDialog
 
         open();
 
-        new Actions(driver).click(driver.findElement(By.className(ADD_PASSWORD_LINK))).perform();
+        WebElement addPasswordLink = driver.findElement(By.className(ADD_PASSWORD_LINK));
+
+        new WebDriverWait(driver, 5).until(ExpectedConditions.elementToBeClickable(addPasswordLink));
+
+        new Actions(driver).click(addPasswordLink).perform();
 
         TestUtils.waitForElementBy(
             driver,
