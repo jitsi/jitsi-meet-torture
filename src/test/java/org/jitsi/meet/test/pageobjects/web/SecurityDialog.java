@@ -20,7 +20,6 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 
 /**
  * Represents the security dialog in a particular {@link WebParticipant}.
@@ -64,7 +63,7 @@ public class SecurityDialog
 
         open();
 
-        new Actions(driver).click(driver.findElement(By.className(ADD_PASSWORD_LINK))).perform();
+        driver.findElement(By.className(ADD_PASSWORD_LINK)).click();
 
         TestUtils.waitForElementBy(
             driver,
@@ -194,7 +193,7 @@ public class SecurityDialog
 
         if (removePasswordElement != null)
         {
-            new Actions(driver).click(removePasswordElement).perform();
+            removePasswordElement.click();
         }
     }
 
