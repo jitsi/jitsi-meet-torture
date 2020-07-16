@@ -467,18 +467,19 @@ public class WebParticipant extends Participant<WebDriver>
                     + "//input[@id='editDisplayName']"));
         actions = new Actions(driver);
         actions.moveToElement(inputElem);
-        actions.perform();
 
         if (name != null && name.length() > 0)
         {
-            inputElem.sendKeys(name);
+            actions.sendKeys(name);
         }
         else
         {
-            inputElem.sendKeys(Keys.BACK_SPACE);
+            actions.sendKeys(Keys.BACK_SPACE);
         }
 
-        inputElem.sendKeys(Keys.RETURN);
+        actions.sendKeys(Keys.RETURN);
+        actions.perform();
+
         // just click somewhere to lose focus, to make sure editing has ended
         MeetUIUtils.clickOnLocalVideo(driver);
     }
