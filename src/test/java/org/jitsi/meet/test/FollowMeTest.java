@@ -166,13 +166,14 @@ public class FollowMeTest
 
         getParticipant1().getToolbar().clickTileViewButton();
 
+        // with three participants we default to tile view now
         getAllParticipants().forEach(participant ->
-            MeetUIUtils.waitForTileViewDisplay(participant, true));
+            MeetUIUtils.waitForTileViewDisplay(participant, false));
 
         getParticipant1().getToolbar().clickTileViewButton();
 
         getAllParticipants().forEach(participant ->
-            MeetUIUtils.waitForTileViewDisplay(participant, false));
+            MeetUIUtils.waitForTileViewDisplay(participant, true));
     }
 
     /**
