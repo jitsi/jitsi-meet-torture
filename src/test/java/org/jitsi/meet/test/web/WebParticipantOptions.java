@@ -113,14 +113,8 @@ public class WebParticipantOptions
     private static final String PROP_VERSION = "version";
 
     /**
-     * The name of the property whether to retry chrome joining.
-     * By default we retry, skip it in certain cases where we expect to fail joining.
-     */
-    public static final String PROP_CHROME_SKIP_RETRY_JOIN = "chrome-skip-retry-join";
-
-    /**
      * Get web specific global property names. See
-     * {@link ParticipantHelper#moveSystemGlobalProperties()} for more info.
+     * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
      */
     public static List<String> getSystemGlobalPropNames()
@@ -285,20 +279,6 @@ public class WebParticipantOptions
     public WebParticipantOptions setChromeExtensionId(String extensionId)
     {
         setProperty(PROP_CHROME_EXTENSION_ID, extensionId);
-
-        return this;
-    }
-
-    /**
-     * Sets whether we need to retry joing if it fails.
-     * @see WebTestBase#joinParticipantAndWait(int, JitsiMeetUrl, ParticipantOptions) 
-     *
-     * @param value whether we need to retry joiing if it fails.
-     * @return a reference to this object.
-     */
-    public WebParticipantOptions setChromeSkipRetry(boolean value)
-    {
-        setProperty(PROP_CHROME_SKIP_RETRY_JOIN, Boolean.toString(value));
 
         return this;
     }
