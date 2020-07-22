@@ -58,9 +58,7 @@ public class StartMutedTest
         settingsDialog.setStartVideoMuted(true);
         settingsDialog.submit();
 
-        WebParticipant participant2 = joinSecondParticipant();
-
-        participant2.waitForSendReceiveData();
+        ensureTwoParticipants();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -84,11 +82,10 @@ public class StartMutedTest
                 "config.debugAudioLevels=true&" +
                 "config.startVideoMuted=1"));
 
-        WebParticipant participant2 = joinSecondParticipant();
-
-        participant2.waitForSendReceiveData();
+        ensureTwoParticipants();
 
         WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
 
         final WebDriver driver2 = participant2.getDriver();
         participant1.executeScript(
@@ -196,6 +193,9 @@ public class StartMutedTest
 
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = joinSecondParticipant(meetUrl);
+
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
 
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),

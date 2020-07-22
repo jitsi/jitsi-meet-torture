@@ -94,27 +94,18 @@ public class LockRoomTest
         securityDialog1.open();
         assertTrue(securityDialog1.isLocked());
 
-        try
-        {
-            ensureTwoParticipants();
-
-            fail("participant2 must not be able to join the room.");
-        }
-        catch(TimeoutException e)
-        {}
+        joinSecondParticipant();
 
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
+        // wait for password prompt
+        waitForPasswordDialog(driver2);
+
         submitPassword(driver2, ROOM_KEY + "1234");
 
-        try
-        {
-            participant2.waitToJoinMUC(5);
-            fail("participant2 must not be able to join the room.");
-        }
-        catch(TimeoutException e)
-        {}
+        // wait for password prompt
+        waitForPasswordDialog(driver2);
 
         submitPassword(driver2, ROOM_KEY);
 
@@ -211,28 +202,18 @@ public class LockRoomTest
 
         participant1LockRoom();
 
-        try
-        {
-            ensureTwoParticipants();
-
-            fail("participant2 must not be able to join the room.");
-        }
-        catch(TimeoutException e)
-        {}
+        joinSecondParticipant();
 
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
+        // wait for password prompt
+        waitForPasswordDialog(driver2);
+
         submitPassword(driver2, ROOM_KEY + "1234");
 
-        try
-        {
-            participant2.waitToJoinMUC(5);
-
-            fail("participant2 must not be able to join the room.");
-        }
-        catch(TimeoutException e)
-        {}
+        // wait for password prompt
+        waitForPasswordDialog(driver2);
 
         participant1UnlockRoom();
 
@@ -255,11 +236,9 @@ public class LockRoomTest
      * password modal
      * @param password the password to enter and submit
      */
-    private void submitPassword(WebDriver driver, String password) {
-        TestUtils.waitForElementBy(
-            driver,
-            By.xpath("//input[@name='lockKey']"),
-            5);
+    private void submitPassword(WebDriver driver, String password)
+    {
+        waitForPasswordDialog(driver);
 
         WebElement passwordInput = driver.findElement(
             By.xpath("//input[@name='lockKey']"));
@@ -268,5 +247,18 @@ public class LockRoomTest
         passwordInput.sendKeys(password);
 
         ModalDialogHelper.clickOKButton(driver);
+    }
+
+    /**
+     * Waits till the password dialog is shown.
+     * @param driver the participant that should be used to interact with the
+     * password modal
+     */
+    private void waitForPasswordDialog(WebDriver driver)
+    {
+        TestUtils.waitForElementBy(
+            driver,
+            By.xpath("//input[@name='lockKey']"),
+            5);
     }
 }
