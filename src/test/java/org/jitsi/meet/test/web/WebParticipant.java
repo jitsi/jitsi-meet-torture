@@ -355,15 +355,6 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     * Whether this participant supports video, based on the browser type.
-     * @return {@code true} if the participant browser do not support video.
-     */
-    public boolean isAudioOnlyParticipant()
-    {
-        return getType() == ParticipantType.safari;
-    }
-
-    /**
      * {@inheritDoc}
      */
     protected boolean isIceConnected()

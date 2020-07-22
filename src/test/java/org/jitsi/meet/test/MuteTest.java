@@ -191,10 +191,7 @@ public class MuteTest
 
         WebParticipant participant = joinSecondParticipant();
 
-        // if the participant is audio only, if audio is muted we will not
-        // receive any data, so skip download check
-        participant.waitForSendReceiveData(
-            true, !participant.isAudioOnlyParticipant());
+        participant.waitForSendReceiveData();
 
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(getParticipant1(), true);
