@@ -60,11 +60,7 @@ public class StartMutedTest
 
         WebParticipant participant2 = joinSecondParticipant();
 
-        // if the participant2 is audio only and audio muted there will be no
-        // data sent
-        participant2.waitForSendReceiveData(
-            !participant2.isAudioOnlyParticipant(),
-            true);
+        participant2.waitForSendReceiveData();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -90,10 +86,7 @@ public class StartMutedTest
 
         WebParticipant participant2 = joinSecondParticipant();
 
-        // if the participant is audio only, if audio is muted we will not
-        // receive any data, so skip upload check
-        participant2.waitForSendReceiveData(
-            !participant2.isAudioOnlyParticipant(), true);
+        participant2.waitForSendReceiveData();
 
         WebParticipant participant1 = getParticipant1();
 
