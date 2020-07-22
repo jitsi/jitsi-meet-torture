@@ -112,6 +112,10 @@ public class SecurityDialog
         }
 
         clickToolbarButton();
+
+        // waits till it is closed
+        new WebDriverWait(participant.getDriver(), 3).until(
+            (ExpectedCondition<Boolean>) d -> !isOpen());
     }
 
     /**
@@ -188,6 +192,14 @@ public class SecurityDialog
         }
 
         this.clickToolbarButton();
+
+        // waits till its open
+        new WebDriverWait(participant.getDriver(), 3).until(
+            (ExpectedCondition<Boolean>) d -> isOpen());
+
+        // give time the dialog to settle before operating on it, we see failures where click button handlers are
+        // not triggered when clicked shortly after opening dialog, not always reproducible
+        TestUtils.waitMillis(500);
     }
 
     /**
@@ -204,6 +216,10 @@ public class SecurityDialog
         this.open();
 
         WebDriver driver = participant.getDriver();
+
+        new WebDriverWait(driver, 5).until(
+            ExpectedConditions.elementToBeClickable(By.className(REMOVE_PASSWORD)));
+
         WebElement removePasswordElement
             = driver.findElement(By.className(REMOVE_PASSWORD));
 
