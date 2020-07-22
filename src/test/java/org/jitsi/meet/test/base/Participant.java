@@ -315,11 +315,11 @@ public abstract class Participant<T extends WebDriver>
     }
 
     /**
-     * Waits 15 seconds until this participant joins the MUC.
+     * Waits 10 seconds until this participant joins the MUC.
      */
     public void waitToJoinMUC()
     {
-        waitToJoinMUC(15);
+        waitToJoinMUC(10);
     }
 
     /**

@@ -330,12 +330,7 @@ public class WebTestBase
      */
     public WebParticipant joinSecondParticipant(JitsiMeetUrl meetUrl)
     {
-        WebParticipant participant = joinParticipant(1, meetUrl, null);
-
-        participant.waitToJoinMUC(10);
-        participant.waitForIceConnected();
-
-        return participant;
+        return joinParticipant(1, meetUrl, null);
     }
 
     /**
@@ -378,7 +373,7 @@ public class WebTestBase
         // in the tests logs
         try
         {
-            participant.waitToJoinMUC(10);
+            participant.waitToJoinMUC();
         }
         catch (TimeoutException ex)
         {

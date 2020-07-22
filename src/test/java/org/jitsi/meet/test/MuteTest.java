@@ -189,9 +189,7 @@ public class MuteTest
 
         getParticipant1().getToolbar().clickAudioMuteButton();
 
-        WebParticipant participant = joinSecondParticipant();
-
-        participant.waitForSendReceiveData();
+        ensureTwoParticipants();
 
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(getParticipant1(), true);
