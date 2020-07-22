@@ -84,6 +84,12 @@ public class SecurityDialog
 
         passwordEntry.sendKeys(password);
         passwordEntry.sendKeys(Keys.RETURN);
+
+        String validationMessage = passwordEntry.getAttribute("validationMessage");
+        if (validationMessage != null && validationMessage.length() > 0) {
+            passwordEntry.sendKeys(Keys.ESCAPE);
+            throw new ValidationError(validationMessage);
+        }
     }
 
     /**
