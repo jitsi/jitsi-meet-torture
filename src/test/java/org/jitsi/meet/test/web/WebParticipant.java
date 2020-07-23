@@ -56,9 +56,6 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
             + "&config.analytics.disabled=true"
-            + "&config.disableAudioLevels=true"
-            + "&config.startWithVideoMuted=false"
-            + "&config.startWithAudioMuted=false"
             + "&interfaceConfig.SHOW_CHROME_EXTENSION_BANNER=false"
             + "&interfaceConfig.DISABLE_FOCUS_INDICATOR=true";
 

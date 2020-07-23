@@ -258,12 +258,7 @@ public class SecurityDialog
         WebDriver driver = participant.getDriver();
         WebElement lobbySection = driver.findElement(By.id(LOBBY_SECTION_ID));
 
-        if (lobbySection != null)
-        {
-            return lobbySection.findElement(By.tagName("input"));
-        }
-
-        return null;
+        return lobbySection.findElement(By.tagName("input"));
     }
 
     /**
