@@ -77,6 +77,8 @@ public class LobbyTest
         assertNotNull(notificationEnabled2);
         assertTrue(notificationEnabled2.contains(participant1.getName()));
 
+        participant2.getNotifications().closeLobbyEnabled();
+
         SecurityDialog securityDialog2 = participant2.getSecurityDialog();
         securityDialog2.open();
 
@@ -212,6 +214,8 @@ public class LobbyTest
             notificationText.contains(participant3.getName()),
             "Notification for second participant need to have the name pf the participant that access was denied");
 
+        participant2.getNotifications().closeLobbyParticipantAccessDenied();
+
         // check the denied one is out of lobby, sees the notification about it
         assertTrue(
             participant3.getNotifications().hasLobbyAccessDenied(),
@@ -245,6 +249,8 @@ public class LobbyTest
         assertTrue(
             notificationText.contains(participant3.getName()),
             "Notification for second participant need to have the name pf the participant that access was granted");
+
+        participant2.getNotifications().closeLobbyParticipantAccessGranted();
 
         // ensure 3 participants in the call will check for the third one that muc is joined, ice connected,
         // media is being receiving and there are two remote streams

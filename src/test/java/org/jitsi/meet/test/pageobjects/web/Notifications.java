@@ -18,6 +18,10 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.interactions.*;
+
+import java.util.*;
 
 /**
  * Gathers all notifications in the UI and obtaining those.
@@ -40,9 +44,14 @@ public class Notifications
     private static final String LOBBY_ENABLED_TEST_ID = "lobby.notificationLobbyEnabled";
 
     /**
+     * The title of all lobby notifications, used to locate the notification and its close button, in order to close it.
+     */
+    private static final String LOBBY_NOTIFICATIONS_TITLE_TEST_ID = "lobby.notificationTitle";
+
+    /**
      * The test id of the notification that a someone's access was denied.
      */
-    private static final String LOBBY_PARTICIPANT_ACCESS_DENIED__TEST_ID = "lobby.notificationLobbyAccessDenied";
+    private static final String LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID = "lobby.notificationLobbyAccessDenied";
 
     /**
      * The test id of the notification that a someone's access was approved.
@@ -81,6 +90,33 @@ public class Notifications
     }
 
     /**
+     * Closes a specific notification.
+     * @param testId the test id for the notification to close.
+     */
+    private void close(String testId)
+    {
+        TestUtils.waitForElementBy(this.participant.getDriver(), ByTestId.testId(testId), 3);
+
+        List<WebElement> lobbyNotifications
+            = this.participant.getDriver().findElements(ByTestId.testId(LOBBY_NOTIFICATIONS_TITLE_TEST_ID));
+
+        WebElement notification = lobbyNotifications.stream()
+            .filter(webElement -> webElement.findElements(ByTestId.testId(testId)).size() > 0)
+            .findFirst().orElse(null);
+
+        if (notification != null)
+        {
+            WebElement closeButton = notification.findElement(By.tagName("button"));
+
+            new Actions(this.participant.getDriver()).moveToElement(closeButton).click().perform();
+        }
+        else
+        {
+            throw new NoSuchElementException("Notification not found:" + testId);
+        }
+    }
+
+    /**
      * The notification on participants page when Lobby is being enabled or disabled.
      * @return the lobby enable/disable notification.
      */
@@ -90,12 +126,28 @@ public class Notifications
     }
 
     /**
+     * Closes the notification.
+     */
+    public void closeLobbyEnabled()
+    {
+        close(LOBBY_ENABLED_TEST_ID);
+    }
+
+    /**
      * The notification test that a someone's access was denied.
      * @return the notification test that a someone's access was denied.
      */
     public String getLobbyParticipantAccessDenied()
     {
-        return getNotificationText(LOBBY_PARTICIPANT_ACCESS_DENIED__TEST_ID);
+        return getNotificationText(LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID);
+    }
+
+    /**
+     * Closes the notification.
+     */
+    public void closeLobbyParticipantAccessDenied()
+    {
+        close(LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID);
     }
 
     /**
@@ -105,6 +157,14 @@ public class Notifications
     public String getLobbyParticipantAccessGranted()
     {
         return getNotificationText(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
+    }
+
+    /**
+     * Closes the notification.
+     */
+    public void closeLobbyParticipantAccessGranted()
+    {
+        close(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
     }
 
     /**
