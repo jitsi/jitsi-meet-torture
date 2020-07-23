@@ -21,6 +21,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -77,15 +78,21 @@ public class PreJoinTest
 
         preJoinScreen.waitForLoading();
 
-        // The event that display name is required takes a while to be received
-        // after showing the UI.
-        TestUtils.waitMillis(2000);
-
         WebElement joinButton = preJoinScreen.getJoinButton();
 
         assertTrue(joinButton.isDisplayed(), "Join button not displayed");
 
-        String classes = joinButton.getAttribute("class");
-        assertTrue(classes.contains("disabled"), "The join button should be disabled");
+        // The event that display name is required takes a while to be received
+        // after showing the UI.
+        TestUtils.waitForCondition(
+            getParticipant2().getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> {
+                WebElement button = preJoinScreen.getJoinButton();
+                String classes = button.getAttribute("class");
+
+                // The join button should be disabled
+                return classes.contains("disabled");
+            });
     }
 }
