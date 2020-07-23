@@ -70,7 +70,7 @@ public class LockRoomDigitsOnlyTest extends WebTestBase
         }
         assertTrue(gotValidationError);
     
-        // Wait for the dialog to settle.
+        // Wait for the dialog to settle while it auto close because of the validate error.
         TestUtils.waitMillis(1000);
 
         assertFalse(securityDialog.isOpen());
@@ -82,9 +82,6 @@ public class LockRoomDigitsOnlyTest extends WebTestBase
         // Set a valid numeric password.
         securityDialog.addPassword("12345");
         securityDialog.close();
-
-        // Wait for the dialog to settle.
-        TestUtils.waitMillis(1000);
 
         securityDialog.open();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright @ 2015 Atlassian Pty Ltd
+ * Copyright @ 2018 8x8 Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,11 @@ public class WebParticipant extends Participant<WebDriver>
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
+    private KnockingParticipantList knockingParticipantList;
     private LargeVideo largeVideo;
+    private LobbyScreen lobbyScreen;
+    private Notifications notifications;
+    private PreJoinScreen preJoinScreen;
     private SecurityDialog securityDialog;
     private SettingsDialog settingsDialog;
     private Toolbar toolbar;
@@ -545,6 +549,19 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * @return a representation of the list of knocking participants.
+     */
+    public KnockingParticipantList getKnockingParticipantList()
+    {
+        if (knockingParticipantList == null)
+        {
+            knockingParticipantList = new KnockingParticipantList(this);
+        }
+
+        return knockingParticipantList;
+    }
+
+    /**
      * @return a representation of the large video of this participant.
      */
     public LargeVideo getLargeVideo()
@@ -555,6 +572,45 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return largeVideo;
+    }
+
+    /**
+     * @return a representation of the lobby.
+     */
+    public LobbyScreen getLobbyScreen()
+    {
+        if (lobbyScreen == null)
+        {
+            lobbyScreen = new LobbyScreen(this);
+        }
+
+        return lobbyScreen;
+    }
+
+    /**
+     * @return a representation of the notifications.
+     */
+    public Notifications getNotifications()
+    {
+        if (notifications == null)
+        {
+            notifications = new Notifications(this);
+        }
+
+        return notifications;
+    }
+
+    /**
+     * @return a representation of the pre join screen.
+     */
+    public PreJoinScreen getPreJoinScreen()
+    {
+        if (preJoinScreen == null)
+        {
+            preJoinScreen = new PreJoinScreen(this);
+        }
+
+        return preJoinScreen;
     }
 
     /**

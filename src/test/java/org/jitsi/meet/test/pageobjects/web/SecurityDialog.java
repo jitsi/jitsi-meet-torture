@@ -20,6 +20,7 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
@@ -38,6 +39,7 @@ public class SecurityDialog
     private final static String LOCAL_LOCK = "info-password-local";
     private final static String REMOTE_LOCK = "info-password-remote";
     private final static String REMOVE_PASSWORD = "remove-password";
+    private final static String LOBBY_SECTION_ID = "lobby-section";
 
     /**
      * The participant used to interact with the security dialog.
@@ -112,6 +114,10 @@ public class SecurityDialog
         }
 
         clickToolbarButton();
+
+        // waits till it is closed
+        new WebDriverWait(participant.getDriver(), 3).until(
+            (ExpectedCondition<Boolean>) d -> !isOpen());
     }
 
     /**
@@ -188,6 +194,14 @@ public class SecurityDialog
         }
 
         this.clickToolbarButton();
+
+        // waits till its open
+        new WebDriverWait(participant.getDriver(), 3).until(
+            (ExpectedCondition<Boolean>) d -> isOpen());
+
+        // give time the dialog to settle before operating on it, we see failures where click button handlers are
+        // not triggered when clicked shortly after opening dialog, not always reproducible
+        TestUtils.waitMillis(500);
     }
 
     /**
@@ -204,6 +218,10 @@ public class SecurityDialog
         this.open();
 
         WebDriver driver = participant.getDriver();
+
+        new WebDriverWait(driver, 5).until(
+            ExpectedConditions.elementToBeClickable(By.className(REMOVE_PASSWORD)));
+
         WebElement removePasswordElement
             = driver.findElement(By.className(REMOVE_PASSWORD));
 
@@ -229,5 +247,64 @@ public class SecurityDialog
 
         WebDriver driver = participant.getDriver();
         return driver.findElements(By.className(className)).size() != 0;
+    }
+
+    /**
+     * Returns the switch that can be used to detect lobby state or change lobby state.
+     * @return the lobby switch UI element.
+     */
+    private WebElement getLobbySwitch()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement lobbySection = driver.findElement(By.id(LOBBY_SECTION_ID));
+
+        return lobbySection.findElement(By.tagName("input"));
+    }
+
+    /**
+     * Checks if the current conference has lobby enabled based on the security dialog's display state.
+     *
+     * @return {@code true} if the conference has lobby enabled in the security dialog, {@code false} otherwise.
+     */
+    public boolean isLobbyEnabled()
+    {
+        open();
+
+        WebElement lobbySwitch = getLobbySwitch();
+
+        return lobbySwitch != null ? lobbySwitch.isSelected() : false;
+    }
+
+    /**
+     * Toggles Lobby.
+     */
+    public void toggleLobby()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement lobbySwitch = getLobbySwitch();
+
+        if (lobbySwitch == null)
+        {
+            throw new NoSuchElementException("Lobby switch not found!");
+        }
+
+        new Actions(driver).moveToElement(lobbySwitch).click().perform();
+    }
+
+    /**
+     * Checks whether lobby section is present in the UI.
+     * @return {@code true} if the lobby switch is displayed in the security dialog, {@code false} otherwise.
+     */
+    public boolean isLobbySectionPresent()
+    {
+        try
+        {
+            WebElement lobbySwitch = getLobbySwitch();
+            return lobbySwitch != null;
+        }
+        catch(NoSuchElementException e)
+        {
+            return false;
+        }
     }
 }
