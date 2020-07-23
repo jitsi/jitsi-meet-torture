@@ -19,7 +19,6 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
-import java.util.*;
 import java.util.logging.*;
 
 /**
@@ -317,7 +316,19 @@ public class WebTestBase
      */
     public WebParticipant joinFirstParticipant()
     {
-        return joinParticipant(0, null, null);
+        return joinFirstParticipant(null);
+    }
+
+    /**
+     * Joins the first participant to a specified {@link JitsiMeetUrl}.
+     * @param meetUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinFirstParticipant(JitsiMeetUrl meetUrl)
+    {
+        return joinParticipant(0, meetUrl, null);
     }
 
     /**
@@ -348,7 +359,7 @@ public class WebTestBase
      */
     public WebParticipant joinThirdParticipant()
     {
-        return joinParticipantAndWait(2, null, null);
+        return joinParticipant(2, null, null);
     }
 
     /**

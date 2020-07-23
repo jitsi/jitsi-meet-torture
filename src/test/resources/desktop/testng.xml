@@ -97,6 +97,11 @@
             <class name="org.jitsi.meet.test.LipSyncTest" />
         </classes>
     </test>
+    <test name="LobbyTest">
+        <classes>
+            <class name="org.jitsi.meet.test.LobbyTest" />
+        </classes>
+    </test>
     <test name="LockRoomTest">
         <classes>
             <class name="org.jitsi.meet.test.LockRoomTest" />
@@ -125,6 +130,11 @@
     <test name="Peer2PeerTest">
         <classes>
             <class name="org.jitsi.meet.test.Peer2PeerTest" />
+        </classes>
+    </test>
+    <test name="PreJoinTest">
+        <classes>
+            <class name="org.jitsi.meet.test.PreJoinTest" />
         </classes>
     </test>
     <test name="ReloadTest">

@@ -20,6 +20,7 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
@@ -38,6 +39,7 @@ public class SecurityDialog
     private final static String LOCAL_LOCK = "info-password-local";
     private final static String REMOTE_LOCK = "info-password-remote";
     private final static String REMOVE_PASSWORD = "remove-password";
+    private final static String LOBBY_SECTION_ID = "lobby-section";
 
     /**
      * The participant used to interact with the security dialog.
@@ -245,5 +247,69 @@ public class SecurityDialog
 
         WebDriver driver = participant.getDriver();
         return driver.findElements(By.className(className)).size() != 0;
+    }
+
+    /**
+     * Returns the switch that can be used to detect lobby state or change lobby state.
+     * @return the lobby switch UI element.
+     */
+    private WebElement getLobbySwitch()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement lobbySection = driver.findElement(By.id(LOBBY_SECTION_ID));
+
+        if (lobbySection != null)
+        {
+            return lobbySection.findElement(By.tagName("input"));
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks if the current conference has lobby enabled based on the security dialog's display state.
+     *
+     * @return {@code true} if the conference has lobby enabled in the security dialog, {@code false} otherwise.
+     */
+    public boolean isLobbyEnabled()
+    {
+        open();
+
+        WebElement lobbySwitch = getLobbySwitch();
+
+        return lobbySwitch != null ? lobbySwitch.isSelected() : false;
+    }
+
+    /**
+     * Toggles Lobby.
+     */
+    public void toggleLobby()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement lobbySwitch = getLobbySwitch();
+
+        if (lobbySwitch == null)
+        {
+            throw new NoSuchElementException("Lobby switch not found!");
+        }
+
+        new Actions(driver).moveToElement(lobbySwitch).click().perform();
+    }
+
+    /**
+     * Checks whether lobby section is present in the UI.
+     * @return {@code true} if the lobby switch is displayed in the security dialog, {@code false} otherwise.
+     */
+    public boolean isLobbySectionPresent()
+    {
+        try
+        {
+            WebElement lobbySwitch = getLobbySwitch();
+            return lobbySwitch != null;
+        }
+        catch(NoSuchElementException e)
+        {
+            return false;
+        }
     }
 }
