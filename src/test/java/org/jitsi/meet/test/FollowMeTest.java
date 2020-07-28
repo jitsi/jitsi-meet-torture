@@ -164,9 +164,12 @@ public class FollowMeTest
     {
         joinThirdParticipant();
 
+        // with three participants we default to tile view now, but it's decided a bit
+        // later than when the 3rd part. joins, so we need to wait for that.
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
+
         getParticipant1().getToolbar().clickTileViewButton();
 
-        // with three participants we default to tile view now
         getAllParticipants().forEach(participant ->
             MeetUIUtils.waitForTileViewDisplay(participant, false));
 
