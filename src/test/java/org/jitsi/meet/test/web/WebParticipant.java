@@ -273,7 +273,7 @@ public class WebParticipant extends Participant<WebDriver>
                 "try{ "
                         + "return JSON.stringify("
                         + "  APP.conference.getLogs(), null, '    ');"
-                        + "}catch (e) {}");
+                        + "}catch (e) { return e.message; }");
 
             return log instanceof String ? (String) log : null;
         }
