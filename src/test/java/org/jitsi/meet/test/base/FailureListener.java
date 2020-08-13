@@ -209,7 +209,7 @@ public class FailureListener
         }
         catch(Throwable ex)
         {
-            ex.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Failed to gather debug information for ", ex);
         }
     }
 
@@ -300,6 +300,8 @@ public class FailureListener
     {
         try
         {
+            Logger.getGlobal().info("get debug log for:" + participant.getName());
+
             String log = participant.getMeetDebugLog();
             if (log != null)
             {

@@ -272,8 +272,8 @@ public class WebParticipant extends Participant<WebDriver>
                 = executeScript(
                 "try{ "
                         + "return JSON.stringify("
-                        + "  APP.conference.getLogs(), null, '    ');"
-                        + "}catch (e) {}");
+                        + "  APP.connection.getLogs(), null, '    ');"
+                        + "}catch (e) { return e.message; }");
 
             return log instanceof String ? (String) log : null;
         }
@@ -677,7 +677,6 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
-     /**
      * A list of log string entries.
      *
      * @return a list of log entries.
