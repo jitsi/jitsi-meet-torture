@@ -506,7 +506,7 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Obtains JitsiMeet debug logs.
      *
-     * XXX On web the value is obtained from "APP.conference.getLogs()", but
+     * XXX On web the value is obtained from "APP.connection.getLogs()", but
      * it's done by executing a script, so no idea at this point when that will
      * be available on mobile.
      *
