@@ -95,4 +95,10 @@ public class PreJoinTest
                 return classes.contains("disabled");
             });
     }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
 }
