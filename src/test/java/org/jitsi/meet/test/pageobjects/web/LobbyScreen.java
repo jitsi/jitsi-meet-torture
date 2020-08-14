@@ -55,7 +55,8 @@ public class LobbyScreen
      * JS script to check whether lobby room is joined or not.
      */
     private static final String CHECK_LOBBY_JOINED_SCRIPT
-        = "return APP.conference._room.room.getLobby().lobbyRoom.joined;";
+        = "return APP.conference._room.room.getLobby().lobbyRoom" +
+            " && APP.conference._room.room.getLobby().lobbyRoom.joined;";
 
     public LobbyScreen(WebParticipant participant)
     {

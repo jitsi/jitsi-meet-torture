@@ -416,4 +416,31 @@ public class LobbyTest
         WebParticipant participant3 = getParticipant3();
         participant3.waitForRemoteStreams(2);
     }
+
+    /**
+     * Tests the case where there are two participants in the call, on is moderator and
+     * one is not. The moderator leaves and we check that the seconnd one becomes moderator
+     * and joins lobby.
+     */
+    @Test(dependsOnMethods = {"testLobbyEnableWithMoreThanTwoParticipants"})
+    public void testModeratorLeavesWhileLobbyEnabled()
+    {
+        ensureTwoParticipants();
+
+        getParticipant1().hangUp();
+
+        WebParticipant participant2 = getParticipant2();
+
+        TestUtils.waitForCondition(
+            participant2.getDriver(),
+            4,
+            (ExpectedCondition<Boolean>) d -> participant2.isModerator());
+
+        LobbyScreen lobbyScreen = participant2.getLobbyScreen();
+
+        TestUtils.waitForCondition(
+            participant2.getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
+    }
 }
