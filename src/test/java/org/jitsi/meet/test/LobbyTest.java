@@ -58,6 +58,14 @@ public class LobbyTest
     {
         ensureTwoParticipants();
 
+        enableLobby();
+    }
+
+    /**
+     * This requires at least two participants in the room.
+     */
+    private void enableLobby()
+    {
         WebParticipant participant1 = getParticipant1();
 
         // we set the name so we can check it on the notifications
@@ -384,5 +392,28 @@ public class LobbyTest
         getParticipant3().waitToJoinMUC();
         getParticipant3().waitForIceConnected();
         getParticipant3().waitForSendReceiveData();
+    }
+
+    /**
+     * Three participants enter a room and moderator enables lobby. All should stay in room.
+     * This tests a problem we were seeing where all participants except the first two a kicked out.
+     */
+    @Test(dependsOnMethods = {"testLobbySharedPassword"})
+    public void testLobbyEnableWithMoreThanTwoParticipants()
+    {
+        hangUpAllParticipants();
+
+        ensureThreeParticipants();
+
+        enableLobby();
+
+        // we need to check remote participants as isInMuc has not changed its value as
+        // the bug is triggered by presence with status 322 which is not handled correctly
+        WebParticipant participant1 = getParticipant1();
+        participant1.waitForRemoteStreams(2);
+        WebParticipant participant2 = getParticipant2();
+        participant2.waitForRemoteStreams(2);
+        WebParticipant participant3 = getParticipant3();
+        participant3.waitForRemoteStreams(2);
     }
 }
