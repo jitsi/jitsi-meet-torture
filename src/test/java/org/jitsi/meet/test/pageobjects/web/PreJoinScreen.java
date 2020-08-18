@@ -34,6 +34,11 @@ public class PreJoinScreen
      */
     private final static String JOIN_BUTTON_TEST_ID = "prejoin.joinMeeting";
 
+    /**
+     * The testId of the join meeting button.
+     */
+    private final static String ERROR_ON_JOIN = "prejoin.errorMessage";
+
     public PreJoinScreen(WebParticipant participant)
     {
         this.participant = participant;
@@ -55,6 +60,15 @@ public class PreJoinScreen
     public WebElement getJoinButton()
     {
         return participant.getDriver().findElement(ByTestId.testId(JOIN_BUTTON_TEST_ID));
+    }
+
+    /**
+     * The errro displayed when joining without name if name is required
+     * @return error element.
+     */
+    public WebElement getErrorOnJoin()
+    {
+        return participant.getDriver().findElement(ByTestId.testId(ERROR_ON_JOIN));
     }
 
 }

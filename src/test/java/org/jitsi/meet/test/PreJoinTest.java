@@ -30,6 +30,32 @@ public class PreJoinTest
     extends WebTestBase
 {
     @Test
+    public void testPreJoiWnenDisplayedNameRequired()
+    {
+        JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
+        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
+        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+        meetingUrl.appendConfig("config.requireDisplayName=true");
+
+        joinFirstParticipant(meetingUrl);
+        PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
+
+        preJoinScreen.waitForLoading();
+
+        WebElement joinButton = preJoinScreen.getJoinButton();
+
+        assertTrue(joinButton.isDisplayed(), "Join button displayed");
+
+        joinButton.click();
+
+        WebElement error = preJoinScreen.getErrorOnJoin();
+
+        assertTrue(error.isDisplayed(), "Error displayed for display name required");
+
+        getParticipant1().hangUp();
+    }
+
+    @Test
     public void testPreJoinForRoomWithoutLobby()
     {
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
@@ -43,10 +69,7 @@ public class PreJoinTest
 
         WebElement joinButton = preJoinScreen.getJoinButton();
 
-        assertTrue(joinButton.isDisplayed(), "Join button not displayed");
-
-        String classes = joinButton.getAttribute("class");
-        assertFalse(classes.contains("disabled"), "The join button should not be disabled");
+        assertTrue(joinButton.isDisplayed(), "Join button displayed");
 
         getParticipant1().hangUp();
     }
@@ -80,20 +103,7 @@ public class PreJoinTest
 
         WebElement joinButton = preJoinScreen.getJoinButton();
 
-        assertTrue(joinButton.isDisplayed(), "Join button not displayed");
-
-        // The event that display name is required takes a while to be received
-        // after showing the UI.
-        TestUtils.waitForCondition(
-            getParticipant2().getDriver(),
-            5,
-            (ExpectedCondition<Boolean>) d -> {
-                WebElement button = preJoinScreen.getJoinButton();
-                String classes = button.getAttribute("class");
-
-                // The join button should be disabled
-                return classes.contains("disabled");
-            });
+        assertTrue(joinButton.isDisplayed(), "Join button displayed");
     }
 
     @Override
