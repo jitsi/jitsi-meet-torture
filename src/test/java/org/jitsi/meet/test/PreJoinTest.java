@@ -51,6 +51,38 @@ public class PreJoinTest
         getParticipant1().hangUp();
     }
 
+    @Test
+    public void testJoinWithoutAudio()
+    {
+
+        JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
+        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
+        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+
+        joinFirstParticipant(meetingUrl);
+        PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
+
+        preJoinScreen.waitForLoading();
+        preJoinScreen.getJoinOptions().click();
+
+        WebDriverWait wait = new WebDriverWait(getParticipant1().getDriver(), 5);
+        WebElement joinWithoutAudioBtn = wait.until(
+            ExpectedConditions.elementToBeClickable(
+                preJoinScreen.getJoinWithoutAudioButton()));
+        joinWithoutAudioBtn.click();
+
+        getParticipant1().waitToJoinMUC();
+
+        boolean micButtonIsDisabled = getParticipant1()
+            .getDriver()
+            .findElement(
+                By.cssSelector(".audio-preview .toolbox-icon.toggled.disabled"))
+            .isDisplayed();
+
+        assertTrue(micButtonIsDisabled);
+
+    }
+
     @Test(dependsOnMethods = {"testPreJoinForRoomWithoutLobby"})
     public void testPreJoinForRoomWithLobby()
     {
@@ -95,6 +127,7 @@ public class PreJoinTest
                 return classes.contains("disabled");
             });
     }
+
 
     @Override
     public boolean skipTestByDefault()

@@ -34,6 +34,10 @@ public class PreJoinScreen
      */
     private final static String JOIN_BUTTON_TEST_ID = "prejoin.joinMeeting";
 
+    private final static String OPTIONS_BUTTON = "prejoin.joinOptions";
+
+    private final static String JOIN_WITHOUT_AUDIO = "prejoin.joinWithoutAudio";
+
     public PreJoinScreen(WebParticipant participant)
     {
         this.participant = participant;
@@ -55,6 +59,22 @@ public class PreJoinScreen
     public WebElement getJoinButton()
     {
         return participant.getDriver().findElement(ByTestId.testId(JOIN_BUTTON_TEST_ID));
+    }
+
+    /**
+     * The join options button.
+     * @return option button.
+     */
+    public WebElement getJoinOptions() {
+        return participant.getDriver().findElement(ByTestId.testId(OPTIONS_BUTTON));
+    }
+
+    /**
+     * The 'joinWithoutAudio' button.
+     * @return join without audio button
+     */
+    public WebElement getJoinWithoutAudioButton() {
+        return participant.getDriver().findElement(ByTestId.testId(JOIN_WITHOUT_AUDIO));
     }
 
 }
