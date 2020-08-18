@@ -39,6 +39,16 @@ public class PreJoinScreen
      */
     private final static String ERROR_ON_JOIN = "prejoin.errorMessage";
 
+    /**
+     * The testId of the join options button.
+     */
+    private final static String OPTIONS_BUTTON = "prejoin.joinOptions";
+
+    /**
+     * The testId of the join without audio button.
+     */
+    private final static String JOIN_WITHOUT_AUDIO = "prejoin.joinWithoutAudio";
+
     public PreJoinScreen(WebParticipant participant)
     {
         this.participant = participant;
@@ -63,7 +73,7 @@ public class PreJoinScreen
     }
 
     /**
-     * The errro displayed when joining without name if name is required
+     * The error displayed when joining without name if name is required.
      * @return error element.
      */
     public WebElement getErrorOnJoin()
@@ -71,4 +81,19 @@ public class PreJoinScreen
         return participant.getDriver().findElement(ByTestId.testId(ERROR_ON_JOIN));
     }
 
+  /**
+     * The join options button.
+     * @return option button.
+     */
+    public WebElement getJoinOptions() {
+        return participant.getDriver().findElement(ByTestId.testId(OPTIONS_BUTTON));
+    }
+
+    /**
+     * The 'joinWithoutAudio' button.
+     * @return join without audio button
+     */
+    public WebElement getJoinWithoutAudioButton() {
+        return participant.getDriver().findElement(ByTestId.testId(JOIN_WITHOUT_AUDIO));
+    }
 }
