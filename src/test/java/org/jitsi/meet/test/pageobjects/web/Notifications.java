@@ -74,9 +74,7 @@ public class Notifications
      */
     private String getNotificationText(String testId)
     {
-        WebElement notification = TestUtils.waitForElementBy(this.participant.getDriver(), ByTestId.testId(testId), 3);
-
-        return notification != null ? notification.getText() : null;
+        return TestUtils.waitForElementTextBy(this.participant.getDriver(), ByTestId.testId(testId), 3);
     }
 
     /**

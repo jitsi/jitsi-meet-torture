@@ -227,6 +227,35 @@ public class TestUtils
     }
 
     /**
+     * Waits until an element becomes available and return it.
+     * @param driver the {@code WebDriver}.
+     * @param by the xpath to search for the element
+     * @param timeout the time to wait for the element in seconds.
+     * @return WebElement the found element
+     */
+    public static String waitForElementTextBy(
+        WebDriver driver,
+        final By by,
+        long timeout)
+    {
+        final String[] foundElement = new String[1];
+        new WebDriverWait(driver, timeout)
+            .until((ExpectedCondition<Boolean>) d -> {
+                List<WebElement> elements = d.findElements(by);
+
+                if (!elements.isEmpty())
+                {
+                    foundElement[0] = elements.get(0).getText();
+                    return true;
+                }
+                else
+                    return false;
+            });
+
+        return foundElement[0];
+    }
+
+    /**
      * Waits until an element becomes unavailable
      * @param driver the {@code WebDriver}.
      * @param by the xpath to search for the element
