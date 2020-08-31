@@ -87,7 +87,13 @@ public class SecurityDialog
         passwordEntry.sendKeys(password);
         passwordEntry.sendKeys(Keys.RETURN);
 
-        String validationMessage = passwordEntry.getAttribute("validationMessage");
+        String validationMessage = null;
+        if (driver.findElements(By.className(ADD_PASSWORD_FIELD)).size() > 0)
+        {
+            // validation had failed on password field as it is still on the page
+            validationMessage = passwordEntry.getAttribute("validationMessage");
+        }
+
         if (validationMessage != null && validationMessage.length() > 0) {
             passwordEntry.sendKeys(Keys.ESCAPE);
             throw new ValidationError(validationMessage);
