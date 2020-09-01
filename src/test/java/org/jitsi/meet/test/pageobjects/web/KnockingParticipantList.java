@@ -156,8 +156,40 @@ public class KnockingParticipantList
          */
         private void clickButton(String buttonId)
         {
+            WebElement participantElement = getParticipantElement();
+
+            if (participantElement == null)
+                throw new NoSuchElementException("Participant not found");
+
+            // there are occasions where the click is not triggered, especially when few browsers run on the same
+            // machine, so we will retry several times before giving up
+            // the element should disappear once it was successfully clicked
+            int retries = 5;
+            while(participantElement != null && retries > 0)
+            {
+                new Actions(participant.getDriver())
+                    .click(participantElement.findElement(ByTestId.testId(buttonId)))
+                    .perform();
+
+                TestUtils.waitMillis(1000);
+
+                retries--;
+                participantElement = getParticipantElement();
+            }
+
+            if (participantElement != null)
+                throw new TimeoutException("Clicking " + buttonId + " did not triggered hiding the UI button.");
+        }
+
+        /**
+         * Returns the knocking participant element that holds approve and deny buttons.
+         * @return the element with approve/deny buttons.
+         */
+        private WebElement getParticipantElement()
+        {
             List<WebElement> listElements = participant.getDriver().findElements(By.xpath(PARTICIPANTS_XPATH));
-            WebElement participantElement = listElements.stream().filter(participant -> {
+
+            return listElements.stream().filter(participant -> {
                 String name = participant.findElement(ByTestId.testId(PARTICIPANT_NAME_TEST_ID)).getText();
 
                 if (name != null && name.equals(this.name))
@@ -165,13 +197,6 @@ public class KnockingParticipantList
 
                 return false;
             }).findAny().orElse(null);
-
-            if (participantElement == null)
-                throw new NoSuchElementException("Participant not found");
-
-            new Actions(participant.getDriver())
-                .click(participantElement.findElement(ByTestId.testId(buttonId)))
-                .perform();
         }
     }
 }
