@@ -104,6 +104,25 @@ public class KnockingParticipantList
     }
 
     /**
+     * Will wait 3 seconds for the knocking participants to disappear and return true or will return false.
+     * @return <tt>true</tt> if the knocking participants list was not displayed.
+     */
+    public boolean waitForHideOfKnockingParticipants()
+    {
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(participant.getDriver(), KNOCKING_PARTICIPANT_LIST_ID, 3);
+
+            return true;
+        }
+        catch(TimeoutException ex)
+        {
+            return false;
+        }
+    }
+
+
+    /**
      * Presentation for the participants in the knocking participants list.
      */
     public class Participant
