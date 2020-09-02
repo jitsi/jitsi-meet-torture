@@ -273,17 +273,12 @@ public class LobbyTest
     @Test(dependsOnMethods = {"testEnteringInLobbyAndApprove"})
     public void testLobbyUserLeaves()
     {
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+        enterLobby(getParticipant1(), false);
 
         getParticipant3().hangUp();
 
-        // check that moderator (participant 1) no longer seers notification about participant in lobby
-        WebParticipant participant1 = getParticipant1();
-        KnockingParticipantList knockingParticipants
-            = participant1.getKnockingParticipantList();
-        boolean lobbyParticipantPresent = knockingParticipants.getParticipants().stream()
-            .anyMatch(p -> p.getName().equals(knockingParticipant.getName()));
-        assertFalse(lobbyParticipantPresent,
+        // check that moderator (participant 1) no longer sees notification about participant in lobby
+        assertTrue(getParticipant1().getKnockingParticipantList().waitForHideOfKnockingParticipants(),
             "Moderator should not see participant in knocking participants list after that participant leaves Lobby.");
     }
 
