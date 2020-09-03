@@ -145,19 +145,16 @@ public class ActiveSpeakerTest
         final String speakerEndpoint = activeSpeaker.getEndpointId();
 
         // just a debug print to go in logs
-        activeSpeaker.executeScript(
-                "console.log('Unmuting in testActiveSpeaker');");
+        consolePrint(activeSpeaker, "Unmuting in testActiveSpeaker");
         // Unmute
         activeSpeaker.getToolbar().clickAudioMuteButton();
 
         // just a debug print to go in logs
-        participant2.executeScript(
-                "console.log('Participant unmuted in testActiveSpeaker "
-                    + speakerEndpoint + "');");
+        consolePrint(participant2,
+            "Participant unmuted in testActiveSpeaker " + speakerEndpoint);
         // just a debug print to go in logs
-        participant3.executeScript(
-                "console.log('Participant unmuted in testActiveSpeaker "
-                    + speakerEndpoint + "');");
+        consolePrint(participant3,
+            "Participant unmuted in testActiveSpeaker " + speakerEndpoint);
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(activeSpeaker, false);
 
@@ -178,18 +175,15 @@ public class ActiveSpeakerTest
         }
 
         // just a debug print to go in logs
-        activeSpeaker.executeScript(
-                "console.log('Muting in testActiveSpeaker');");
+        consolePrint(activeSpeaker, "Muting in testActiveSpeaker");
         // Mute back again
         activeSpeaker.getToolbar().clickAudioMuteButton();
         // just a debug print to go in logs
-        participant2.executeScript(
-                "console.log('Participant muted in testActiveSpeaker "
-                    + speakerEndpoint + "');");
+        consolePrint(participant2,
+            "Participant muted in testActiveSpeaker " + speakerEndpoint);
         // just a debug print to go in logs
-        participant3.executeScript(
-                "console.log('Participant muted in testActiveSpeaker "
-                    + speakerEndpoint + "');");
+        consolePrint(participant3,
+            "Participant muted in testActiveSpeaker " + speakerEndpoint);
         participant2.getFilmstrip().assertAudioMuteIcon(activeSpeaker, true);
     }
 }

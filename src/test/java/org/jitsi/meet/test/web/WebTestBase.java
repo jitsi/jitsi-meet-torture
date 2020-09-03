@@ -411,4 +411,16 @@ public class WebTestBase
 
         return participant;
     }
+
+    /**
+     * Prints logs in the jitsi-meet app that will be available as test results.
+     * @param participant The participant in which logs to add the log entry.s
+     * @param log the log to print.
+     */
+    public void consolePrint(WebParticipant participant, String log)
+    {
+        participant.executeScript(
+            "APP.debugLogs.storeLogs([{ " +
+                "text: new Date().toISOString() + \" [" + getClass().getSimpleName() + "] " + log +"\" }]);");
+    }
 }

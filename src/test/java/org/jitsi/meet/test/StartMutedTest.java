@@ -88,9 +88,8 @@ public class StartMutedTest
         WebParticipant participant2 = getParticipant2();
 
         final WebDriver driver2 = participant2.getDriver();
-        participant1.executeScript(
-            "console.log('Start configOptionsTest, second participant: "
-                + participant2.getEndpointId() + "');");
+        consolePrint(participant1,
+            "Start configOptionsTest, second participant: " + participant2.getEndpointId());
 
         participant1.waitForIceConnected();
 
@@ -104,8 +103,8 @@ public class StartMutedTest
 
         // Unmute and see if the audio works
         participant2.getToolbar().clickAudioMuteButton();
-        participant1.executeScript(
-            "console.log('configOptionsTest, unmuted second participant');");
+        consolePrint(participant1,
+            "configOptionsTest, unmuted second participant");
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
             driver2,
