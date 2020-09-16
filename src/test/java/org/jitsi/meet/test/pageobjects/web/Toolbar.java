@@ -48,6 +48,7 @@ public class Toolbar
     private final static String TILE_VIEW_BUTTON = "Toggle tile view";
     private final static String VIDEO_MUTE = "Toggle mute video";
     private final static String VIDEO_QUALITY = "Manage video quality";
+    private final static String EMBED_MEETING = "Embed meeting";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -126,6 +127,14 @@ public class Toolbar
     public void clickChatButton()
     {
         clickButton(CHAT);
+    }
+
+    /**
+     * Clicks on the embed meeting toolbar button which shows or hides etherpad.
+     */
+    public void clickEmbedMeetingButton()
+    {
+        clickButtonInOverflowMenu(EMBED_MEETING);
     }
 
     /**
