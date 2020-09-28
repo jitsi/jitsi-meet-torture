@@ -174,4 +174,10 @@ public class DataChannelTest
         new WebDriverWait(webDriver, 15).until(
             (ExpectedCondition<Boolean>) this::isServerHelloReceived);
     }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
 }
