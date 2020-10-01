@@ -129,7 +129,7 @@ public class SecurityDialog
         clickToolbarButton();
 
         // waits till it is closed
-        new WebDriverWait(participant.getDriver(), 3).until(
+        new WebDriverWait(participant.getDriver(), 6).until(
             (ExpectedCondition<Boolean>) d -> !isOpen());
     }
 
@@ -285,7 +285,7 @@ public class SecurityDialog
 
         WebElement lobbySwitch = getLobbySwitch();
 
-        return lobbySwitch != null ? lobbySwitch.isSelected() : false;
+        return lobbySwitch != null && lobbySwitch.isSelected();
     }
 
     /**
