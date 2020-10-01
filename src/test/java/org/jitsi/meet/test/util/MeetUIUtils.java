@@ -1090,7 +1090,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForCondition(
             participant.getDriver(),
-            5,
+            10,
             (ExpectedCondition<Boolean>) d -> {
                 WebDriver driver = participant.getDriver();
                 WebElement appRoot
