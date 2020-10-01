@@ -88,13 +88,20 @@ public class SecurityDialog
         passwordEntry.sendKeys(Keys.RETURN);
 
         String validationMessage = null;
+
+        // There are two cases here, validation is enabled and the field passwordEntry maybe there
+        // with validation failed, or maybe successfully hidden after setting the password
+        // So let's give it some time to act on any of the above
+        TestUtils.waitMillis(1000);
+
         if (driver.findElements(By.className(ADD_PASSWORD_FIELD)).size() > 0)
         {
             // validation had failed on password field as it is still on the page
             validationMessage = passwordEntry.getAttribute("validationMessage");
         }
 
-        if (validationMessage != null && validationMessage.length() > 0) {
+        if (validationMessage != null && validationMessage.length() > 0)
+        {
             passwordEntry.sendKeys(Keys.ESCAPE);
             throw new ValidationError(validationMessage);
         }
