@@ -154,10 +154,8 @@ public class WebParticipant extends Participant<WebDriver>
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(conferenceUrl.getIframeToNavigateTo())));
         }
-        else
-        {
-            MeetUtils.waitForPageToLoad(driver);
-        }
+
+        MeetUtils.waitForPageToLoad(driver);
 
         // disables animations
         executeScript("try { jQuery.fx.off = true; } catch(e) {}");
