@@ -118,7 +118,7 @@ public class LobbyTest
 
         TestUtils.waitForCondition(
             participant.getDriver(),
-            5,
+            10,
             (ExpectedCondition<Boolean>) d -> {
                 boolean currentState = securityDialog.isLobbyEnabled();
 
