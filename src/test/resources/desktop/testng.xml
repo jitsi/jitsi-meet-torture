@@ -66,11 +66,6 @@
             <class name="org.jitsi.meet.test.FakeDialInAudioTest" />
         </classes>
     </test>
-    <test name="FilmstripOnlyTest">
-        <classes>
-            <class name="org.jitsi.meet.test.FilmstripOnlyTest" />
-        </classes>
-    </test>
     <test name="FollowMeTest">
         <classes>
             <class name="org.jitsi.meet.test.FollowMeTest" />
