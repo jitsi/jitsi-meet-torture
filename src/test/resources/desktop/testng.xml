@@ -87,6 +87,11 @@
             <class name="org.jitsi.meet.test.IFrameAPITest" />
         </classes>
     </test>
+    <test name="KickTest">
+        <classes>
+            <class name="org.jitsi.meet.test.KickTest" />
+        </classes>
+    </test>
     <test name="LipSyncTest">
         <classes>
             <class name="org.jitsi.meet.test.LipSyncTest" />
