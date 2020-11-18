@@ -131,6 +131,11 @@ public class AvatarTest
 
         // Start the third participant
         ensureThreeParticipants();
+
+        // Temporary wait few seconds so the avatar to be downloaded from libravatar
+        // Seems there is some delay when requesting it
+        TestUtils.waitMillis(3000);
+
         WebDriver driver3 = getParticipant3().getDriver();
 
         String participant2Src = getLocalThumbnailSrc(driver2);
