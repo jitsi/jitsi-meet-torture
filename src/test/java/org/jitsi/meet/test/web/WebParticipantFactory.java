@@ -232,7 +232,7 @@ public class WebParticipantFactory
                 }
             }
 
-            ops.addArguments("auto-select-desktop-capture-source=Entire screen");
+            ops.addArguments("auto-select-desktop-capture-source=Your Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
