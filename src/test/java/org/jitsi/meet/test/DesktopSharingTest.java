@@ -18,7 +18,6 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
-import org.testng.*;
 
 /**
  * Launches a hook script that will launch a participant that will join
@@ -43,19 +42,7 @@ public class DesktopSharingTest
     {
         ensureOneParticipant();
 
-        String extId
-            = (String) getParticipant1().getConfigValue(
-                "desktopSharingChromeExtId");
-
-        if (extId == null)
-        {
-            throw new SkipException(
-                "No Desktop sharing configuration detected. Disabling test.");
-        }
-
-        ensureTwoParticipants(
-                null, null, null,
-                new WebParticipantOptions().setChromeExtensionId(extId));
+        ensureTwoParticipants();
         toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(true);
         testDesktopSharingInPresence("desktop");
@@ -133,16 +120,5 @@ public class DesktopSharingTest
             getParticipant1().getDriver(),
             LOCAL_VIDEO_XPATH,
             5);
-    }
-
-    /**
-     * Currently desktop sharing tests are broken.
-     * There are some chrome crashes and the 'Entire screen' has changed to
-     * 'Your Entire screen'.
-     * @return whether to skip tests by default.
-     */
-    public boolean skipTestByDefault()
-    {
-        return true;
     }
 }

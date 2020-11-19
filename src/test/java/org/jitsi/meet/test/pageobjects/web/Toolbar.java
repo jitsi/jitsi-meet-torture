@@ -18,6 +18,7 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 
 import java.util.*;
 
@@ -56,13 +57,6 @@ public class Toolbar
     private final static String TOOLBOX_ID = "new-toolbox";
 
     /**
-     * The xpath for the desktop button icon. Its toggle class can determine
-     * if desktop sharing is active or not active.
-     */
-    private final static String DESKTOP_ICON_XPATH
-        = "//*[local-name() = 'svg' and @id = 'share-desktop']";
-
-    /**
      * The participant.
      */
     private final WebParticipant participant;
@@ -91,32 +85,18 @@ public class Toolbar
      */
     public void clickDesktopSharingButton()
     {
-        WebDriver driver = participant.getDriver();
-
-        waitForButtonDisplay(DESKTOP);
-
-        WebElement desktopIcon = driver.findElement(
-            By.xpath(DESKTOP_ICON_XPATH));
-        String classNames = desktopIcon.getAttribute("class");
-        boolean isToggled = classNames.contains("toggled");
-
-        clickButton(DESKTOP);
-
-        if (isToggled)
+        // Firefox require user gesture for getDisplayMedia()
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1580944
+        // we us js to click buttons as we have seen some stale elements exceptions due to react updates
+        if (this.participant.getType().isFirefox())
         {
-            TestUtils.waitForElementNotContainsClassByXPath(
-                driver,
-                DESKTOP_ICON_XPATH,
-                "toggled",
-                2);
+            WebElement button = participant.getDriver().findElement(By.cssSelector(
+                getAccessibilityCSSSelector(DESKTOP)));
+            new Actions(this.participant.getDriver()).moveToElement(button).click().perform();
         }
         else
         {
-            TestUtils.waitForElementContainsClassByXPath(
-                driver,
-                DESKTOP_ICON_XPATH,
-                "toggled",
-                2);
+            clickButton(DESKTOP);
         }
     }
 
