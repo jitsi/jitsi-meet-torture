@@ -21,6 +21,8 @@ import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
+import static org.jitsi.meet.test.util.TestUtils.*;
+
 /**
  * Tests the muting and unmuting of the participants in Meet conferences.
  *
@@ -144,6 +146,17 @@ public class MuteTest
     @Test(dependsOnMethods = {"unmuteParticipant2AndCheck"})
     public void participant1MutesParticipant2AndCheck()
     {
+        WebParticipant participant1 = getParticipant1();
+        if (!participant1.isModerator())
+        {
+            print("Participant 1 is not a moderator, skipping check!");
+
+            // will mute participant2 to keep the state expected by next tests
+            getParticipant2().getToolbar().clickAudioMuteButton();
+
+            return;
+        }
+
         getParticipant1()
             .getRemoteParticipantById(getParticipant2().getEndpointId())
             .mute();
