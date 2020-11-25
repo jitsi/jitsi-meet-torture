@@ -87,7 +87,11 @@
             <version>3.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version> 1.7.30</version> 
+        </dependency>
     </dependencies>
 
     <!-- Here we list all properties that we currently support in both
