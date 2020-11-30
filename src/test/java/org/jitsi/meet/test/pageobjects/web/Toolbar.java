@@ -48,7 +48,7 @@ public class Toolbar
     private final static String SHARE_VIDEO = "Toggle Youtube video sharing";
     private final static String TILE_VIEW_BUTTON = "Toggle tile view";
     private final static String VIDEO_MUTE = "Toggle mute video";
-    private final static String VIDEO_QUALITY = "Manage video quality";
+    private final static String VIDEO_QUALITY = "Manage call quality";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
