@@ -45,7 +45,7 @@ public class DesktopSharingTest
         ensureTwoParticipants();
         toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(true);
-        testDesktopSharingInPresence("desktop");
+        testDesktopSharingInPresence(getParticipant1(), getParticipant2(), "desktop");
     }
 
     /**
@@ -59,22 +59,26 @@ public class DesktopSharingTest
     {
         toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(false);
-        testDesktopSharingInPresence("camera");
+        testDesktopSharingInPresence(getParticipant1(), getParticipant2(), "camera");
     }
 
     /**
      * Checks the status of desktop sharing received from the presence and
      * compares it to the passed expected result.
+     * @param localParticipant the participant doing the check
+     * @param remoteParticipant the participant doing the sharing
      * @param expectedResult camera/desktop
      */
-    private void testDesktopSharingInPresence(final String expectedResult)
+    private void testDesktopSharingInPresence(
+        WebParticipant localParticipant,
+        WebParticipant remoteParticipant,
+        final String expectedResult)
     {
-        String participant2EndpointId = getParticipant2().getEndpointId();
+        String participantEndpointId = remoteParticipant.getEndpointId();
 
         TestUtils.waitForStrings(
-            getParticipant1().getDriver(),
-            "return APP.UI.getRemoteVideoType('" + participant2EndpointId +
-                "');",
+            localParticipant.getDriver(),
+            "return APP.UI.getRemoteVideoType('" + participantEndpointId + "');",
             expectedResult,
             5);
     }
@@ -120,5 +124,64 @@ public class DesktopSharingTest
             getParticipant1().getDriver(),
             LOCAL_VIDEO_XPATH,
             5);
+    }
+
+    @Test(dependsOnMethods = { "testDesktopSharingStop" })
+    public void testAudioOnlyAndScreenShare()
+    {
+        hangUpAllParticipants();
+
+        ensureTwoParticipants();
+
+        AudioOnlyTest.setAudioOnly(getParticipant1(), true);
+
+        getParticipant1().getToolbar().clickAudioMuteButton();
+
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        ensureThreeParticipants();
+
+        WebParticipant participant3 = getParticipant3();
+        String participant3EndpointId = participant3.getEndpointId();
+        participant3.getToolbar().clickDesktopSharingButton();
+
+        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
+        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
+
+        // the video should be playing (fixed in jvb2 0c5dd91b)
+        TestUtils.waitForBoolean(getParticipant1().getDriver(),
+            "return APP.UI.isRemoteVideoPlaying('" + participant3EndpointId + "');",
+            10);
+
+        // now change dominant speaker
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        getParticipant3().hangUp();
+
+        ensureThreeParticipants();
+
+        participant3 = getParticipant3();
+
+        getParticipant3().getToolbar().clickAudioMuteButton();
+        participant3EndpointId = participant3.getEndpointId();
+
+        participant3.getToolbar().clickDesktopSharingButton();
+        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
+        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
+
+        // the video should be playing (fixed in jitsi-meet 3657c19e)
+        TestUtils.waitForBoolean(getParticipant1().getDriver(),
+            "return APP.UI.isRemoteVideoPlaying('" + participant3EndpointId + "');",
+            10);
+    }
+
+    public void testLastNAndScreenshare()
+    {
+
+    }
+
+    public void testLastNTileViewAndScreenshare()
+    {
+
     }
 }

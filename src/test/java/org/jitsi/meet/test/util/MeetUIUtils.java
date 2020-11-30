@@ -18,7 +18,6 @@ package org.jitsi.meet.test.util;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -382,27 +381,6 @@ public class MeetUIUtils
 
             TestUtils.waitForElementNotPresentByXPath(
                     driver, filmstripXPath, 5);
-        }
-    }
-
-    /**
-     * Opens the settings panel, if not open.
-     *
-     * @param participant <tt>WebParticipant</tt> instance of the participant
-     * for whom we'll try to open the settings panel.
-     * @throws TimeoutException if we fail to open the settings panel.
-     */
-    public static void displaySettingsPanel(WebParticipant participant)
-    {
-        WebDriver driver = participant.getDriver();
-        String settingsXPath = "//div[@id='settings_container']";
-        WebElement settings = driver.findElement(By.xpath(settingsXPath));
-        if (!settings.isDisplayed())
-        {
-            participant.getToolbar().clickSettingsButton();
-
-            TestUtils.waitForDisplayedElementByXPath(
-                driver, settingsXPath, 5);
         }
     }
 
