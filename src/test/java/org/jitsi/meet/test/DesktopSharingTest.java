@@ -15,9 +15,12 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Launches a hook script that will launch a participant that will join
@@ -78,7 +81,7 @@ public class DesktopSharingTest
 
         TestUtils.waitForStrings(
             localParticipant.getDriver(),
-            "return APP.UI.getRemoteVideoType('" + participantEndpointId + "');",
+            "return JitsiMeetJS.app.testing.getRemoteVideoType('" + participantEndpointId + "');",
             expectedResult,
             5);
     }
@@ -126,60 +129,100 @@ public class DesktopSharingTest
             5);
     }
 
+    /**
+     * A case where do non dominant speaker is sharing screen for a participant in low bandwidth mode
+     * where only a screen share can be received. A bug fixed in jvb 0c5dd91b where the video was not received.
+     *
+     * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
+     */
     @Test(dependsOnMethods = { "testDesktopSharingStop" })
-    public void testAudioOnlyAndScreenShare()
+    public void testAudioOnlyAndNonDominantScreenShare()
     {
         hangUpAllParticipants();
 
-        ensureTwoParticipants();
-
+        ensureOneParticipant();
         AudioOnlyTest.setAudioOnly(getParticipant1(), true);
-
         getParticipant1().getToolbar().clickAudioMuteButton();
 
-        getParticipant2().getToolbar().clickAudioMuteButton();
+        WebParticipant participant2 = joinSecondParticipant();
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData(true, false);
 
-        ensureThreeParticipants();
-
-        WebParticipant participant3 = getParticipant3();
-        String participant3EndpointId = participant3.getEndpointId();
-        participant3.getToolbar().clickDesktopSharingButton();
-
-        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
-        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
-
-        // the video should be playing (fixed in jvb2 0c5dd91b)
-        TestUtils.waitForBoolean(getParticipant1().getDriver(),
-            "return APP.UI.isRemoteVideoPlaying('" + participant3EndpointId + "');",
-            10);
-
-        // now change dominant speaker
-        getParticipant2().getToolbar().clickAudioMuteButton();
-
-        getParticipant3().hangUp();
-
-        ensureThreeParticipants();
-
-        participant3 = getParticipant3();
+        WebParticipant participant3 = joinThirdParticipant();
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
 
         getParticipant3().getToolbar().clickAudioMuteButton();
-        participant3EndpointId = participant3.getEndpointId();
 
         participant3.getToolbar().clickDesktopSharingButton();
+
         testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
         testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
 
-        // the video should be playing (fixed in jitsi-meet 3657c19e)
+        // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
-            "return APP.UI.isRemoteVideoPlaying('" + participant3EndpointId + "');",
+            "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
     }
 
+    /**
+     * A case where first participant is muted (a&v) and enters low bandwidth mode,
+     * the second one is audio muted only and the one sharing (the third) is dominant speaker.
+     * A problem fixed in jitsi-meet 3657c19e and d6ab0a72.
+     *
+     * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
+     */
+    @Test(dependsOnMethods = { "testAudioOnlyAndNonDominantScreenShare" })
+    public void testAudioOnlyAndDominantScreenShare()
+    {
+        hangUpAllParticipants();
+
+        JitsiMeetUrl meetUrl1 = getJitsiMeetUrl()
+            .appendConfig("config.startWithAudioMuted=true")
+            .appendConfig("config.startWithVideoMuted=true");
+        JitsiMeetUrl meetUrl2 = getJitsiMeetUrl()
+            .appendConfig("config.startWithAudioMuted=true");
+
+        ensureOneParticipant(meetUrl1);
+
+        AudioOnlyTest.setAudioOnly(getParticipant1(), true);
+
+        WebParticipant participant2 = joinSecondParticipant(meetUrl2);
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData(true, false);
+
+        WebParticipant participant3 = joinThirdParticipant();
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
+
+        String participant3EndpointId = participant3.getEndpointId();
+
+        participant3.getToolbar().clickDesktopSharingButton();
+        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
+        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
+
+        assertEquals(
+            participant3EndpointId,
+            MeetUIUtils.getLargeVideoResource(getParticipant1().getDriver()),
+            "The desktop sharing participant should be on large");
+
+        // the video should be playing
+        TestUtils.waitForBoolean(getParticipant1().getDriver(),
+            "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
+            10);
+    }
+
+    @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
     public void testLastNAndScreenshare()
     {
 
     }
 
+    @Test(dependsOnMethods = { "testLastNAndScreenshare" })
     public void testLastNTileViewAndScreenshare()
     {
 
