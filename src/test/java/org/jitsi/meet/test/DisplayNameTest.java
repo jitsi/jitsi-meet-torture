@@ -44,7 +44,9 @@ public class DisplayNameTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        WebParticipantOptions ops = new WebParticipantOptions().setSkipDisplayNameSet(true);
+
+        ensureTwoParticipants(null, null, ops, ops);
     }
 
     /**
@@ -101,7 +103,7 @@ public class DisplayNameTest
 
         // now let's reload the second participant
         getParticipant2().hangUp();
-        ensureTwoParticipants();
+        ensureTwoParticipants(null, null, null, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
         doLocalDisplayNameCheck(randomName);
     }

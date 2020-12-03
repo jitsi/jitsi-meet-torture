@@ -139,7 +139,7 @@ public class LobbyTest
      */
     private KnockingParticipantList.Participant enterLobby(WebParticipant moderator, boolean enterDisplayName)
     {
-        joinThirdParticipant();
+        joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
         WebParticipant participant3 = getParticipant3();
         LobbyScreen lobbyScreen = participant3.getLobbyScreen();
