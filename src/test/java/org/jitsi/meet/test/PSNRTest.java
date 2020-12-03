@@ -121,7 +121,7 @@ public class PSNRTest
                         ? "" : " INPUT_VIDEO_FILE does not exist"));
         }
 
-        ParticipantOptions options
+        WebParticipantOptions options
             = new WebParticipantOptions()
                 .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 

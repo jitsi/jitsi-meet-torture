@@ -269,7 +269,7 @@ public class BandwidthEstimationTest
     /**
      * The options to launch the sender participant with.
      */
-    private ParticipantOptions senderOptions;
+    private WebParticipantOptions senderOptions;
 
     /**
      * Utility method that calls {@link #tcScript} to rate-limit given port.
@@ -304,8 +304,8 @@ public class BandwidthEstimationTest
      * Runs the benchmark script with the jvb and the p2p webrtc-stats
      * as a parameter.
      *
-     * @param jvb the {@link File} to read the JVB webrtc-stats from.
-     * @param p2p the {@link File} to read the webrtc-stats file from.
+     * @param jvbFile the {@link File} to read the JVB webrtc-stats from.
+     * @param p2pFile the {@link File} to read the webrtc-stats file from.
      * @param analysisFile the {@link File} to store the analysis results in.
      */
     private static int benchmark(File jvbFile, File p2pFile, File analysisFile)

@@ -104,7 +104,7 @@ public class LipSyncTest
         // don't want to end up with silence being streamed
 
         // this file is required in order to run this test
-        ParticipantOptions options
+        WebParticipantOptions options
             = new WebParticipantOptions()
                 .setFakeStreamVideoFile("resources/fakeVideoStream.y4m")
                 .setFakeStreamAudioFile("resources/fakeAudioStream-lipsync.wav");

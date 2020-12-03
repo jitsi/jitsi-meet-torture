@@ -41,7 +41,7 @@ public class AudioOnlyTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        ensureTwoParticipants(null, null, new WebParticipantOptions().setSkipDisplayNameSet(true), null);
     }
 
     /**

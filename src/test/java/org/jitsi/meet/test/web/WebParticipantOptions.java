@@ -113,6 +113,11 @@ public class WebParticipantOptions
     private static final String PROP_VERSION = "version";
 
     /**
+     * By default WebTestBase will set a display name, this property can skip this step.
+     */
+    private static final String PROP_SKIP_DISPLAYNAME = "skip-displayname";
+
+    /**
      * Get web specific global property names. See
      * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
@@ -143,6 +148,7 @@ public class WebParticipantOptions
                 PROP_REMOTE_ADDRESS_NAME, DEFAULT_REMOTE_ADDRESS_NAME);
         defaults.setProperty(
                 PROP_CHROME_DISABLE_SANDBOX, DEFAULT_CHROME_DISABLE_SANDBOX);
+        defaults.setProperty(PROP_SKIP_DISPLAYNAME, Boolean.FALSE.toString());
 
         return defaults;
     }
@@ -254,6 +260,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets whether we need to skip setting display name for this participant by default in web base tests.
+     */
+    public WebParticipantOptions setSkipDisplayNameSet(boolean value)
+    {
+        setProperty(PROP_SKIP_DISPLAYNAME, Boolean.toString(value));
+        return this;
+    }
+
+    /**
      * Sets the name of y4m video file which will be streamed through fake video
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
@@ -327,6 +342,15 @@ public class WebParticipantOptions
     public String getFakeStreamAudioFile()
     {
         return getProperty(PROP_FAKE_AUDIO);
+    }
+
+    /**
+     * Whether to skip default display name set.
+     * @return Whether to skip default display name set
+     */
+    public boolean getSkipDisplayNameSet()
+    {
+        return Boolean.valueOf(getProperty(PROP_SKIP_DISPLAYNAME));
     }
 
     /**
