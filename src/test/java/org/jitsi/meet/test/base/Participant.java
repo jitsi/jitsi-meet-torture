@@ -73,6 +73,11 @@ public abstract class Participant<T extends WebDriver>
     private String joinedRoomName = null;
 
     /**
+     * The url used to join.
+     */
+    private JitsiMeetUrl meetUrl = null;
+
+    /**
      * Executor that is responsible for keeping the participant session alive.
      */
     private ScheduledExecutorService executor
@@ -152,6 +157,7 @@ public abstract class Participant<T extends WebDriver>
         doJoinConference(meetURL);
 
         this.joinedRoomName = meetURL.getRoomName();
+        this.meetUrl = meetURL;
         this.hungUp = false;
     }
 
@@ -597,5 +603,14 @@ public abstract class Participant<T extends WebDriver>
             .filter(p -> p.getEndpointId().equals(id))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * The url with all options used to join the conference.
+     * @return
+     */
+    public JitsiMeetUrl getMeetUrl()
+    {
+        return meetUrl;
     }
 }
