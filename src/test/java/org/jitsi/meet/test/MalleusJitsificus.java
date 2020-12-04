@@ -64,19 +64,19 @@ public class MalleusJitsificus
             return new Object[0][0];
         }
 
-        int numConferences = Integer.valueOf(System.getProperty(CONFERENCES_PNAME));
-        int numParticipants = Integer.valueOf(System.getProperty(PARTICIPANTS_PNAME));
+        int numConferences = Integer.parseInt(System.getProperty(CONFERENCES_PNAME));
+        int numParticipants = Integer.parseInt(System.getProperty(PARTICIPANTS_PNAME));
         String numSendersStr = System.getProperty(SENDERS_PNAME);
         int numSenders = numSendersStr == null
             ? numParticipants
-            : Integer.valueOf(numSendersStr);
+            : Integer.parseInt(numSendersStr);
 
         String numAudioSendersStr = System.getProperty(AUDIO_SENDERS_PNAME);
         int numAudioSenders = numAudioSendersStr == null
                 ? numParticipants
-                : Integer.valueOf(numAudioSendersStr);
+                : Integer.parseInt(numAudioSendersStr);
 
-        int timeoutMs = 1000 * Integer.valueOf(System.getProperty(DURATION_PNAME));
+        int timeoutMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
 
         String[] regions = null;
         String regionsStr = System.getProperty(REGIONS_PNAME);
