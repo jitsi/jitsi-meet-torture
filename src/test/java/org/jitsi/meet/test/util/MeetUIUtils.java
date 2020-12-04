@@ -895,6 +895,36 @@ public class MeetUIUtils
     }
 
     /**
+     * Checks whether the remote participant's media connection status is ninja.
+     *
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant whose connection
+     * status will be checked.
+     * @return <tt>true</tt> if the indicator is ninja.
+     */
+    public static boolean hasNinjaUserConnStatusIndication(WebDriver driver, String endpointId)
+    {
+        assertNotNull(endpointId);
+
+        // Check "connection ninja" icon
+        return driver.findElements(
+            By.xpath("//span[@id='participant_" + endpointId + "']//span[@class='connection_ninja']"))
+                .size() > 0;
+    }
+
+    /**
+     * Waits for ninja icon to appear in remote videos.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void waitForNinjaIcon(WebDriver driver)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[contains(@class,'videocontainer')]//span[contains(@class,'connection_ninja')]", 5);
+    }
+
+    /**
      * This method verifies whether or not given participant is having
      * connectivity issues, but in a different way that it's done in
      * {@link MeetUIUtils#verifyUserConnStatusIndication(WebDriver, String, boolean)}
