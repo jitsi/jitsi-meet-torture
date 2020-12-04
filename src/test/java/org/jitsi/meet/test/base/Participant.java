@@ -73,6 +73,12 @@ public abstract class Participant<T extends WebDriver>
     private String joinedRoomName = null;
 
     /**
+     * Whether this is a "secondary" participant, i.e. reusing another
+     * participant's driver.
+     */
+    private final boolean secondary;
+
+    /**
      * Executor that is responsible for keeping the participant session alive.
      */
     private ScheduledExecutorService executor
@@ -102,6 +108,21 @@ public abstract class Participant<T extends WebDriver>
         this.driver = Objects.requireNonNull(driver, "driver");
         this.type = Objects.requireNonNull(type, "type");
         this.defaultConfig = defaultConfig;
+        this.secondary = false;
+    }
+
+    /**
+     * Constructs a secondary Participant based on another one.
+     */
+    public Participant(
+        String name,
+        Participant<T> other)
+    {
+        this.name = name;
+        this.driver = other.driver;
+        this.type = other.type;
+        this.defaultConfig = other.defaultConfig;
+        this.secondary = true;
     }
 
     /**
@@ -110,7 +131,10 @@ public abstract class Participant<T extends WebDriver>
      */
     public void initialize()
     {
-        startKeepAliveExecution();
+        if (!secondary)
+        {
+            startKeepAliveExecution();
+        }
     }
 
     /**
@@ -197,6 +221,11 @@ public abstract class Participant<T extends WebDriver>
      */
     public void close()
     {
+        if (secondary)
+        {
+            return;
+        }
+
         TestUtils.print("Closing " + name);
 
         cancelKeepAlive();

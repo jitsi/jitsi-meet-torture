@@ -50,6 +50,11 @@ public abstract class ParticipantHelper<P extends Participant>
     private final List<P> participants;
 
     /**
+     * The current list of "primary" participants, that own their driver connections.
+     */
+    private final List<P> primaryParticipants;
+
+    /**
      * Default.
      *
      * @param config - The config which will be used as a properties source for
@@ -59,6 +64,7 @@ public abstract class ParticipantHelper<P extends Participant>
     {
         this.config = Objects.requireNonNull(config, "config");
         this.participants = new CopyOnWriteArrayList<>();
+        this.primaryParticipants = new CopyOnWriteArrayList<>();
         this.participantFactory = null;
     }
 
@@ -148,12 +154,22 @@ public abstract class ParticipantHelper<P extends Participant>
         P participant = participantFactory.createParticipant(targetOptions);
 
         participants.add(participant);
+        primaryParticipants.add(participant);
 
         TestUtils.print(
                 "Started " + participant.getType()
                     + " driver for prefix: " + configPrefix);
 
         return participant;
+    }
+
+    /**
+     * Registers a secondary participant.
+     *
+     * */
+    public void registerSecondaryParticipant(P participant)
+    {
+        participants.add(participant);
     }
 
     /**
@@ -171,7 +187,7 @@ public abstract class ParticipantHelper<P extends Participant>
      */
     public void cleanup()
     {
-        participants.stream().forEach(Participant::closeSafely);
+        primaryParticipants.stream().forEach(Participant::closeSafely);
         participants.clear();
     }
 
@@ -181,7 +197,7 @@ public abstract class ParticipantHelper<P extends Participant>
      */
     public void hangUpByIndex(int index)
     {
-        Participant participant = get(index);
+        P participant = get(index);
         if (participant != null)
             participant.hangUp();
     }

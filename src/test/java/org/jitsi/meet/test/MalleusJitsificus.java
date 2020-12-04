@@ -145,6 +145,7 @@ public class MalleusJitsificus
                     waitTime,
                     i >= numSenders /* no video */,
                     i >= numAudioSenders /* no audio */,
+                    2,
                     regions == null ? null : regions[i % regions.length]);
         }
 
@@ -162,11 +163,14 @@ public class MalleusJitsificus
                             long waitTime,
                             boolean muteVideo,
                             boolean muteAudio,
+                            int numSecondary,
                             String region)
     {
         JitsiMeetUrl _url = url.copy();
 
         Thread joinThread = new Thread(() -> {
+
+            List<WebParticipant> ourParticipants = new ArrayList<>();
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
@@ -187,7 +191,17 @@ public class MalleusJitsificus
             }
 
             WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            ourParticipants.add(participant);
             participant.joinConference(_url);
+
+            for (int j = 0; j < numSecondary; j++)
+            {
+                WebParticipant secondary = new WebParticipant("web.participant" + (i + 1) + "-" + (j + 1), participant);
+
+                participants.registerSecondaryParticipant(secondary);
+                ourParticipants.add(secondary);
+                secondary.joinConference(_url);
+            }
 
             try
             {
@@ -199,7 +213,7 @@ public class MalleusJitsificus
             }
             finally
             {
-                participant.hangUp();
+                ourParticipants.forEach(Participant::hangUp);
                 closeParticipant(participant);
             }
         });

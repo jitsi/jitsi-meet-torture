@@ -93,6 +93,8 @@ public class WebParticipant extends Participant<WebDriver>
     public static final String GET_REMOTE_PARTICIPANT_IDS =
         "return APP.conference._room.getParticipants().map(p => p._id);";
 
+    private String windowHandle;
+
     private ChatPanel chatPanel;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
@@ -107,7 +109,7 @@ public class WebParticipant extends Participant<WebDriver>
     private WebFilmstrip filmstrip;
 
     /**
-     * Constructs a Participant.
+     * Constructs a primary Participant.
      *
      * @param name    the name.
      * @param driver  its driver instance.
@@ -117,6 +119,36 @@ public class WebParticipant extends Participant<WebDriver>
             String name, WebDriver driver, ParticipantType type)
     {
         super(name, driver, type, DEFAULT_CONFIG);
+        Set<String> handles = driver.getWindowHandles();
+        assert(handles.size() == 1);
+        windowHandle = handles.iterator().next();
+    }
+
+    /**
+     * Constructs a secondary participant.
+     */
+    public WebParticipant(String name, WebParticipant other)
+    {
+        super(name, other);
+        JavascriptExecutor executor = getJSExecutor();
+        synchronized (driver)
+        {
+            Set<String> handles1 = driver.getWindowHandles();
+
+            executor.executeScript("window.open();");
+
+            /* TODO: is this valid immediately? */
+            Set<String> handles2 = driver.getWindowHandles();
+            handles2.removeAll(handles1);
+            assert(handles2.size() == 1);
+
+            windowHandle = handles2.iterator().next();
+        }
+    }
+
+    private void switchToWindow()
+    {
+        driver.switchTo().window(windowHandle);
     }
 
     /**
@@ -125,6 +157,7 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public void doJoinConference(JitsiMeetUrl conferenceUrl)
     {
+        switchToWindow();
         // with chrome v52 we start getting error:
         // "Timed out receiving message from renderer" and
         // "Navigate timeout: cannot determine loading status"
@@ -204,6 +237,7 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
+        switchToWindow();
         getToolbar().clickHangUpButton();
 
         TestUtils.waitMillis(500);
@@ -221,7 +255,11 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public Object executeScript(String var1, Object... var2)
     {
-        return getJSExecutor().executeScript(var1, var2);
+        synchronized (driver)
+        {
+            switchToWindow();
+            return getJSExecutor().executeScript(var1, var2);
+        }
     }
 
     /**
