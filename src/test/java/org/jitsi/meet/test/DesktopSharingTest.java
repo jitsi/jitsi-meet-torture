@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -219,12 +220,68 @@ public class DesktopSharingTest
     @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
     public void testLastNAndScreenshare()
     {
+        hangUpAllParticipants();
 
-    }
+        ensureThreeParticipants();
 
-    @Test(dependsOnMethods = { "testLastNAndScreenshare" })
-    public void testLastNTileViewAndScreenshare()
-    {
+        getParticipant3().getToolbar().clickDesktopSharingButton();
 
+        WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl().appendConfig("config.channelLastN=2"));
+        WebDriver driver4 = participant4.getDriver();
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
+
+        testDesktopSharingInPresence(participant1, participant3, "desktop");
+        testDesktopSharingInPresence(participant2, participant3, "desktop");
+
+        String participant3EndpointId = participant3.getEndpointId();
+
+        // video on large, the screenshare from p3
+        MeetUIUtils.waitsForLargeVideoSwitch(driver4, participant3EndpointId);
+
+        // the video should be playing
+        TestUtils.waitForBoolean(driver4,
+            "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
+            10);
+
+        // one inactive icon should appear in few seconds
+        MeetUIUtils.waitForNinjaIcon(driver4);
+
+        // and there is video for the other participant
+        String participant1EndpointId = participant1.getEndpointId();
+        String participant2EndpointId = participant2.getEndpointId();
+
+        boolean p1IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant1EndpointId);
+        boolean p2IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant2EndpointId);
+
+        assertTrue(p1IsNinja || p2IsNinja, "Participant 1 or 2 should be ninja");
+
+        if (p1IsNinja)
+        {
+
+            // check participant 2 whether video is received
+            assertTrue(TestUtils.executeScriptAndReturnBoolean(
+                    driver4,
+                    "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
+                "Participant 2 should have video on");
+            assertFalse(TestUtils.executeScriptAndReturnBoolean(
+                    driver4,
+                    "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
+                "Participant 1 should not receive video");
+        }
+        else
+        {
+            // check participant 1 whether video is received
+            assertTrue(TestUtils.executeScriptAndReturnBoolean(
+                driver4,
+                "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
+                "Participant 1 should have video on");
+            assertFalse(TestUtils.executeScriptAndReturnBoolean(
+                driver4,
+                "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
+                "Participant 2 should not receive video");
+        }
     }
 }

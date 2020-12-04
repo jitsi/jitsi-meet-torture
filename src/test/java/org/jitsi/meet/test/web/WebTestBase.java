@@ -236,6 +236,15 @@ public class WebTestBase
     }
 
     /**
+     * Returns the fourth participant.
+     * @return the fourth participant.
+     */
+    public WebParticipant getParticipant4()
+    {
+        return getParticipant(4);
+    }
+
+    /**
      * Hangups all participants.
      */
     public void hangUpAllParticipants()
@@ -381,6 +390,18 @@ public class WebTestBase
     public WebParticipant joinThirdParticipant(JitsiMeetUrl meetUrl, WebParticipantOptions options)
     {
         return joinParticipant(2, meetUrl, options);
+    }
+
+    /**
+     * Joins the fourth participant.
+     * @param meetUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinFourthParticipant(JitsiMeetUrl meetUrl)
+    {
+        return joinParticipant(3, meetUrl, null);
     }
 
     /**
