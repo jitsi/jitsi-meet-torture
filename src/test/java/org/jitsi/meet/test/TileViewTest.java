@@ -153,4 +153,53 @@ public class TileViewTest
         getParticipant1().getToolbar().clickTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
     }
+
+    /**
+     * The first one is dominant, a third enters with lastN=1 and sees second participant's video as a dominant speaker.
+     * The dominant speaker changes to the second one and we start seeing its video and is ninja no more.
+     */
+    @Test(dependsOnMethods = { "testLocalVideoDisplaysIndependentlyFromRemote" })
+    public void testLastNAndTileView()
+    {
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        // let's mute the third so it does not become dominant speaker
+        ensureThreeParticipants(null, null,
+            getJitsiMeetUrl().appendConfig("config.channelLastN=1")
+                .appendConfig("config.startWithAudioMuted=true"));
+
+        WebDriver driver3 = getParticipant3().getDriver();
+
+        // one inactive icon should appear in few seconds
+        MeetUIUtils.waitForNinjaIcon(driver3);
+
+        String participant1EndpointId = getParticipant1().getEndpointId();
+
+        // should have video for participant 1
+        assertTrue(TestUtils.executeScriptAndReturnBoolean(
+            driver3,
+            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
+            "Participant 1 should have video on");
+
+        String participant2EndpointId = getParticipant2().getEndpointId();
+
+        assertTrue(MeetUIUtils.hasNinjaUserConnStatusIndication(driver3, participant2EndpointId));
+
+        // no video for participant 2
+        assertFalse(TestUtils.executeScriptAndReturnBoolean(
+            driver3,
+            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
+            "Participant 2 should have video off");
+
+        getParticipant1().getToolbar().clickAudioMuteButton();
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        MeetUIUtils.waitForDominantspeaker(driver3, participant2EndpointId);
+
+        // check video of participant 2 should be received
+        assertTrue(TestUtils.executeScriptAndReturnBoolean(
+            driver3,
+            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
+            "Participant 2 should have video on");
+    }
 }

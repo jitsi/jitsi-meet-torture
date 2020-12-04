@@ -925,6 +925,19 @@ public class MeetUIUtils
     }
 
     /**
+     * Waits for dominant speaker icon to appear in remote video of a participant.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant whose dominant speaker icon
+     * status will be checked.
+     */
+    public static void waitForDominantspeaker(WebDriver driver, String endpointId)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[@id='participant_" + endpointId + "']//span[@id='dominantspeakerindicator']", 5);
+    }
+
+    /**
      * This method verifies whether or not given participant is having
      * connectivity issues, but in a different way that it's done in
      * {@link MeetUIUtils#verifyUserConnStatusIndication(WebDriver, String, boolean)}
