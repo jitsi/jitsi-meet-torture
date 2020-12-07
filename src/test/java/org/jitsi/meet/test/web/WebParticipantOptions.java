@@ -47,12 +47,6 @@ public class WebParticipantOptions
     private static final String PROP_BINARY = "binary";
 
     /**
-     * The id of the chrome extension that will be loaded
-     * on opening participant driver.
-     */
-    private static final String PROP_CHROME_EXTENSION_ID = "chromeExtensionID";
-
-    /**
      * The name of the system property that holds the path to the packet
      * delivery trace file to use for the downlink direction in the mahimahi
      * shell.
@@ -304,18 +298,6 @@ public class WebParticipantOptions
     }
 
     /**
-     * Sets the chrome extension id to be used.
-     * @param extensionId the chrome extension id to be used.
-     * @return a reference to this object.
-     */
-    public WebParticipantOptions setChromeExtensionId(String extensionId)
-    {
-        setProperty(PROP_CHROME_EXTENSION_ID, extensionId);
-
-        return this;
-    }
-
-    /**
      * Returns version for the driver, if available.
      * @return version for the driver, if available.
      */
@@ -405,14 +387,5 @@ public class WebParticipantOptions
     public String getFakeStreamVideoFile()
     {
         return getProperty(PROP_FAKE_VIDEO);
-    }
-
-    /**
-     * Returns the chrome extension id option.
-     * @return the chrome extension id option.
-     */
-    public String getChromeExtensionId()
-    {
-        return getProperty(PROP_CHROME_EXTENSION_ID);
     }
 }
