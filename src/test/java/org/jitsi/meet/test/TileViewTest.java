@@ -20,7 +20,10 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.testng.*;
 import org.testng.annotations.*;
+
+import java.util.logging.*;
 
 import static org.testng.Assert.*;
 
@@ -161,6 +164,12 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testLocalVideoDisplaysIndependentlyFromRemote" })
     public void testLastNAndTileView()
     {
+        if (getParticipant1().getType().isFirefox() || getParticipant2().getType().isFirefox())
+        {
+            Logger.getGlobal().log(Level.WARNING, "Not testing as second participant cannot be dominant speaker.");
+            throw new SkipException("Firefox does not support external audio file as input.");
+        }
+
         getParticipant2().getToolbar().clickAudioMuteButton();
 
         // let's mute the third so it does not become dominant speaker
