@@ -140,7 +140,10 @@ public class WebParticipantFactory
             // Enables tcp in firefox, disabled by default in 44
             profile.setPreference("media.peerconnection.ice.tcp", true);
             profile.setPreference("media.navigator.streams.fake", true);
-            profile.setAcceptUntrustedCertificates(true);
+            if (options.allowsInsecureCerts())
+            {
+                profile.setAcceptUntrustedCertificates(true);
+            }
 
             profile.setPreference(
                 "webdriver.log.file", FailureListener.createLogsFolder() +
@@ -235,6 +238,7 @@ public class WebParticipantFactory
             ops.addArguments("auto-select-desktop-capture-source=Your Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+            ops.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, options.allowsInsecureCerts());
 
             if (options.isChromeSandboxDisabled())
             {

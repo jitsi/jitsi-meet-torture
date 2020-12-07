@@ -39,6 +39,11 @@ public class WebParticipantOptions
     private static final String DEFAULT_REMOTE_ADDRESS_NAME
         = "http://localhost:4444/wd/hub";
 
+    /**
+     * Whether to allow insecure certs, by default is false.
+     */
+    private static final String PROP_ALLOW_INSECURE_CERTS = "allowInsecureCerts";
+
     private static final String PROP_BINARY = "binary";
 
     /**
@@ -126,6 +131,7 @@ public class WebParticipantOptions
     {
         List<String> globalKeys = new LinkedList<>();
 
+        globalKeys.add(PROP_ALLOW_INSECURE_CERTS);
         globalKeys.add(PROP_DISABLE_NOSANBOX);
         globalKeys.add(PROP_ENABLE_HEADLESS);
         globalKeys.add(PROP_REMOTE_ADDRESS_NAME);
@@ -149,6 +155,7 @@ public class WebParticipantOptions
         defaults.setProperty(
                 PROP_CHROME_DISABLE_SANDBOX, DEFAULT_CHROME_DISABLE_SANDBOX);
         defaults.setProperty(PROP_SKIP_DISPLAYNAME, Boolean.FALSE.toString());
+        defaults.setProperty(PROP_ALLOW_INSECURE_CERTS, Boolean.FALSE.toString());
 
         return defaults;
     }
@@ -181,6 +188,16 @@ public class WebParticipantOptions
         {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * The getter for {@link #PROP_ALLOW_INSECURE_CERTS}.
+     *
+     * @return <tt>true</tt> or <tt>false</tt>.
+     */
+    public boolean allowsInsecureCerts()
+    {
+        return getBooleanProperty(PROP_ALLOW_INSECURE_CERTS);
     }
 
     /**
