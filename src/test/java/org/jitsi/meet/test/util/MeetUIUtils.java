@@ -925,6 +925,19 @@ public class MeetUIUtils
     }
 
     /**
+     * Waits for ninja icon to appear in endpoint's remote videos.
+     * @param endpointId the endpoint ID of the participant whose connection
+     * status will be checked.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void waitForNinjaIcon(WebDriver driver, String endpointId)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[@id='participant_" + endpointId + "']//span[contains(@class,'connection_ninja')]", 10);
+    }
+
+    /**
      * Waits for dominant speaker icon to appear in remote video of a participant.
      * @param driver the <tt>WebDriver</tt> instance where the check will be
      * performed.

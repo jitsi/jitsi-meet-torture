@@ -225,8 +225,11 @@ public class DesktopSharingTest
         ensureThreeParticipants();
 
         getParticipant3().getToolbar().clickDesktopSharingButton();
+        // Let's make sure participant1 is not dominant
+        getParticipant1().getToolbar().clickAudioMuteButton();
 
-        WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl().appendConfig("config.channelLastN=2"));
+        WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
+            .appendConfig("config.channelLastN=2").appendConfig("config.startWithAudioMuted=true"));
         WebDriver driver4 = participant4.getDriver();
 
         WebParticipant participant1 = getParticipant1();
@@ -235,6 +238,9 @@ public class DesktopSharingTest
 
         testDesktopSharingInPresence(participant1, participant3, "desktop");
         testDesktopSharingInPresence(participant2, participant3, "desktop");
+
+        // Let's make sure participant3 is not dominant
+        getParticipant3().getToolbar().clickAudioMuteButton();
 
         String participant3EndpointId = participant3.getEndpointId();
 
@@ -254,34 +260,23 @@ public class DesktopSharingTest
         String participant2EndpointId = participant2.getEndpointId();
 
         boolean p1IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant1EndpointId);
-        boolean p2IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant2EndpointId);
 
-        assertTrue(p1IsNinja || p2IsNinja, "Participant 1 or 2 should be ninja");
+        assertTrue(p1IsNinja, "Participant 1 should be ninja");
 
-        if (p1IsNinja)
-        {
-
-            // check participant 2 whether video is received
-            assertTrue(TestUtils.executeScriptAndReturnBoolean(
-                    driver4,
-                    "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
-                "Participant 2 should have video on");
-            assertFalse(TestUtils.executeScriptAndReturnBoolean(
-                    driver4,
-                    "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
-                "Participant 1 should not receive video");
-        }
-        else
-        {
-            // check participant 1 whether video is received
-            assertTrue(TestUtils.executeScriptAndReturnBoolean(
-                driver4,
-                "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
-                "Participant 1 should have video on");
-            assertFalse(TestUtils.executeScriptAndReturnBoolean(
+        // check participant 2 whether video is received
+        assertTrue(TestUtils.executeScriptAndReturnBoolean(
                 driver4,
                 "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
-                "Participant 2 should not receive video");
-        }
+            "Participant 2 should have video on");
+        assertFalse(TestUtils.executeScriptAndReturnBoolean(
+                driver4,
+                "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
+            "Participant 1 should not receive video");
+
+        // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
+        getParticipant1().getToolbar().clickAudioMuteButton();
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        MeetUIUtils.waitForNinjaIcon(driver4, participant2EndpointId);
     }
 }
