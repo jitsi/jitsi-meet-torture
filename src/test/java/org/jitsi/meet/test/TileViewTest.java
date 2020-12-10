@@ -185,20 +185,14 @@ public class TileViewTest
         String participant1EndpointId = getParticipant1().getEndpointId();
 
         // should have video for participant 1
-        assertTrue(TestUtils.executeScriptAndReturnBoolean(
-            driver3,
-            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
-            "Participant 1 should have video on");
+        MeetUIUtils.waitForRemoteVideo(driver3, participant1EndpointId, true);
 
         String participant2EndpointId = getParticipant2().getEndpointId();
 
         assertTrue(MeetUIUtils.hasNinjaUserConnStatusIndication(driver3, participant2EndpointId));
 
         // no video for participant 2
-        assertFalse(TestUtils.executeScriptAndReturnBoolean(
-            driver3,
-            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
-            "Participant 2 should have video off");
+        MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, false);
 
         getParticipant1().getToolbar().clickAudioMuteButton();
         getParticipant2().getToolbar().clickAudioMuteButton();
@@ -206,9 +200,6 @@ public class TileViewTest
         MeetUIUtils.waitForDominantspeaker(driver3, participant2EndpointId);
 
         // check video of participant 2 should be received
-        assertTrue(TestUtils.executeScriptAndReturnBoolean(
-            driver3,
-            "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
-            "Participant 2 should have video on");
+        MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, true);
     }
 }

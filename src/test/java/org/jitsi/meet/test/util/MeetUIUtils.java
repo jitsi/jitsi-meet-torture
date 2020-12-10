@@ -951,6 +951,19 @@ public class MeetUIUtils
     }
 
     /**
+     * Waits for remote video state - receiving or not receive for a participant.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant which video will be checked.
+     */
+    public static void waitForRemoteVideo(WebDriver driver, String endpointId, boolean received)
+    {
+        TestUtils.waitForBoolean(driver,
+            "return " + (received ? "" : "!" ) +"JitsiMeetJS.app.testing.isRemoteVideoReceived('" + endpointId + "');",
+            5);
+    }
+
+    /**
      * This method verifies whether or not given participant is having
      * connectivity issues, but in a different way that it's done in
      * {@link MeetUIUtils#verifyUserConnStatusIndication(WebDriver, String, boolean)}
