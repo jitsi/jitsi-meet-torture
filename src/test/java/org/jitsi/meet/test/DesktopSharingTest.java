@@ -264,16 +264,10 @@ public class DesktopSharingTest
         assertTrue(p1IsNinja, "Participant 1 should be ninja");
 
         // check participant 2 whether video is received
-        assertTrue(TestUtils.executeScriptAndReturnBoolean(
-                driver4,
-                "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant2EndpointId + "');"),
-            "Participant 2 should have video on");
+        MeetUIUtils.waitForRemoteVideo(driver4, participant2EndpointId, true);
         // We are getting too many false positives here we need to add
         // some debugs and investigate, will comment for now to stop failing PR tests randomly
-        //assertFalse(TestUtils.executeScriptAndReturnBoolean(
-        //        driver4,
-        //        "return JitsiMeetJS.app.testing.isRemoteVideoReceived('" + participant1EndpointId + "');"),
-        //    "Participant 1 should not receive video");
+        //MeetUIUtils.waitForRemoteVideo(driver4, participant1EndpointId, false);
 
         // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
         getParticipant1().getToolbar().clickAudioMuteButton();
