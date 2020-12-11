@@ -11,6 +11,8 @@ case $1 in
         --participants) PARTICIPANTS=$optvalue;;
         --senders) SENDERS=$optvalue;;
         --audio-senders) AUDIO_SENDERS=$optvalue;;
+        --senders-per-node) SENDERS_PER_NODE=$optvalue;;
+        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue;;
         --duration) DURATION=$optvalue;;
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
@@ -37,6 +39,22 @@ case $1 in
 
     if [ -z "$AUDIO_SENDERS" ]; then
       AUDIO_SENDERS=$PARTICIPANTS
+    fi
+
+    if [ -z "$SENDERS" ]; then
+      SENDERS=$PARTICIPANTS
+    fi
+
+    if [ -z "$AUDIO_SENDERS" ]; then
+      AUDIO_SENDERS=$PARTICIPANTS
+    fi
+
+    if [ -z "$SENDERS" ]; then
+      SENDERS_PER_NODE=1
+    fi
+
+    if [ -z "$AUDIO_SENDERS" ]; then
+      RECEIVERS_PER_NODE=1
     fi
 
     if [ -z "$DURATION" ]; then
@@ -88,6 +106,8 @@ mvn \
 -Dorg.jitsi.malleus.participants=$PARTICIPANTS \
 -Dorg.jitsi.malleus.senders=$SENDERS \
 -Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \
+-Dorg.jitsi.malleus.senders_per_node=$SENDERS_PER_NODE \
+-Dorg.jitsi.malleus.receivers_per_node=$RECEIVERS_PER_NODE \
 -Dorg.jitsi.malleus.duration=$DURATION \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \
