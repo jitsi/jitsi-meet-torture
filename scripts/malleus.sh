@@ -8,6 +8,7 @@ case $1 in
       optvalue=`echo $arg | cut -d= -f2`
       case $optname in
         --conferences) CONFERENCES=$optvalue;;
+        --allow-insecure-certs) ALLOW_INSECURE_CERTS=$optvalue;;
         --participants) PARTICIPANTS=$optvalue;;
         --senders) SENDERS=$optvalue;;
         --audio-senders) AUDIO_SENDERS=$optvalue;;
@@ -22,6 +23,10 @@ case $1 in
           ;;
       esac
     done
+
+    if [ -z "$ALLOW_INSECURE_CERTS" ]; then
+      ALLOW_INSECURE_CERTS=false
+    fi
 
     if [ -z "$CONFERENCES" ]; then
       CONFERENCES=1
@@ -92,6 +97,7 @@ mvn \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \
 -Dremote.address=$HUB_URL \
+-DallowInsecureCerts=$ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=MalleusJitsificus \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
