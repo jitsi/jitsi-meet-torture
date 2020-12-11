@@ -310,7 +310,7 @@ public class JibriTest
         WebDriver driver = participant.getDriver();
 
         driver.get(url);
-        MeetUtils.waitForPageToLoad(driver);
+        MeetUtils.waitForPageToLoad(driver, null);
 
         participant.executeScript(
                 "document.title='" + participant.getName() + "'");

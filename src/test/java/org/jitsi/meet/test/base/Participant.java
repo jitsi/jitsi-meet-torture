@@ -160,7 +160,7 @@ public abstract class Participant<T extends WebDriver>
 
         meetURL.appendConfig(defaultConfig, false /* do not override */);
 
-        TestUtils.print(getName() + " is opening URL: " + meetURL);
+        TestUtils.print(getName() + (secondary ? " (secondary)" : "") + " is opening URL: " + meetURL);
 
         // not hungup, so not joining
         // FIXME this should also check for room parameters, config etc.

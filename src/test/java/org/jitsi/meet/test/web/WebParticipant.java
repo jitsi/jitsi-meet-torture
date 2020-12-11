@@ -126,6 +126,9 @@ public class WebParticipant extends Participant<WebDriver>
 
     /**
      * Constructs a secondary participant.
+     *
+     * Right now secondary participants only work correctly for Malleus;
+     * other script executions may not work properly.
      */
     public WebParticipant(String name, WebParticipant other)
     {
@@ -157,7 +160,6 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public void doJoinConference(JitsiMeetUrl conferenceUrl)
     {
-        switchToWindow();
         // with chrome v52 we start getting error:
         // "Timed out receiving message from renderer" and
         // "Navigate timeout: cannot determine loading status"
@@ -170,7 +172,11 @@ public class WebParticipant extends Participant<WebDriver>
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         try
         {
-            driver.get(conferenceUrl.toString());
+            synchronized (driver)
+            {
+                switchToWindow();
+                driver.get(conferenceUrl.toString());
+            }
         }
         catch (org.openqa.selenium.TimeoutException ex)
         {
@@ -188,7 +194,7 @@ public class WebParticipant extends Participant<WebDriver>
                 By.id(conferenceUrl.getIframeToNavigateTo())));
         }
 
-        MeetUtils.waitForPageToLoad(driver);
+        MeetUtils.waitForPageToLoad(driver, windowHandle);
 
         // disables animations
         executeScript("try { jQuery.fx.off = true; } catch(e) {}");
@@ -221,8 +227,13 @@ public class WebParticipant extends Participant<WebDriver>
             executeScript("config.callStatsID=false;");
         }
 
-        String version = TestUtils.executeScriptAndReturnString(driver,
-            "return JitsiMeetJS.version;");
+        String version;
+        synchronized (driver)
+        {
+            switchToWindow();
+            version = TestUtils.executeScriptAndReturnString(driver,
+                "return JitsiMeetJS.version;");
+        }
         TestUtils.print(name + " lib-jitsi-meet version: " + version
             + (driver instanceof RemoteWebDriver ?
                 " sessionID: "
@@ -237,15 +248,18 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
-        switchToWindow();
-        getToolbar().clickHangUpButton();
+        synchronized (driver)
+        {
+            switchToWindow();
+            getToolbar().clickHangUpButton();
+        }
 
         TestUtils.waitMillis(500);
         // open a blank page after hanging up, to make sure
         // we will successfully navigate to the new link containing the
         // parameters, which change during testing
         driver.get("about:blank");
-        MeetUtils.waitForPageToLoad(driver);
+        MeetUtils.waitForPageToLoad(driver, windowHandle);
     }
 
     /**

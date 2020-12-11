@@ -165,11 +165,18 @@ public abstract class ParticipantHelper<P extends Participant>
 
     /**
      * Registers a secondary participant.
-     *
-     * */
+     */
     public void registerSecondaryParticipant(P participant)
     {
         participants.add(participant);
+    }
+
+    /**
+     * Unregisters a secondary participant.
+     */
+    public void unregisterSecondaryParticipant(P participant)
+    {
+        participants.remove(participant);
     }
 
     /**

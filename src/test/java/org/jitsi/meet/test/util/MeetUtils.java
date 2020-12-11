@@ -236,8 +236,10 @@ public class MeetUtils
     /**
      * Waits for the page to be loaded before continuing with the operations.
      * @param driver the webdriver that just loaded a page
+     * @param windowHandle
      */
-    public static void waitForPageToLoad(WebDriver driver)
+    public static void waitForPageToLoad(WebDriver driver,
+        String windowHandle)
     {
         String checkPageLoadScript = "" +
             "var state = ''; " +
@@ -249,16 +251,23 @@ public class MeetUtils
         try
         {
             wait.until(driverInstance -> {
-                try
+                synchronized (driverInstance)
                 {
-                    return ((JavascriptExecutor) driverInstance)
-                        .executeScript(checkPageLoadScript)
-                        .equals("complete");
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                    return false;
+                    try
+                    {
+                        if (windowHandle != null)
+                        {
+                            driverInstance.switchTo().window(windowHandle);
+                        }
+                        return ((JavascriptExecutor) driverInstance)
+                            .executeScript(checkPageLoadScript)
+                            .equals("complete");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        return false;
+                    }
                 }
             });
         }

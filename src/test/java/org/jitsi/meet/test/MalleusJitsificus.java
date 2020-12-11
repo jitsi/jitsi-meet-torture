@@ -43,7 +43,7 @@ public class MalleusJitsificus
     public static final String SENDERS_PNAME
         = "org.jitsi.malleus.senders";
     public static final String AUDIO_SENDERS_PNAME
-            = "org.jitsi.malleus.audio_senders";
+        = "org.jitsi.malleus.audio_senders";
     public static final String ENABLE_P2P_PNAME
         = "org.jitsi.malleus.enable_p2p";
     public static final String DURATION_PNAME
@@ -51,7 +51,11 @@ public class MalleusJitsificus
     public static final String ROOM_NAME_PREFIX_PNAME
         = "org.jitsi.malleus.room_name_prefix";
     public static final String REGIONS_PNAME
-            = "org.jitsi.malleus.regions";
+        = "org.jitsi.malleus.regions";
+    public static final String SENDERS_PER_NODE_PNAME
+        = "org.jitsi.malleus.senders_per_node";
+    public static final String RECEIVERS_PER_NODE_PNAME
+        = "org.jitsi.malleus.receivers_per_node";
 
 
     @DataProvider(name = "dp", parallel = true)
@@ -95,6 +99,18 @@ public class MalleusJitsificus
         boolean enableP2p
             = enableP2pStr == null || Boolean.parseBoolean(enableP2pStr);
 
+        String numSendersPerNodeStr = System.getProperty(
+            SENDERS_PER_NODE_PNAME);
+        int numSendersPerNode = numSendersPerNodeStr == null
+                ? 1
+                : Integer.parseInt(numSendersPerNodeStr);
+
+        String numReceiversPerNodeStr = System.getProperty(
+            RECEIVERS_PER_NODE_PNAME);
+        int numReceiversPerNode = numReceiversPerNodeStr == null
+            ? 1
+            : Integer.parseInt(numReceiversPerNodeStr);
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -104,6 +120,8 @@ public class MalleusJitsificus
         print("participants=" + numParticipants);
         print("senders=" + numSenders);
         print("audio senders=" + numAudioSenders);
+        print("senders_per_node=" + numSendersPerNode);
+        print("receivers_per_node=" + numReceiversPerNode);
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
@@ -122,7 +140,8 @@ public class MalleusJitsificus
                 .appendConfig("config.testing.noAutoPlayVideo=true")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
+            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders,
+                numSendersPerNode, numReceiversPerNode, regions};
         }
 
         return ret;
@@ -131,22 +150,45 @@ public class MalleusJitsificus
     @Test(dataProvider = "dp")
     public void testMain(
         JitsiMeetUrl url,
-        int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
+        int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders,
+        int numSendersPerNode, int numReceiversPerNode, String[] regions)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
+            boolean muteVideo = i >= numSenders;
+            boolean muteAudio = i >= numAudioSenders;
+
+            int numEndpoints;
+            if (muteAudio && muteVideo) {
+                numEndpoints = Math.min(numReceiversPerNode, numberOfParticipants - i);
+            }
+            else {
+                int cap = numberOfParticipants;
+                if (i < numSenders && cap < numSenders)
+                {
+                    cap = numSenders;
+                }
+                if (i < numAudioSenders && cap < numAudioSenders)
+                {
+                    cap = numAudioSenders;
+                }
+                numEndpoints = Math.min(numSendersPerNode, cap - i);
+            }
+            /* TODO: numEndpoints > 1 doesn't work with regions. */
+
             runThreads[i]
                 = runAsync(
                     i,
                     url,
                     waitTime,
-                    i >= numSenders /* no video */,
-                    i >= numAudioSenders /* no audio */,
-                    2,
+                    muteVideo,
+                    muteAudio,
+                    numEndpoints - 1,
                     regions == null ? null : regions[i % regions.length]);
+            i += numEndpoints - 1;
         }
 
         for (Thread t : runThreads)
@@ -155,6 +197,31 @@ public class MalleusJitsificus
             {
                 t.join();
             }
+        }
+    }
+
+    private void doTest(Participant participant, JitsiMeetUrl url, long waitTime)
+    {
+        try
+        {
+            participant.joinConference(url);
+
+            try
+            {
+                Thread.sleep(waitTime);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                participant.hangUp();
+            }
+        }
+        catch (Exception e) {
+            TestUtils.print("Exception for " + participant.getName() + ": " + e.toString());
+            throw e;
         }
     }
 
@@ -169,8 +236,6 @@ public class MalleusJitsificus
         JitsiMeetUrl _url = url.copy();
 
         Thread joinThread = new Thread(() -> {
-
-            List<WebParticipant> ourParticipants = new ArrayList<>();
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
@@ -191,29 +256,49 @@ public class MalleusJitsificus
             }
 
             WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
-            ourParticipants.add(participant);
-            participant.joinConference(_url);
+
+            Thread[] subthreads = new Thread[numSecondary];
 
             for (int j = 0; j < numSecondary; j++)
             {
-                WebParticipant secondary = new WebParticipant("web.participant" + (i + 1) + "-" + (j + 1), participant);
+                int participantNum = i + j + 2;
+                Thread subthread = new Thread(() -> {
+                    WebParticipant secondary = new WebParticipant("web.participant" + participantNum, participant);
 
-                participants.registerSecondaryParticipant(secondary);
-                ourParticipants.add(secondary);
-                secondary.joinConference(_url);
+                    participants.registerSecondaryParticipant(secondary);
+
+                    try
+                    {
+                        doTest(secondary, _url, waitTime);
+                    }
+                    finally
+                    {
+                        participants.unregisterSecondaryParticipant(secondary);
+                    }
+                });
+                subthreads[j] = subthread;
+                subthread.start();
             }
 
             try
             {
-                Thread.sleep(waitTime);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
+                doTest(participant, _url, waitTime);
             }
             finally
             {
-                ourParticipants.forEach(Participant::hangUp);
+                for (Thread t : subthreads)
+                {
+                    if (t != null)
+                    {
+                        try
+                        {
+                            t.join();
+                        }
+                        catch (InterruptedException ignored) {
+                        }
+                    }
+                }
+
                 closeParticipant(participant);
             }
         });
