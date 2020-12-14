@@ -39,13 +39,12 @@ public class WebParticipantOptions
     private static final String DEFAULT_REMOTE_ADDRESS_NAME
         = "http://localhost:4444/wd/hub";
 
-    private static final String PROP_BINARY = "binary";
-
     /**
-     * The id of the chrome extension that will be loaded
-     * on opening participant driver.
+     * Whether to allow insecure certs, by default is false.
      */
-    private static final String PROP_CHROME_EXTENSION_ID = "chromeExtensionID";
+    private static final String PROP_ALLOW_INSECURE_CERTS = "allowInsecureCerts";
+
+    private static final String PROP_BINARY = "binary";
 
     /**
      * The name of the system property that holds the path to the packet
@@ -113,6 +112,11 @@ public class WebParticipantOptions
     private static final String PROP_VERSION = "version";
 
     /**
+     * By default WebTestBase will set a display name, this property can skip this step.
+     */
+    private static final String PROP_SKIP_DISPLAYNAME = "skip-displayname";
+
+    /**
      * Get web specific global property names. See
      * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
@@ -121,6 +125,7 @@ public class WebParticipantOptions
     {
         List<String> globalKeys = new LinkedList<>();
 
+        globalKeys.add(PROP_ALLOW_INSECURE_CERTS);
         globalKeys.add(PROP_DISABLE_NOSANBOX);
         globalKeys.add(PROP_ENABLE_HEADLESS);
         globalKeys.add(PROP_REMOTE_ADDRESS_NAME);
@@ -143,6 +148,8 @@ public class WebParticipantOptions
                 PROP_REMOTE_ADDRESS_NAME, DEFAULT_REMOTE_ADDRESS_NAME);
         defaults.setProperty(
                 PROP_CHROME_DISABLE_SANDBOX, DEFAULT_CHROME_DISABLE_SANDBOX);
+        defaults.setProperty(PROP_SKIP_DISPLAYNAME, Boolean.FALSE.toString());
+        defaults.setProperty(PROP_ALLOW_INSECURE_CERTS, Boolean.FALSE.toString());
 
         return defaults;
     }
@@ -175,6 +182,16 @@ public class WebParticipantOptions
         {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * The getter for {@link #PROP_ALLOW_INSECURE_CERTS}.
+     *
+     * @return <tt>true</tt> or <tt>false</tt>.
+     */
+    public boolean allowsInsecureCerts()
+    {
+        return getBooleanProperty(PROP_ALLOW_INSECURE_CERTS);
     }
 
     /**
@@ -254,6 +271,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets whether we need to skip setting display name for this participant by default in web base tests.
+     */
+    public WebParticipantOptions setSkipDisplayNameSet(boolean value)
+    {
+        setProperty(PROP_SKIP_DISPLAYNAME, Boolean.toString(value));
+        return this;
+    }
+
+    /**
      * Sets the name of y4m video file which will be streamed through fake video
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
@@ -267,18 +293,6 @@ public class WebParticipantOptions
         String fakeStreamVideoFile)
     {
         setProperty(PROP_FAKE_VIDEO, fakeStreamVideoFile);
-
-        return this;
-    }
-
-    /**
-     * Sets the chrome extension id to be used.
-     * @param extensionId the chrome extension id to be used.
-     * @return a reference to this object.
-     */
-    public WebParticipantOptions setChromeExtensionId(String extensionId)
-    {
-        setProperty(PROP_CHROME_EXTENSION_ID, extensionId);
 
         return this;
     }
@@ -330,6 +344,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Whether to skip default display name set.
+     * @return Whether to skip default display name set
+     */
+    public boolean getSkipDisplayNameSet()
+    {
+        return Boolean.valueOf(getProperty(PROP_SKIP_DISPLAYNAME));
+    }
+
+    /**
      * Gets the path to the packet delivery trace file to use for the uplink
      * direction in the mahimahi shell.
      */
@@ -364,14 +387,5 @@ public class WebParticipantOptions
     public String getFakeStreamVideoFile()
     {
         return getProperty(PROP_FAKE_VIDEO);
-    }
-
-    /**
-     * Returns the chrome extension id option.
-     * @return the chrome extension id option.
-     */
-    public String getChromeExtensionId()
-    {
-        return getProperty(PROP_CHROME_EXTENSION_ID);
     }
 }

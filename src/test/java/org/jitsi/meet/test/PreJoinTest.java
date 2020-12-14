@@ -30,14 +30,14 @@ public class PreJoinTest
     extends WebTestBase
 {
     @Test
-    public void testPreJoiWnenDisplayedNameRequired()
+    public void testPreJoinWhenDisplayedNameRequired()
     {
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
         meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
         meetingUrl.appendConfig("config.prejoinPageEnabled=true");
         meetingUrl.appendConfig("config.requireDisplayName=true");
 
-        joinFirstParticipant(meetingUrl);
+        joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
         PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
 
         preJoinScreen.waitForLoading();
@@ -62,7 +62,7 @@ public class PreJoinTest
         meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
         meetingUrl.appendConfig("config.prejoinPageEnabled=true");
 
-        joinFirstParticipant(meetingUrl);
+        joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
         PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
 
         preJoinScreen.waitForLoading();
@@ -77,12 +77,11 @@ public class PreJoinTest
     @Test
     public void testJoinWithoutAudio()
     {
-
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
         meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
         meetingUrl.appendConfig("config.prejoinPageEnabled=true");
 
-        joinFirstParticipant(meetingUrl);
+        joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
         PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
 
         preJoinScreen.waitForLoading();

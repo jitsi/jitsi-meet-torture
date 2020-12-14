@@ -20,7 +20,10 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.testng.*;
 import org.testng.annotations.*;
+
+import java.util.logging.*;
 
 import static org.testng.Assert.*;
 
@@ -152,5 +155,51 @@ public class TileViewTest
     {
         getParticipant1().getToolbar().clickTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
+    }
+
+    /**
+     * The first one is dominant, a third enters with lastN=1 and sees second participant's video as a dominant speaker.
+     * The dominant speaker changes to the second one and we start seeing its video and is ninja no more.
+     */
+    @Test(dependsOnMethods = { "testLocalVideoDisplaysIndependentlyFromRemote" })
+    public void testLastNAndTileView()
+    {
+        if (getParticipant1().getType().isFirefox() || getParticipant2().getType().isFirefox())
+        {
+            Logger.getGlobal().log(Level.WARNING, "Not testing as second participant cannot be dominant speaker.");
+            throw new SkipException("Firefox does not support external audio file as input.");
+        }
+
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        // let's mute the third so it does not become dominant speaker
+        ensureThreeParticipants(null, null,
+            getJitsiMeetUrl().appendConfig("config.channelLastN=1")
+                .appendConfig("config.startWithAudioMuted=true"));
+
+        WebDriver driver3 = getParticipant3().getDriver();
+
+        // one inactive icon should appear in few seconds
+        MeetUIUtils.waitForNinjaIcon(driver3);
+
+        String participant1EndpointId = getParticipant1().getEndpointId();
+
+        // should have video for participant 1
+        MeetUIUtils.waitForRemoteVideo(driver3, participant1EndpointId, true);
+
+        String participant2EndpointId = getParticipant2().getEndpointId();
+
+        assertTrue(MeetUIUtils.hasNinjaUserConnStatusIndication(driver3, participant2EndpointId));
+
+        // no video for participant 2
+        MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, false);
+
+        getParticipant1().getToolbar().clickAudioMuteButton();
+        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        MeetUIUtils.waitForDominantspeaker(driver3, participant2EndpointId);
+
+        // check video of participant 2 should be received
+        MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, true);
     }
 }

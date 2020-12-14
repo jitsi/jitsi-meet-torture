@@ -140,7 +140,10 @@ public class WebParticipantFactory
             // Enables tcp in firefox, disabled by default in 44
             profile.setPreference("media.peerconnection.ice.tcp", true);
             profile.setPreference("media.navigator.streams.fake", true);
-            profile.setAcceptUntrustedCertificates(true);
+            if (options.allowsInsecureCerts())
+            {
+                profile.setAcceptUntrustedCertificates(true);
+            }
 
             profile.setPreference(
                 "webdriver.log.file", FailureListener.createLogsFolder() +
@@ -219,22 +222,10 @@ public class WebParticipantFactory
             // shared video tests, disable no-user-gesture to make it work
             ops.addArguments("autoplay-policy=no-user-gesture-required");
 
-            if (options.getChromeExtensionId() != null)
-            {
-                try
-                {
-                    ops.addExtensions(
-                        downloadExtension(options.getChromeExtensionId()));
-                }
-                catch (IOException e)
-                {
-                   throw new RuntimeException(e);
-                }
-            }
-
-            ops.addArguments("auto-select-desktop-capture-source=Entire screen");
+            ops.addArguments("auto-select-desktop-capture-source=Your Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+            ops.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, options.allowsInsecureCerts());
 
             if (options.isChromeSandboxDisabled())
             {
@@ -360,29 +351,5 @@ public class WebParticipantFactory
             TestUtils.print("Just create ChromeDriver, may hang!");
             return new ChromeDriver(ops);
         }
-    }
-
-    /**
-     * Downloads an extension from the chrome webstore.
-     * @param id - the id of the extension.
-     * @returns <tt>File</tt> associated with the downloaded extension.
-     */
-    private static File downloadExtension(String id)
-        throws IOException
-    {
-        URL website = new URL(String.format(EXT_DOWNLOAD_URL_FORMAT, id));
-        File extension = File.createTempFile("jidesha", ".crx");
-        extension.deleteOnExit();
-
-        try(
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream(extension);
-            FileChannel fc = fos.getChannel();
-        )
-        {
-            fc.transferFrom(rbc, 0, Long.MAX_VALUE);
-        }
-
-        return extension;
     }
 }

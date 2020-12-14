@@ -77,7 +77,7 @@ public class WebTestBase
      * @param options custom options to be used for the new participant.
      */
     public void ensureOneParticipant(
-        JitsiMeetUrl meetURL, ParticipantOptions options)
+        JitsiMeetUrl meetURL, WebParticipantOptions options)
     {
         joinParticipantAndWait(0, meetURL, options);
     }
@@ -120,8 +120,8 @@ public class WebTestBase
     public void ensureTwoParticipants(
         JitsiMeetUrl participantOneMeetURL,
         JitsiMeetUrl participantTwoMeetURL,
-        ParticipantOptions participantOneOptions,
-        ParticipantOptions participantTwoOptions)
+        WebParticipantOptions participantOneOptions,
+        WebParticipantOptions participantTwoOptions)
     {
         ensureTwoParticipantsInternal(
             participantOneMeetURL,
@@ -145,8 +145,8 @@ public class WebTestBase
     private void ensureTwoParticipantsInternal(
         JitsiMeetUrl participantOneMeetURL,
         JitsiMeetUrl participantTwoMeetURL,
-        ParticipantOptions participantOneOptions,
-        ParticipantOptions participantTwoOptions)
+        WebParticipantOptions participantOneOptions,
+        WebParticipantOptions participantTwoOptions)
     {
         ensureOneParticipant(participantOneMeetURL, participantOneOptions);
 
@@ -236,6 +236,15 @@ public class WebTestBase
     }
 
     /**
+     * Returns the fourth participant.
+     * @return the fourth participant.
+     */
+    public WebParticipant getParticipant4()
+    {
+        return getParticipant(4);
+    }
+
+    /**
      * Hangups all participants.
      */
     public void hangUpAllParticipants()
@@ -269,7 +278,7 @@ public class WebTestBase
     private WebParticipant joinParticipant(
         int                     index,
         JitsiMeetUrl            meetURL,
-        ParticipantOptions      options)
+        WebParticipantOptions      options)
     {
         WebParticipant p = participants.get(index);
 
@@ -305,6 +314,13 @@ public class WebTestBase
             meetURL = getJitsiMeetUrl();
         }
 
+        if (options == null || !options.getSkipDisplayNameSet())
+        {
+            // participant names are `web.participantN` we drop `web.`. Shorter for display in thumbs and avatar is PN.
+            String displayName = p.getName().replaceAll("web\\.", "");
+            meetURL.appendConfig("userInfo.displayName=\"" + displayName + "\"", false);
+        }
+
         p.joinConference(meetURL);
 
         return p;
@@ -316,7 +332,7 @@ public class WebTestBase
      */
     public WebParticipant joinFirstParticipant()
     {
-        return joinFirstParticipant(null);
+        return joinFirstParticipant(null, null);
     }
 
     /**
@@ -326,9 +342,9 @@ public class WebTestBase
      * the config part.
      * @return the participant which was created.
      */
-    public WebParticipant joinFirstParticipant(JitsiMeetUrl meetUrl)
+    public WebParticipant joinFirstParticipant(JitsiMeetUrl meetUrl, WebParticipantOptions options)
     {
-        return joinParticipant(0, meetUrl, null);
+        return joinParticipant(0, meetUrl, options);
     }
 
     /**
@@ -337,6 +353,7 @@ public class WebTestBase
      * @param meetUrl a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
      * the config part.
+     * @param options the options to be used when creating the participant.
      * @return the participant which was created.
      */
     public WebParticipant joinSecondParticipant(JitsiMeetUrl meetUrl)
@@ -359,7 +376,32 @@ public class WebTestBase
      */
     public WebParticipant joinThirdParticipant()
     {
-        return joinParticipant(2, null, null);
+        return joinThirdParticipant(null, null);
+    }
+
+    /**
+     * Joins the third participant.
+     * @param meetUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
+     * @param options the options to be used when creating the participant.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinThirdParticipant(JitsiMeetUrl meetUrl, WebParticipantOptions options)
+    {
+        return joinParticipant(2, meetUrl, options);
+    }
+
+    /**
+     * Joins the fourth participant.
+     * @param meetUrl a {@link JitsiMeetUrl} which represents the full
+     * conference URL which includes server, conference parameters and
+     * the config part.
+     * @return the participant which was created.
+     */
+    public WebParticipant joinFourthParticipant(JitsiMeetUrl meetUrl)
+    {
+        return joinParticipant(3, meetUrl, null);
     }
 
     /**
@@ -376,7 +418,7 @@ public class WebTestBase
     private WebParticipant joinParticipantAndWait(
         int                     index,
         JitsiMeetUrl            meetURL,
-        ParticipantOptions      options)
+        WebParticipantOptions      options)
     {
         WebParticipant participant = joinParticipant(index, meetURL, options);
 

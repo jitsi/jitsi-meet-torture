@@ -47,7 +47,8 @@ public class AvatarTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        WebParticipantOptions ops = new WebParticipantOptions().setSkipDisplayNameSet(true);
+        ensureTwoParticipants(null, null, ops, ops);
     }
 
     /**
@@ -75,7 +76,7 @@ public class AvatarTest
                     ", should start with: " + participant1ThumbSrc);
 
         // Join participant2
-        ensureTwoParticipants();
+        ensureTwoParticipants(null, null, null, new WebParticipantOptions().setSkipDisplayNameSet(true));
         WebDriver driver2 = getParticipant2().getDriver();
         String participant2EndpointId = getParticipant2().getEndpointId();
 
@@ -208,7 +209,8 @@ public class AvatarTest
             "Current email has wrong value");
 
         getParticipant1().hangUp();
-        ensureTwoParticipants();
+
+        ensureTwoParticipants(null, null, new WebParticipantOptions().setSkipDisplayNameSet(true), null);
 
         getParticipant1().getToolbar().clickProfileButton();
         currentEmailValue

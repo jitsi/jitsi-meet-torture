@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
@@ -40,7 +41,7 @@ public class AudioOnlyTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        ensureTwoParticipants(null, null, new WebParticipantOptions().setSkipDisplayNameSet(true), null);
     }
 
     /**
@@ -133,7 +134,7 @@ public class AudioOnlyTest
      * @param participant the {@code WebParticipant}.
      * @param audioOnly whether or not audio only mode should be enabled.
      */
-    private void setAudioOnly(WebParticipant participant, boolean audioOnly)
+    public static void setAudioOnly(WebParticipant participant, boolean audioOnly)
     {
         WebDriver participantDriver = participant.getDriver();
 
@@ -173,17 +174,16 @@ public class AudioOnlyTest
      * @param participant the {@code WebParticipant}.
      * @param visible whether or not the dialog should be displayed.
      */
-    private void setVideoQualityDialogVisible(
-        WebParticipant participant, boolean visible)
+    private static void setVideoQualityDialogVisible(WebParticipant participant, boolean visible)
     {
-        boolean isDialogSliderVisible
-            = !participant.getDriver().findElements(
-                By.className(VIDEO_QUALITY_SLIDER_CLASS)).isEmpty();
-
-        if ((isDialogSliderVisible && !visible)
-            || (!isDialogSliderVisible && visible))
+        if (visible)
         {
             participant.getToolbar().clickVideoQualityButton();
+        }
+        else
+        {
+            // click done button
+            ModalDialogHelper.clickOKButton(participant.getDriver());
         }
     }
 

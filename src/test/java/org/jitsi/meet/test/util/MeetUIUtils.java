@@ -18,7 +18,6 @@ package org.jitsi.meet.test.util;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -382,27 +381,6 @@ public class MeetUIUtils
 
             TestUtils.waitForElementNotPresentByXPath(
                     driver, filmstripXPath, 5);
-        }
-    }
-
-    /**
-     * Opens the settings panel, if not open.
-     *
-     * @param participant <tt>WebParticipant</tt> instance of the participant
-     * for whom we'll try to open the settings panel.
-     * @throws TimeoutException if we fail to open the settings panel.
-     */
-    public static void displaySettingsPanel(WebParticipant participant)
-    {
-        WebDriver driver = participant.getDriver();
-        String settingsXPath = "//div[@id='settings_container']";
-        WebElement settings = driver.findElement(By.xpath(settingsXPath));
-        if (!settings.isDisplayed())
-        {
-            participant.getToolbar().clickSettingsButton();
-
-            TestUtils.waitForDisplayedElementByXPath(
-                driver, settingsXPath, 5);
         }
     }
 
@@ -914,6 +892,75 @@ public class MeetUIUtils
         // Check "connection lost" icon
         TestUtils.waitForDisplayedOrNotByXPath(
                 driver, connectionLostXpath, 2, !isConnected);
+    }
+
+    /**
+     * Checks whether the remote participant's media connection status is ninja.
+     *
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant whose connection
+     * status will be checked.
+     * @return <tt>true</tt> if the indicator is ninja.
+     */
+    public static boolean hasNinjaUserConnStatusIndication(WebDriver driver, String endpointId)
+    {
+        assertNotNull(endpointId);
+
+        // Check "connection ninja" icon
+        return driver.findElements(
+            By.xpath("//span[@id='participant_" + endpointId + "']//span[@class='connection_ninja']"))
+                .size() > 0;
+    }
+
+    /**
+     * Waits for ninja icon to appear in remote videos.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void waitForNinjaIcon(WebDriver driver)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[contains(@class,'videocontainer')]//span[contains(@class,'connection_ninja')]", 5);
+    }
+
+    /**
+     * Waits for ninja icon to appear in endpoint's remote videos.
+     * @param endpointId the endpoint ID of the participant whose connection
+     * status will be checked.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     */
+    public static void waitForNinjaIcon(WebDriver driver, String endpointId)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[@id='participant_" + endpointId + "']//span[contains(@class,'connection_ninja')]", 10);
+    }
+
+    /**
+     * Waits for dominant speaker icon to appear in remote video of a participant.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant whose dominant speaker icon
+     * status will be checked.
+     */
+    public static void waitForDominantspeaker(WebDriver driver, String endpointId)
+    {
+        TestUtils.waitForElementByXPath(driver,
+            "//span[@id='participant_" + endpointId + "']//span[@id='dominantspeakerindicator']", 5);
+    }
+
+    /**
+     * Waits for remote video state - receiving or not receive for a participant.
+     * @param driver the <tt>WebDriver</tt> instance where the check will be
+     * performed.
+     * @param endpointId the endpoint ID of the participant which video will be checked.
+     */
+    public static void waitForRemoteVideo(WebDriver driver, String endpointId, boolean received)
+    {
+        TestUtils.waitForBoolean(driver,
+            "return " + (received ? "" : "!" ) +"JitsiMeetJS.app.testing.isRemoteVideoReceived('" + endpointId + "');",
+            5);
     }
 
     /**
