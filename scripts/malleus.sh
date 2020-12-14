@@ -49,11 +49,11 @@ case $1 in
       AUDIO_SENDERS=$PARTICIPANTS
     fi
 
-    if [ -z "$SENDERS" ]; then
+    if [ -z "$SENDERS_PER_NODE" ]; then
       SENDERS_PER_NODE=1
     fi
 
-    if [ -z "$AUDIO_SENDERS" ]; then
+    if [ -z "$RECEIVERS_PER_NODE" ]; then
       RECEIVERS_PER_NODE=1
     fi
 
