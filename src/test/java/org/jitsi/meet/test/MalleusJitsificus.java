@@ -205,7 +205,15 @@ public class MalleusJitsificus
             }
             finally
             {
-                participant.hangUp();
+                try
+                {
+                    participant.hangUp();
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception hanging up " + participant.getName());
+                    e.printStackTrace();
+                }
                 closeParticipant(participant);
             }
         });
