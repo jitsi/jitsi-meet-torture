@@ -251,9 +251,13 @@ public class MeetUtils
             wait.until(driverInstance -> {
                 try
                 {
-                    return ((JavascriptExecutor) driverInstance)
-                        .executeScript(checkPageLoadScript)
-                        .equals("complete");
+                    return Objects.equals(((JavascriptExecutor) driverInstance)
+                        .executeScript(checkPageLoadScript),
+                        "complete");
+                }
+                catch (WebDriverException e)
+                {
+                    throw e;
                 }
                 catch (Exception e)
                 {
