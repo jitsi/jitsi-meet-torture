@@ -46,6 +46,8 @@ public class WebParticipantOptions
 
     private static final String PROP_BINARY = "binary";
 
+    private static final String PROP_APP_NAME = "applicationName";
+
     /**
      * The name of the system property that holds the path to the packet
      * delivery trace file to use for the downlink direction in the mahimahi
@@ -298,6 +300,17 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets the app name capability that the node must have.
+     *
+     * @param applicationName the app name capability that the node must have.
+     */
+    public WebParticipantOptions setApplicationName(String applicationName)
+    {
+        setProperty(PROP_APP_NAME, applicationName);
+        return this;
+    }
+
+    /**
      * Returns version for the driver, if available.
      * @return version for the driver, if available.
      */
@@ -387,5 +400,13 @@ public class WebParticipantOptions
     public String getFakeStreamVideoFile()
     {
         return getProperty(PROP_FAKE_VIDEO);
+    }
+
+    /**
+     * @return the app name capability that the node must have.
+     */
+    public String getApplicationName()
+    {
+        return getProperty(PROP_APP_NAME);
     }
 }

@@ -1,5 +1,10 @@
 #!/bin/sh
 
+usage() {
+    echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--skip-mutation]" >&2
+    exit 1
+}
+
 case $1 in
   --*)
     # new arg parsing code that includes default values for the different options.
@@ -12,14 +17,16 @@ case $1 in
         --participants) PARTICIPANTS=$optvalue;;
         --senders) SENDERS=$optvalue;;
         --audio-senders) AUDIO_SENDERS=$optvalue;;
+        --senders-per-node) SENDERS_PER_NODE=$optvalue;;
+        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue;;
         --duration) DURATION=$optvalue;;
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
+        --skip-mutation) SKIP_MUTATION=1;;
         *)
-          echo 'Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS]' >&2
-          exit 1
+          usage
           ;;
       esac
     done
@@ -42,6 +49,14 @@ case $1 in
 
     if [ -z "$AUDIO_SENDERS" ]; then
       AUDIO_SENDERS=$PARTICIPANTS
+    fi
+
+    if [ -z "$SENDERS_PER_NODE" ]; then
+      SENDERS_PER_NODE=1
+    fi
+
+    if [ -z "$RECEIVERS_PER_NODE" ]; then
+      RECEIVERS_PER_NODE=1
     fi
 
     if [ -z "$DURATION" ]; then
@@ -86,6 +101,12 @@ case $1 in
     INSTANCE_URL='https://meet.jit.si'
     ;;
 esac
+
+if [ -z "$SKIP_MUTATION" ]
+then
+    "$(dirname $0)"/mutatenodes.sh --hub-url="$HUB_URL" --num-senders="$SENDERS" \
+		   --send-node-max-sessions="$SENDERS_PER_NODE" --recv-node-max-sessions="$RECEIVERS_PER_NODE"
+fi
 
 mvn \
 -Dthreadcount=1 \

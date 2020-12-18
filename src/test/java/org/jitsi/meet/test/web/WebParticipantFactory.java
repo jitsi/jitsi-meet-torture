@@ -209,6 +209,7 @@ public class WebParticipantFactory
             logPrefs.enable(LogType.BROWSER, Level.ALL);
 
             final ChromeOptions ops = new ChromeOptions();
+            ops.setCapability(CapabilityType.APPLICATION_NAME, options.getApplicationName());
             // Force chrome to use English instead of system language.
             // At least work at version 83.0.4103.61 on win 10
             ops.addArguments("lang=en");

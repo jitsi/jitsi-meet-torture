@@ -175,6 +175,12 @@ public class MalleusJitsificus
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
+                /* TODO: is it okay to have an audio sender use a malleus receiver ep? */
+                ops.setApplicationName("malleusReceiver");
+            }
+            else
+            {
+                ops.setApplicationName("malleusSender");
             }
             if (muteAudio)
             {
