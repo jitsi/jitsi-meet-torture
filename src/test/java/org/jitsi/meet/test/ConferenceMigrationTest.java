@@ -30,11 +30,11 @@ import static org.testng.Assert.*;
 /**
  * Test for migrating conference from broken bridge to a new one.
  *
- * To run the tes configure {@link #MIGRATED_BRIDGE_PNAME} to point to the
+ * To run the test configure {@link #MIGRATED_BRIDGE_PNAME} to point to the
  * bridge that has to be killed by the focus during the test. We'll be testing
  * conference migration from this bridge to a secondary one.
  *
- * Set {@link #MIGRATED_BRIDGE_REST_ENDPOINT_PNAME} to RESt endpoint of migrated
+ * Set {@link #MIGRATED_BRIDGE_REST_ENDPOINT_PNAME} to REST endpoint of migrated
  * bridge. By default it is {@link #DEFAULT_BRIDGE_REST_ENDPOINT}.
  *
  * @author Pawel Domas
