@@ -43,7 +43,7 @@ public class MalleusJitsificus
     public static final String SENDERS_PNAME
         = "org.jitsi.malleus.senders";
     public static final String AUDIO_SENDERS_PNAME
-            = "org.jitsi.malleus.audio_senders";
+        = "org.jitsi.malleus.audio_senders";
     public static final String ENABLE_P2P_PNAME
         = "org.jitsi.malleus.enable_p2p";
     public static final String DURATION_PNAME
@@ -51,8 +51,9 @@ public class MalleusJitsificus
     public static final String ROOM_NAME_PREFIX_PNAME
         = "org.jitsi.malleus.room_name_prefix";
     public static final String REGIONS_PNAME
-            = "org.jitsi.malleus.regions";
-
+        = "org.jitsi.malleus.regions";
+    public static final String USE_NODE_TYPES_PNAME
+        = "org.jitsi.malleus.use_node_types";
 
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
@@ -175,16 +176,25 @@ public class MalleusJitsificus
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
-                /* TODO: is it okay to have an audio sender use a malleus receiver ep? */
-                ops.setApplicationName("malleusReceiver");
-            }
-            else
-            {
-                ops.setApplicationName("malleusSender");
             }
             if (muteAudio)
             {
                 _url.appendConfig("config.startWithAudioMuted=true");
+            }
+
+            boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+
+            if (useNodeTypes)
+            {
+                if (muteVideo)
+                {
+                    /* TODO: is it okay to have an audio sender use a malleus receiver ep? */
+                    ops.setApplicationName("malleusReceiver");
+                }
+                else
+                {
+                    ops.setApplicationName("malleusSender");
+                }
             }
 
             if (region != null)

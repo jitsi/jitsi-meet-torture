@@ -1,8 +1,8 @@
 #!/bin/sh
 
 usage() {
-    echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--skip-mutation]" >&2
-    exit 1
+  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types]" >&2
+  exit 1
 }
 
 case $1 in
@@ -17,14 +17,14 @@ case $1 in
         --participants) PARTICIPANTS=$optvalue;;
         --senders) SENDERS=$optvalue;;
         --audio-senders) AUDIO_SENDERS=$optvalue;;
-        --senders-per-node) SENDERS_PER_NODE=$optvalue;;
-        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue;;
+        --senders-per-node) SENDERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
+        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
         --duration) DURATION=$optvalue;;
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
-        --skip-mutation) SKIP_MUTATION=1;;
+        --use-node-types) USE_NODE_TYPES=$optvalue;;
         *)
           usage
           ;;
@@ -74,6 +74,11 @@ case $1 in
     if [ -z "$INSTANCE_URL" ]; then
       INSTANCE_URL='https://meet.jit.si'
     fi
+
+    if [ -z "$USE_NODE_TYPES" ]; then
+      USE_NODE_TYPES=false
+    fi
+
     ;;
   *)
     # backwords compatible arg parsing so as to not break existing scripts that
@@ -102,7 +107,10 @@ case $1 in
     ;;
 esac
 
-if [ -z "$SKIP_MUTATION" ]
+# This names nodes as being a "malleusSender" or "malleusReceiver" (using the Selenium Grid
+# "applicationName" parameter).  This lets us run multiple browsers on a Selenium Grid endpoint,
+# scaled for the number of browsers the endpoint can handle performing the requested action.
+if [ "$USE_NODE_TYPES" = "true" ]
 then
     "$(dirname $0)"/mutatenodes.sh --hub-url="$HUB_URL" --num-senders="$SENDERS" \
                    --send-node-max-sessions="$SENDERS_PER_NODE" --recv-node-max-sessions="$RECEIVERS_PER_NODE"
@@ -117,6 +125,7 @@ mvn \
 -Dorg.jitsi.malleus.duration=$DURATION \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \
+-Dorg.jitsi.malleus.use_node_types=$USE_NODE_TYPES \
 -Dremote.address=$HUB_URL \
 -DallowInsecureCerts=$ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=MalleusJitsificus \
