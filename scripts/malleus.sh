@@ -25,6 +25,7 @@ case $1 in
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
         --use-node-types) USE_NODE_TYPES=$optvalue;;
+        --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
         *)
           usage
           ;;
@@ -125,6 +126,8 @@ fi
 mvn \
 -Dthreadcount=1 \
 -Dorg.jitsi.malleus.conferences=$CONFERENCES \
+-Dorg.jitsi.malleus.max_disrupted_bridges_pct=$MAX_DISRUPTED_BRIDGES_PCT \
+-Dorg.jitsi.meet.test.util.blip_script=$BLIP_SCRIPT \
 -Dorg.jitsi.malleus.participants=$PARTICIPANTS \
 -Dorg.jitsi.malleus.senders=$SENDERS \
 -Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \

@@ -55,6 +55,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.regions";
     public static final String USE_NODE_TYPES_PNAME
         = "org.jitsi.malleus.use_node_types";
+    public static final String MAX_DISRUPTED_BRIDGES_PCT_PNAME
+        = "org.jitsi.malleus.max_disrupted_bridges_pct";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -99,6 +101,13 @@ public class MalleusJitsificus
         boolean enableP2p
             = enableP2pStr == null || Boolean.parseBoolean(enableP2pStr);
 
+        float maxDisruptedBidges = 0;
+        String maxDisruptedBidgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
+        if (!"".equals(maxDisruptedBidgesStr))
+        {
+            maxDisruptedBidges = Float.parseFloat(maxDisruptedBidgesStr);
+        }
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -111,6 +120,7 @@ public class MalleusJitsificus
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
+        print("max_disrupted_bridges_pct=" + maxDisruptedBidges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
 
         Object[][] ret = new Object[numConferences][4];
@@ -126,19 +136,25 @@ public class MalleusJitsificus
                 .appendConfig("config.testing.noAutoPlayVideo=true")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
+            ret[i] = new Object[] {
+                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBidges
+            };
         }
 
         return ret;
     }
 
+    private CountDownLatch readyCountDownLatch;
+
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url,
-        int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
+        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders,
+        int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
         throws InterruptedException
     {
         Thread[] runThreads = new Thread[numberOfParticipants];
+
+        readyCountDownLatch = new CountDownLatch(numberOfParticipants);
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
@@ -150,6 +166,19 @@ public class MalleusJitsificus
                     i >= numSenders /* no video */,
                     i >= numAudioSenders /* no audio */,
                     regions == null ? null : regions[i % regions.length]);
+        }
+
+        if (blipMaxDisruptedPct > 0)
+        {
+            readyCountDownLatch.await();
+            try
+            {
+                Blip.randomBlipsFor(waitTime / 1000).withMaxDisruptedPct(blipMaxDisruptedPct).call();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
         for (Thread t : runThreads)
@@ -216,6 +245,8 @@ public class MalleusJitsificus
                 allHungUp.arriveAndDeregister();
                 throw e;
             }
+
+            readyCountDownLatch.countDown();
 
             try
             {
