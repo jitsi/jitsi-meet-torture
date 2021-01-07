@@ -22,9 +22,9 @@ if [ -z "$SSH" ]
 then
     if [ -r "$JITSI_SSH_CONFIG" ]
     then
-	SSH="ssh -F $JITSI_SSH_CONFIG"
+        SSH="ssh -F $JITSI_SSH_CONFIG"
     else
-	SSH="ssh"
+        SSH="ssh"
     fi
 fi
 
@@ -34,8 +34,8 @@ while true
 do
     for node in $NODES
     do
-	printf "%s:\t" $node
-	$SSH $node uptime
+        printf "%s:\t" $node
+        $SSH $node uptime
     done
     echo
     sleep 1

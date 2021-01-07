@@ -15,13 +15,13 @@ for arg in "$@"; do
     optname=`echo $arg | cut -d= -f1`
     optvalue=`echo $arg | cut -d= -f2`
     case $optname in
-	--hub-url) HUB_URL=$optvalue;;
-	--num-senders) NUM_SENDERS=$optvalue;;
-	--send-node-max-sessions) SEND_NODE_MAX_SESSIONS=$optvalue;;
-	--recv-node-max-sessions) RECV_NODE_MAX_SESSIONS=$optvalue;;
-	*)
-	    usage
-	    ;;
+        --hub-url) HUB_URL=$optvalue;;
+        --num-senders) NUM_SENDERS=$optvalue;;
+        --send-node-max-sessions) SEND_NODE_MAX_SESSIONS=$optvalue;;
+        --recv-node-max-sessions) RECV_NODE_MAX_SESSIONS=$optvalue;;
+        *)
+            usage
+            ;;
     esac
 done
 
@@ -39,9 +39,9 @@ if [ -z "$SSH" ]
 then
     if [ -r "$JITSI_SSH_CONFIG" ]
     then
-	SSH="ssh -F $JITSI_SSH_CONFIG"
+        SSH="ssh -F $JITSI_SSH_CONFIG"
     else
-	SSH="ssh"
+        SSH="ssh"
     fi
 fi
 
@@ -49,29 +49,29 @@ if [ -z "$SCP" ]
 then
     if [ -r "$JITSI_SSH_CONFIG" ]
     then
-	SCP="scp -F $JITSI_SSH_CONFIG"
+        SCP="scp -F $JITSI_SSH_CONFIG"
     else
-	SCP="scp"
+        SCP="scp"
     fi
 fi
 
 mutate_node() {
     if [ $1 -gt 0 ]
     then
-	# mutate the node into a sender.
-	max_instances=$SEND_NODE_MAX_SESSIONS
-	max_session=$SEND_NODE_MAX_SESSIONS
-	application_name=$SEND_APP_NAME
+        # mutate the node into a sender.
+        max_instances=$SEND_NODE_MAX_SESSIONS
+        max_session=$SEND_NODE_MAX_SESSIONS
+        application_name=$SEND_APP_NAME
     else
-	# mutate the node into a receiver.
-	max_instances=$RECV_NODE_MAX_SESSIONS
-	max_session=$RECV_NODE_MAX_SESSIONS
-	application_name=$RECV_APP_NAME
+        # mutate the node into a receiver.
+        max_instances=$RECV_NODE_MAX_SESSIONS
+        max_session=$RECV_NODE_MAX_SESSIONS
+        application_name=$RECV_APP_NAME
     fi
 
     node_config=$(mktemp)
     $SSH $2 cat /opt/selenium_grid_extras/node_5555.json \
-	| jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" > $node_config
+        | jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" > $node_config
 
     $SCP $node_config $2:node_5555.json
     $SSH $2 "sudo mv node_5555.json /opt/selenium_grid_extras/; sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json; sudo chmod 644 /opt/selenium_grid_extras/node_5555.json; sudo systemctl restart selenium-grid-extras-node"
