@@ -39,9 +39,9 @@ if [ -z "$SSH" ]
 then
     if [ -r "$JITSI_SSH_CONFIG" ]
     then
-        SSH="ssh -F $JITSI_SSH_CONFIG"
+        SSH="ssh -o StrictHostKeyChecking=no -F $JITSI_SSH_CONFIG"
     else
-        SSH="ssh"
+        SSH="ssh -o StrictHostKeyChecking=no"
     fi
 fi
 
@@ -49,9 +49,9 @@ if [ -z "$SCP" ]
 then
     if [ -r "$JITSI_SSH_CONFIG" ]
     then
-        SCP="scp -F $JITSI_SSH_CONFIG"
+        SCP="scp -o StrictHostKeyChecking=no -F $JITSI_SSH_CONFIG"
     else
-        SCP="scp"
+        SCP="scp -o StrictHostKeyChecking=no"
     fi
 fi
 
