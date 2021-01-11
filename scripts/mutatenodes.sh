@@ -55,6 +55,8 @@ then
     fi
 fi
 
+NODE_FAILURE_LOG=$(mktemp)
+
 mutate_node() {
     if [ $1 -gt 0 ]
     then
@@ -69,13 +71,27 @@ mutate_node() {
         application_name=$RECV_APP_NAME
     fi
 
+    node_config_orig=$(mktemp)
     node_config=$(mktemp)
-    $SSH $2 cat /opt/selenium_grid_extras/node_5555.json \
-        | jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" > $node_config
+
+    # Make sure we can reach $2
+    set +e
+    $SSH $2 true
+    err=$?
+    set -e
+    if [ $err -ne 0 ]
+    then
+        echo "Can't reach $2: ssh returned status $err" 1>&2
+        echo -n "F" >> $NODE_FAILURE_LOG
+        exit 1
+    fi
+
+    $SSH $2 cat /opt/selenium_grid_extras/node_5555.json > $node_config_orig
+    jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" $node_config_orig > $node_config
 
     $SCP $node_config $2:node_5555.json
     $SSH $2 "sudo mv node_5555.json /opt/selenium_grid_extras/; sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json; sudo chmod 644 /opt/selenium_grid_extras/node_5555.json; sudo systemctl restart selenium-grid-extras-node"
-    rm $node_config
+    rm $node_config_orig $node_config
 }
 
 HUB_CONSOLE_URL="$(echo "$HUB_URL" | sed 's,/wd/hub,/grid/console,')"
@@ -89,3 +105,14 @@ do
 done
 
 wait
+
+NUM_FAILURES=$(wc -c < $NODE_FAILURE_LOG)
+rm $NODE_FAILURE_LOG
+
+if [ $NUM_FAILURES -ne 0 ]
+then
+    echo "$0 failed: $NUM_FAILURES nodes could not be mutated"
+    exit 1
+fi
+
+exit 0

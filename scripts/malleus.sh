@@ -114,6 +114,12 @@ if [ "$USE_NODE_TYPES" = "true" ]
 then
     "$(dirname $0)"/mutatenodes.sh --hub-url="$HUB_URL" --num-senders="$SENDERS" \
                    --send-node-max-sessions="$SENDERS_PER_NODE" --recv-node-max-sessions="$RECEIVERS_PER_NODE"
+    err=$?
+    if [ $err -ne 0 ]
+    then
+        echo "Not running malleus: mutatenodes.sh failed with status $err"
+        exit $err
+    fi
 fi
 
 mvn \
