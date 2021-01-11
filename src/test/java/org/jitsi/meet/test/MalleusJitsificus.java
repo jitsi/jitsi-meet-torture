@@ -22,6 +22,7 @@ import org.testng.*;
 import org.testng.annotations.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Damian Minkov
@@ -54,6 +55,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.regions";
     public static final String USE_NODE_TYPES_PNAME
         = "org.jitsi.malleus.use_node_types";
+
+    private CountDownLatch allHungUp;
 
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
@@ -109,6 +112,8 @@ public class MalleusJitsificus
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
+
+        allHungUp = new CountDownLatch(numConferences * numParticipants);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -224,7 +229,21 @@ public class MalleusJitsificus
                     TestUtils.print("Exception hanging up " + participant.getName());
                     e.printStackTrace();
                 }
-                closeParticipant(participant);
+                try
+                {
+                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
+                     * Chrome session can cause another one to close too.  So wait for all sessions
+                     * to hang up before we close any of them.
+                     */
+                    allHungUp.countDown();
+                    allHungUp.await();
+                    closeParticipant(participant);
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception closing " + participant.getName());
+                    e.printStackTrace();
+                }
             }
         });
 
