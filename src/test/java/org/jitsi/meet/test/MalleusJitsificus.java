@@ -56,7 +56,7 @@ public class MalleusJitsificus
     public static final String USE_NODE_TYPES_PNAME
         = "org.jitsi.malleus.use_node_types";
 
-    private CountDownLatch allHungUp;
+    private final Phaser allHungUp = new Phaser();
 
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
@@ -112,8 +112,6 @@ public class MalleusJitsificus
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
-
-        allHungUp = new CountDownLatch(numConferences * numParticipants);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -208,7 +206,16 @@ public class MalleusJitsificus
             }
 
             WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
-            participant.joinConference(_url);
+            allHungUp.register();
+            try
+            {
+                participant.joinConference(_url);
+            }
+            catch (Exception e) {
+                /* If join failed, don't block other threads from hanging up. */
+                allHungUp.arriveAndDeregister();
+                throw e;
+            }
 
             try
             {
@@ -216,6 +223,7 @@ public class MalleusJitsificus
             }
             catch (InterruptedException e)
             {
+                allHungUp.arriveAndDeregister();
                 throw new RuntimeException(e);
             }
             finally
@@ -235,8 +243,7 @@ public class MalleusJitsificus
                      * Chrome session can cause another one to close too.  So wait for all sessions
                      * to hang up before we close any of them.
                      */
-                    allHungUp.countDown();
-                    allHungUp.await();
+                    allHungUp.arriveAndAwaitAdvance();
                     closeParticipant(participant);
                 }
                 catch (Exception e)
