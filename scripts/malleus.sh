@@ -1,7 +1,11 @@
 #!/bin/sh
 
+if [ -n "$DEBUG" ]; then
+  set -x
+fi
+
 usage() {
-  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types]" >&2
+  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
   exit 1
 }
 
@@ -26,6 +30,7 @@ case $1 in
         --regions) REGIONS=$optvalue;;
         --use-node-types) USE_NODE_TYPES=$optvalue;;
         --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
+        --debug) set -x;;
         *)
           usage
           ;;

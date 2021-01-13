@@ -51,13 +51,13 @@ public class Blip
         File file = new File(blipScript);
         if (file.canExecute())
         {
-            // Usage: ./scripts/blip.sh --duration=seconds --max-disrupted-pct [--xmpp-client-port=5222] [--debug]
+            // For usage see ./scripts/blip.sh.
             String[] command = {
                 blipScript,
                 "--duration=" + period,
-                "--max-disrupted-pct=" + maxDisruptedPct,
-                "--debug"
+                "--max-disrupted-pct=" + maxDisruptedPct
             };
+
             ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
             Process process = pb.start();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream())))
