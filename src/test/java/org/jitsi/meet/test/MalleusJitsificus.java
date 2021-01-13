@@ -148,7 +148,7 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTime, int numSenders,
+        JitsiMeetUrl url, int numberOfParticipants, long waitTimeMs, int numSenders,
         int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
         throws InterruptedException
     {
@@ -162,7 +162,7 @@ public class MalleusJitsificus
                 = runAsync(
                     i,
                     url,
-                    waitTime,
+                    waitTimeMs,
                     i >= numSenders /* no video */,
                     i >= numAudioSenders /* no audio */,
                     regions == null ? null : regions[i % regions.length]);
@@ -173,7 +173,7 @@ public class MalleusJitsificus
             readyCountDownLatch.await();
             try
             {
-                Blip.randomBlipsFor(waitTime / 1000).withMaxDisruptedPct(blipMaxDisruptedPct).call();
+                Blip.randomBlipsFor(waitTimeMs / 1000).withMaxDisruptedPct(blipMaxDisruptedPct).call();
             }
             catch (Exception e)
             {
@@ -190,9 +190,37 @@ public class MalleusJitsificus
         }
     }
 
+    private void sleepOrCheck(long waitTimeMs, int i, WebParticipant participant)
+        throws InterruptedException
+    {
+        long healthCheckIntervalMs = 5000;
+        long remainingMs = waitTimeMs;
+        while (remainingMs > 0)
+        {
+            long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
+
+            long currentMillis = System.currentTimeMillis();
+
+            Thread.sleep(sleepTime);
+
+            healthCheck(i, participant);
+
+            // we use the elapsedMillis because the healthcheck operation may
+            // also take time that needs to be accounted for.
+            long elapsedMillis = System.currentTimeMillis() - currentMillis;
+
+            remainingMs -= elapsedMillis;
+        }
+    }
+
+    void healthCheck(int i, WebParticipant participant)
+    {
+        // There aren't any participant health checks by default.
+    }
+
     private Thread runAsync(int i,
                             JitsiMeetUrl url,
-                            long waitTime,
+                            long waitTimeMs,
                             boolean muteVideo,
                             boolean muteAudio,
                             String region)
@@ -250,7 +278,7 @@ public class MalleusJitsificus
 
             try
             {
-                Thread.sleep(waitTime);
+                sleepOrCheck(waitTimeMs, i, participant);
             }
             catch (InterruptedException e)
             {
