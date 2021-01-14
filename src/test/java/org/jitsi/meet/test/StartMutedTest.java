@@ -170,6 +170,12 @@ public class StartMutedTest
             participant2.getDriver(),
             participant1.getEndpointId());
 
+
+        try
+        {
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException e) {}
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
 
         participant1.getLargeVideo().isVideoPlaying();
