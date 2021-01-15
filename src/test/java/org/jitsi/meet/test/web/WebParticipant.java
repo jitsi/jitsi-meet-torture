@@ -359,7 +359,7 @@ public class WebParticipant extends Participant<WebDriver>
      * {@inheritDoc}
      */
     @Override
-    protected RtpStatistics getRtpStatistics()
+    public RtpStatistics getRtpStatistics()
     {
         return new WebRtpStatistics(this);
     }
