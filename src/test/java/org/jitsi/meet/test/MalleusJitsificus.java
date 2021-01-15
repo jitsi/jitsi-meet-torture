@@ -124,6 +124,7 @@ public class MalleusJitsificus
                 .appendConfig("config.p2p.useStunTurn=true")
                 .appendConfig("config.disable1On1Mode=false")
                 .appendConfig("config.testing.noAutoPlayVideo=true")
+                .appendConfig("config.pcStatsInterval=10000")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
             ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
