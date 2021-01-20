@@ -23,6 +23,7 @@ import org.testng.annotations.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * @author Damian Minkov
@@ -152,28 +153,34 @@ public class MalleusJitsificus
         int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
         throws InterruptedException
     {
-        Thread[] runThreads = new Thread[numberOfParticipants];
+        ParticipantThread[] runThreads = new ParticipantThread[numberOfParticipants];
 
         readyCountDownLatch = new CountDownLatch(numberOfParticipants);
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
-                = runAsync(
+                = new ParticipantThread(
                     i,
-                    url,
+                    url.copy(),
                     waitTimeMs,
                     i >= numSenders /* no video */,
                     i >= numAudioSenders /* no audio */,
                     regions == null ? null : regions[i % regions.length]);
+
+            runThreads[i].start();
         }
 
         if (blipMaxDisruptedPct > 0)
         {
             readyCountDownLatch.await();
+
+            Set<String> bridges = Arrays.stream(runThreads)
+                .map(ParticipantThread::getBridge).collect(Collectors.toSet());
+
             try
             {
-                Blip.randomBlipsFor(waitTimeMs / 1000).withMaxDisruptedPct(blipMaxDisruptedPct).call();
+                Blip.randomBlipsFor(waitTimeMs / 1000).theseBridges(bridges).withMaxDisruptedPct(blipMaxDisruptedPct).call();
             }
             catch (Exception e)
             {
@@ -218,17 +225,37 @@ public class MalleusJitsificus
         // There aren't any participant health checks by default.
     }
 
-    private Thread runAsync(int i,
-                            JitsiMeetUrl url,
-                            long waitTimeMs,
-                            boolean muteVideo,
-                            boolean muteAudio,
-                            String region)
+    private class ParticipantThread
+        extends Thread
     {
-        JitsiMeetUrl _url = url.copy();
+        private final int i;
+        private final JitsiMeetUrl _url;
+        private final long waitTimeMs;
+        private final boolean muteVideo;
+        private final boolean muteAudio;
+        private final String region;
+        private String bridge;
 
-        Thread joinThread = new Thread(() -> {
+        String getBridge()
+        {
+            return bridge;
+        }
 
+        public ParticipantThread(
+            int i, JitsiMeetUrl url, long waitTimeMs,
+            boolean muteVideo, boolean muteAudio, String region)
+        {
+            this.i = i;
+            this._url = url;
+            this.waitTimeMs = waitTimeMs;
+            this.muteVideo = muteVideo;
+            this.muteAudio = muteAudio;
+            this.region = region;
+        }
+
+        @Override
+        public void run()
+        {
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
@@ -274,11 +301,12 @@ public class MalleusJitsificus
                 throw e;
             }
 
+            this.bridge = participant.getBridgeIP();
             readyCountDownLatch.countDown();
 
             try
             {
-                sleepOrCheck(waitTimeMs, i, participant);
+                MalleusJitsificus.this.sleepOrCheck(waitTimeMs, i, participant);
             }
             catch (InterruptedException e)
             {
@@ -303,7 +331,7 @@ public class MalleusJitsificus
                      * to hang up before we close any of them.
                      */
                     allHungUp.arriveAndAwaitAdvance();
-                    closeParticipant(participant);
+                    MalleusJitsificus.this.closeParticipant(participant);
                 }
                 catch (Exception e)
                 {
@@ -311,11 +339,7 @@ public class MalleusJitsificus
                     e.printStackTrace();
                 }
             }
-        });
-
-        joinThread.start();
-
-        return joinThread;
+        }
     }
 
     private void print(String s)

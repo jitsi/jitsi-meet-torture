@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.util;
 
 import java.io.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -29,6 +30,7 @@ public class Blip
 
     private long period;
     private float maxDisruptedPct;
+    private Set<String> bridgeIPs;
 
     /**
      * Factory method.
@@ -55,7 +57,8 @@ public class Blip
             String[] command = {
                 blipScript,
                 "--duration=" + period,
-                "--max-disrupted-pct=" + maxDisruptedPct
+                "--max-disrupted-pct=" + maxDisruptedPct,
+                "--bridge-ips=" + String.join(",", bridgeIPs)
             };
 
             ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
@@ -95,6 +98,12 @@ public class Blip
     public Blip withMaxDisruptedPct(float maxDisruptedPct)
     {
         this.maxDisruptedPct = maxDisruptedPct;
+        return this;
+    }
+
+    public Blip theseBridges(Set<String> bridgeIPs)
+    {
+        this.bridgeIPs = bridgeIPs;
         return this;
     }
 }

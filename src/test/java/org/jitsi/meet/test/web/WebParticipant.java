@@ -119,6 +119,12 @@ public class WebParticipant extends Participant<WebDriver>
         super(name, driver, type, DEFAULT_CONFIG);
     }
 
+    public String getBridgeIP()
+    {
+        // TODO Figure out how to get this from the client.
+        return "";
+    }
+
     /**
      * {@inheritDoc}
      */
