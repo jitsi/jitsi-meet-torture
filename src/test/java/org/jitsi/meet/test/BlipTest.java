@@ -21,7 +21,7 @@ import org.jitsi.meet.test.web.*;
 /**
  * A test that works exactly like the {@link MalleusJitsificus} but with blips
  * enabled by default and some health checks that are periodically run on the
- * endpoints. Also see {@link ConferenceMigrationTest}.
+ * endpoints.
  */
 public class BlipTest extends MalleusJitsificus
 {
