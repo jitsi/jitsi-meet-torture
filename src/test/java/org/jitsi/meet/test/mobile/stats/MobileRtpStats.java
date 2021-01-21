@@ -84,4 +84,10 @@ public class MobileRtpStats implements RtpStatistics
     {
         return getBitrate().getLong("upload");
     }
+
+    @Override
+    public RtpTransport getRtpTransport()
+    {
+        return null;
+    }
 }

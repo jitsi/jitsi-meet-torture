@@ -119,10 +119,16 @@ public class WebParticipant extends Participant<WebDriver>
         super(name, driver, type, DEFAULT_CONFIG);
     }
 
-    public String getBridgeIP()
+    public String getBridgeIp()
     {
-        // TODO Figure out how to get this from the client.
-        return "";
+        return new WebDriverWait(driver, 20).until(d -> {
+
+            RtpStatistics rtpStats
+                = new WebRtpStatistics((JavascriptExecutor) d);
+
+            return rtpStats.getRtpTransport().isP2P()
+                ? null : rtpStats.getRtpTransport().getRemoteIp();
+        });
     }
 
     /**

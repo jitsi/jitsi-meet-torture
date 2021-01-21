@@ -35,4 +35,13 @@ public interface RtpStatistics
      * @return a non negative value expressed in bits per second.
      */
     long getUploadBitrate();
+
+    RtpTransport getRtpTransport();
+
+    interface RtpTransport
+    {
+        String getRemoteIp();
+
+        boolean isP2P();
+    }
 }

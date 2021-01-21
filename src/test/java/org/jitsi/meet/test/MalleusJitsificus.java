@@ -301,7 +301,7 @@ public class MalleusJitsificus
                 throw e;
             }
 
-            this.bridge = participant.getBridgeIP();
+            this.bridge = participant.getBridgeIp();
             readyCountDownLatch.countDown();
 
             try
