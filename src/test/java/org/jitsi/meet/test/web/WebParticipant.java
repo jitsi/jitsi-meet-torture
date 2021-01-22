@@ -126,8 +126,18 @@ public class WebParticipant extends Participant<WebDriver>
             RtpStatistics rtpStats
                 = new WebRtpStatistics((JavascriptExecutor) d);
 
-            return rtpStats.getRtpTransport().isP2P()
-                ? null : rtpStats.getRtpTransport().getRemoteIp();
+            if (rtpStats.getRtpTransport().isP2P())
+            {
+                return null;
+            }
+
+            String socket = rtpStats.getRtpTransport().getRemoteSocket();
+            if (socket == null)
+            {
+                return null;
+            }
+
+            return socket.split(":")[0];
         });
     }
 

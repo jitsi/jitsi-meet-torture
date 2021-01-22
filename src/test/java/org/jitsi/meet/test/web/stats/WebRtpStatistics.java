@@ -108,7 +108,7 @@ public class WebRtpStatistics
          * {@inheritDoc}
          */
         @Override
-        public String getRemoteIp()
+        public String getRemoteSocket()
         {
             return transportMap != null ? (String) transportMap.get("ip") : "";
         }

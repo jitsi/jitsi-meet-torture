@@ -47,9 +47,9 @@ public interface RtpStatistics
     interface RtpTransport
     {
         /**
-         * @return the IP:PORT combination of the remote endpoint.
+         * @return the socket of the remote endpoint.
          */
-        String getRemoteIp();
+        String getRemoteSocket();
 
         /**
          * @return true if the transport is peer-to-peer, false otherwise.
