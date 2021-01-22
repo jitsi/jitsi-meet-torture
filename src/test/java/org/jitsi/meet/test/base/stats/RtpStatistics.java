@@ -36,12 +36,24 @@ public interface RtpStatistics
      */
     long getUploadBitrate();
 
+    /**
+     * @return the transport part of the {@link Participant}'s RTP statistics.
+     */
     RtpTransport getRtpTransport();
 
+    /**
+     * It's the interface describing the transport part of {@link Participant}'s RTP statistics.
+     */
     interface RtpTransport
     {
+        /**
+         * @return the IP:PORT combination of the remote endpoint.
+         */
         String getRemoteIp();
 
+        /**
+         * @return true if the transport is peer-to-peer, false otherwise.
+         */
         boolean isP2P();
     }
 }
