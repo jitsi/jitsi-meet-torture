@@ -49,13 +49,12 @@ public class WebRtpStatistics
         Map stats
             = (Map) javascriptExecutor.executeScript(
                     "return APP.conference.getStats();");
-
         this.bitrateMap
             = (Map<String, Long>) stats.get("bitrate");
 
         List transport = (List) stats.get("transport");
-
-        rtpTransport= new WebRtpTransport(transport != null && !transport.isEmpty() ? (Map) transport.get(0) : null);
+        this.rtpTransport = new WebRtpTransport(
+            transport != null && !transport.isEmpty() ? (Map) transport.get(0) : null);
     }
 
     /**
