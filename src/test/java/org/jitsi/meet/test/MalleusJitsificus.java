@@ -21,6 +21,7 @@ import org.jitsi.meet.test.web.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
@@ -58,6 +59,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_node_types";
     public static final String MAX_DISRUPTED_BRIDGES_PCT_PNAME
         = "org.jitsi.malleus.max_disrupted_bridges_pct";
+    public static final String USE_LOAD_TEST_PNAME
+        = "org.jitsi.malleus.use_load_test";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -158,16 +161,18 @@ public class MalleusJitsificus
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
+        boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
+        
         for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
                 = new ParticipantThread(
-                    i,
-                    url.copy(),
-                    waitTimeMs,
-                    i >= numSenders /* no video */,
-                    i >= numAudioSenders /* no audio */,
-                    regions == null ? null : regions[i % regions.length]);
+                i,
+                url.copy(),
+                waitTimeMs,
+                i >= numSenders /* no video */,
+                i >= numAudioSenders /* no audio */,
+                regions == null ? null : regions[i % regions.length]);
 
             runThreads[i].start();
         }
@@ -393,6 +398,85 @@ public class MalleusJitsificus
 
             Blip.failFor(duration).theseBridges(bridgesToFail).call();
         }
+    }
+
+    private Thread runLoadTestAsync(int i,
+        JitsiMeetUrl url,
+        long waitTime,
+        boolean muteVideo,
+        boolean muteAudio,
+        String region)
+    {
+        StringBuilder urlBuilder = new StringBuilder(url.getServerUrl())
+            .append("/static/load-test/load-test-participant.html#roomName=")
+            .append(URLEncoder.encode("\"" + url.getRoomName() + "\""));
+
+        if (!muteVideo)
+        {
+            urlBuilder.append("&localVideo=true");
+        }
+        if (!muteAudio)
+        {
+            urlBuilder.append("&localAudio=true");
+        }
+        if (region != null)
+        {
+            urlBuilder.append("config.deploymentInfo.userRegion=\"")
+                .append (region).append("\"");
+        }
+
+        final String _url = urlBuilder.toString();
+
+        Thread joinThread = new Thread(() -> {
+
+            WebParticipantOptions ops
+                = new WebParticipantOptions()
+                .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+
+            boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+
+            if (useNodeTypes)
+            {
+                if (muteVideo)
+                {
+                    /* TODO: is it okay to have an audio sender use a malleus receiver ep? */
+                    ops.setApplicationName("malleusReceiver");
+                }
+                else
+                {
+                    ops.setApplicationName("malleusSender");
+                }
+            }
+
+            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+
+            participant.getDriver().get(_url);
+
+            try
+            {
+                Thread.sleep(waitTime);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                try
+                {
+                    participant.closeSafely();
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception closing " + participant.getName());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        joinThread.start();
+
+        return joinThread;
     }
 
     private void print(String s)
