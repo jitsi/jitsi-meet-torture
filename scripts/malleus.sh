@@ -30,6 +30,7 @@ case $1 in
         --regions) REGIONS=$optvalue;;
         --use-node-types) USE_NODE_TYPES=$optvalue;;
         --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
+        --use-load-test) USE_LOAD_TEST=$optvalue;;
         --debug) set -x;;
         *)
           usage
@@ -83,6 +84,10 @@ case $1 in
 
     if [ -z "$USE_NODE_TYPES" ]; then
       USE_NODE_TYPES=false
+    fi
+
+    if [ -z "$USE_LOAD_TEST" ]; then
+      USE_LOAD_TEST=false
     fi
 
     ;;
@@ -144,6 +149,7 @@ mvn \
 -Dorg.jitsi.malleus.regions=$REGIONS \
 -Dorg.jitsi.malleus.use_node_types=$USE_NODE_TYPES \
 -Dorg.jitsi.meet.test.util.blip_script=$BLIP_SCRIPT \
+-Dorg.jitsi.malleus.use_load_test=$USE_LOAD_TEST \
 -Dremote.address=$HUB_URL \
 -DallowInsecureCerts=$ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=$TESTS_TO_RUN \
