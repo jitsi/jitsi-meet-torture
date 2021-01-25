@@ -161,26 +161,8 @@ public class DisplayNameTest
     {
         String remoteParticipantEndpointId = remoteParticipant.getEndpointId();
 
-        // check on local participant remote video
-        WebElement displayNameElem =
-            localParticipant.getDriver().findElement(By.xpath(
-                "//span[@id='participant_" + remoteParticipantEndpointId +
-                    "']//span[@id='participant_" +
-                    remoteParticipantEndpointId + "_name']"));
-
-        boolean isFF = remoteParticipant.getType().isFirefox();
-        if (!isFF)
-        {
-            assertTrue(
-                displayNameElem.isDisplayed(),
-                "Display name not visible");
-        }
-
-        String displayNameText = displayNameElem.getText();
-        if (isFF)
-        {
-            displayNameText = displayNameElem.getAttribute("innerHTML");
-        }
+        String displayNameText
+            = MeetUIUtils.getRemoteDisplayName(localParticipant.getDriver(), remoteParticipantEndpointId);
 
         assertTrue(
             displayNameText.contains(nameToCheck),

@@ -199,12 +199,12 @@ public class LobbyTest
     /**
      * Checks that third tries to enter, sees lobby, and rest notifications are correct and the access is denied.
      */
-    @Test(dependsOnMethods = {"testEnableLobby"})
+    @Test(dependsOnMethods = {"testEnteringInLobbyAndApprove"})
     public void testEnteringInLobbyAndDeny()
     {
         // the first time tests is executed we need to enter display name,
         // for next execution that will be locally stored
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), true);
+        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
 
         // moderator rejects access
         knockingParticipant.reject();
@@ -236,13 +236,16 @@ public class LobbyTest
 
     /**
      * Checks that third tries to enter, sees lobby, and rest notifications are correct and the access is approved.
+     * This check needs to be before any check (testEnteringInLobbyAndDeny) the modifies/stores the display name in
+     * local storage. There was a case where the page stores the display name in localstaorage on the first run
+     * but does not update that state in the conference when allowed to join and is joining with no display name.
      */
-    @Test(dependsOnMethods = {"testEnteringInLobbyAndDeny"})
+    @Test(dependsOnMethods = {"testEnableLobby"})
     public void testEnteringInLobbyAndApprove()
     {
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), true);
 
-        // moderator rejects access
+        // moderator allows access
         knockingParticipant.allow();
 
         // granted notification on 2nd participant
@@ -262,7 +265,15 @@ public class LobbyTest
 
         // ensure 3 participants in the call will check for the third one that muc is joined, ice connected,
         // media is being receiving and there are two remote streams
-        ensureThreeParticipants();
+        joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
+
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
+        participant3.waitForRemoteStreams(2);
+
+        // now check third one display name in the room, is the one set in the prejoin screen
+        String name = MeetUIUtils.getRemoteDisplayName(participant1.getDriver(), participant3.getEndpointId());
+        assertEquals(name, participant3.getName());
 
         getParticipant3().hangUp();
     }
