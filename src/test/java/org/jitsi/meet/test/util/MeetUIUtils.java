@@ -18,6 +18,7 @@ package org.jitsi.meet.test.util;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
@@ -596,6 +597,25 @@ public class MeetUIUtils
             "//span[@id='participant_" + endpointId + "']" +
                 "//span[@class='displayname']",
             5);
+    }
+
+    /**
+     * Retrieves a remote participant display name.
+     *
+     * @param driver The driver where to check for the display name.
+     * @param remoteParticipantEndpointId The participant id which display name to be returned.
+     * @return The current display name of a participant.
+     */
+    public static String getRemoteDisplayName(WebDriver driver, String remoteParticipantEndpointId)
+    {
+        WebElement displayNameElem = driver.findElement(By.xpath(
+            "//span[@id='participant_" + remoteParticipantEndpointId + "']//span[@id='participant_" +
+                    remoteParticipantEndpointId + "_name']"));
+        Actions action = new Actions(driver);
+        action.moveToElement(displayNameElem);
+        action.build().perform();
+
+        return displayNameElem.getText();
     }
 
     /**
