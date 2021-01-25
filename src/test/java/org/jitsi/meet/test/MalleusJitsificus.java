@@ -162,7 +162,7 @@ public class MalleusJitsificus
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
-        
+
         for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
