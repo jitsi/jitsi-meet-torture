@@ -137,7 +137,14 @@ public class WebParticipant extends Participant<WebDriver>
                 return null;
             }
 
-            return socket.split(":")[0];
+            String ip = socket.split(":")[0];
+
+            if ("".equals(ip))
+            {
+                return null;
+            }
+
+            return ip;
         });
     }
 
