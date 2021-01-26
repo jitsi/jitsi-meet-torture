@@ -212,7 +212,7 @@ public class SettingsDialog
 
         if (check != isChecked)
         {
-            checkbox.click();
+            ((JavascriptExecutor)driver).executeScript("arguments[0].click();", checkbox);
         }
     }
 }
