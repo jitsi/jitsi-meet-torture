@@ -5,7 +5,7 @@
 # for the BlipTest to function properly are listed bellow.
 
 usage() {
-    echo "Usage: $0 --duration=seconds --max-disrupted-pct --bridge-ips=IPs [--xmpp-client-port=5222] [--debug]" >&2
+    echo "Usage: $0 --duration=seconds --max-disrupted-pct=percent [--bridge-ips=IP1[,IP2,...]] [--xmpp-client-port=5222] [--debug]" >&2
     exit 1
 }
 
