@@ -28,20 +28,20 @@ public class Blip
 {
     public final static String BLIP_SCRIPT_PNAME = "org.jitsi.meet.test.util.blip_script";
 
-    private long period;
+    private long duration;
     private float maxDisruptedPct;
     private Set<String> bridgeIPs;
 
     /**
      * Factory method.
      *
-     * @param period the period to run the blip for.
+     * @param duration the duration to run the blip for.
      * @return the new instance.
      */
-    public static Blip randomBlipsFor(long period)
+    public static Blip randomBlipsFor(long duration)
     {
         Blip blip = new Blip();
-        blip.period = period;
+        blip.duration = duration;
         return blip;
     }
 
@@ -56,7 +56,7 @@ public class Blip
             // For usage see ./scripts/blip.sh.
             String[] command = {
                 blipScript,
-                "--duration=" + period,
+                "--duration=" + duration,
                 "--max-disrupted-pct=" + maxDisruptedPct,
                 "--bridge-ips=" + String.join(",", bridgeIPs)
             };
