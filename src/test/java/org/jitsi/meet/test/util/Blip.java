@@ -20,16 +20,21 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * A fluid wrapper around the blip shell script (typically found under the
- * scripts folder) that can be used to emulate network blips on AWS shards.
+ * A fluid wrapper around the blip shell script that can be used to emulate network blips (see ./scripts/blip.sh).
  */
 public class Blip
     implements Callable<Void>
 {
     public final static String BLIP_SCRIPT_PNAME = "org.jitsi.meet.test.util.blip_script";
 
+    /**
+     * The duration of the network blip (see ./scripts/blip.sh).
+     */
     private long duration;
-    private float maxDisruptedPct;
+
+    /**
+     * The IPs of the bridges to break (see ./scripts/blip.sh).
+     */
     private Set<String> bridgeIPs;
 
     /**
@@ -38,7 +43,7 @@ public class Blip
      * @param duration the duration to run the blip for.
      * @return the new instance.
      */
-    public static Blip randomBlipsFor(long duration)
+    public static Blip failFor(long duration)
     {
         Blip blip = new Blip();
         blip.duration = duration;
@@ -57,7 +62,6 @@ public class Blip
             String[] command = {
                 blipScript,
                 "--duration=" + duration,
-                "--max-disrupted-pct=" + maxDisruptedPct,
                 "--bridge-ips=" + String.join(",", bridgeIPs)
             };
 
@@ -87,18 +91,6 @@ public class Blip
         }
 
         return null;
-    }
-
-    /**
-     * Sets the max bridges to disrupt (as a percentage).
-     *
-     * @param maxDisruptedPct the max bridge to disrupt (as a percentage).
-     * @return this instance for fluid syntax.
-     */
-    public Blip withMaxDisruptedPct(float maxDisruptedPct)
-    {
-        this.maxDisruptedPct = maxDisruptedPct;
-        return this;
     }
 
     public Blip theseBridges(Set<String> bridgeIPs)

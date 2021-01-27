@@ -145,17 +145,17 @@ public class MalleusJitsificus
         return ret;
     }
 
-    private CountDownLatch readyCountDownLatch;
+    private CountDownLatch bridgeSelectionCountDownLatch;
 
     @Test(dataProvider = "dp")
     public void testMain(
         JitsiMeetUrl url, int numberOfParticipants, long waitTimeMs, int numSenders,
         int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
-        throws InterruptedException
+        throws Exception
     {
         ParticipantThread[] runThreads = new ParticipantThread[numberOfParticipants];
 
-        readyCountDownLatch = new CountDownLatch(numberOfParticipants);
+        bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
@@ -171,58 +171,32 @@ public class MalleusJitsificus
             runThreads[i].start();
         }
 
-        if (blipMaxDisruptedPct > 0)
+        try
         {
-            readyCountDownLatch.await();
-
-            Set<String> bridges = Arrays.stream(runThreads)
-                .map(ParticipantThread::getBridge).collect(Collectors.toSet());
-
-            try
+            disruptBridges(blipMaxDisruptedPct, waitTimeMs / 1000, runThreads);
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally
+        {
+            int minFailureTolerance = Integer.MAX_VALUE;
+            for (ParticipantThread t : runThreads)
             {
-                Blip.randomBlipsFor(waitTimeMs / 1000).theseBridges(bridges).withMaxDisruptedPct(blipMaxDisruptedPct).call();
+                if (t != null)
+                {
+                    t.join();
+
+                    minFailureTolerance = Math.min(minFailureTolerance, t.failureTolerance);
+                }
             }
-            catch (Exception e)
+
+            if (minFailureTolerance < 0)
             {
-                e.printStackTrace();
+                throw new Exception("Minimum failure tolerance is less than 0");
             }
         }
-
-        for (Thread t : runThreads)
-        {
-            if (t != null)
-            {
-                t.join();
-            }
-        }
-    }
-
-    private void sleepOrCheck(long waitTimeMs, int i, WebParticipant participant)
-        throws InterruptedException
-    {
-        long healthCheckIntervalMs = 5000;
-        long remainingMs = waitTimeMs;
-        while (remainingMs > 0)
-        {
-            long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
-
-            long currentMillis = System.currentTimeMillis();
-
-            Thread.sleep(sleepTime);
-
-            healthCheck(i, participant);
-
-            // we use the elapsedMillis because the healthcheck operation may
-            // also take time that needs to be accounted for.
-            long elapsedMillis = System.currentTimeMillis() - currentMillis;
-
-            remainingMs -= elapsedMillis;
-        }
-    }
-
-    void healthCheck(int i, WebParticipant participant)
-    {
-        // There aren't any participant health checks by default.
     }
 
     private class ParticipantThread
@@ -234,12 +208,10 @@ public class MalleusJitsificus
         private final boolean muteVideo;
         private final boolean muteAudio;
         private final String region;
-        private String bridge;
 
-        String getBridge()
-        {
-            return bridge;
-        }
+        WebParticipant participant;
+        public int failureTolerance;
+        private String bridge;
 
         public ParticipantThread(
             int i, JitsiMeetUrl url, long waitTimeMs,
@@ -289,7 +261,7 @@ public class MalleusJitsificus
                 _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
             }
 
-            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            participant = participants.createParticipant("web.participant" + (i + 1), ops);
             allHungUp.register();
             try
             {
@@ -301,12 +273,12 @@ public class MalleusJitsificus
                 throw e;
             }
 
-            this.bridge = participant.getBridgeIp();
-            readyCountDownLatch.countDown();
+            bridge = participant.getBridgeIp();
+            bridgeSelectionCountDownLatch.countDown();
 
             try
             {
-                MalleusJitsificus.this.sleepOrCheck(waitTimeMs, i, participant);
+                check();
             }
             catch (InterruptedException e)
             {
@@ -339,6 +311,73 @@ public class MalleusJitsificus
                     e.printStackTrace();
                 }
             }
+        }
+
+        private void check()
+            throws InterruptedException
+        {
+            long healthCheckIntervalMs = 5000;
+            long remainingMs = waitTimeMs;
+            while (remainingMs > 0)
+            {
+                long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
+
+                long currentMillis = System.currentTimeMillis();
+
+                Thread.sleep(sleepTime);
+
+                try
+                {
+                    participant.waitForIceConnected(0 /* no timeout */);
+                    TestUtils.print("Participant " + i + " is connected (tolerance=" + failureTolerance + ").");
+                }
+                catch (Exception ex)
+                {
+                    TestUtils.print("Participant " + i + " is NOT connected (tolerance=" + failureTolerance + ").");
+                    failureTolerance--;
+                    if (failureTolerance < 0)
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        // wait for reconnect
+                        participant.waitForIceConnected(20);
+                        TestUtils.print("Participant " + i + " reconnected (tolerance=" + failureTolerance + ").");
+                    }
+                }
+
+                // we use the elapsedMillis because the healthcheck operation may
+                // also take time that needs to be accounted for.
+                long elapsedMillis = System.currentTimeMillis() - currentMillis;
+
+                remainingMs -= elapsedMillis;
+            }
+        }
+    }
+
+    private void disruptBridges(float blipMaxDisruptedPct, long duration, ParticipantThread[] runThreads)
+        throws Exception
+    {
+        if (blipMaxDisruptedPct > 0)
+        {
+            bridgeSelectionCountDownLatch.await();
+
+            Set<String> bridges = Arrays.stream(runThreads)
+                .map(t -> t.bridge).collect(Collectors.toSet());
+
+            Set<String> bridgesToFail = bridges.stream()
+                .limit((long) (Math.ceil(bridges.size() * blipMaxDisruptedPct / 100))).collect(Collectors.toSet());
+
+            for (ParticipantThread runThread : runThreads)
+            {
+                if (bridgesToFail.contains(runThread.bridge))
+                {
+                    runThread.failureTolerance = 1;
+                }
+            }
+
+            Blip.failFor(duration).theseBridges(bridgesToFail).call();
         }
     }
 
