@@ -119,6 +119,35 @@ public class WebParticipant extends Participant<WebDriver>
         super(name, driver, type, DEFAULT_CONFIG);
     }
 
+    public String getBridgeIp()
+    {
+        return new WebDriverWait(driver, 20).until(d -> {
+
+            RtpStatistics rtpStats
+                = new WebRtpStatistics((JavascriptExecutor) d);
+
+            if (rtpStats.getRtpTransport().isP2P())
+            {
+                return null;
+            }
+
+            String socket = rtpStats.getRtpTransport().getRemoteSocket();
+            if (socket == null)
+            {
+                return null;
+            }
+
+            String ip = socket.split(":")[0];
+
+            if ("".equals(ip))
+            {
+                return null;
+            }
+
+            return ip;
+        });
+    }
+
     /**
      * {@inheritDoc}
      */

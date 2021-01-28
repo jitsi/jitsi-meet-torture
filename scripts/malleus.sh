@@ -1,7 +1,11 @@
 #!/bin/sh
 
+if [ -n "$DEBUG" ]; then
+  set -x
+fi
+
 usage() {
-  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types]" >&2
+  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
   exit 1
 }
 
@@ -25,6 +29,8 @@ case $1 in
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
         --use-node-types) USE_NODE_TYPES=$optvalue;;
+        --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
+        --debug) set -x;;
         *)
           usage
           ;;
@@ -122,9 +128,14 @@ then
     fi
 fi
 
+if [ -z "$TESTS_TO_RUN" ]; then
+  TESTS_TO_RUN=MalleusJitsificus
+fi
+
 mvn \
 -Dthreadcount=1 \
 -Dorg.jitsi.malleus.conferences=$CONFERENCES \
+-Dorg.jitsi.malleus.max_disrupted_bridges_pct=$MAX_DISRUPTED_BRIDGES_PCT \
 -Dorg.jitsi.malleus.participants=$PARTICIPANTS \
 -Dorg.jitsi.malleus.senders=$SENDERS \
 -Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \
@@ -132,9 +143,10 @@ mvn \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \
 -Dorg.jitsi.malleus.use_node_types=$USE_NODE_TYPES \
+-Dorg.jitsi.meet.test.util.blip_script=$BLIP_SCRIPT \
 -Dremote.address=$HUB_URL \
 -DallowInsecureCerts=$ALLOW_INSECURE_CERTS \
--Djitsi-meet.tests.toRun=MalleusJitsificus \
+-Djitsi-meet.tests.toRun=$TESTS_TO_RUN \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
 -Djitsi-meet.instance.url=$INSTANCE_URL \

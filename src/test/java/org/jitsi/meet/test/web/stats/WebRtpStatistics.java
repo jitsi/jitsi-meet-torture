@@ -16,7 +16,7 @@
 package org.jitsi.meet.test.web.stats;
 
 import org.jitsi.meet.test.base.stats.*;
-import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 
 import java.util.*;
 
@@ -32,17 +32,29 @@ public class WebRtpStatistics
     private final Map<String, Long> bitrateMap;
 
     /**
+     * The transport part of the RTP statistics state retrieved from the app.
+     *
+     * Note that the transport object that is returned from the app is a list.
+     * For simplicity we keep only the first element.
+     */
+    private final RtpTransport rtpTransport;
+
+    /**
      * Creates new {@link WebRtpStatistics}.
      *
-     * @param webParticipant the participant for whom the stats will be created.
+     * @param javascriptExecutor the {@link JavascriptExecutor} for whom the stats will be created.
      */
-    public WebRtpStatistics(WebParticipant webParticipant)
+    public WebRtpStatistics(JavascriptExecutor javascriptExecutor)
     {
         Map stats
-            = (Map) webParticipant.executeScript(
+            = (Map) javascriptExecutor.executeScript(
                     "return APP.conference.getStats();");
         this.bitrateMap
             = (Map<String, Long>) stats.get("bitrate");
+
+        List transport = (List) stats.get("transport");
+        this.rtpTransport = new WebRtpTransport(
+            transport != null && !transport.isEmpty() ? (Map) transport.get(0) : null);
     }
 
     /**
@@ -61,5 +73,53 @@ public class WebRtpStatistics
     public long getUploadBitrate()
     {
         return bitrateMap != null ? bitrateMap.get("upload") : 0L;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RtpTransport getRtpTransport()
+    {
+        return rtpTransport;
+    }
+
+    static class WebRtpTransport implements RtpTransport
+    {
+        /**
+         * The transport part of the RTP statistics state retrieved from the app.
+         *
+         * Note that the transport object that is returned from the app is a list.
+         * For simplicity we keep only the first element.
+         */
+        private final Map transportMap;
+
+        /**
+         * Ctor.
+         *
+         * @param transportMap the transport part of the RTP statistics state retrieved from the app.
+         */
+        WebRtpTransport(Map transportMap)
+        {
+            this.transportMap = transportMap;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getRemoteSocket()
+        {
+            return transportMap != null ? (String) transportMap.get("ip") : "";
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isP2P()
+        {
+            return transportMap != null && (boolean) transportMap.get("p2p");
+        }
     }
 }

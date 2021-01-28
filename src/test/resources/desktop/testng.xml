@@ -199,11 +199,6 @@
             <class name="org.jitsi.meet.test.AuthSetupConference" />
         </classes>
     </test>
-    <test name="ConferenceMigrationTest">
-        <classes>
-            <class name="org.jitsi.meet.test.ConferenceMigrationTest" />
-        </classes>
-    </test>
     <test name="JVBConferencesCheck">
         <classes>
             <class name="org.jitsi.meet.test.JVBConferencesCheck" />

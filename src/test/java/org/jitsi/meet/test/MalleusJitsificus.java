@@ -23,6 +23,7 @@ import org.testng.annotations.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * @author Damian Minkov
@@ -55,6 +56,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.regions";
     public static final String USE_NODE_TYPES_PNAME
         = "org.jitsi.malleus.use_node_types";
+    public static final String MAX_DISRUPTED_BRIDGES_PCT_PNAME
+        = "org.jitsi.malleus.max_disrupted_bridges_pct";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -99,6 +102,13 @@ public class MalleusJitsificus
         boolean enableP2p
             = enableP2pStr == null || Boolean.parseBoolean(enableP2pStr);
 
+        float maxDisruptedBidges = 0;
+        String maxDisruptedBidgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
+        if (!"".equals(maxDisruptedBidgesStr))
+        {
+            maxDisruptedBidges = Float.parseFloat(maxDisruptedBidgesStr);
+        }
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -111,6 +121,7 @@ public class MalleusJitsificus
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
+        print("max_disrupted_bridges_pct=" + maxDisruptedBidges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
 
         Object[][] ret = new Object[numConferences][4];
@@ -127,52 +138,97 @@ public class MalleusJitsificus
                 .appendConfig("config.pcStatsInterval=10000")
 
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
-            ret[i] = new Object[] { url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions};
+            ret[i] = new Object[] {
+                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBidges
+            };
         }
 
         return ret;
     }
 
+    private CountDownLatch bridgeSelectionCountDownLatch;
+
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url,
-        int numberOfParticipants, long waitTime, int numSenders, int numAudioSenders, String[] regions)
-        throws InterruptedException
+        JitsiMeetUrl url, int numberOfParticipants, long waitTimeMs, int numSenders,
+        int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
+        throws Exception
     {
-        Thread[] runThreads = new Thread[numberOfParticipants];
+        ParticipantThread[] runThreads = new ParticipantThread[numberOfParticipants];
+
+        bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
             runThreads[i]
-                = runAsync(
+                = new ParticipantThread(
                     i,
-                    url,
-                    waitTime,
+                    url.copy(),
+                    waitTimeMs,
                     i >= numSenders /* no video */,
                     i >= numAudioSenders /* no audio */,
                     regions == null ? null : regions[i % regions.length]);
+
+            runThreads[i].start();
         }
 
-        for (Thread t : runThreads)
+        try
         {
-            if (t != null)
+            disruptBridges(blipMaxDisruptedPct, waitTimeMs / 1000, runThreads);
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+        finally
+        {
+            int minFailureTolerance = Integer.MAX_VALUE;
+            for (ParticipantThread t : runThreads)
             {
-                t.join();
+                if (t != null)
+                {
+                    t.join();
+
+                    minFailureTolerance = Math.min(minFailureTolerance, t.failureTolerance);
+                }
+            }
+
+            if (minFailureTolerance < 0)
+            {
+                throw new Exception("Minimum failure tolerance is less than 0");
             }
         }
     }
 
-    private Thread runAsync(int i,
-                            JitsiMeetUrl url,
-                            long waitTime,
-                            boolean muteVideo,
-                            boolean muteAudio,
-                            String region)
+    private class ParticipantThread
+        extends Thread
     {
-        JitsiMeetUrl _url = url.copy();
+        private final int i;
+        private final JitsiMeetUrl _url;
+        private final long waitTimeMs;
+        private final boolean muteVideo;
+        private final boolean muteAudio;
+        private final String region;
 
-        Thread joinThread = new Thread(() -> {
+        WebParticipant participant;
+        public int failureTolerance;
+        private String bridge;
 
+        public ParticipantThread(
+            int i, JitsiMeetUrl url, long waitTimeMs,
+            boolean muteVideo, boolean muteAudio, String region)
+        {
+            this.i = i;
+            this._url = url;
+            this.waitTimeMs = waitTimeMs;
+            this.muteVideo = muteVideo;
+            this.muteAudio = muteAudio;
+            this.region = region;
+        }
+
+        @Override
+        public void run()
+        {
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                         .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
@@ -206,13 +262,14 @@ public class MalleusJitsificus
                 _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
             }
 
-            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            participant = participants.createParticipant("web.participant" + (i + 1), ops);
             allHungUp.register();
             try
             {
                 participant.joinConference(_url);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 /* If join failed, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
                 throw e;
@@ -220,7 +277,22 @@ public class MalleusJitsificus
 
             try
             {
-                Thread.sleep(waitTime);
+                bridge = participant.getBridgeIp();
+            }
+            catch (Exception e)
+            {
+                /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
+                allHungUp.arriveAndDeregister();
+                throw e;
+            }
+            finally
+            {
+                bridgeSelectionCountDownLatch.countDown();
+            }
+
+            try
+            {
+                check();
             }
             catch (InterruptedException e)
             {
@@ -245,7 +317,7 @@ public class MalleusJitsificus
                      * to hang up before we close any of them.
                      */
                     allHungUp.arriveAndAwaitAdvance();
-                    closeParticipant(participant);
+                    MalleusJitsificus.this.closeParticipant(participant);
                 }
                 catch (Exception e)
                 {
@@ -253,11 +325,74 @@ public class MalleusJitsificus
                     e.printStackTrace();
                 }
             }
-        });
+        }
 
-        joinThread.start();
+        private void check()
+            throws InterruptedException
+        {
+            long healthCheckIntervalMs = 5000;
+            long remainingMs = waitTimeMs;
+            while (remainingMs > 0)
+            {
+                long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
 
-        return joinThread;
+                long currentMillis = System.currentTimeMillis();
+
+                Thread.sleep(sleepTime);
+
+                try
+                {
+                    participant.waitForIceConnected(0 /* no timeout */);
+                    TestUtils.print("Participant " + i + " is connected (tolerance=" + failureTolerance + ").");
+                }
+                catch (Exception ex)
+                {
+                    TestUtils.print("Participant " + i + " is NOT connected (tolerance=" + failureTolerance + ").");
+                    failureTolerance--;
+                    if (failureTolerance < 0)
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        // wait for reconnect
+                        participant.waitForIceConnected(20);
+                        TestUtils.print("Participant " + i + " reconnected (tolerance=" + failureTolerance + ").");
+                    }
+                }
+
+                // we use the elapsedMillis because the healthcheck operation may
+                // also take time that needs to be accounted for.
+                long elapsedMillis = System.currentTimeMillis() - currentMillis;
+
+                remainingMs -= elapsedMillis;
+            }
+        }
+    }
+
+    private void disruptBridges(float blipMaxDisruptedPct, long duration, ParticipantThread[] runThreads)
+        throws Exception
+    {
+        if (blipMaxDisruptedPct > 0)
+        {
+            bridgeSelectionCountDownLatch.await();
+
+            Set<String> bridges = Arrays.stream(runThreads)
+                .map(t -> t.bridge).collect(Collectors.toSet());
+
+            Set<String> bridgesToFail = bridges.stream()
+                .limit((long) (Math.ceil(bridges.size() * blipMaxDisruptedPct / 100))).collect(Collectors.toSet());
+
+            for (ParticipantThread runThread : runThreads)
+            {
+                if (bridgesToFail.contains(runThread.bridge))
+                {
+                    runThread.failureTolerance = 1;
+                }
+            }
+
+            Blip.failFor(duration).theseBridges(bridgesToFail).call();
+        }
     }
 
     private void print(String s)
