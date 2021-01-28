@@ -449,8 +449,18 @@ public class MalleusJitsificus
             }
 
             WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            allHungUp.register();
 
-            participant.getDriver().get(_url);
+            try
+            {
+                participant.getDriver().get(_url);
+            }
+            catch (Exception e)
+            {
+                /* If join failed, don't block other threads from hanging up. */
+                allHungUp.arriveAndDeregister();
+                throw e;
+            }
 
             try
             {
@@ -464,6 +474,21 @@ public class MalleusJitsificus
             {
                 try
                 {
+                    /* Call is hung up when user navigates away from page */
+                    participant.getDriver().get("about:blank");
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception hanging up " + participant.getName());
+                    e.printStackTrace();
+                }
+                try
+                {
+                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
+                     * Chrome session can cause another one to close too.  So wait for all sessions
+                     * to hang up before we close any of them.
+                     */
+                    allHungUp.arriveAndAwaitAdvance();
                     participant.closeSafely();
                 }
                 catch (Exception e)
