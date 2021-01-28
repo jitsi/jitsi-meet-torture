@@ -273,8 +273,19 @@ public class MalleusJitsificus
                 throw e;
             }
 
-            bridge = participant.getBridgeIp();
-            bridgeSelectionCountDownLatch.countDown();
+            try
+            {
+                bridge = participant.getBridgeIp();
+            }
+            catch (Exception e) {
+                /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
+                allHungUp.arriveAndDeregister();
+                throw e;
+            }
+            finally
+            {
+                bridgeSelectionCountDownLatch.countDown();
+            }
 
             try
             {
