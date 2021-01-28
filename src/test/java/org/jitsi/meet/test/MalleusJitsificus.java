@@ -400,6 +400,9 @@ public class MalleusJitsificus
         }
     }
 
+    /* TODO: this would be cleaner if I made the load test participant
+     *  a new subclass of Participant, but there's a lot of plumbing to do there.
+     */
     private Thread runLoadTestAsync(int i,
         JitsiMeetUrl url,
         long waitTime,
@@ -453,6 +456,7 @@ public class MalleusJitsificus
 
             try
             {
+                TestUtils.print(participant.getName() + " is opening URL: " + _url);
                 participant.getDriver().get(_url);
             }
             catch (Exception e)
@@ -476,6 +480,8 @@ public class MalleusJitsificus
                 {
                     /* Call is hung up when user navigates away from page */
                     participant.getDriver().get("about:blank");
+                    MeetUtils.waitForPageToLoad(participant.getDriver());
+                    TestUtils.print("Hung up in " + participant.getName() + ".");
                 }
                 catch (Exception e)
                 {
@@ -489,7 +495,7 @@ public class MalleusJitsificus
                      * to hang up before we close any of them.
                      */
                     allHungUp.arriveAndAwaitAdvance();
-                    participant.closeSafely();
+                    closeParticipant(participant);
                 }
                 catch (Exception e)
                 {
