@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
+  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
   exit 1
 }
 
@@ -14,7 +14,7 @@ case $1 in
     # new arg parsing code that includes default values for the different options.
     for arg in "$@"; do
       optname=`echo $arg | cut -d= -f1`
-      optvalue=`echo $arg | cut -d= -f2`
+      optvalue=`echo $arg | cut -s -d= -f2`
       case $optname in
         --conferences) CONFERENCES=$optvalue;;
         --allow-insecure-certs) ALLOW_INSECURE_CERTS=$optvalue;;
@@ -28,9 +28,9 @@ case $1 in
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
         --regions) REGIONS=$optvalue;;
-        --use-node-types) USE_NODE_TYPES=$optvalue;;
+        --use-node-types) if [ -n "$optvalue" ]; then USE_NODE_TYPES=$optvalue; else USE_NODE_TYPES=true; fi;;
+        --use-load-test) if [ -n "$optvalue" ]; then USE_LOAD_TEST=$optvalue; else USE_LOAD_TEST=true; fi;;
         --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
-        --use-load-test) USE_LOAD_TEST=$optvalue;;
         --debug) set -x;;
         *)
           usage
