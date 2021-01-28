@@ -267,7 +267,8 @@ public class MalleusJitsificus
             {
                 participant.joinConference(_url);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 /* If join failed, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
                 throw e;
@@ -277,7 +278,8 @@ public class MalleusJitsificus
             {
                 bridge = participant.getBridgeIp();
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
                 throw e;
