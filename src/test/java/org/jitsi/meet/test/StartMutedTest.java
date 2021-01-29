@@ -149,7 +149,7 @@ public class StartMutedTest
         // to p2p).
         TestUtils.waitForCondition(
             participant1.getDriver(),
-            5,
+            10,
             d -> participant1.getRtpStatistics().getRtpTransport().isP2P() == enableP2p);
 
         MeetUIUtils.assertMuteIconIsDisplayed(
