@@ -980,7 +980,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForBoolean(driver,
             "return " + (received ? "" : "!" ) +"JitsiMeetJS.app.testing.isRemoteVideoReceived('" + endpointId + "');",
-            5);
+            10);
     }
 
     /**
