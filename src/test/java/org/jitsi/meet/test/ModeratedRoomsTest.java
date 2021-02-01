@@ -60,7 +60,7 @@ public class ModeratedRoomsTest
         ensureTwoParticipants(url.copy().setRoomParameters("jwt=" + token), url);
 
         assertTrue(getParticipant1().isModerator(), "Participant 1 must be moderator");
-        assertFalse(getParticipant2().isModerator(), "Participant 1 must not be moderator");
+        assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");
 
         checkModeratorMenuItems(getParticipant1(), getParticipant2());
         checkModeratorMenuItems(getParticipant2(), getParticipant1());
