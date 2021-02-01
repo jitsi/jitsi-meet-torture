@@ -112,6 +112,11 @@
             <class name="org.jitsi.meet.test.LockRoomDigitsOnlyTest" />
         </classes>
     </test>
+    <test name="ModeratedRoomsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.ModeratedRoomsTest" />
+        </classes>
+    </test>
     <test name="ModeratorTest">
         <classes>
             <class name="org.jitsi.meet.test.ModeratorTest" />
