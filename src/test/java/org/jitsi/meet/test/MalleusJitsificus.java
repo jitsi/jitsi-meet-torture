@@ -165,14 +165,28 @@ public class MalleusJitsificus
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
-            runThreads[i]
-                = new ParticipantThread(
-                i,
-                url.copy(),
-                waitTimeMs,
-                i >= numSenders /* no video */,
-                i >= numAudioSenders /* no audio */,
-                regions == null ? null : regions[i % regions.length]);
+            if (useLoadTest)
+            {
+                runThreads[i]
+                    = new LoadTestParticipantThread(
+                    i,
+                    url.copy(),
+                    waitTimeMs,
+                    i >= numSenders /* no video */,
+                    i >= numAudioSenders /* no audio */,
+                    regions == null ? null : regions[i % regions.length]);
+            }
+            else
+            {
+                runThreads[i]
+                    = new ParticipantThread(
+                    i,
+                    url.copy(),
+                    waitTimeMs,
+                    i >= numSenders /* no video */,
+                    i >= numAudioSenders /* no audio */,
+                    regions == null ? null : regions[i % regions.length]);
+            }
 
             runThreads[i].start();
         }
@@ -208,12 +222,12 @@ public class MalleusJitsificus
     private class ParticipantThread
         extends Thread
     {
-        private final int i;
-        private final JitsiMeetUrl _url;
-        private final long waitTimeMs;
-        private final boolean muteVideo;
-        private final boolean muteAudio;
-        private final String region;
+        protected final int i;
+        protected final JitsiMeetUrl _url;
+        protected final long waitTimeMs;
+        protected final boolean muteVideo;
+        protected final boolean muteAudio;
+        protected final String region;
 
         WebParticipant participant;
         public int failureTolerance;
@@ -403,40 +417,46 @@ public class MalleusJitsificus
     /* TODO: this would be cleaner if I made the load test participant
      *  a new subclass of Participant, but there's a lot of plumbing to do there.
      */
-    private Thread runLoadTestAsync(int i,
-        JitsiMeetUrl url,
-        long waitTime,
-        boolean muteVideo,
-        boolean muteAudio,
-        String region)
+    /* Note: Load test and bridge disruption don't currently work together. */
+    private class LoadTestParticipantThread
+        extends ParticipantThread
     {
-        StringBuilder urlBuilder = new StringBuilder(url.getServerUrl())
-            .append("/static/load-test/load-test-participant.html#roomName=")
-            .append(URLEncoder.encode("\"" + url.getRoomName() + "\""));
-
-        if (!muteVideo)
+        public LoadTestParticipantThread(
+            int i, JitsiMeetUrl url, long waitTimeMs,
+            boolean muteVideo, boolean muteAudio, String region)
         {
-            urlBuilder.append("&localVideo=true");
-        }
-        if (!muteAudio)
-        {
-            urlBuilder.append("&localAudio=true");
-        }
-        if (region != null)
-        {
-            urlBuilder.append("config.deploymentInfo.userRegion=\"")
-                .append (region).append("\"");
+            super(i, url, waitTimeMs, muteVideo, muteAudio, region);
         }
 
-        final String _url = urlBuilder.toString();
+        @Override
+        public void run()
+        {
+            StringBuilder urlBuilder = new StringBuilder(_url.getServerUrl())
+                .append("/static/load-test/load-test-participant.html#roomName=")
+                .append(URLEncoder.encode("\"" + _url.getRoomName() + "\""));
 
-        Thread joinThread = new Thread(() -> {
+            if (!muteVideo)
+            {
+                urlBuilder.append("&localVideo=true");
+            }
+            if (!muteAudio)
+            {
+                urlBuilder.append("&localAudio=true");
+            }
+            if (region != null)
+            {
+                urlBuilder.append("config.deploymentInfo.userRegion=\"")
+                    .append(region).append("\"");
+            }
+
+            String url = urlBuilder.toString();
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                 .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
 
-            boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+            boolean useNodeTypes = Boolean
+                .parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
 
             if (useNodeTypes)
             {
@@ -456,8 +476,8 @@ public class MalleusJitsificus
 
             try
             {
-                TestUtils.print(participant.getName() + " is opening URL: " + _url);
-                participant.getDriver().get(_url);
+                TestUtils.print(participant.getName() + " is opening URL: " + url);
+                participant.getDriver().get(url);
             }
             catch (Exception e)
             {
@@ -468,7 +488,7 @@ public class MalleusJitsificus
 
             try
             {
-                Thread.sleep(waitTime);
+                Thread.sleep(waitTimeMs);
             }
             catch (InterruptedException e)
             {
@@ -499,15 +519,12 @@ public class MalleusJitsificus
                 }
                 catch (Exception e)
                 {
-                    TestUtils.print("Exception closing " + participant.getName());
+                    TestUtils.print(
+                        "Exception closing " + participant.getName());
                     e.printStackTrace();
                 }
             }
-        });
-
-        joinThread.start();
-
-        return joinThread;
+        }
     }
 
     private void print(String s)
