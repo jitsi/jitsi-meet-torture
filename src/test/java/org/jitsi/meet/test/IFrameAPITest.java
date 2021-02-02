@@ -32,11 +32,8 @@ import java.net.*;
 public class IFrameAPITest
     extends WebTestBase
 {
-    private static final String IFRAME_SERVER_URL
-        = "https://web-cdn.jitsi.net";
-
-    private static final String IFRAME_ROOM_NAME
-        = "jitsi-meet-torture/v2/iframeAPITest.html";
+    private static final String IFRAME_SERVER_URL = "file://";
+    private static final String IFRAME_ROOM_NAME = IFrameAPITest.class.getResource("/iframeAPITest.html").getFile();
 
     /**
      * A url for a page that loads the iframe API.
