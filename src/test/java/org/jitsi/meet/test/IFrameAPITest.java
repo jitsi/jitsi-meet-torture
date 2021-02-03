@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
+import org.testng.*;
 import org.testng.annotations.*;
 
 import java.net.*;
@@ -32,11 +33,14 @@ import java.net.*;
 public class IFrameAPITest
     extends WebTestBase
 {
-    private static final String IFRAME_SERVER_URL
-        = "https://web-cdn.jitsi.net";
+    /**
+     * The url of the page implementing the iframe, mut be hosted on https location.
+     * {@link src/test/resources/files/iframeAPITest.html}
+     */
+    @SuppressWarnings("JavadocReference")
+    public static final String IFRAME_PAGE_PATH_PNAME = "org.jitsi.iframe.page_path";
 
-    private static final String IFRAME_ROOM_NAME
-        = "jitsi-meet-torture/v2/iframeAPITest.html";
+    private static final String IFRAME_ROOM_NAME = "iframeAPITest.html";
 
     /**
      * A url for a page that loads the iframe API.
@@ -59,8 +63,15 @@ public class IFrameAPITest
     @Test
     public void testIFrameAPI()
     {
+        String pagePath = System.getProperty(IFRAME_PAGE_PATH_PNAME);
+
+        if (pagePath == null || pagePath.trim().length() == 0)
+        {
+            throw new SkipException("missing configuration");
+        }
+
         // uses a custom join, so we can load the page with iframe api
-        JitsiMeetUrl iFrameUrl = getJitsiMeetUrl();
+        JitsiMeetUrl iFrameUrl = getJitsiMeetUrl().copy();
         String domain;
         try
         {
@@ -75,13 +86,13 @@ public class IFrameAPITest
             = String.format(IFRAME_ROOM_PARAMS, domain, currentRoomName);
 
         // Override the server and the path part(which is s room name)
-        iFrameUrl.setServerUrl(IFRAME_SERVER_URL);
+        iFrameUrl.setServerUrl(pagePath);
         iFrameUrl.setRoomName(IFRAME_ROOM_NAME);
         iFrameUrl.setRoomParameters(roomParams);
         iFrameUrl.setIframeToNavigateTo("jitsiConferenceFrame0");
 
         ensureOneParticipant(iFrameUrl);
-        ensureThreeParticipants();
+        ensureThreeParticipants(iFrameUrl, null, null);
 
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
         switchVideoTest.participant1ClickOnLocalVideoAndTest();
@@ -94,6 +105,6 @@ public class IFrameAPITest
         MuteTest muteTest = new MuteTest(this);
         muteTest.muteParticipant1AndCheck();
         muteTest.muteParticipant2AndCheck();
-        muteTest.muteParticipant3AndCheck();
+        muteTest.muteParticipant3AndCheck(iFrameUrl, null, null);
     }
 }
