@@ -40,20 +40,21 @@ public class LastNTest
             .appendConfig("config.startWithAudioMuted=true")
             .appendConfig("config.startWithVideoMuted=true")
             .appendConfig("config.channelLastN=1");
-
-        JitsiMeetUrl meetUrl2 = getJitsiMeetUrl()
+        JitsiMeetUrl meetUrl2 = meetUrl1.copy();
+        JitsiMeetUrl meetUrl3 = getJitsiMeetUrl()
             .appendConfig("config.channelLastN=1");
+        JitsiMeetUrl meetUrl4 = meetUrl3.copy();
 
         ensureOneParticipant(meetUrl1);
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
 
-        WebParticipant participant2 = joinSecondParticipant(meetUrl1);
+        WebParticipant participant2 = joinSecondParticipant(meetUrl2);
         WebDriver driver2 = participant2.getDriver();
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
 
-        WebParticipant participant3 = joinThirdParticipant(meetUrl2, null);
+        WebParticipant participant3 = joinThirdParticipant(meetUrl3, null);
         participant3.waitToJoinMUC();
         participant3.waitForIceConnected();
 
@@ -63,7 +64,7 @@ public class LastNTest
         // Mute audio on participant3.
         participant3.getToolbar().clickAudioMuteButton();
 
-        WebParticipant participant4 = joinFourthParticipant(meetUrl2);
+        WebParticipant participant4 = joinFourthParticipant(meetUrl4);
         participant4.waitToJoinMUC();
         participant4.waitForIceConnected();
         participant4.waitForSendReceiveData(true, true);

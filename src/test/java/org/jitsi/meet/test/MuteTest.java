@@ -117,7 +117,17 @@ public class MuteTest
      */
     public void muteParticipant3AndCheck()
     {
-        ensureThreeParticipants();
+        this.muteParticipant3AndCheck(null, null, null);
+    }
+
+    /**
+     * Mutes participant3 and checks at participant1's side.
+     */
+    public void muteParticipant3AndCheck(JitsiMeetUrl participantOneMeetURL,
+                                         JitsiMeetUrl participantTwoMeetURL,
+                                         JitsiMeetUrl participantThreeMeetURL)
+    {
+        ensureThreeParticipants(participantOneMeetURL, participantTwoMeetURL, participantThreeMeetURL);
 
         toggleMuteAndCheck(
             getParticipant3(),
