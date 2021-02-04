@@ -100,7 +100,8 @@ public class WebParticipantFactory
             = new WebParticipant(
                     webOptions.getName(),
                     startWebDriver(webOptions),
-                    webOptions.getParticipantType());
+                    webOptions.getParticipantType(),
+                    webOptions.getLoadTest());
 
         return webParticipant;
     }

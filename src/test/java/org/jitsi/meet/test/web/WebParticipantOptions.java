@@ -119,6 +119,12 @@ public class WebParticipantOptions
     private static final String PROP_SKIP_DISPLAYNAME = "skip-displayname";
 
     /**
+     * Whether the Participant is using a the load test URL (and thus certain operations
+     * can be skipped).
+     */
+    private static final String PROP_LOADTEST = "isLoadTest";
+
+    /**
      * Get web specific global property names. See
      * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
@@ -152,6 +158,7 @@ public class WebParticipantOptions
                 PROP_CHROME_DISABLE_SANDBOX, DEFAULT_CHROME_DISABLE_SANDBOX);
         defaults.setProperty(PROP_SKIP_DISPLAYNAME, Boolean.FALSE.toString());
         defaults.setProperty(PROP_ALLOW_INSECURE_CERTS, Boolean.FALSE.toString());
+        defaults.setProperty(PROP_LOADTEST, Boolean.FALSE.toString());
 
         return defaults;
     }
@@ -282,6 +289,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets whether this participant is using the load test interface
+     */
+    public WebParticipantOptions setLoadTest(boolean value)
+    {
+        setProperty(PROP_LOADTEST, Boolean.toString(value));
+        return this;
+    }
+
+    /**
      * Sets the name of y4m video file which will be streamed through fake video
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
@@ -363,6 +379,15 @@ public class WebParticipantOptions
     public boolean getSkipDisplayNameSet()
     {
         return Boolean.valueOf(getProperty(PROP_SKIP_DISPLAYNAME));
+    }
+
+    /**
+     * Whether this is a load test URL
+     * @return Whether this is a load test URL.
+     */
+    public boolean getLoadTest()
+    {
+        return Boolean.parseBoolean(getProperty(PROP_LOADTEST));
     }
 
     /**

@@ -112,6 +112,8 @@ public class MalleusJitsificus
             maxDisruptedBidges = Float.parseFloat(maxDisruptedBidgesStr);
         }
 
+        boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -139,8 +141,13 @@ public class MalleusJitsificus
                 .appendConfig("config.disable1On1Mode=false")
                 .appendConfig("config.testing.noAutoPlayVideo=true")
                 .appendConfig("config.pcStatsInterval=10000")
-
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
+
+            if (useLoadTest)
+            {
+                url.setServerUrl(url.getServerUrl() + "/_load-test");
+            }
+
             ret[i] = new Object[] {
                 url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBidges
             };
@@ -161,32 +168,16 @@ public class MalleusJitsificus
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
-        boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
-
         for (int i = 0; i < numberOfParticipants; i++)
         {
-            if (useLoadTest)
-            {
-                runThreads[i]
-                    = new LoadTestParticipantThread(
-                    i,
-                    url.copy(),
-                    waitTimeMs,
-                    i >= numSenders /* no video */,
-                    i >= numAudioSenders /* no audio */,
-                    regions == null ? null : regions[i % regions.length]);
-            }
-            else
-            {
-                runThreads[i]
-                    = new ParticipantThread(
-                    i,
-                    url.copy(),
-                    waitTimeMs,
-                    i >= numSenders /* no video */,
-                    i >= numAudioSenders /* no audio */,
-                    regions == null ? null : regions[i % regions.length]);
-            }
+         runThreads[i]
+                = new ParticipantThread(
+                i,
+                url.copy(),
+                waitTimeMs,
+                i >= numSenders /* no video */,
+                i >= numAudioSenders /* no audio */,
+                regions == null ? null : regions[i % regions.length]);
 
             runThreads[i].start();
         }
@@ -248,9 +239,12 @@ public class MalleusJitsificus
         @Override
         public void run()
         {
+            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
+
             WebParticipantOptions ops
                 = new WebParticipantOptions()
-                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
+                        .setLoadTest(useLoadTest);
 
             if (muteVideo)
             {
@@ -411,119 +405,6 @@ public class MalleusJitsificus
             }
 
             Blip.failFor(duration).theseBridges(bridgesToFail).call();
-        }
-    }
-
-    /* TODO: this would be cleaner if I made the load test participant
-     *  a new subclass of Participant, but there's a lot of plumbing to do there.
-     */
-    /* Note: Load test and bridge disruption don't currently work together. */
-    private class LoadTestParticipantThread
-        extends ParticipantThread
-    {
-        public LoadTestParticipantThread(
-            int i, JitsiMeetUrl url, long waitTimeMs,
-            boolean muteVideo, boolean muteAudio, String region)
-        {
-            super(i, url, waitTimeMs, muteVideo, muteAudio, region);
-        }
-
-        @Override
-        public void run()
-        {
-            StringBuilder urlBuilder = new StringBuilder(_url.getServerUrl())
-                .append("/static/load-test/load-test-participant.html#roomName=")
-                .append(URLEncoder.encode("\"" + _url.getRoomName() + "\""));
-
-            if (!muteVideo)
-            {
-                urlBuilder.append("&localVideo=true");
-            }
-            if (!muteAudio)
-            {
-                urlBuilder.append("&localAudio=true");
-            }
-            if (region != null)
-            {
-                urlBuilder.append("config.deploymentInfo.userRegion=\"")
-                    .append(region).append("\"");
-            }
-
-            String url = urlBuilder.toString();
-
-            WebParticipantOptions ops
-                = new WebParticipantOptions()
-                .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
-
-            boolean useNodeTypes = Boolean
-                .parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
-
-            if (useNodeTypes)
-            {
-                if (muteVideo)
-                {
-                    /* TODO: is it okay to have an audio sender use a malleus receiver ep? */
-                    ops.setApplicationName("malleusReceiver");
-                }
-                else
-                {
-                    ops.setApplicationName("malleusSender");
-                }
-            }
-
-            WebParticipant participant = participants.createParticipant("web.participant" + (i + 1), ops);
-            allHungUp.register();
-
-            try
-            {
-                TestUtils.print(participant.getName() + " is opening URL: " + url);
-                participant.getDriver().get(url);
-            }
-            catch (Exception e)
-            {
-                /* If join failed, don't block other threads from hanging up. */
-                allHungUp.arriveAndDeregister();
-                throw e;
-            }
-
-            try
-            {
-                Thread.sleep(waitTimeMs);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-            finally
-            {
-                try
-                {
-                    /* Call is hung up when user navigates away from page */
-                    participant.getDriver().get("about:blank");
-                    MeetUtils.waitForPageToLoad(participant.getDriver());
-                    TestUtils.print("Hung up in " + participant.getName() + ".");
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print("Exception hanging up " + participant.getName());
-                    e.printStackTrace();
-                }
-                try
-                {
-                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
-                     * Chrome session can cause another one to close too.  So wait for all sessions
-                     * to hang up before we close any of them.
-                     */
-                    allHungUp.arriveAndAwaitAdvance();
-                    closeParticipant(participant);
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print(
-                        "Exception closing " + participant.getName());
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

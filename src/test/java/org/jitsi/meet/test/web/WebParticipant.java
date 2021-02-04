@@ -106,6 +106,8 @@ public class WebParticipant extends Participant<WebDriver>
     private Toolbar toolbar;
     private WebFilmstrip filmstrip;
 
+    private final boolean isLoadTest;
+
     /**
      * Constructs a Participant.
      *
@@ -114,9 +116,10 @@ public class WebParticipant extends Participant<WebDriver>
      * @param type    the type (type of browser).
      */
     public WebParticipant(
-            String name, WebDriver driver, ParticipantType type)
+            String name, WebDriver driver, ParticipantType type, boolean isLoadTest)
     {
         super(name, driver, type, DEFAULT_CONFIG);
+        this.isLoadTest = isLoadTest;
     }
 
     public String getBridgeIp()
@@ -186,28 +189,31 @@ public class WebParticipant extends Participant<WebDriver>
 
         MeetUtils.waitForPageToLoad(driver);
 
-        // disables animations
-        executeScript("try { jQuery.fx.off = true; } catch(e) {}");
-
-        executeScript("APP.UI.dockToolbar(true);");
-
-        // disable keyframe animations (.fadeIn and .fadeOut classes)
-        executeScript("$('<style>.notransition * { "
-            + "animation-duration: 0s !important; "
-            + "-webkit-animation-duration: 0s !important; transition:none; }"
-            + " </style>').appendTo(document.head);");
-        executeScript("$('body').toggleClass('notransition');");
-
-        // disable the blur effect in firefox as it has some performance issues
-        if (this.type.isFirefox())
+        if (!isLoadTest)
         {
-            executeScript(
-                "try { var blur "
-                    + "= document.querySelector('.video_blurred_container'); "
-                    + "if (blur) { "
-                    + "document.querySelector('.video_blurred_container')"
-                    + ".style.display = 'none' "
-                    + "} } catch(e) {}");
+            // disables animations
+            executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+
+            executeScript("APP.UI.dockToolbar(true);");
+
+            // disable keyframe animations (.fadeIn and .fadeOut classes)
+            executeScript("$('<style>.notransition * { "
+                + "animation-duration: 0s !important; "
+                + "-webkit-animation-duration: 0s !important; transition:none; }"
+                + " </style>').appendTo(document.head);");
+            executeScript("$('body').toggleClass('notransition');");
+
+            // disable the blur effect in firefox as it has some performance issues
+            if (this.type.isFirefox())
+            {
+                executeScript(
+                    "try { var blur "
+                        + "= document.querySelector('.video_blurred_container'); "
+                        + "if (blur) { "
+                        + "document.querySelector('.video_blurred_container')"
+                        + ".style.display = 'none' "
+                        + "} } catch(e) {}");
+            }
         }
 
         if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
@@ -233,9 +239,12 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
-        getToolbar().clickHangUpButton();
+        if (!isLoadTest)
+        {
+            getToolbar().clickHangUpButton();
 
-        TestUtils.waitMillis(500);
+            TestUtils.waitMillis(500);
+        }
         // open a blank page after hanging up, to make sure
         // we will successfully navigate to the new link containing the
         // parameters, which change during testing
