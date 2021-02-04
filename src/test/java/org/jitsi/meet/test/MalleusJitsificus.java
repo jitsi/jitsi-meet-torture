@@ -105,11 +105,11 @@ public class MalleusJitsificus
         boolean enableP2p
             = enableP2pStr == null || Boolean.parseBoolean(enableP2pStr);
 
-        float maxDisruptedBidges = 0;
-        String maxDisruptedBidgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
-        if (!"".equals(maxDisruptedBidgesStr))
+        float maxDisruptedBridges = 0;
+        String maxDisruptedBridgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
+        if (!"".equals(maxDisruptedBridgesStr))
         {
-            maxDisruptedBidges = Float.parseFloat(maxDisruptedBidgesStr);
+            maxDisruptedBridges = Float.parseFloat(maxDisruptedBridgesStr);
         }
 
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
@@ -126,7 +126,7 @@ public class MalleusJitsificus
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
-        print("max_disrupted_bridges_pct=" + maxDisruptedBidges);
+        print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
 
         Object[][] ret = new Object[numConferences][4];
@@ -149,7 +149,7 @@ public class MalleusJitsificus
             }
 
             ret[i] = new Object[] {
-                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBidges
+                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBridges
             };
         }
 
