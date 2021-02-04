@@ -79,7 +79,7 @@ public class LastNTest
         MeetUIUtils.waitForRemoteVideo(driver1, participant3EndpointId, true);
 
         // At this point, mute video of p3 and others should be receiving p4's video.
-        participant3.getToolbar().clickVideoMuteButton();
+        MeetUIUtils.muteVideoAndCheck(participant3, participant1);
         MeetUIUtils.waitForRemoteVideo(driver1, participant4EndpointId, true);
 
         // Unmute p3's video and others should switch to receiving p3's video.
@@ -92,6 +92,5 @@ public class LastNTest
         participant3.getToolbar().clickAudioMuteButton();
         participant2.getToolbar().clickAudioMuteButton();
         MeetUIUtils.waitForRemoteVideo(driver1, participant3EndpointId, true);
-        MeetUIUtils.waitForRemoteVideo(driver2, participant3EndpointId, true);
     }
 }
