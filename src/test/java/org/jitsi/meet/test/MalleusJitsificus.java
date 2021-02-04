@@ -58,6 +58,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_node_types";
     public static final String MAX_DISRUPTED_BRIDGES_PCT_PNAME
         = "org.jitsi.malleus.max_disrupted_bridges_pct";
+    public static final String USE_LOAD_TEST_PNAME
+        = "org.jitsi.malleus.use_load_test";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -102,12 +104,14 @@ public class MalleusJitsificus
         boolean enableP2p
             = enableP2pStr == null || Boolean.parseBoolean(enableP2pStr);
 
-        float maxDisruptedBidges = 0;
-        String maxDisruptedBidgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
-        if (!"".equals(maxDisruptedBidgesStr))
+        float maxDisruptedBridges = 0;
+        String maxDisruptedBridgesStr = System.getProperty(MAX_DISRUPTED_BRIDGES_PCT_PNAME);
+        if (!"".equals(maxDisruptedBridgesStr))
         {
-            maxDisruptedBidges = Float.parseFloat(maxDisruptedBidgesStr);
+            maxDisruptedBridges = Float.parseFloat(maxDisruptedBridgesStr);
         }
+
+        boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
 
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
@@ -121,7 +125,7 @@ public class MalleusJitsificus
         print("duration=" + timeoutMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
-        print("max_disrupted_bridges_pct=" + maxDisruptedBidges);
+        print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
 
         Object[][] ret = new Object[numConferences][4];
@@ -136,10 +140,15 @@ public class MalleusJitsificus
                 .appendConfig("config.disable1On1Mode=false")
                 .appendConfig("config.testing.noAutoPlayVideo=true")
                 .appendConfig("config.pcStatsInterval=10000")
-
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
+
+            if (useLoadTest)
+            {
+                url.setServerUrl(url.getServerUrl() + "/_load-test");
+            }
+
             ret[i] = new Object[] {
-                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBidges
+                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBridges
             };
         }
 
@@ -160,14 +169,16 @@ public class MalleusJitsificus
 
         for (int i = 0; i < numberOfParticipants; i++)
         {
-            runThreads[i]
+         runThreads[i]
                 = new ParticipantThread(
-                    i,
-                    url.copy(),
-                    waitTimeMs,
-                    i >= numSenders /* no video */,
-                    i >= numAudioSenders /* no audio */,
-                    regions == null ? null : regions[i % regions.length]);
+                i,
+                url.copy(),
+                waitTimeMs,
+                i >= numSenders /* no video */,
+                i >= numAudioSenders /* no audio */,
+                regions == null ? null : regions[i % regions.length],
+                blipMaxDisruptedPct
+             );
 
             runThreads[i].start();
         }
@@ -203,12 +214,13 @@ public class MalleusJitsificus
     private class ParticipantThread
         extends Thread
     {
-        private final int i;
-        private final JitsiMeetUrl _url;
-        private final long waitTimeMs;
-        private final boolean muteVideo;
-        private final boolean muteAudio;
-        private final String region;
+        protected final int i;
+        protected final JitsiMeetUrl _url;
+        protected final long waitTimeMs;
+        protected final boolean muteVideo;
+        protected final boolean muteAudio;
+        protected final String region;
+        protected final float blipMaxDisruptionPct;
 
         WebParticipant participant;
         public int failureTolerance;
@@ -216,7 +228,8 @@ public class MalleusJitsificus
 
         public ParticipantThread(
             int i, JitsiMeetUrl url, long waitTimeMs,
-            boolean muteVideo, boolean muteAudio, String region)
+            boolean muteVideo, boolean muteAudio, String region,
+            float blipMaxDisruptionPct)
         {
             this.i = i;
             this._url = url;
@@ -224,14 +237,18 @@ public class MalleusJitsificus
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.region = region;
+            this.blipMaxDisruptionPct = blipMaxDisruptionPct;
         }
 
         @Override
         public void run()
         {
+            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
+
             WebParticipantOptions ops
                 = new WebParticipantOptions()
-                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE);
+                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
+                        .setLoadTest(useLoadTest);
 
             if (muteVideo)
             {
@@ -277,7 +294,10 @@ public class MalleusJitsificus
 
             try
             {
-                bridge = participant.getBridgeIp();
+                if (blipMaxDisruptionPct > 0)
+                {
+                    bridge = participant.getBridgeIp();
+                }
             }
             catch (Exception e)
             {
@@ -292,7 +312,14 @@ public class MalleusJitsificus
 
             try
             {
-                check();
+                if (blipMaxDisruptionPct > 0)
+                {
+                    check();
+                }
+                else
+                {
+                    Thread.sleep(waitTimeMs);
+                }
             }
             catch (InterruptedException e)
             {
