@@ -21,7 +21,6 @@ import org.jitsi.meet.test.web.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
-import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
@@ -177,7 +176,9 @@ public class MalleusJitsificus
                 waitTimeMs,
                 i >= numSenders /* no video */,
                 i >= numAudioSenders /* no audio */,
-                regions == null ? null : regions[i % regions.length]);
+                regions == null ? null : regions[i % regions.length],
+                blipMaxDisruptedPct
+             );
 
             runThreads[i].start();
         }
@@ -219,6 +220,7 @@ public class MalleusJitsificus
         protected final boolean muteVideo;
         protected final boolean muteAudio;
         protected final String region;
+        protected final float blipMaxDisruptionPct;
 
         WebParticipant participant;
         public int failureTolerance;
@@ -226,7 +228,8 @@ public class MalleusJitsificus
 
         public ParticipantThread(
             int i, JitsiMeetUrl url, long waitTimeMs,
-            boolean muteVideo, boolean muteAudio, String region)
+            boolean muteVideo, boolean muteAudio, String region,
+            float blipMaxDisruptionPct)
         {
             this.i = i;
             this._url = url;
@@ -234,6 +237,7 @@ public class MalleusJitsificus
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.region = region;
+            this.blipMaxDisruptionPct = blipMaxDisruptionPct;
         }
 
         @Override
@@ -290,7 +294,10 @@ public class MalleusJitsificus
 
             try
             {
-                bridge = participant.getBridgeIp();
+                if (blipMaxDisruptionPct > 0)
+                {
+                    bridge = participant.getBridgeIp();
+                }
             }
             catch (Exception e)
             {
@@ -305,7 +312,14 @@ public class MalleusJitsificus
 
             try
             {
-                check();
+                if (blipMaxDisruptionPct > 0)
+                {
+                    check();
+                }
+                else
+                {
+                    Thread.sleep(waitTimeMs);
+                }
             }
             catch (InterruptedException e)
             {
