@@ -140,6 +140,7 @@ public class WebParticipantFactory
             // Enables tcp in firefox, disabled by default in 44
             profile.setPreference("media.peerconnection.ice.tcp", true);
             profile.setPreference("media.navigator.streams.fake", true);
+            profile.setPreference("media.autoplay.default", 0);
             if (options.allowsInsecureCerts())
             {
                 profile.setAcceptUntrustedCertificates(true);
