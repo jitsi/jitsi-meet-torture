@@ -57,6 +57,7 @@ public class LastNTest
         WebParticipant participant3 = joinThirdParticipant(meetUrl3, null);
         participant3.waitToJoinMUC();
         participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData(true, false);
 
         String participant3EndpointId = participant3.getEndpointId();
         MeetUIUtils.waitForRemoteVideo(driver1, participant3EndpointId, true);
