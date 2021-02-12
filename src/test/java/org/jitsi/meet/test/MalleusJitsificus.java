@@ -60,6 +60,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.max_disrupted_bridges_pct";
     public static final String USE_LOAD_TEST_PNAME
         = "org.jitsi.malleus.use_load_test";
+    public static final String JOIN_DELAY_PNAME
+        = "org.jitsi.malleus.join_delay";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -85,7 +87,9 @@ public class MalleusJitsificus
                 ? numParticipants
                 : Integer.parseInt(numAudioSendersStr);
 
-        int timeoutMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
+        int durationMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
+
+        int joinDelayMs = Integer.parseInt(System.getProperty(JOIN_DELAY_PNAME));
 
         String[] regions = null;
         String regionsStr = System.getProperty(REGIONS_PNAME);
@@ -122,7 +126,8 @@ public class MalleusJitsificus
         print("participants=" + numParticipants);
         print("senders=" + numSenders);
         print("audio senders=" + numAudioSenders);
-        print("duration=" + timeoutMs + "ms");
+        print("duration=" + durationMs + "ms");
+        print("join delay=" + joinDelayMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
         print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
@@ -148,7 +153,7 @@ public class MalleusJitsificus
             }
 
             ret[i] = new Object[] {
-                url, numParticipants, timeoutMs, numSenders, numAudioSenders, regions, maxDisruptedBridges
+                url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders, regions, maxDisruptedBridges
             };
         }
 
@@ -159,8 +164,9 @@ public class MalleusJitsificus
 
     @Test(dataProvider = "dp")
     public void testMain(
-        JitsiMeetUrl url, int numberOfParticipants, long waitTimeMs, int numSenders,
-        int numAudioSenders, String[] regions, float blipMaxDisruptedPct)
+        JitsiMeetUrl url, int numberOfParticipants,
+        long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
+        String[] regions, float blipMaxDisruptedPct)
         throws Exception
     {
         ParticipantThread[] runThreads = new ParticipantThread[numberOfParticipants];
@@ -173,7 +179,8 @@ public class MalleusJitsificus
                 = new ParticipantThread(
                 i,
                 url.copy(),
-                waitTimeMs,
+                durationMs,
+                i * joinDelayMs,
                 i >= numSenders /* no video */,
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
@@ -185,7 +192,7 @@ public class MalleusJitsificus
 
         try
         {
-            disruptBridges(blipMaxDisruptedPct, waitTimeMs / 1000, runThreads);
+            disruptBridges(blipMaxDisruptedPct, durationMs / 1000, runThreads);
         }
         catch (Exception e)
         {
@@ -216,7 +223,8 @@ public class MalleusJitsificus
     {
         protected final int i;
         protected final JitsiMeetUrl _url;
-        protected final long waitTimeMs;
+        protected final long durationMs;
+        protected final long joinDelayMs;
         protected final boolean muteVideo;
         protected final boolean muteAudio;
         protected final String region;
@@ -227,13 +235,14 @@ public class MalleusJitsificus
         private String bridge;
 
         public ParticipantThread(
-            int i, JitsiMeetUrl url, long waitTimeMs,
+            int i, JitsiMeetUrl url, long durationMs, long joinDelayMs,
             boolean muteVideo, boolean muteAudio, String region,
             float blipMaxDisruptionPct)
         {
             this.i = i;
             this._url = url;
-            this.waitTimeMs = waitTimeMs;
+            this.durationMs = durationMs;
+            this.joinDelayMs = joinDelayMs;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.region = region;
@@ -279,6 +288,15 @@ public class MalleusJitsificus
                 _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
             }
 
+            try
+            {
+                Thread.sleep(joinDelayMs);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+
             participant = participants.createParticipant("web.participant" + (i + 1), ops);
             allHungUp.register();
             try
@@ -318,7 +336,7 @@ public class MalleusJitsificus
                 }
                 else
                 {
-                    Thread.sleep(waitTimeMs);
+                    Thread.sleep(durationMs);
                 }
             }
             catch (InterruptedException e)
@@ -358,7 +376,7 @@ public class MalleusJitsificus
             throws InterruptedException
         {
             long healthCheckIntervalMs = 5000;
-            long remainingMs = waitTimeMs;
+            long remainingMs = durationMs;
             while (remainingMs > 0)
             {
                 long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
