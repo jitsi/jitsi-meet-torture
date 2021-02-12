@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
+  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION (s)] [--join-delay=JOIN_DELAY (ms)] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
   exit 1
 }
 
@@ -24,6 +24,7 @@ case $1 in
         --senders-per-node) SENDERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
         --receivers-per-node) RECEIVERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
         --duration) DURATION=$optvalue;;
+        --join-delay) JOIN_DELAY=$optvalue;;
         --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
         --hub-url) HUB_URL=$optvalue;;
         --instance-url) INSTANCE_URL=$optvalue;;
@@ -68,6 +69,10 @@ case $1 in
 
     if [ -z "$DURATION" ]; then
       DURATION=60
+    fi
+
+    if [ -z "$JOIN_DELAY" ]; then
+      JOIN_DELAY=0
     fi
 
     if [ -z "$ROOM_NAME_PREFIX" ]; then
@@ -145,6 +150,7 @@ mvn \
 -Dorg.jitsi.malleus.senders=$SENDERS \
 -Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \
 -Dorg.jitsi.malleus.duration=$DURATION \
+-Dorg.jitsi.malleus.join_delay=$JOIN_DELAY \
 -Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$REGIONS \
 -Dorg.jitsi.malleus.use_node_types=$USE_NODE_TYPES \
