@@ -9,36 +9,7 @@ usage() {
   exit 1
 }
 
-case $1 in
-  --*)
-    # new arg parsing code that includes default values for the different options.
-    for arg in "$@"; do
-      optname=`echo $arg | cut -d= -f1`
-      optvalue=`echo $arg | cut -s -d= -f2`
-      case $optname in
-        --conferences) CONFERENCES=$optvalue;;
-        --allow-insecure-certs) ALLOW_INSECURE_CERTS=$optvalue;;
-        --participants) PARTICIPANTS=$optvalue;;
-        --senders) SENDERS=$optvalue;;
-        --audio-senders) AUDIO_SENDERS=$optvalue;;
-        --senders-per-node) SENDERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
-        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
-        --duration) DURATION=$optvalue;;
-        --join-delay) JOIN_DELAY=$optvalue;;
-        --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
-        --hub-url) HUB_URL=$optvalue;;
-        --instance-url) INSTANCE_URL=$optvalue;;
-        --regions) REGIONS=$optvalue;;
-        --use-node-types) if [ -n "$optvalue" ]; then USE_NODE_TYPES=$optvalue; else USE_NODE_TYPES=true; fi;;
-        --use-load-test) if [ -n "$optvalue" ]; then USE_LOAD_TEST=$optvalue; else USE_LOAD_TEST=true; fi;;
-        --max-disrupted-bribges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
-        --debug) set -x;;
-        *)
-          usage
-          ;;
-      esac
-    done
-
+set_defaults() {
     if [ -z "$ALLOW_INSECURE_CERTS" ]; then
       ALLOW_INSECURE_CERTS=false
     fi
@@ -95,6 +66,43 @@ case $1 in
       USE_LOAD_TEST=false
     fi
 
+    if [ -z "$MAX_DISRUPTED_BRIDGES_PCT" ]; then
+      MAX_DISRUPTED_BRIDGES_PCT=0
+    fi
+}
+
+case $1 in
+  --*)
+    # new arg parsing code that includes default values for the different options.
+    for arg in "$@"; do
+      optname=`echo $arg | cut -d= -f1`
+      optvalue=`echo $arg | cut -s -d= -f2`
+      case $optname in
+        --conferences) CONFERENCES=$optvalue;;
+        --allow-insecure-certs) ALLOW_INSECURE_CERTS=$optvalue;;
+        --participants) PARTICIPANTS=$optvalue;;
+        --senders) SENDERS=$optvalue;;
+        --audio-senders) AUDIO_SENDERS=$optvalue;;
+        --senders-per-node) SENDERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
+        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
+        --duration) DURATION=$optvalue;;
+        --join-delay) JOIN_DELAY=$optvalue;;
+        --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
+        --hub-url) HUB_URL=$optvalue;;
+        --instance-url) INSTANCE_URL=$optvalue;;
+        --regions) REGIONS=$optvalue;;
+        --use-node-types) if [ -n "$optvalue" ]; then USE_NODE_TYPES=$optvalue; else USE_NODE_TYPES=true; fi;;
+        --use-load-test) if [ -n "$optvalue" ]; then USE_LOAD_TEST=$optvalue; else USE_LOAD_TEST=true; fi;;
+        --max-disrupted-bridges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
+        --debug) set -x;;
+        *)
+          usage
+          ;;
+      esac
+    done
+
+    set_defaults()
+    
     ;;
   *)
     # backwords compatible arg parsing so as to not break existing scripts that
@@ -109,8 +117,7 @@ case $1 in
     #  $6 will be the selenium grid address (for example http://grid.example.com:4444/wd/hub)
 
     if [ $# != 6 ]; then
-      echo "Usage: $0 CONFERENCES PARTICIPANTS SENDERS DURATION ROOM_NAME_PREFIX HUB_URL" >&2
-      exit 1
+      usage()
     fi
 
     CONFERENCES=$1
@@ -120,6 +127,8 @@ case $1 in
     ROOM_NAME_PREFIX=$5
     HUB_URL=$6
     INSTANCE_URL='https://meet.jit.si'
+
+    set_defaults()
     ;;
 esac
 
