@@ -101,8 +101,7 @@ case $1 in
       esac
     done
 
-    set_defaults()
-    
+    set_defaults
     ;;
   *)
     # backwords compatible arg parsing so as to not break existing scripts that
@@ -117,7 +116,7 @@ case $1 in
     #  $6 will be the selenium grid address (for example http://grid.example.com:4444/wd/hub)
 
     if [ $# != 6 ]; then
-      usage()
+      usage
     fi
 
     CONFERENCES=$1
@@ -128,7 +127,7 @@ case $1 in
     HUB_URL=$6
     INSTANCE_URL='https://meet.jit.si'
 
-    set_defaults()
+    set_defaults
     ;;
 esac
 
