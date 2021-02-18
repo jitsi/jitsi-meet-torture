@@ -42,13 +42,13 @@ public class Blip
     /**
      * Factory method.
      *
-     * @param duration the duration to run the blip for.
+     * @param durationInSeconds the duration (in seconds) to run the blip for.
      * @return the new instance.
      */
-    public static Blip failFor(long duration)
+    public static Blip failFor(long durationInSeconds)
     {
         Blip blip = new Blip();
-        blip.duration = duration;
+        blip.duration = durationInSeconds;
         return blip;
     }
 

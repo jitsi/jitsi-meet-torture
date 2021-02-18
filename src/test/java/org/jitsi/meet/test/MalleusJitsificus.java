@@ -411,7 +411,7 @@ public class MalleusJitsificus
         }
     }
 
-    private void disruptBridges(float blipMaxDisruptedPct, long duration, ParticipantThread[] runThreads)
+    private void disruptBridges(float blipMaxDisruptedPct, long durationInSeconds, ParticipantThread[] runThreads)
         throws Exception
     {
         if (blipMaxDisruptedPct > 0)
@@ -432,7 +432,7 @@ public class MalleusJitsificus
                 }
             }
 
-            Blip.failFor(duration).theseBridges(bridgesToFail).call();
+            Blip.failFor(durationInSeconds).theseBridges(bridgesToFail).call();
         }
     }
 
