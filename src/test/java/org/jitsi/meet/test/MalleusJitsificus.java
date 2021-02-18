@@ -195,10 +195,6 @@ public class MalleusJitsificus
         {
             disruptBridges(blipMaxDisruptedPct, durationMs / 1000, runThreads);
         }
-        catch (Exception e)
-        {
-            throw e;
-        }
         finally
         {
             int minFailureTolerance = Integer.MAX_VALUE;
