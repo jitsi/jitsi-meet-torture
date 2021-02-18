@@ -37,6 +37,7 @@ public class MalleusJitsificus
      */
     private static final String INPUT_VIDEO_FILE
         = "resources/FourPeople_1280x720_30.y4m";
+    private static final int DISABLE_FAILURE_DETECTION = -1;
 
     public static final String CONFERENCES_PNAME
         = "org.jitsi.malleus.conferences";
@@ -184,7 +185,7 @@ public class MalleusJitsificus
                 i >= numSenders /* no video */,
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
-                blipMaxDisruptedPct
+                blipMaxDisruptedPct > 0 ? 0 : DISABLE_FAILURE_DETECTION
              );
 
             runThreads[i].start();
@@ -228,7 +229,6 @@ public class MalleusJitsificus
         protected final boolean muteVideo;
         protected final boolean muteAudio;
         protected final String region;
-        protected final float blipMaxDisruptionPct;
 
         WebParticipant participant;
         public int failureTolerance;
@@ -237,7 +237,7 @@ public class MalleusJitsificus
         public ParticipantThread(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs,
             boolean muteVideo, boolean muteAudio, String region,
-            float blipMaxDisruptionPct)
+            int initialFailureTolerance)
         {
             this.i = i;
             this._url = url;
@@ -246,7 +246,7 @@ public class MalleusJitsificus
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.region = region;
-            this.blipMaxDisruptionPct = blipMaxDisruptionPct;
+            this.failureTolerance = initialFailureTolerance;
         }
 
         @Override
@@ -312,7 +312,7 @@ public class MalleusJitsificus
 
             try
             {
-                if (blipMaxDisruptionPct > 0)
+                if (failureTolerance > DISABLE_FAILURE_DETECTION)
                 {
                     bridge = participant.getBridgeIp();
                 }
@@ -330,7 +330,7 @@ public class MalleusJitsificus
 
             try
             {
-                if (blipMaxDisruptionPct > 0)
+                if (failureTolerance > DISABLE_FAILURE_DETECTION)
                 {
                     check();
                 }
