@@ -124,7 +124,9 @@ public class WebParticipant extends Participant<WebDriver>
 
     public String getBridgeIp()
     {
-        return new WebDriverWait(driver, 20).until(d -> {
+        // With the default stats interval (10s) this can take up to 20 seconds.
+        // We wait for 30 to give ourselves some margin.
+        return new WebDriverWait(driver, 30).until(d -> {
 
             RtpStatistics rtpStats
                 = new WebRtpStatistics((JavascriptExecutor) d);
