@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -n "$DEBUG" ]; then
+  set -x
+fi
+
 SEND_APP_NAME='malleusSender'
 RECV_APP_NAME='malleusReceiver'
 
@@ -19,6 +23,7 @@ for arg in "$@"; do
         --num-senders) NUM_SENDERS=$optvalue;;
         --send-node-max-sessions) SEND_NODE_MAX_SESSIONS=$optvalue;;
         --recv-node-max-sessions) RECV_NODE_MAX_SESSIONS=$optvalue;;
+        --debug) set -x;;
         *)
             usage
             ;;
