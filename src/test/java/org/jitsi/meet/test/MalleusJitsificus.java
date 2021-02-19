@@ -174,6 +174,7 @@ public class MalleusJitsificus
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
+        boolean disruptBridges = blipMaxDisruptedPct > 0;
         for (int i = 0; i < numberOfParticipants; i++)
         {
          runThreads[i]
@@ -185,33 +186,48 @@ public class MalleusJitsificus
                 i >= numSenders /* no video */,
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
-                blipMaxDisruptedPct > 0 ? 0 : DISABLE_FAILURE_DETECTION
+                disruptBridges ? 0 : DISABLE_FAILURE_DETECTION
              );
 
             runThreads[i].start();
         }
 
-        try
+        if (disruptBridges)
         {
-            disruptBridges(blipMaxDisruptedPct, durationMs / 1000, runThreads);
-        }
-        finally
-        {
-            int minFailureTolerance = Integer.MAX_VALUE;
-            for (ParticipantThread t : runThreads)
+            try
             {
-                if (t != null)
+                disruptBridges(blipMaxDisruptedPct, durationMs / 1000, runThreads);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to disrupt the bridges.");
+            }
+            finally
+            {
+                for (ParticipantThread t : runThreads)
                 {
-                    t.join();
-
-                    minFailureTolerance = Math.min(minFailureTolerance, t.failureTolerance);
+                    if (t != null)
+                    {
+                        t.join();
+                    }
                 }
             }
+        }
 
-            if (minFailureTolerance < 0)
+        int minFailureTolerance = Integer.MAX_VALUE;
+        for (ParticipantThread t : runThreads)
+        {
+            if (t != null)
             {
-                throw new Exception("Minimum failure tolerance is less than 0");
+                t.join();
+
+                minFailureTolerance = Math.min(minFailureTolerance, t.failureTolerance);
             }
+        }
+
+        if (disruptBridges && minFailureTolerance < 0)
+        {
+            throw new Exception("Minimum failure tolerance is less than 0");
         }
     }
 
@@ -414,26 +430,23 @@ public class MalleusJitsificus
     private void disruptBridges(float blipMaxDisruptedPct, long durationInSeconds, ParticipantThread[] runThreads)
         throws Exception
     {
-        if (blipMaxDisruptedPct > 0)
+        bridgeSelectionCountDownLatch.await();
+
+        Set<String> bridges = Arrays.stream(runThreads)
+            .map(t -> t.bridge).collect(Collectors.toSet());
+
+        Set<String> bridgesToFail = bridges.stream()
+            .limit((long) (Math.ceil(bridges.size() * blipMaxDisruptedPct / 100))).collect(Collectors.toSet());
+
+        for (ParticipantThread runThread : runThreads)
         {
-            bridgeSelectionCountDownLatch.await();
-
-            Set<String> bridges = Arrays.stream(runThreads)
-                .map(t -> t.bridge).collect(Collectors.toSet());
-
-            Set<String> bridgesToFail = bridges.stream()
-                .limit((long) (Math.ceil(bridges.size() * blipMaxDisruptedPct / 100))).collect(Collectors.toSet());
-
-            for (ParticipantThread runThread : runThreads)
+            if (bridgesToFail.contains(runThread.bridge))
             {
-                if (bridgesToFail.contains(runThread.bridge))
-                {
-                    runThread.failureTolerance = 1;
-                }
+                runThread.failureTolerance = 1;
             }
-
-            Blip.failFor(durationInSeconds).theseBridges(bridgesToFail).call();
         }
+
+        Blip.failFor(durationInSeconds).theseBridges(bridgesToFail).call();
     }
 
     private void print(String s)
