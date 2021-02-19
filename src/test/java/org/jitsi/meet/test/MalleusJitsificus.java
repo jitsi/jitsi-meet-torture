@@ -400,7 +400,6 @@ public class MalleusJitsificus
                 try
                 {
                     participant.waitForIceConnected(0 /* no timeout */);
-                    TestUtils.print("Participant " + i + " is connected (tolerance=" + failureTolerance + ").");
                 }
                 catch (Exception ex)
                 {
