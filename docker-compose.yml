@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  jitsi-meet-torture:
+    build: .
+    command:
+      - -Dchrome.enable.headless=true
+      - -Dchrome.disable.sandbox
+      - -Djitsi-meet.instance.url=https://meet.example.com
+      - -Djitsi-meet.tests.toRun=MuteTest,TCPTest
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./target:/target
