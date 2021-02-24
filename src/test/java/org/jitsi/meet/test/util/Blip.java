@@ -25,7 +25,9 @@ import java.util.concurrent.*;
 public class Blip
     implements Callable<Void>
 {
-    public final static String BLIP_SCRIPT_PNAME = "org.jitsi.meet.test.util.blip_script";
+    private final static String BLIP_SCRIPT_PNAME = "org.jitsi.meet.test.util.blip_script";
+
+    private final static String BLIP_SCRIPT_DEFAULT = "scripts/blip.sh";
 
     /**
      * The duration of the network blip (see ./scripts/blip.sh).
@@ -40,13 +42,13 @@ public class Blip
     /**
      * Factory method.
      *
-     * @param duration the duration to run the blip for.
+     * @param durationInSeconds the duration (in seconds) to run the blip for.
      * @return the new instance.
      */
-    public static Blip failFor(long duration)
+    public static Blip failFor(long durationInSeconds)
     {
         Blip blip = new Blip();
-        blip.duration = duration;
+        blip.duration = durationInSeconds;
         return blip;
     }
 
@@ -55,12 +57,12 @@ public class Blip
         throws Exception
     {
         final String blipScript = System.getProperty(BLIP_SCRIPT_PNAME);
-        File file = new File(blipScript);
+        File file = new File(blipScript == null || blipScript.equals("") ? BLIP_SCRIPT_DEFAULT : blipScript);
         if (file.canExecute())
         {
             // For usage see ./scripts/blip.sh.
             String[] command = {
-                blipScript,
+                file.getAbsolutePath(),
                 "--duration=" + duration,
                 "--bridge-ips=" + String.join(",", bridgeIPs)
             };
@@ -87,7 +89,7 @@ public class Blip
         }
         else
         {
-            throw new Exception("Could not find or could not execute the blip script.");
+            throw new Exception("Could not find or could not execute the blip script: " + file);
         }
 
         return null;
