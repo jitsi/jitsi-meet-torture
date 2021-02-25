@@ -66,6 +66,8 @@ public class MalleusJitsificus
 
     private final Phaser allHungUp = new Phaser();
 
+    private CountDownLatch bridgeSelectionCountDownLatch;
+
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
     {
@@ -160,8 +162,6 @@ public class MalleusJitsificus
 
         return ret;
     }
-
-    private CountDownLatch bridgeSelectionCountDownLatch;
 
     @Test(dataProvider = "dp")
     public void testMain(
@@ -319,6 +319,8 @@ public class MalleusJitsificus
             {
                 /* If join failed, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
+                /* If join failed, don't block bridge disruption. */
+                bridgeSelectionCountDownLatch.countDown();
                 throw e;
             }
 
