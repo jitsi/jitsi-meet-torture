@@ -118,7 +118,7 @@ public class SharedVideoTest
 
         TestUtils.click(
             driver1,
-            By.name("jqi_state0_buttonspandatai18ndialogShareSharespan"));
+            By.name("modal-dialog-ok-button"));
 
         // give time for the internal frame to load and attach to the page.
         TestUtils.waitMillis(2000);
