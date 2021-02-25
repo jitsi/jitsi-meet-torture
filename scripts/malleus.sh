@@ -5,69 +5,69 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=CONFERENCES] [--participants=PARTICIPANTS] [--senders=SENDERS] [--audio-senders=AUDIO_SENDERS] [--senders-per-node=SENDERS_PER_NODE] [--receivers-per-node=RECEIVERS_PER_NODE] [--duration=DURATION (s)] [--join-delay=JOIN_DELAY (ms)] [--room-name-prefix=ROOM_NAME_PREFIX] [--hub-url=HUB_URL] [--instance-url=INSTANCE_URL] [--regions=REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=PCT] [--debug]" >&2
+  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--debug]" >&2
   exit 1
 }
 
 set_defaults() {
-    if [ -z "$ALLOW_INSECURE_CERTS" ]; then
-      ALLOW_INSECURE_CERTS=false
+    if [ -z "$MALLEUS_ALLOW_INSECURE_CERTS" ]; then
+      MALLEUS_ALLOW_INSECURE_CERTS=false
     fi
 
-    if [ -z "$CONFERENCES" ]; then
-      CONFERENCES=1
+    if [ -z "$MALLEUS_CONFERENCES" ]; then
+      MALLEUS_CONFERENCES=1
     fi
 
-    if [ -z "$PARTICIPANTS" ]; then
-      PARTICIPANTS=3
+    if [ -z "$MALLEUS_PARTICIPANTS" ]; then
+      MALLEUS_PARTICIPANTS=3
     fi
 
-    if [ -z "$SENDERS" ]; then
-      SENDERS=$PARTICIPANTS
+    if [ -z "$MALLEUS_SENDERS" ]; then
+      MALLEUS_SENDERS=$MALLEUS_PARTICIPANTS
     fi
 
-    if [ -z "$AUDIO_SENDERS" ]; then
-      AUDIO_SENDERS=$PARTICIPANTS
+    if [ -z "$MALLEUS_AUDIO_SENDERS" ]; then
+      MALLEUS_AUDIO_SENDERS=$MALLEUS_PARTICIPANTS
     fi
 
-    if [ -z "$SENDERS_PER_NODE" ]; then
-      SENDERS_PER_NODE=1
+    if [ -z "$MALLEUS_SENDERS_PER_NODE" ]; then
+      MALLEUS_SENDERS_PER_NODE=1
     fi
 
-    if [ -z "$RECEIVERS_PER_NODE" ]; then
-      RECEIVERS_PER_NODE=1
+    if [ -z "$MALLEUS_RECEIVERS_PER_NODE" ]; then
+      MALLEUS_RECEIVERS_PER_NODE=1
     fi
 
-    if [ -z "$DURATION" ]; then
-      DURATION=60
+    if [ -z "$MALLEUS_DURATION" ]; then
+      MALLEUS_DURATION=60
     fi
 
-    if [ -z "$JOIN_DELAY" ]; then
-      JOIN_DELAY=0
+    if [ -z "$MALLEUS_JOIN_DELAY" ]; then
+      MALLEUS_JOIN_DELAY=0
     fi
 
-    if [ -z "$ROOM_NAME_PREFIX" ]; then
-      ROOM_NAME_PREFIX='loadtest'
+    if [ -z "$MALLEUS_ROOM_NAME_PREFIX" ]; then
+      MALLEUS_ROOM_NAME_PREFIX='loadtest'
     fi
 
-    if [ -z "$HUB_URL" ]; then
-      HUB_URL='http://localhost:4444/wd/hub'
+    if [ -z "$MALLEUS_HUB_URL" ]; then
+      MALLEUS_HUB_URL='http://localhost:4444/wd/hub'
     fi
 
-    if [ -z "$INSTANCE_URL" ]; then
-      INSTANCE_URL='https://meet.jit.si'
+    if [ -z "$MALLEUS_INSTANCE_URL" ]; then
+      MALLEUS_INSTANCE_URL='https://meet.jit.si'
     fi
 
-    if [ -z "$USE_NODE_TYPES" ]; then
-      USE_NODE_TYPES=false
+    if [ -z "$MALLEUS_USE_NODE_TYPES" ]; then
+      MALLEUS_USE_NODE_TYPES=false
     fi
 
-    if [ -z "$USE_LOAD_TEST" ]; then
-      USE_LOAD_TEST=false
+    if [ -z "$MALLEUS_USE_LOAD_TEST" ]; then
+      MALLEUS_USE_LOAD_TEST=false
     fi
 
-    if [ -z "$MAX_DISRUPTED_BRIDGES_PCT" ]; then
-      MAX_DISRUPTED_BRIDGES_PCT=0
+    if [ -z "$MALLEUS_MAX_DISRUPTED_BRIDGES_PCT" ]; then
+      MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=0
     fi
 }
 
@@ -78,22 +78,22 @@ case $1 in
       optname=`echo $arg | cut -d= -f1`
       optvalue=`echo $arg | cut -s -d= -f2`
       case $optname in
-        --conferences) CONFERENCES=$optvalue;;
-        --allow-insecure-certs) ALLOW_INSECURE_CERTS=$optvalue;;
-        --participants) PARTICIPANTS=$optvalue;;
-        --senders) SENDERS=$optvalue;;
-        --audio-senders) AUDIO_SENDERS=$optvalue;;
-        --senders-per-node) SENDERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
-        --receivers-per-node) RECEIVERS_PER_NODE=$optvalue; USE_NODE_TYPES=true;;
-        --duration) DURATION=$optvalue;;
-        --join-delay) JOIN_DELAY=$optvalue;;
-        --room-name-prefix) ROOM_NAME_PREFIX=$optvalue;;
-        --hub-url) HUB_URL=$optvalue;;
-        --instance-url) INSTANCE_URL=$optvalue;;
-        --regions) REGIONS=$optvalue;;
-        --use-node-types) if [ -n "$optvalue" ]; then USE_NODE_TYPES=$optvalue; else USE_NODE_TYPES=true; fi;;
-        --use-load-test) if [ -n "$optvalue" ]; then USE_LOAD_TEST=$optvalue; else USE_LOAD_TEST=true; fi;;
-        --max-disrupted-bridges-pct) MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
+        --conferences) MALLEUS_CONFERENCES=$optvalue;;
+        --allow-insecure-certs) MALLEUS_ALLOW_INSECURE_CERTS=$optvalue;;
+        --participants) MALLEUS_PARTICIPANTS=$optvalue;;
+        --senders) MALLEUS_SENDERS=$optvalue;;
+        --audio-senders) MALLEUS_AUDIO_SENDERS=$optvalue;;
+        --senders-per-node) MALLEUS_SENDERS_PER_NODE=$optvalue; MALLEUS_USE_NODE_TYPES=true;;
+        --receivers-per-node) MALLEUS_RECEIVERS_PER_NODE=$optvalue; MALLEUS_USE_NODE_TYPES=true;;
+        --duration) MALLEUS_DURATION=$optvalue;;
+        --join-delay) MALLEUS_JOIN_DELAY=$optvalue;;
+        --room-name-prefix) MALLEUS_ROOM_NAME_PREFIX=$optvalue;;
+        --hub-url) MALLEUS_HUB_URL=$optvalue;;
+        --instance-url) MALLEUS_INSTANCE_URL=$optvalue;;
+        --regions) MALLEUS_REGIONS=$optvalue;;
+        --use-node-types) if [ -n "$optvalue" ]; then MALLEUS_USE_NODE_TYPES=$optvalue; else MALLEUS_USE_NODE_TYPES=true; fi;;
+        --use-load-test) if [ -n "$optvalue" ]; then MALLEUS_USE_LOAD_TEST=$optvalue; else MALLEUS_USE_LOAD_TEST=true; fi;;
+        --max-disrupted-bridges-pct) MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
         --debug) set -x;;
         *)
           usage
@@ -119,13 +119,13 @@ case $1 in
       usage
     fi
 
-    CONFERENCES=$1
-    PARTICIPANTS=$2
-    SENDERS=$3
-    DURATION=$4
-    ROOM_NAME_PREFIX=$5
-    HUB_URL=$6
-    INSTANCE_URL='https://meet.jit.si'
+    MALLEUS_CONFERENCES=$1
+    MALLEUS_PARTICIPANTS=$2
+    MALLEUS_SENDERS=$3
+    MALLEUS_DURATION=$4
+    MALLEUS_ROOM_NAME_PREFIX=$5
+    MALLEUS_HUB_URL=$6
+    MALLEUS_INSTANCE_URL='https://meet.jit.si'
 
     set_defaults
     ;;
@@ -134,10 +134,10 @@ esac
 # This names nodes as being a "malleusSender" or "malleusReceiver" (using the Selenium Grid
 # "applicationName" parameter).  This lets us run multiple browsers on a Selenium Grid endpoint,
 # scaled for the number of browsers the endpoint can handle performing the requested action.
-if [ "$USE_NODE_TYPES" = "true" ]
+if [ "$MALLEUS_USE_NODE_TYPES" = "true" ]
 then
-    "$(dirname $0)"/mutatenodes.sh --hub-url="$HUB_URL" --num-senders="$SENDERS" \
-                   --send-node-max-sessions="$SENDERS_PER_NODE" --recv-node-max-sessions="$RECEIVERS_PER_NODE"
+    "$(dirname $0)"/mutatenodes.sh --hub-url="$MALLEUS_HUB_URL" --num-senders="$MALLEUS_SENDERS" \
+                   --send-node-max-sessions="$MALLEUS_SENDERS_PER_NODE" --recv-node-max-sessions="$MALLEUS_RECEIVERS_PER_NODE"
     err=$?
     if [ $err -ne 0 ]
     then
@@ -146,30 +146,30 @@ then
     fi
 fi
 
-if [ -z "$TESTS_TO_RUN" ]; then
-  TESTS_TO_RUN=MalleusJitsificus
+if [ -z "$MALLEUS_TESTS_TO_RUN" ]; then
+  MALLEUS_TESTS_TO_RUN=MalleusJitsificus
 fi
 
 mvn \
 -Dthreadcount=1 \
--Dorg.jitsi.malleus.conferences=$CONFERENCES \
--Dorg.jitsi.malleus.max_disrupted_bridges_pct=$MAX_DISRUPTED_BRIDGES_PCT \
--Dorg.jitsi.malleus.participants=$PARTICIPANTS \
--Dorg.jitsi.malleus.senders=$SENDERS \
--Dorg.jitsi.malleus.audio_senders=$AUDIO_SENDERS \
--Dorg.jitsi.malleus.duration=$DURATION \
--Dorg.jitsi.malleus.join_delay=$JOIN_DELAY \
--Dorg.jitsi.malleus.room_name_prefix=$ROOM_NAME_PREFIX \
--Dorg.jitsi.malleus.regions=$REGIONS \
--Dorg.jitsi.malleus.use_node_types=$USE_NODE_TYPES \
--Dorg.jitsi.meet.test.util.blip_script=$BLIP_SCRIPT \
--Dorg.jitsi.malleus.use_load_test=$USE_LOAD_TEST \
--Dremote.address=$HUB_URL \
--DallowInsecureCerts=$ALLOW_INSECURE_CERTS \
--Djitsi-meet.tests.toRun=$TESTS_TO_RUN \
+-Dorg.jitsi.malleus.conferences=$MALLEUS_CONFERENCES \
+-Dorg.jitsi.malleus.max_disrupted_bridges_pct=$MALLEUS_MAX_DISRUPTED_BRIDGES_PCT \
+-Dorg.jitsi.malleus.participants=$MALLEUS_PARTICIPANTS \
+-Dorg.jitsi.malleus.senders=$MALLEUS_SENDERS \
+-Dorg.jitsi.malleus.audio_senders=$MALLEUS_AUDIO_SENDERS \
+-Dorg.jitsi.malleus.duration=$MALLEUS_DURATION \
+-Dorg.jitsi.malleus.join_delay=$MALLEUS_JOIN_DELAY \
+-Dorg.jitsi.malleus.room_name_prefix=$MALLEUS_ROOM_NAME_PREFIX \
+-Dorg.jitsi.malleus.regions=$MALLEUS_REGIONS \
+-Dorg.jitsi.malleus.use_node_types=$MALLEUS_USE_NODE_TYPES \
+-Dorg.jitsi.meet.test.util.blip_script=$MALLEUS_BLIP_SCRIPT \
+-Dorg.jitsi.malleus.use_load_test=$MALLEUS_USE_LOAD_TEST \
+-Dremote.address=$MALLEUS_HUB_URL \
+-DallowInsecureCerts=$MALLEUS_ALLOW_INSECURE_CERTS \
+-Djitsi-meet.tests.toRun=$MALLEUS_TESTS_TO_RUN \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
--Djitsi-meet.instance.url=$INSTANCE_URL \
+-Djitsi-meet.instance.url=$MALLEUS_INSTANCE_URL \
 -Djitsi-meet.isRemote=true \
 -Dchrome.disable.nosanbox=true \
 test
