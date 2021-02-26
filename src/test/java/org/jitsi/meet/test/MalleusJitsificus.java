@@ -37,7 +37,6 @@ public class MalleusJitsificus
      */
     private static final String INPUT_VIDEO_FILE
         = "resources/FourPeople_1280x720_30.y4m";
-    private static final int DISABLE_FAILURE_DETECTION = -1;
 
     public static final String CONFERENCES_PNAME
         = "org.jitsi.malleus.conferences";
@@ -67,6 +66,13 @@ public class MalleusJitsificus
     private final Phaser allHungUp = new Phaser();
 
     private CountDownLatch bridgeSelectionCountDownLatch;
+
+    // The participant threads put the IP of their bridge in this set.
+    private final Set<String> bridgeSelection = ConcurrentHashMap.newKeySet();
+
+    // The test thread creates this set.
+    // The participant threads check if the IP of their bridge is in this set.
+    private Set<String> bridgesToFail;
 
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
@@ -170,15 +176,16 @@ public class MalleusJitsificus
         String[] regions, float blipMaxDisruptedPct)
         throws Exception
     {
-        ParticipantThread[] runThreads = new ParticipantThread[numberOfParticipants];
+        Future<?>[] futures = new Future[numberOfParticipants];
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
+
+        ExecutorService pool = Executors.newFixedThreadPool(numberOfParticipants);
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
         for (int i = 0; i < numberOfParticipants; i++)
         {
-         runThreads[i]
-                = new ParticipantThread(
+            futures[i] = pool.submit(new MalleusTask(
                 i,
                 url.copy(),
                 durationMs,
@@ -186,53 +193,44 @@ public class MalleusJitsificus
                 i >= numSenders /* no video */,
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
-                disruptBridges ? 0 : DISABLE_FAILURE_DETECTION
-             );
-
-            runThreads[i].start();
+                disruptBridges
+            ));
         }
 
+        List<Throwable> errors = new ArrayList<>();
         if (disruptBridges)
         {
             try
             {
-                disruptBridges(blipMaxDisruptedPct, durationMs / 1000, runThreads);
+                disruptBridges(blipMaxDisruptedPct, durationMs / 1000);
             }
             catch (Exception e)
             {
-                throw new Exception("Failed to disrupt the bridges.");
-            }
-            finally
-            {
-                for (ParticipantThread t : runThreads)
-                {
-                    if (t != null)
-                    {
-                        t.join();
-                    }
-                }
+                // TODO we should cancel the futures since test has failed
+                errors.add(new Exception("Failed to disrupt the bridges.", e));
             }
         }
 
-        int minFailureTolerance = Integer.MAX_VALUE;
-        for (ParticipantThread t : runThreads)
+        for(Future<?> f: futures)
         {
-            if (t != null)
+            try
             {
-                t.join();
-
-                minFailureTolerance = Math.min(minFailureTolerance, t.failureTolerance);
+                f.get();
+            }
+            catch (ExecutionException e)
+            {
+                errors.add(e.getCause());
             }
         }
 
-        if (disruptBridges && minFailureTolerance < 0)
+        if (!errors.isEmpty())
         {
-            throw new Exception("Minimum failure tolerance is less than 0");
+            throw new Exception("Failed with multiple errors. Throws the primary.", errors.get(0));
         }
     }
 
-    private class ParticipantThread
-        extends Thread
+    private class MalleusTask
+        implements Runnable
     {
         protected final int i;
         protected final JitsiMeetUrl _url;
@@ -241,15 +239,15 @@ public class MalleusJitsificus
         protected final boolean muteVideo;
         protected final boolean muteAudio;
         protected final String region;
+        protected final boolean enableFailureDetection;
 
         WebParticipant participant;
-        public int failureTolerance;
         private String bridge;
 
-        public ParticipantThread(
+        public MalleusTask(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs,
             boolean muteVideo, boolean muteAudio, String region,
-            int initialFailureTolerance)
+            boolean enableFailureDetection)
         {
             this.i = i;
             this._url = url;
@@ -258,7 +256,7 @@ public class MalleusJitsificus
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.region = region;
-            this.failureTolerance = initialFailureTolerance;
+            this.enableFailureDetection = enableFailureDetection;
         }
 
         @Override
@@ -326,9 +324,10 @@ public class MalleusJitsificus
 
             try
             {
-                if (failureTolerance > DISABLE_FAILURE_DETECTION)
+                if (enableFailureDetection)
                 {
                     bridge = participant.getBridgeIp();
+                    bridgeSelection.add(bridge);
                 }
             }
             catch (Exception e)
@@ -344,7 +343,7 @@ public class MalleusJitsificus
 
             try
             {
-                if (failureTolerance > DISABLE_FAILURE_DETECTION)
+                if (enableFailureDetection)
                 {
                     check();
                 }
@@ -405,9 +404,8 @@ public class MalleusJitsificus
                 }
                 catch (Exception ex)
                 {
-                    TestUtils.print("Participant " + i + " is NOT connected (tolerance=" + failureTolerance + ").");
-                    failureTolerance--;
-                    if (failureTolerance < 0)
+                    TestUtils.print("Participant " + i + " is NOT connected.");
+                    if (!bridgesToFail.contains(bridge))
                     {
                         throw ex;
                     }
@@ -415,7 +413,7 @@ public class MalleusJitsificus
                     {
                         // wait for reconnect
                         participant.waitForIceConnected(20);
-                        TestUtils.print("Participant " + i + " reconnected (tolerance=" + failureTolerance + ").");
+                        TestUtils.print("Participant " + i + " reconnected.");
                     }
                 }
 
@@ -428,24 +426,14 @@ public class MalleusJitsificus
         }
     }
 
-    private void disruptBridges(float blipMaxDisruptedPct, long durationInSeconds, ParticipantThread[] runThreads)
+    private void disruptBridges(float blipMaxDisruptedPct, long durationInSeconds)
         throws Exception
     {
         bridgeSelectionCountDownLatch.await();
 
-        Set<String> bridges = Arrays.stream(runThreads)
-            .map(t -> t.bridge).collect(Collectors.toSet());
-
-        Set<String> bridgesToFail = bridges.stream()
-            .limit((long) (Math.ceil(bridges.size() * blipMaxDisruptedPct / 100))).collect(Collectors.toSet());
-
-        for (ParticipantThread runThread : runThreads)
-        {
-            if (bridgesToFail.contains(runThread.bridge))
-            {
-                runThread.failureTolerance = 1;
-            }
-        }
+        bridgesToFail = Collections.synchronizedSet(bridgeSelection.stream()
+            .limit((long) (Math.ceil(bridgeSelection.size() * blipMaxDisruptedPct / 100)))
+            .collect(Collectors.toSet()));
 
         Blip.failFor(durationInSeconds).theseBridges(bridgesToFail).call();
     }
