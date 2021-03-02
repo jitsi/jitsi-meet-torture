@@ -67,18 +67,7 @@ public class Blip
                 "--bridge-ips=" + String.join(",", bridgeIPs)
             };
 
-            ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
-            Process process = pb.start();
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream())))
-            {
-                while (true)
-                {
-                    String line = in.readLine();
-                    if (line == null)
-                        break;
-                    System.out.println(line);
-                }
-            }
+            Process process = Runtime.getRuntime().exec(command);
 
             int exitStatus = process.waitFor();
 
