@@ -45,7 +45,7 @@ public class Toolbar
     private final static String RECORD = "Toggle recording";
     private final static String SECURITY = "Security options";
     private final static String SETTINGS = "Toggle settings";
-    private final static String SHARE_VIDEO = "Toggle YouTube video sharing";
+    private final static String SHARE_VIDEO = "Toggle Youtube video sharing";
     private final static String TILE_VIEW_BUTTON = "Toggle tile view";
     private final static String VIDEO_MUTE = "Toggle mute video";
     private final static String VIDEO_QUALITY = "Manage video quality";
