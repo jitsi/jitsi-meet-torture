@@ -543,4 +543,10 @@ public class SharedVideoTest
 
         stopSharingTest();
     }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
 }
