@@ -380,8 +380,41 @@ public class SharedVideoTest
     {
         getParticipant1().getToolbar().clickSharedVideoButton();
 
+        WebDriver driver1 = getParticipant1().getDriver();
+
+
+        // video should be visible on both sides
+        WebDriver driver2 = getParticipant2().getDriver();
+        assertTrue(
+            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            "Video not displayed:");
+        assertTrue(
+            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            "Video not displayed:");
+
         getParticipant1().getToolbar().clickSharedVideoButton();
 
+
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                driver1, "sharedVideoIFrame", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means its not visible anymore
+        }
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                driver2, "sharedVideoIFrame", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means its not visible anymore
+        }
     }
 
     /**
