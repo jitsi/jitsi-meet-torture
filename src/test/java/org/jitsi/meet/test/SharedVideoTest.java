@@ -107,18 +107,14 @@ public class SharedVideoTest
         // sendKeys is not working for FF, seems the input has size of 20
         // and only 21 chars goes in, the size is not visible in
         // web-development console
-        MeetUIUtils.setAttribute(
-            driver1,
-            driver1.findElement(
-                By.xpath("//input[@name='sharedVideoUrl']")),
-            "value",
-            url);
+        driver1.findElement(By.xpath("//input[@name='sharedVideoUrl']"))
+                .sendKeys(url);
 
         currentVideoId = expectedId;
 
         TestUtils.click(
             driver1,
-            By.name("modal-dialog-ok-button"));
+            By.id("modal-dialog-ok-button"));
 
         // give time for the internal frame to load and attach to the page.
         TestUtils.waitMillis(2000);
@@ -384,50 +380,8 @@ public class SharedVideoTest
     {
         getParticipant1().getToolbar().clickSharedVideoButton();
 
-        WebDriver driver1 = getParticipant1().getDriver();
-
-        // let's cancel
-        executeClickWorkaroundScript(
-            getParticipant1(),
-            "jqi_state0_buttonspandatai18ndialogCancelCancelspan"
-        );
-
-        // video should be visible on both sides
-        WebDriver driver2 = getParticipant2().getDriver();
-        assertTrue(
-            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
-            "Video not displayed:");
-        assertTrue(
-            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
-            "Video not displayed:");
-
         getParticipant1().getToolbar().clickSharedVideoButton();
 
-        executeClickWorkaroundScript(
-            getParticipant1(),
-            "jqi_state0_buttonspandatai18ndialogRemoveRemovespan"
-        );
-
-        try
-        {
-            TestUtils.waitForNotDisplayedElementByID(
-                driver1, "sharedVideoIFrame", 5);
-        }
-        catch (StaleElementReferenceException ex)
-        {
-            // if the element is detached in a process of checking its display
-            // status, means its not visible anymore
-        }
-        try
-        {
-            TestUtils.waitForNotDisplayedElementByID(
-                driver2, "sharedVideoIFrame", 5);
-        }
-        catch (StaleElementReferenceException ex)
-        {
-            // if the element is detached in a process of checking its display
-            // status, means its not visible anymore
-        }
     }
 
     /**
@@ -555,32 +509,5 @@ public class SharedVideoTest
         checkUrls();
 
         stopSharingTest();
-    }
-
-    /**
-     * Clicks on an element with the passed in name using javascript. This works
-     * around: https://bugs.chromium.org/p/chromedriver/issues/detail?id=2758.
-     * Chromedriver fails to click on buttons that are over a cross domain
-     * iframe, which would be the case with the YouTube video iframe.
-     *
-     * @param participant <tt>Participant</tt> of the participant who will
-     * be clicking the element.
-     * @param name The name attribute value of the element to be clicked.
-     */
-    private void executeClickWorkaroundScript(
-        WebParticipant participant,
-        String name)
-    {
-        new WebDriverWait(participant.getDriver(), 5)
-            .until((ExpectedCondition<Boolean>) d -> {
-                Object res = participant.executeScript(
-                    "return document.getElementsByName('" +
-                    name +
-                    "').length > 0;");
-                return TestUtils.getBooleanResult(res);
-            });
-
-        participant.executeScript(
-            "return document.getElementsByName('" + name + "')[0].click();");
     }
 }

@@ -424,7 +424,7 @@ public class TestUtils
     }
 
     /**
-     * Waits until an element becomes available and displayed.
+     * Waits until an element becomes is not displayed.
      * @param driver the {@code WebDriver}.
      * @param id the id to search for the element
      * @param timeout the time to wait for the element in seconds.
