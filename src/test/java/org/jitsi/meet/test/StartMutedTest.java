@@ -58,7 +58,12 @@ public class StartMutedTest
         settingsDialog.setStartVideoMuted(true);
         settingsDialog.submit();
 
-        ensureTwoParticipants();
+        ensureOneParticipant();
+
+        WebParticipant participant2 = joinSecondParticipant();
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData(false, true);
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -82,10 +87,12 @@ public class StartMutedTest
                 "config.debugAudioLevels=true&" +
                 "config.startVideoMuted=1"));
 
-        ensureTwoParticipants();
+        WebParticipant participant2 = joinSecondParticipant();
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData(false, true);
 
         WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = getParticipant2();
 
         final WebDriver driver2 = participant2.getDriver();
         consolePrint(participant1,
