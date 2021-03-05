@@ -46,8 +46,6 @@ public class StartMutedTest
     @Test
     public void checkboxesTest()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
-
         WebParticipant participant1 = getParticipant1();
 
         participant1.getToolbar().clickSettingsButton();
@@ -95,8 +93,7 @@ public class StartMutedTest
         WebParticipant participant1 = getParticipant1();
 
         final WebDriver driver2 = participant2.getDriver();
-        consolePrint(participant1,
-            "Start configOptionsTest, second participant: " + participant2.getEndpointId());
+        consolePrint(participant1, "Start configOptionsTest, second participant: " + participant2.getEndpointId());
 
         participant1.waitForIceConnected();
 
@@ -110,8 +107,7 @@ public class StartMutedTest
 
         // Unmute and see if the audio works
         participant2.getToolbar().clickAudioMuteButton();
-        consolePrint(participant1,
-            "configOptionsTest, unmuted second participant");
+        consolePrint(participant1, "configOptionsTest, unmuted second participant");
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
             driver2,
@@ -124,6 +120,12 @@ public class StartMutedTest
      */
     @Test(dependsOnMethods = { "configOptionsTest" })
     public void startWithVideoMutedCanUnmute()
+    {
+        startWithVideoMutedCanUnmute(true);
+        startWithVideoMutedCanUnmute(false);
+    }
+
+    private void startWithVideoMutedCanUnmute(boolean enableP2p)
     {
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
@@ -145,13 +147,17 @@ public class StartMutedTest
         
         hangUpAllParticipants();
 
-        // Explicitly enable P2P due to a regression with unmute not updating
-        // large video while in P2P.
-        JitsiMeetUrl url
-            = getJitsiMeetUrl().appendConfig(
-                "config.startWithVideoMuted=true&" +
-                    "config.p2p.enabled=true");
+        JitsiMeetUrl url = getJitsiMeetUrl()
+                .appendConfig("config.startWithVideoMuted=true")
+                .appendConfig("config.p2p.enabled=" + enableP2p);
         ensureTwoParticipants(url, url);
+
+        // Make sure we're using the expected connection (the call starts in jvb and might need some time to switch
+        // to p2p).
+        TestUtils.waitForCondition(
+            participant1.getDriver(),
+            10,
+            d -> participant1.getRtpStatistics().getRtpTransport().isP2P() == enableP2p);
 
         MeetUIUtils.assertMuteIconIsDisplayed(
             participant1.getDriver(),
