@@ -378,10 +378,7 @@ public class SharedVideoTest
     @Test(dependsOnMethods = { "backToSharedVideoTest" })
     public void stopSharingTest()
     {
-        getParticipant1().getToolbar().clickSharedVideoButton();
-
         WebDriver driver1 = getParticipant1().getDriver();
-
 
         // video should be visible on both sides
         WebDriver driver2 = getParticipant2().getDriver();
@@ -393,7 +390,6 @@ public class SharedVideoTest
             "Video not displayed:");
 
         getParticipant1().getToolbar().clickSharedVideoButton();
-
 
         try
         {
@@ -542,11 +538,5 @@ public class SharedVideoTest
         checkUrls();
 
         stopSharingTest();
-    }
-
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
     }
 }
