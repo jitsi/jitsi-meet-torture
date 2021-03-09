@@ -172,7 +172,7 @@ public class Toolbar
      */
     public void clickSecurityButton()
     {
-        clickButton(SECURITY);
+        clickButtonInOverflowMenu(SECURITY);
     }
 
     /**
