@@ -193,7 +193,6 @@ public class DesktopSharingTest
         WebParticipant participant2 = joinSecondParticipant(meetUrl2);
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
-        participant2.waitForSendReceiveData(true, false);
 
         WebParticipant participant3 = joinThirdParticipant();
         participant3.waitToJoinMUC();
