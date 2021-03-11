@@ -954,7 +954,7 @@ public class MeetUIUtils
     public static void waitForNinjaIcon(WebDriver driver, String endpointId)
     {
         TestUtils.waitForElementByXPath(driver,
-            "//span[@id='participant_" + endpointId + "']//span[contains(@class,'connection_ninja')]", 10);
+            "//span[@id='participant_" + endpointId + "']//span[contains(@class,'connection_ninja')]", 15);
     }
 
     /**
