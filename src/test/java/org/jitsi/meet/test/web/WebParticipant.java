@@ -51,7 +51,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.alwaysVisibleToolbar=true"
             + "&config.p2p.enabled=false"
             + "&config.p2p.useStunTurn=false"
-            + "&config.pcStatsInterval=1500"
+            + "&config.pcStatsInterval=10000"
             + "&config.prejoinPageEnabled=false"
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
