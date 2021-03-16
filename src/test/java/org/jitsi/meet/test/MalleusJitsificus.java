@@ -176,16 +176,16 @@ public class MalleusJitsificus
         String[] regions, float blipMaxDisruptedPct)
         throws Exception
     {
-        Future<?>[] futures = new Future[numberOfParticipants];
+        MalleusTask[] tasks = new MalleusTask[numberOfParticipants];
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
-        ExecutorService pool = Executors.newFixedThreadPool(numberOfParticipants);
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(numberOfParticipants);
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
         for (int i = 0; i < numberOfParticipants; i++)
         {
-            futures[i] = pool.submit(new MalleusTask(
+            tasks[i] = new MalleusTask(
                 i,
                 url.copy(),
                 durationMs,
@@ -194,7 +194,8 @@ public class MalleusJitsificus
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 disruptBridges
-            ));
+            );
+            tasks[i].start(pool);
         }
 
         List<Throwable> errors = new ArrayList<>();
@@ -211,11 +212,11 @@ public class MalleusJitsificus
             }
         }
 
-        for(Future<?> f: futures)
+        for (MalleusTask t: tasks)
         {
             try
             {
-                f.get();
+                t.waitUntilComplete();
             }
             catch (ExecutionException e)
             {
@@ -230,16 +231,18 @@ public class MalleusJitsificus
     }
 
     private class MalleusTask
-        implements Runnable
     {
-        protected final int i;
-        protected final JitsiMeetUrl _url;
-        protected final long durationMs;
-        protected final long joinDelayMs;
-        protected final boolean muteVideo;
-        protected final boolean muteAudio;
-        protected final String region;
-        protected final boolean enableFailureDetection;
+        private final int i;
+        private final JitsiMeetUrl _url;
+        private final long durationMs;
+        private final long joinDelayMs;
+        private final boolean muteVideo;
+        private boolean muteAudio;
+        private final boolean enableFailureDetection;
+
+        private Future<?> started;
+        private Future<?> complete;
+        private ScheduledFuture<?> checking;
 
         WebParticipant participant;
         private String bridge;
@@ -255,19 +258,7 @@ public class MalleusJitsificus
             this.joinDelayMs = joinDelayMs;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
-            this.region = region;
             this.enableFailureDetection = enableFailureDetection;
-        }
-
-        @Override
-        public void run()
-        {
-            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
-
-            WebParticipantOptions ops
-                = new WebParticipantOptions()
-                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
-                        .setLoadTest(useLoadTest);
 
             if (muteVideo)
             {
@@ -278,7 +269,35 @@ public class MalleusJitsificus
                 _url.appendConfig("config.startWithAudioMuted=true");
             }
 
+            if (region != null)
+            {
+                _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
+            }
+        }
+
+        public void start(ScheduledExecutorService pool)
+        {
+            started = pool.schedule(this::join, joinDelayMs, TimeUnit.MILLISECONDS);
+            complete = pool.schedule(this::finish, joinDelayMs + durationMs, TimeUnit.MILLISECONDS);
+
+            if (enableFailureDetection)
+            {
+                long healthCheckIntervalMs = 5000; // Configure this?
+
+                checking = pool.scheduleWithFixedDelay(this::check,
+                    joinDelayMs + healthCheckIntervalMs, healthCheckIntervalMs, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        private void join()
+        {
+            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
             boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+
+            WebParticipantOptions ops
+                = new WebParticipantOptions()
+                .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
+                .setLoadTest(useLoadTest);
 
             if (useNodeTypes)
             {
@@ -293,20 +312,6 @@ public class MalleusJitsificus
                 }
             }
 
-            if (region != null)
-            {
-                _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
-            }
-
-            try
-            {
-                Thread.sleep(joinDelayMs);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-
             participant = participants.createParticipant("web.participant" + (i + 1), ops);
             allHungUp.register();
             try
@@ -319,6 +324,7 @@ public class MalleusJitsificus
                 allHungUp.arriveAndDeregister();
                 /* If join failed, don't block bridge disruption. */
                 bridgeSelectionCountDownLatch.countDown();
+                complete.cancel(true);
                 throw e;
             }
 
@@ -334,94 +340,72 @@ public class MalleusJitsificus
             {
                 /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
+                complete.cancel(true);
                 throw e;
             }
             finally
             {
                 bridgeSelectionCountDownLatch.countDown();
             }
+        }
+
+        private void finish()
+        {
+            if (checking != null)
+            {
+                checking.cancel(true);
+            }
 
             try
             {
-                if (enableFailureDetection)
-                {
-                    check();
-                }
-                else
-                {
-                    Thread.sleep(durationMs);
-                }
+                participant.hangUp();
             }
-            catch (InterruptedException e)
+            catch (Exception e)
             {
-                allHungUp.arriveAndDeregister();
-                throw new RuntimeException(e);
+                TestUtils.print("Exception hanging up " + participant.getName());
+                e.printStackTrace();
             }
-            finally
+            try
             {
-                try
-                {
-                    participant.hangUp();
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print("Exception hanging up " + participant.getName());
-                    e.printStackTrace();
-                }
-                try
-                {
-                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
-                     * Chrome session can cause another one to close too.  So wait for all sessions
-                     * to hang up before we close any of them.
-                     */
-                    allHungUp.arriveAndAwaitAdvance();
-                    MalleusJitsificus.this.closeParticipant(participant);
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print("Exception closing " + participant.getName());
-                    e.printStackTrace();
-                }
+                /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
+                 * Chrome session can cause another one to close too.  So wait for all sessions
+                 * to hang up before we close any of them.
+                 */
+                allHungUp.arriveAndAwaitAdvance();
+                MalleusJitsificus.this.closeParticipant(participant);
+            }
+            catch (Exception e)
+            {
+                TestUtils.print("Exception closing " + participant.getName());
+                e.printStackTrace();
             }
         }
 
-        private void check()
-            throws InterruptedException
+        public void waitUntilComplete() throws ExecutionException, InterruptedException
         {
-            long healthCheckIntervalMs = 5000;
-            long remainingMs = durationMs;
-            while (remainingMs > 0)
+            started.get();
+            complete.get();
+        }
+
+        private void check()
+        {
+            try
             {
-                long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
-
-                long currentMillis = System.currentTimeMillis();
-
-                Thread.sleep(sleepTime);
-
-                try
+                participant.waitForIceConnected(0 /* no timeout */);
+            }
+            catch (Exception ex)
+            {
+                TestUtils.print("Participant " + i + " is NOT connected.");
+                if (!bridgesToFail.contains(bridge))
                 {
-                    participant.waitForIceConnected(0 /* no timeout */);
+                    throw ex;
                 }
-                catch (Exception ex)
+                else
                 {
-                    TestUtils.print("Participant " + i + " is NOT connected.");
-                    if (!bridgesToFail.contains(bridge))
-                    {
-                        throw ex;
-                    }
-                    else
-                    {
-                        // wait for reconnect
-                        participant.waitForIceConnected(20);
-                        TestUtils.print("Participant " + i + " reconnected.");
-                    }
+                    // wait for reconnect
+                    participant.waitForIceConnected(20);
+                    TestUtils.print("Participant " + i + " reconnected.");
                 }
-
-                // we use the elapsedMillis because the healthcheck operation may
-                // also take time that needs to be accounted for.
-                long elapsedMillis = System.currentTimeMillis() - currentMillis;
-
-                remainingMs -= elapsedMillis;
             }
         }
     }
