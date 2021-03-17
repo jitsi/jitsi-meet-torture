@@ -735,4 +735,12 @@ public class WebParticipant extends Participant<WebDriver>
             return null;
         }
     }
+
+    /**
+     * Mute or unmute this participant's audio, through the API.
+     */
+    public void muteAudio(boolean mute)
+    {
+        executeScript("APP.conference.muteAudio(arguments[0])", mute);
+    }
 }
