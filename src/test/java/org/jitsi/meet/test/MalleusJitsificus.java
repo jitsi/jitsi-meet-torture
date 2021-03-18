@@ -62,6 +62,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_load_test";
     public static final String JOIN_DELAY_PNAME
         = "org.jitsi.malleus.join_delay";
+    public static final String SWITCH_SPEAKERS
+        = "org.jitsi.malleus.switch_speakers";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -126,6 +128,12 @@ public class MalleusJitsificus
 
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
 
+        boolean switchSpeakers = Boolean.parseBoolean(System.getProperty(SWITCH_SPEAKERS));
+        if (switchSpeakers) {
+            /* Start with 0 and let the switcher turn one on. */
+            numAudioSenders = 0;
+        }
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -162,7 +170,8 @@ public class MalleusJitsificus
             }
 
             ret[i] = new Object[] {
-                url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders, regions, maxDisruptedBridges
+                url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders, regions, maxDisruptedBridges,
+                switchSpeakers
             };
         }
 
@@ -173,19 +182,19 @@ public class MalleusJitsificus
     public void testMain(
         JitsiMeetUrl url, int numberOfParticipants,
         long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
-        String[] regions, float blipMaxDisruptedPct)
+        String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers)
         throws Exception
     {
-        Future<?>[] futures = new Future[numberOfParticipants];
+        List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
-        ExecutorService pool = Executors.newFixedThreadPool(numberOfParticipants);
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(numberOfParticipants + 2);
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
         for (int i = 0; i < numberOfParticipants; i++)
         {
-            futures[i] = pool.submit(new MalleusTask(
+            MalleusTask task = new MalleusTask(
                 i,
                 url.copy(),
                 durationMs,
@@ -194,28 +203,64 @@ public class MalleusJitsificus
                 i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 disruptBridges
+            );
+            malleusTasks.add(task);
+            task.start(pool);
+        }
+
+        List<Future<?>> otherTasks = new ArrayList<>();
+
+        if (disruptBridges)
+        {
+            otherTasks.add(pool.submit(() -> {
+                    try
+                    {
+                        disruptBridges(blipMaxDisruptedPct, durationMs / 1000);
+                    }
+                    catch (Exception e)
+                    {
+                        // Let it be returned by Future#get()
+                        throw new RuntimeException(e);
+                    }
+                }
+            ));
+        }
+
+        if (switchSpeakers)
+        {
+            otherTasks.add(pool.submit(() -> {
+                    try
+                    {
+                        switchSpeakers(malleusTasks, durationMs + joinDelayMs * numberOfParticipants);
+                    }
+                    catch (Exception e)
+                    {
+                        // Let it be returned by Future#get()
+                        throw new RuntimeException(e);
+                    }
+                }
             ));
         }
 
         List<Throwable> errors = new ArrayList<>();
-        if (disruptBridges)
+
+        for (MalleusTask t: malleusTasks)
         {
             try
             {
-                disruptBridges(blipMaxDisruptedPct, durationMs / 1000);
+                t.waitUntilComplete();
             }
-            catch (Exception e)
+            catch (ExecutionException e)
             {
-                // TODO we should cancel the futures since test has failed
-                errors.add(new Exception("Failed to disrupt the bridges.", e));
+                errors.add(e.getCause());
             }
         }
 
-        for(Future<?> f: futures)
+        for (Future<?> t: otherTasks)
         {
             try
             {
-                f.get();
+                t.get();
             }
             catch (ExecutionException e)
             {
@@ -230,19 +275,26 @@ public class MalleusJitsificus
     }
 
     private class MalleusTask
-        implements Runnable
     {
-        protected final int i;
-        protected final JitsiMeetUrl _url;
-        protected final long durationMs;
-        protected final long joinDelayMs;
-        protected final boolean muteVideo;
-        protected final boolean muteAudio;
-        protected final String region;
-        protected final boolean enableFailureDetection;
+        private final int i;
+        private final JitsiMeetUrl _url;
+        private final long durationMs;
+        private final long joinDelayMs;
+        private final boolean muteVideo;
+        private boolean muteAudio;
+        private final boolean enableFailureDetection;
+
+        public boolean running;
+        public boolean spoken;
+
+        private Future<?> started;
+        private Future<?> complete;
+        private ScheduledFuture<?> checking;
 
         WebParticipant participant;
         private String bridge;
+
+        private ScheduledExecutorService pool;
 
         public MalleusTask(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs,
@@ -255,19 +307,7 @@ public class MalleusJitsificus
             this.joinDelayMs = joinDelayMs;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
-            this.region = region;
             this.enableFailureDetection = enableFailureDetection;
-        }
-
-        @Override
-        public void run()
-        {
-            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
-
-            WebParticipantOptions ops
-                = new WebParticipantOptions()
-                        .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
-                        .setLoadTest(useLoadTest);
 
             if (muteVideo)
             {
@@ -278,7 +318,37 @@ public class MalleusJitsificus
                 _url.appendConfig("config.startWithAudioMuted=true");
             }
 
+            if (region != null)
+            {
+                _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
+            }
+        }
+
+        public void start(ScheduledExecutorService pool)
+        {
+            this.pool = pool;
+
+            started = pool.schedule(this::join, joinDelayMs, TimeUnit.MILLISECONDS);
+            complete = pool.schedule(this::finish, joinDelayMs + durationMs, TimeUnit.MILLISECONDS);
+
+            if (enableFailureDetection)
+            {
+                long healthCheckIntervalMs = 5000; // Configure this?
+
+                checking = pool.scheduleWithFixedDelay(this::check,
+                    joinDelayMs + healthCheckIntervalMs, healthCheckIntervalMs, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        private void join()
+        {
+            boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
             boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+
+            WebParticipantOptions ops
+                = new WebParticipantOptions()
+                .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
+                .setLoadTest(useLoadTest);
 
             if (useNodeTypes)
             {
@@ -293,20 +363,6 @@ public class MalleusJitsificus
                 }
             }
 
-            if (region != null)
-            {
-                _url.appendConfig("config.deploymentInfo.userRegion=\"" + region + "\"");
-            }
-
-            try
-            {
-                Thread.sleep(joinDelayMs);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-
             participant = participants.createParticipant("web.participant" + (i + 1), ops);
             allHungUp.register();
             try
@@ -319,6 +375,7 @@ public class MalleusJitsificus
                 allHungUp.arriveAndDeregister();
                 /* If join failed, don't block bridge disruption. */
                 bridgeSelectionCountDownLatch.countDown();
+                complete.cancel(true);
                 throw e;
             }
 
@@ -334,6 +391,10 @@ public class MalleusJitsificus
             {
                 /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
+                complete.cancel(true);
+                if (checking != null) {
+                    checking.cancel(true);
+                }
                 throw e;
             }
             finally
@@ -341,87 +402,90 @@ public class MalleusJitsificus
                 bridgeSelectionCountDownLatch.countDown();
             }
 
+            running = true;
+        }
+
+        private void finish()
+        {
+            running = false;
+            if (checking != null)
+            {
+                checking.cancel(true);
+            }
+
             try
             {
-                if (enableFailureDetection)
+                participant.hangUp();
+            }
+            catch (Exception e)
+            {
+                TestUtils.print("Exception hanging up " + participant.getName());
+                e.printStackTrace();
+            }
+            try
+            {
+                /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
+                 * Chrome session can cause another one to close too.  So wait for all sessions
+                 * to hang up before we close any of them.
+                 */
+                allHungUp.arriveAndAwaitAdvance();
+                MalleusJitsificus.this.closeParticipant(participant);
+            }
+            catch (Exception e)
+            {
+                TestUtils.print("Exception closing " + participant.getName());
+                e.printStackTrace();
+            }
+        }
+
+        public void waitUntilComplete() throws ExecutionException, InterruptedException
+        {
+            started.get();
+            complete.get();
+        }
+
+        private void check()
+        {
+            try
+            {
+                participant.waitForIceConnected(0 /* no timeout */);
+            }
+            catch (Exception ex)
+            {
+                TestUtils.print("Participant " + i + " is NOT connected.");
+                if (!bridgesToFail.contains(bridge))
                 {
-                    check();
+                    throw ex;
                 }
                 else
                 {
-                    Thread.sleep(durationMs);
-                }
-            }
-            catch (InterruptedException e)
-            {
-                allHungUp.arriveAndDeregister();
-                throw new RuntimeException(e);
-            }
-            finally
-            {
-                try
-                {
-                    participant.hangUp();
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print("Exception hanging up " + participant.getName());
-                    e.printStackTrace();
-                }
-                try
-                {
-                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
-                     * Chrome session can cause another one to close too.  So wait for all sessions
-                     * to hang up before we close any of them.
-                     */
-                    allHungUp.arriveAndAwaitAdvance();
-                    MalleusJitsificus.this.closeParticipant(participant);
-                }
-                catch (Exception e)
-                {
-                    TestUtils.print("Exception closing " + participant.getName());
-                    e.printStackTrace();
+                    // wait for reconnect
+                    participant.waitForIceConnected(20);
+                    TestUtils.print("Participant " + i + " reconnected.");
                 }
             }
         }
 
-        private void check()
-            throws InterruptedException
+        public void muteAudio(boolean mute)
         {
-            long healthCheckIntervalMs = 5000;
-            long remainingMs = durationMs;
-            while (remainingMs > 0)
+            pool.execute(() -> doMuteAudio(mute));
+        }
+
+        private void doMuteAudio(boolean mute)
+        {
+            if (mute != muteAudio)
             {
-                long sleepTime = Math.min(healthCheckIntervalMs, remainingMs);
-
-                long currentMillis = System.currentTimeMillis();
-
-                Thread.sleep(sleepTime);
-
-                try
+                participant.muteAudio(mute);
+                muteAudio = mute;
+                if (mute)
                 {
-                    participant.waitForIceConnected(0 /* no timeout */);
+                    TestUtils.print("Muted participant " + i);
                 }
-                catch (Exception ex)
+                else
                 {
-                    TestUtils.print("Participant " + i + " is NOT connected.");
-                    if (!bridgesToFail.contains(bridge))
-                    {
-                        throw ex;
-                    }
-                    else
-                    {
-                        // wait for reconnect
-                        participant.waitForIceConnected(20);
-                        TestUtils.print("Participant " + i + " reconnected.");
-                    }
+                    TestUtils.print("Unmuted participant " + i);
+                    spoken = true;
                 }
-
-                // we use the elapsedMillis because the healthcheck operation may
-                // also take time that needs to be accounted for.
-                long elapsedMillis = System.currentTimeMillis() - currentMillis;
-
-                remainingMs -= elapsedMillis;
             }
         }
     }
@@ -436,6 +500,142 @@ public class MalleusJitsificus
             .collect(Collectors.toSet()));
 
         Blip.failFor(durationInSeconds).theseBridges(bridgesToFail).call();
+    }
+
+    private static final double SINGLE_TALK_MS = 854;
+    private static final double DOUBLE_TALK_MS = 226;
+    private static final double SILENCE_MS = 456;
+
+    private static final double P_SILENCE = 0.4;
+
+    private static long getDuration(double t)
+    {
+        return (long)(-t * (Math.log(1 - ThreadLocalRandom.current().nextDouble())));
+    }
+
+    /** Randomly switch speakers.
+     *  This is modeled on ITU-T P.59, but choosing among N speakers rather than just 2.
+     *  (At most 2 at a time.)
+     */
+    private void switchSpeakers(List<MalleusTask> malleusTasks, long durationInMs)
+        throws InterruptedException
+    {
+        List<MalleusTask> currentSpeakers = new ArrayList<>();
+        long remainingTime = durationInMs;
+
+        while (remainingTime > 0)
+        {
+            switch (currentSpeakers.size())
+            {
+            case 0:
+            {
+                /* No speakers - add a speaker. */
+                MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers);
+                if (newSpeaker != null)
+                {
+                    newSpeaker.muteAudio(false);
+                    currentSpeakers.add(newSpeaker);
+                }
+                break;
+            }
+
+            case 1:
+            {
+                /* One speaker - either add or remove a speaker. */
+                if (ThreadLocalRandom.current().nextDouble() < P_SILENCE)
+                {
+                    MalleusTask removedSpeaker = currentSpeakers.get(0);
+                    removedSpeaker.muteAudio(true);
+                    currentSpeakers.remove(removedSpeaker);
+                }
+                else
+                {
+                    MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers);
+                    if (newSpeaker != null)
+                    {
+                        newSpeaker.muteAudio(false);
+                        currentSpeakers.add(newSpeaker);
+                    }
+                }
+                break;
+            }
+
+            default:
+            {
+                /* More than one speaker - remove a speaker. */
+                int idx = ThreadLocalRandom.current().nextInt(currentSpeakers.size());
+                MalleusTask removedSpeaker = currentSpeakers.get(idx);
+                removedSpeaker.muteAudio(true);
+                currentSpeakers.remove(removedSpeaker);
+                break;
+            }
+            }
+
+            long duration;
+            switch (currentSpeakers.size())
+            {
+            case 0:
+            {
+                /* Silence */
+                duration = 0;
+                while (duration < 200)
+                {
+                    duration += getDuration(SILENCE_MS);
+                }
+                break;
+            }
+            case 1:
+            {
+                /* Single-talk */
+                duration = getDuration(SINGLE_TALK_MS);
+                break;
+            }
+            default:
+            {
+                /* Double-talk */
+                duration = getDuration(DOUBLE_TALK_MS);
+                break;
+            }
+            }
+
+            long sleepTime = Math.min(duration, remainingTime);
+            remainingTime -= sleepTime;
+            Thread.sleep(sleepTime);
+        }
+    }
+
+    /** Randomly choose an active MalleusTask to be the next speaker.
+     * If there are N past speakers we choose a past speaker with probability (N / (N + 1))
+     * and some other conference member with probability (1 / (N + 1)), unless everyone
+     * is a past speaker.
+     */
+    private MalleusTask chooseSpeaker(List<MalleusTask> tasks, List<MalleusTask> currentSpeakers)
+    {
+        List<MalleusTask> pastSpeakers = tasks.stream().
+            filter((t) -> t.running).
+            filter((t) -> t.spoken).
+            filter((t) -> !currentSpeakers.contains(t)).
+            collect(Collectors.toList());
+
+        List<MalleusTask> nonSpeakers = tasks.stream().
+            filter((t) -> t.running).
+            filter((t) -> !t.spoken).
+            filter((t) -> !currentSpeakers.contains(t)).
+            collect(Collectors.toList());
+
+        if (pastSpeakers.isEmpty() && nonSpeakers.isEmpty())
+        {
+            return null;
+        }
+
+        int randMax = pastSpeakers.size() + (nonSpeakers.isEmpty() ? 0 : 1);
+        int idx = ThreadLocalRandom.current().nextInt(randMax);
+        if (idx < pastSpeakers.size())
+        {
+            return pastSpeakers.get(idx);
+        }
+        int idx2 = ThreadLocalRandom.current().nextInt(nonSpeakers.size());
+        return nonSpeakers.get(idx2);
     }
 
     private void print(String s)
