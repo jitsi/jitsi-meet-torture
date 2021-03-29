@@ -129,10 +129,6 @@ public class MalleusJitsificus
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
 
         boolean switchSpeakers = Boolean.parseBoolean(System.getProperty(SWITCH_SPEAKERS));
-        if (switchSpeakers) {
-            /* Start with 0 and let the switcher turn one on. */
-            numAudioSenders = 0;
-        }
 
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
@@ -200,7 +196,7 @@ public class MalleusJitsificus
                 durationMs,
                 i * joinDelayMs,
                 i >= numSenders /* no video */,
-                i >= numAudioSenders /* no audio */,
+                switchSpeakers || i >= numAudioSenders /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 disruptBridges
             );
@@ -231,7 +227,7 @@ public class MalleusJitsificus
             otherTasks.add(pool.submit(() -> {
                     try
                     {
-                        switchSpeakers(malleusTasks, durationMs + joinDelayMs * numberOfParticipants);
+                        switchSpeakers(malleusTasks, durationMs + joinDelayMs * numberOfParticipants, numAudioSenders);
                     }
                     catch (Exception e)
                     {
@@ -517,7 +513,7 @@ public class MalleusJitsificus
      *  This is modeled on ITU-T P.59, but choosing among N speakers rather than just 2.
      *  (At most 2 at a time.)
      */
-    private void switchSpeakers(List<MalleusTask> malleusTasks, long durationInMs)
+    private void switchSpeakers(List<MalleusTask> malleusTasks, long durationInMs, int numAudioSenders)
         throws InterruptedException
     {
         List<MalleusTask> currentSpeakers = new ArrayList<>();
@@ -530,7 +526,7 @@ public class MalleusJitsificus
             case 0:
             {
                 /* No speakers - add a speaker. */
-                MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers);
+                MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
                 if (newSpeaker != null)
                 {
                     newSpeaker.muteAudio(false);
@@ -550,7 +546,7 @@ public class MalleusJitsificus
                 }
                 else
                 {
-                    MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers);
+                    MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
                     if (newSpeaker != null)
                     {
                         newSpeaker.muteAudio(false);
@@ -609,15 +605,17 @@ public class MalleusJitsificus
      * and some other conference member with probability (1 / (N + 1)), unless everyone
      * is a past speaker.
      */
-    private MalleusTask chooseSpeaker(List<MalleusTask> tasks, List<MalleusTask> currentSpeakers)
+    private MalleusTask chooseSpeaker(List<MalleusTask> tasks, List<MalleusTask> currentSpeakers, int numAudioSenders)
     {
         List<MalleusTask> pastSpeakers = tasks.stream().
+            limit(numAudioSenders).
             filter((t) -> t.running).
             filter((t) -> t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
             collect(Collectors.toList());
 
         List<MalleusTask> nonSpeakers = tasks.stream().
+            limit(numAudioSenders).
             filter((t) -> t.running).
             filter((t) -> !t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
