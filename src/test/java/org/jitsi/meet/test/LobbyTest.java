@@ -122,7 +122,7 @@ public class LobbyTest
             (ExpectedCondition<Boolean>) d -> {
                 boolean currentState = securityDialog.isLobbyEnabled();
 
-                return enabled ? currentState : !currentState;
+                return enabled == currentState;
             });
     }
 
@@ -169,11 +169,16 @@ public class LobbyTest
 
             // check join button is enabled
             classes = joinButton.getAttribute("class");
-            assertTrue(!classes.contains("disabled"), "The join button should be enabled");
+            assertFalse(classes.contains("disabled"), "The join button should be enabled");
         }
 
         // click join button
         lobbyScreen.join();
+
+        TestUtils.waitForCondition(
+            participant3.getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
 
         // check no join button
         assertFalse(lobbyScreen.hasJoinButton(), "Join button should be hidden after clicking it");
@@ -390,14 +395,16 @@ public class LobbyTest
 
         enterLobby(participant1, false);
 
+        WebParticipant participant3 = getParticipant3();
+
         // now fill in password
-        LobbyScreen lobbyScreen = getParticipant3().getLobbyScreen();
+        LobbyScreen lobbyScreen = participant3.getLobbyScreen();
 
         lobbyScreen.enterPassword(roomPasscode);
 
-        getParticipant3().waitToJoinMUC();
-        getParticipant3().waitForIceConnected();
-        getParticipant3().waitForSendReceiveData();
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
     }
 
     /**
