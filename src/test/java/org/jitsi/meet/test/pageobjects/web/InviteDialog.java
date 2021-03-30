@@ -71,11 +71,19 @@ public class InviteDialog
     }
 
     /**
-     * Clicks the "info" toolbar button which opens or closes the invite dialog.
+     * Clicks the "info" button which opens or closes the invite dialog.
+     */
+    private void clickInviteButton()
+    {
+        participant.getParticipantsPane().clickInvite();
+    }
+
+    /**
+     * Clicks the "participants" toolbar button to gain access to invite
      */
     private void clickToolbarButton()
     {
-        participant.getToolbar().clickInviteButton();
+        participant.getToolbar().clickParticipantsButton();
     }
 
     /**
@@ -175,7 +183,9 @@ public class InviteDialog
             return;
         }
 
-        this.clickToolbarButton();
+        clickToolbarButton();
+        participant.getToolbar().waitForVisible();
+        clickInviteButton();
     }
 
     /**
