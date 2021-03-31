@@ -33,13 +33,13 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE = "Toggle mute audio";
-    private final static String CHAT = "Toggle chat window";
-    private final static String DESKTOP = "Toggle screenshare";
+    private final static String AUDIO_MUTE = "Mute / Unmute";
+    private final static String CHAT = "Open / Close chat";
+    private final static String DESKTOP = "Start / Stop sharing your screen";
     private final static String ETHERPAD = "Toggle shared document";
-    private final static String HANGUP = "Leave the call";
+    private final static String HANGUP = "Leave the meeting";
     private final static String INVITE = "Invite people";
-    private final static String OVERFLOW = "Toggle more actions menu";
+    private final static String OVERFLOW = "More actions";
     private final static String OVERFLOW_MENU = "More actions menu" ;
     private final static String PROFILE = "Edit your profile";
     private final static String RECORD = "Toggle recording";
@@ -47,7 +47,7 @@ public class Toolbar
     private final static String SETTINGS = "Toggle settings";
     private final static String SHARE_VIDEO = "Toggle YouTube video sharing";
     private final static String TILE_VIEW_BUTTON = "Toggle tile view";
-    private final static String VIDEO_MUTE = "Toggle mute video";
+    private final static String VIDEO_MUTE = "Start / Stop camera";
     private final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
