@@ -142,6 +142,15 @@ public class Toolbar
     }
 
     /**
+     * Returns the invite button.
+     * @return the invite button.
+     */
+    public WebElement getInviteButton()
+    {
+        return participant.getDriver().findElement(By.cssSelector(getAccessibilityCSSSelector(INVITE)));
+    }
+
+    /**
      * Clicks on the overflow toolbar button which opens or closes the overflow
      * menu.
      */

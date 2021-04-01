@@ -20,6 +20,7 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 
 /**
  * Represents the invite dialog in a particular {@link WebParticipant}.
@@ -86,7 +87,9 @@ public class InviteDialog
             return;
         }
 
-        clickToolbarButton();
+        // click with the mouse over the button, as it is a modal dialog it will close
+        Actions actions = new Actions(participant.getDriver());
+        actions.moveToElement(participant.getToolbar().getInviteButton()).click().perform();
     }
 
     /**
