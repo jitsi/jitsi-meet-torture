@@ -24,6 +24,7 @@ import org.apache.http.util.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -146,8 +147,21 @@ public class DialInAudioTest
                 "No dial in configuration detected. Disabling test.");
         }
 
-        // get the dial-in pin
-        dialInPin = retrievePin(participant);
+        try
+        {
+            // get the dial-in pin
+            dialInPin = retrievePin(participant);
+        }
+        catch(TimeoutException e)
+        {
+            // failed retrieving will se it as empty string
+            dialInPin = "";
+        }
+
+        if (dialInPin.length() == 0)
+        {
+            print("dial-in.test.no-pin");
+        }
 
         assertTrue(dialInPin.length() > 1);
         print("Dial-in pin retrieved:" + dialInPin);
