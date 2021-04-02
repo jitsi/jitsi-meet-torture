@@ -31,7 +31,6 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.net.*;
 import java.text.*;
-import java.util.logging.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
@@ -121,8 +120,8 @@ public class DialInAudioTest
     public void enterAndReadDialInPin()
     {
         this.restURLString = System.getProperty(DIAL_IN_PARTICIPANT_REST_URL);
-        Assert.assertTrue(
-            this.restURLString != null,
+        Assert.assertNotNull(
+            this.restURLString,
             "REST Url missing. Pass it using " +
                 "-D" + DIAL_IN_PARTICIPANT_REST_URL + "=");
 
@@ -214,14 +213,14 @@ public class DialInAudioTest
                 HttpEntity entity = response.getEntity();
                 String value = EntityUtils.toString(entity);
 
-                JsonElement jsonElem = new JsonParser().parse(value);
-                JsonObject res = jsonElem.getAsJsonObject();
+                JsonObject res = new JsonParser().parse(value).getAsJsonObject();
 
                 print("dial-in.test.logUrl:"
                     + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
 
-                Assert.assertFalse(
-                    "1".equals(res.get("result")),
+                Assert.assertEquals(
+                    res.get("result").getAsString(),
+                    "1",
                     "Something is wrong, cannot join dial-in participant!");
             }
         }
@@ -236,8 +235,8 @@ public class DialInAudioTest
      * @param httpclient the http client to use.
      * @param mediaSessionAccessUrl the url to access.
      * @return the received value.
-     * @throws URISyntaxException
-     * @throws IOException
+     * @throws URISyntaxException Problem parsing the url.
+     * @throws IOException Cannot read response.s
      */
     private String getLogUrl(CloseableHttpClient httpclient, String mediaSessionAccessUrl)
         throws URISyntaxException,
