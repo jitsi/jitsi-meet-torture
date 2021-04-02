@@ -72,6 +72,11 @@ public class DialInAudioTest
      */
     private boolean userJoined = false;
 
+    /**
+     * The timestamp when we received an OK answer from the REST API request.
+     */
+    private long restAPIExecutionTS;
+
     @Override
     public boolean skipTestByDefault()
     {
@@ -175,6 +180,7 @@ public class DialInAudioTest
     {
         if (!userJoined)
         {
+            // local participant did not join abort
             return;
         }
         try
@@ -203,10 +209,13 @@ public class DialInAudioTest
             {
                 if (response.getStatusLine().getStatusCode() != 200)
                 {
+                    print("dial-in.test.restAPI.request.fail");
+
                     fail("REST returned error:" + response.getStatusLine());
                 }
                 else
                 {
+                    restAPIExecutionTS = System.currentTimeMillis();
                     print("Rest api returned:" + response.getStatusLine());
                 }
 
@@ -215,8 +224,16 @@ public class DialInAudioTest
 
                 JsonObject res = new JsonParser().parse(value).getAsJsonObject();
 
-                print("dial-in.test.logUrl:"
-                    + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
+                // do not fail test if log file is not available
+                try
+                {
+                    print("dial-in.test.logUrl:"
+                        + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
 
                 Assert.assertEquals(
                     res.get("result").getAsString(),
@@ -274,16 +291,44 @@ public class DialInAudioTest
     {
         if (!userJoined)
         {
+            // local participant did not join abort
             return;
         }
 
         WebParticipant participant = getParticipant1();
 
-        participant.waitForParticipants(1);
+        try
+        {
+            participant.waitForParticipants(1);
+        }
+        catch(TimeoutException e)
+        {
+            print("dial-in.test.jigasi.participant.no.join.for:"
+                + (System.currentTimeMillis() - restAPIExecutionTS) + " ms.");
+            throw e;
+        }
+
+        long joinedTS = System.currentTimeMillis();
+
+        print("dial-in.test.jigasi.participant.join.after:"
+            + (joinedTS - restAPIExecutionTS) + " ms.");
 
         participant.waitForIceConnected();
         participant.waitForRemoteStreams(1);
-        participant.waitForSendReceiveData();
+
+        try
+        {
+            participant.waitForSendReceiveData();
+
+            print("dial-in.test.jigasi.participant.received.audio.after.join:"
+                + (System.currentTimeMillis() - joinedTS) + " ms.");
+        }
+        catch(TimeoutException e)
+        {
+            print("dial-in.test.jigasi.participant.no.audio.after.join.for:"
+                + (System.currentTimeMillis() - joinedTS) + " ms.");
+            throw e;
+        }
     }
 
     /**
