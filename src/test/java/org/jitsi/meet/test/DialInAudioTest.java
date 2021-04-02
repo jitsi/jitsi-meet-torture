@@ -27,8 +27,10 @@ import org.jitsi.meet.test.web.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.io.*;
 import java.net.*;
 import java.text.*;
+import java.util.logging.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
@@ -38,6 +40,9 @@ import static org.testng.Assert.*;
  * a REST http call, which is suppose to add a dial-in participant in the call.
  * We wait for some time for new participant, then wait for its audio and we
  * kick it and consider this test successful.
+ *
+ * The REST api result parsing expects the voximplant REST API results, but can
+ * be easily adjusted to any other, or that REST API can be adjust to follow same results.
  *
  * @author Damian Minkov
  */
@@ -196,15 +201,54 @@ public class DialInAudioTest
                 String value = EntityUtils.toString(entity);
 
                 JsonElement jsonElem = new JsonParser().parse(value);
+                JsonObject res = jsonElem.getAsJsonObject();
+
+                print("dial-in.test.logUrl:"
+                    + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
 
                 Assert.assertFalse(
-                    "1".equals(jsonElem.getAsJsonObject().get("result")),
+                    "1".equals(res.get("result")),
                     "Something is wrong, cannot join dial-in participant!");
             }
         }
         catch (Exception e)
         {
             fail("Error sending REST request:" + e.getMessage());
+        }
+    }
+
+    /**
+     * Creates a POST request and returns the value received as String.
+     * @param httpclient the http client to use.
+     * @param mediaSessionAccessUrl the url to access.
+     * @return the received value.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    private String getLogUrl(CloseableHttpClient httpclient, String mediaSessionAccessUrl)
+        throws URISyntaxException,
+               IOException
+    {
+        URI mediaSessionUri = new URI(mediaSessionAccessUrl);
+
+        HttpHost targetHost = new HttpHost(
+            mediaSessionUri.getHost(),
+            mediaSessionUri.getPort(),
+            mediaSessionUri.getScheme());
+        HttpPost httppost = new HttpPost(mediaSessionUri);
+        try (CloseableHttpResponse response = httpclient.execute(
+            targetHost, httppost))
+        {
+            if (response.getStatusLine().getStatusCode() != 200)
+            {
+                fail("POST returned error:" + response.getStatusLine());
+            }
+            else
+            {
+                print("POST api returned:" + response.getStatusLine());
+            }
+
+            return EntityUtils.toString(response.getEntity());
         }
     }
 
