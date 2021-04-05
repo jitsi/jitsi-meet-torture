@@ -63,6 +63,11 @@ public class Notifications
      */
     private static final String SESSION_TERMINATED_TEST_ID = "dialog.sessTerminated";
 
+    /**
+     * The test id of the notification shown to kicked users.
+     */
+    private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
+
     public Notifications(WebParticipant participant)
     {
         this.participant = participant;
@@ -181,5 +186,14 @@ public class Notifications
     public boolean hasMeetingEndedNotification()
     {
         return hasNotification(SESSION_TERMINATED_TEST_ID);
+    }
+
+    /**
+     * The notification on participants page when the participant was kicked.
+     * @return the notification on participants page when the participant was kicked.
+     */
+    public boolean hasKickedNotification()
+    {
+        return hasNotification(KICKED_NOTIFICATION_TEST_ID);
     }
 }
