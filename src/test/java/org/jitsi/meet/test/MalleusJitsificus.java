@@ -64,6 +64,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.join_delay";
     public static final String SWITCH_SPEAKERS
         = "org.jitsi.malleus.switch_speakers";
+    public static final String USE_STAGE_VIEW
+        = "org.jitsi.malleus.use_stage_view";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -130,6 +132,8 @@ public class MalleusJitsificus
 
         boolean switchSpeakers = Boolean.parseBoolean(System.getProperty(SWITCH_SPEAKERS));
 
+        boolean useStageView = Boolean.parseBoolean(System.getProperty(USE_STAGE_VIEW));
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -138,13 +142,14 @@ public class MalleusJitsificus
         print("conferences="+ numConferences);
         print("participants=" + numParticipants);
         print("senders=" + numSenders);
-        print("audio senders=" + numAudioSenders);
+        print("audio senders=" + numAudioSenders + (switchSpeakers ? " (switched)" : ""));
         print("duration=" + durationMs + "ms");
         print("join delay=" + joinDelayMs + "ms");
         print("room_name_prefix=" + roomNamePrefix);
         print("enable_p2p=" + enableP2p);
         print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
+        print("stage view=" + useStageView);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -159,6 +164,9 @@ public class MalleusJitsificus
                 .appendConfig("config.testing.noAutoPlayVideo=true")
                 .appendConfig("config.pcStatsInterval=10000")
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
+
+            if (useStageView)
+                url.appendConfig("config.disableTileView=true");
 
             if (useLoadTest)
             {
