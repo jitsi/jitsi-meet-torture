@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.base;
 
+import com.google.gson.*;
 import org.apache.commons.lang3.*;
 
 import java.net.*;
@@ -161,6 +162,56 @@ public class JitsiMeetUrl
         }
 
         return this;
+    }
+
+    /**
+     * Returns the fragment params as json.
+     * @return fragment params.
+     */
+    public JsonObject getFragmentParamsAsJson()
+    {
+        JsonObject params = new JsonObject();
+
+        // init config and interfaceConfig
+        JsonObject config = new JsonObject();
+        JsonObject interfaceConfig = new JsonObject();
+        params.add("config", config);
+        params.add("interfaceConfig", interfaceConfig);
+
+        for (Map.Entry<String, String> entry : fragmentParams.entrySet())
+        {
+            String key = entry.getKey();
+            JsonObject currentObj;
+            String newKey;
+
+            if (key.startsWith("config."))
+            {
+                currentObj = config;
+                newKey = key.substring("config.".length());
+            }
+            else if (key.startsWith("interfaceConfig."))
+            {
+                currentObj = interfaceConfig;
+                newKey = key.substring("interfaceConfig.".length());
+            }
+            else
+            {
+                currentObj = params;
+                newKey = key;
+            }
+
+            String value = entry.getValue();
+            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+            {
+                currentObj.addProperty(newKey, Boolean.parseBoolean(value));
+            }
+            else
+            {
+                currentObj.addProperty(newKey, value);
+            }
+        }
+
+        return params;
     }
 
     /**
