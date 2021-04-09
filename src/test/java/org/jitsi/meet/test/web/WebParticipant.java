@@ -40,7 +40,7 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * Default config for Web participants.
      */
-    private static final String DEFAULT_CONFIG
+    public static final String DEFAULT_CONFIG
         = "config.requireDisplayName=false"
             + "&config.debug=true"
             + "&config.testing.testMode=true"

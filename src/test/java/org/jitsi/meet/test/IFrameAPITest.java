@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import com.google.gson.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
@@ -47,18 +48,8 @@ public class IFrameAPITest
      */
     private static final String IFRAME_ROOM_PARAMS
         = "domain=%s&room=%s"
-        // default settings, used in Participant join function
-        // FIXME: this must be in sync with WebParticiapnt#DEFAULT_CONFIG
-        + "&config={"
-        + "\"debug\":true,"
-        + "\"disableAEC\":true,"
-        + "\"callStatsID\":false,"
-        + "\"alwaysVisibleToolbar\":true,"
-        + "\"p2p.enabled\":false,"
-        + "\"disable1On1Mode\":true,"
-        + "\"analytics.disabled\":true,"
-        + "\"prejoinPageEnabled\":false"
-        + "}";
+        // here goes the default settings, used in Participant join function
+        + "&config=%s&interfaceConfig=%s";
 
     @Test
     public void testIFrameAPI()
@@ -82,8 +73,14 @@ public class IFrameAPITest
             throw new RuntimeException(e);
         }
 
-        String roomParams
-            = String.format(IFRAME_ROOM_PARAMS, domain, currentRoomName);
+        JsonObject defaultParams = new JitsiMeetUrl().appendConfig(WebParticipant.DEFAULT_CONFIG, false)
+            .getFragmentParamsAsJson();
+
+        String roomParams = String.format(IFRAME_ROOM_PARAMS,
+            domain,
+            currentRoomName,
+            defaultParams.get("config").toString(),
+            defaultParams.get("interfaceConfig").toString());
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);
