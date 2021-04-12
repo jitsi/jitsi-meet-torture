@@ -21,6 +21,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * Represents the invite dialog in a particular {@link WebParticipant}.
@@ -193,13 +194,16 @@ public class InviteDialog
 
         // waits for the element to be available before getting the text
         // PHONE_NUMBER for example can take time before shown
-        TestUtils.waitForElementBy(
-            driver,
-            By.className(className),
-            5);
+        TestUtils.waitForElementBy(driver, By.className(className), 5);
 
-        String fullText
-            = driver.findElement(By.className(className)).getText();
+        // sometimes we see FF taking long (more than 5 seconds) to show the dialog
+        // let's wait a little bit longer, give it 5 more seconds to see it
+        String fullText = (new WebDriverWait(driver, 5)).until((ExpectedCondition<String>) d ->
+        {
+            String text = driver.findElement(By.className(className)).getText();
+
+            return text.split(":").length > 0 ? text : null;
+        });
 
         return fullText.split(":")[1].trim();
     }
