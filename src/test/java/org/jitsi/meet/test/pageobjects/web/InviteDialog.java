@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.pageobjects.web;
 
 import java.util.*;
+import java.util.logging.*;
 
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -202,8 +203,10 @@ public class InviteDialog
         {
             String text = driver.findElement(By.className(className)).getText();
 
-            return text.split(":").length > 0 ? text : null;
+            return text.split(":").length > 1 ? text : null;
         });
+
+        Logger.getGlobal().info("Extracted text:'" + fullText + "'");
 
         return fullText.split(":")[1].trim();
     }
