@@ -41,6 +41,7 @@ public class Toolbar
     private final static String INVITE = "Invite people";
     private final static String OVERFLOW = "Toggle more actions menu";
     private final static String OVERFLOW_MENU = "More actions menu" ;
+    private final static String PARTICIPANTS = "Participants" ;
     private final static String PROFILE = "Edit your profile";
     private final static String RECORD = "Toggle recording";
     private final static String SECURITY = "Security options";
@@ -91,7 +92,7 @@ public class Toolbar
         if (this.participant.getType().isFirefox())
         {
             WebElement button = participant.getDriver().findElement(By.cssSelector(
-                getAccessibilityCSSSelector(DESKTOP)));
+                MeetUIUtils.getAccessibilityCSSSelector(DESKTOP)));
             new Actions(this.participant.getDriver()).moveToElement(button).click().perform();
         }
         else
@@ -136,9 +137,9 @@ public class Toolbar
     /**
      * Clicks on the info toolbar button which opens or closes the info dialog.
      */
-    public void clickInviteButton()
+    public void clickParticipantsButton()
     {
-        clickButton(INVITE);
+        clickButton(PARTICIPANTS);
     }
 
     /**
@@ -147,7 +148,7 @@ public class Toolbar
      */
     public WebElement getInviteButton()
     {
-        return participant.getDriver().findElement(By.cssSelector(getAccessibilityCSSSelector(INVITE)));
+        return participant.getDriver().findElement(By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(INVITE)));
     }
 
     /**
@@ -252,7 +253,7 @@ public class Toolbar
         openOverflowMenu();
 
         return participant.getDriver().findElement(By.cssSelector(
-            getAccessibilityCSSSelector(PROFILE) + " img"));
+            MeetUIUtils.getAccessibilityCSSSelector(PROFILE) + " img"));
     }
 
     /**
@@ -266,7 +267,7 @@ public class Toolbar
 
         List<WebElement> elements
             = participant.getDriver().findElements(By.cssSelector(
-                getAccessibilityCSSSelector(RECORD)));
+                MeetUIUtils.getAccessibilityCSSSelector(RECORD)));
 
         return !elements.isEmpty();
     }
@@ -349,7 +350,7 @@ public class Toolbar
     {
         MeetUIUtils.clickOnElement(
             participant.getDriver(),
-            getAccessibilityCSSSelector(accessibilityLabel),
+            MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel),
             false
         );
     }
@@ -364,7 +365,7 @@ public class Toolbar
     {
         MeetUIUtils.clickOnElement(
             participant.getDriver(),
-            getAccessibilityCSSSelector(accessibilityLabel),
+            MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel),
             true
         );
     }
@@ -385,26 +386,13 @@ public class Toolbar
     }
 
     /**
-     * Helper for formatting the string to be used as a CSS selector for
-     * an accessibility label.
-     *
-     * @param accessibilityLabel The accessibility label to be used to search
-     * for a WebElement on the page.
-     * @return String intended to be used with By#cssSelector.
-     */
-    private String getAccessibilityCSSSelector(String accessibilityLabel)
-    {
-        return String.format("[aria-label=\"%s\"]", accessibilityLabel);
-    }
-
-    /**
      * Helper for retrieving the selector for the overflow menu.
      *
      * @return <tt>By</tt> to be used by WebDriver to locate the overflow menu.
      */
     private By getOverflowMenuSelector()
     {
-        return By.cssSelector(getAccessibilityCSSSelector(OVERFLOW_MENU));
+        return By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(OVERFLOW_MENU));
     }
 
     /**
@@ -417,7 +405,7 @@ public class Toolbar
     {
         TestUtils.waitForElementBy(
             participant.getDriver(),
-            By.cssSelector(getAccessibilityCSSSelector(accessibilityLabel)),
+            By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel)),
             10);
     }
 
