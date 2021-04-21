@@ -71,7 +71,7 @@ public class InviteDialog
     }
 
     /**
-     * Clicks the "info" button which opens or closes the invite dialog.
+     * Clicks the "invite" button which opens or closes the invite dialog.
      */
     private void clickInviteButton()
     {
