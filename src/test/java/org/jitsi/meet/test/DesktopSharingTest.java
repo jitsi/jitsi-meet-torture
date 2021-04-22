@@ -130,12 +130,6 @@ public class DesktopSharingTest
             5);
     }
 
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
-    }
-
     /**
      * A case where do non dominant speaker is sharing screen for a participant in low bandwidth mode
      * where only a screen share can be received. A bug fixed in jvb 0c5dd91b where the video was not received.
