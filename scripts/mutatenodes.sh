@@ -50,6 +50,16 @@ then
     fi
 fi
 
+if [ -z "$SCP" ]
+then
+    if [ -r "$JITSI_SSH_CONFIG" ]
+    then
+        SSH="scp -o StrictHostKeyChecking=no -F $JITSI_SSH_CONFIG"
+    else
+        SSH="scp -o StrictHostKeyChecking=no"
+    fi
+fi
+
 NODE_FAILURE_LOG=$(mktemp)
 
 mutate_node() {
@@ -81,11 +91,11 @@ mutate_node() {
         exit 1
     fi
 
-    $SSH $2 cat /opt/selenium_grid_extras/node_5555.json > $node_config_orig
+    $SCP "$2:/opt/selenium_grid_extras/node_5555.json" $node_config_orig
     jq ".capabilities[0].maxInstances = $max_instances | .capabilities[0].applicationName = \"$application_name\" | .maxSession = $max_session" $node_config_orig > $node_config
 
-    $SSH $2 "cat > node_5555.json" < $node_config
-    $SSH $2 "sudo mv node_5555.json /opt/selenium_grid_extras/; sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json; sudo chmod 644 /opt/selenium_grid_extras/node_5555.json; sudo systemctl restart selenium-grid-extras-node"
+    $SCP $node_config "$2:node_5555.json"
+    $SSH $2 "sudo mv node_5555.json /opt/selenium_grid_extras/ && sudo chown selenium:selenium /opt/selenium_grid_extras/node_5555.json && sudo chmod 644 /opt/selenium_grid_extras/node_5555.json && sudo systemctl restart selenium-grid-extras-node"
     rm $node_config_orig $node_config
 }
 
