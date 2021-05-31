@@ -243,7 +243,7 @@ public class DialInAudioTest
         }
         catch (Exception e)
         {
-            fail("Error sending REST request:" + e.getMessage());
+            fail("Error sending REST request:" + e.getMessage(), e);
         }
     }
 
