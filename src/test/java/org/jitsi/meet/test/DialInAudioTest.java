@@ -204,42 +204,39 @@ public class DialInAudioTest
                 restURI.getScheme());
 
             HttpGet httpget = new HttpGet(restURI);
-            try (CloseableHttpResponse response = httpclient.execute(
-                targetHost, httpget))
+            CloseableHttpResponse response = httpclient.execute(targetHost, httpget);
+            if (response.getStatusLine().getStatusCode() != 200)
             {
-                if (response.getStatusLine().getStatusCode() != 200)
-                {
-                    print("dial-in.test.restAPI.request.fail");
+                print("dial-in.test.restAPI.request.fail");
 
-                    fail("REST returned error:" + response.getStatusLine());
-                }
-                else
-                {
-                    restAPIExecutionTS = System.currentTimeMillis();
-                    print("Rest api returned:" + response.getStatusLine());
-                }
-
-                HttpEntity entity = response.getEntity();
-                String value = EntityUtils.toString(entity);
-
-                JsonObject res = new JsonParser().parse(value).getAsJsonObject();
-
-                // do not fail test if log file is not available
-                try
-                {
-                    print("dial-in.test.logUrl:"
-                        + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-                Assert.assertEquals(
-                    res.get("result").getAsString(),
-                    "1",
-                    "Something is wrong, cannot join dial-in participant!");
+                fail("REST returned error:" + response.getStatusLine());
             }
+            else
+            {
+                restAPIExecutionTS = System.currentTimeMillis();
+                print("Rest api returned:" + response.getStatusLine());
+            }
+
+            HttpEntity entity = response.getEntity();
+            String value = EntityUtils.toString(entity);
+
+            JsonObject res = new JsonParser().parse(value).getAsJsonObject();
+
+            // do not fail test if log file is not available
+            try
+            {
+                print("dial-in.test.logUrl:"
+                    + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            Assert.assertEquals(
+                res.get("result").getAsString(),
+                "1",
+                "Something is wrong, cannot join dial-in participant!");
         }
         catch (Exception e)
         {
@@ -248,10 +245,10 @@ public class DialInAudioTest
     }
 
     /**
-     * Creates a POST request and returns the value received as String.
+     * Sends a POST request and returns the {@link HttpEntity} of the response as a String.
      * @param httpclient the http client to use.
      * @param mediaSessionAccessUrl the url to access.
-     * @return the received value.
+     * @return The {@link HttpEntity} of the response as a String.
      * @throws URISyntaxException Problem parsing the url.
      * @throws IOException Cannot read response.s
      */
@@ -266,20 +263,17 @@ public class DialInAudioTest
             mediaSessionUri.getPort(),
             mediaSessionUri.getScheme());
         HttpPost httppost = new HttpPost(mediaSessionUri);
-        try (CloseableHttpResponse response = httpclient.execute(
-            targetHost, httppost))
+        CloseableHttpResponse response = httpclient.execute(targetHost, httppost);
+        if (response.getStatusLine().getStatusCode() != 200)
         {
-            if (response.getStatusLine().getStatusCode() != 200)
-            {
-                fail("POST returned error:" + response.getStatusLine());
-            }
-            else
-            {
-                print("POST api returned:" + response.getStatusLine());
-            }
-
-            return EntityUtils.toString(response.getEntity());
+            fail("POST returned error:" + response.getStatusLine());
         }
+        else
+        {
+            print("POST api returned:" + response.getStatusLine());
+        }
+
+        return EntityUtils.toString(response.getEntity());
     }
 
     /**
