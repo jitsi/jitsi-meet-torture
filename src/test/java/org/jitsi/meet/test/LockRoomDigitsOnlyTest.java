@@ -33,7 +33,8 @@ import static org.testng.Assert.*;
  * 1. Lock the room with a string (shouldn't work)
  * 2. Lock the room with a valid numeric password (should work)
  */
-public class LockRoomDigitsOnlyTest extends WebTestBase
+public class LockRoomDigitsOnlyTest
+    extends WebTestBase
 {
     /**
      * Stops the participant. And locks the room from participant1.
@@ -52,7 +53,8 @@ public class LockRoomDigitsOnlyTest extends WebTestBase
         Object res = participant1.executeScript(
             "return APP.store.getState()['features/base/config'].roomPasswordNumberOfDigits === 5");
 
-        if (Boolean.FALSE.equals(res)) {
+        if (Boolean.FALSE.equals(res))
+        {
             throw new SkipException("roomPasswordNumberOfDigits cannot be overridden");
         }
 
@@ -63,9 +65,12 @@ public class LockRoomDigitsOnlyTest extends WebTestBase
 
         // Set a non-numeric password.
         boolean gotValidationError = false;
-        try {
+        try
+        {
             securityDialog.addPassword("AAAAA");
-        } catch (ValidationError e) {
+        }
+        catch (ValidationError e)
+        {
             gotValidationError = true;
         }
         assertTrue(gotValidationError);

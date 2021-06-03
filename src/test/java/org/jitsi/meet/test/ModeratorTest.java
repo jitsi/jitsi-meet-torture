@@ -67,12 +67,14 @@ public class ModeratorTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        if (!participant1.isModerator()) {
+        if (!participant1.isModerator())
+        {
             print("Participant 1 is not a moderator, skipping check!");
             return;
         }
 
-        if (participant2.isModerator()) {
+        if (participant2.isModerator())
+        {
             print("Participant 2 is already a moderator, skipping check!");
             return;
         }

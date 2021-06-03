@@ -174,7 +174,8 @@ public class MalleusJitsificus
             }
 
             ret[i] = new Object[] {
-                url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders, regions, maxDisruptedBridges,
+                url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders,
+                regions, maxDisruptedBridges,
                 switchSpeakers
             };
         }
@@ -396,7 +397,8 @@ public class MalleusJitsificus
                 /* If we fail to fetch the bridge ip, don't block other threads from hanging up. */
                 allHungUp.arriveAndDeregister();
                 complete.cancel(true);
-                if (checking != null) {
+                if (checking != null)
+                {
                     checking.cancel(true);
                 }
                 throw e;
