@@ -27,8 +27,6 @@ import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.*;
 
 import java.io.*;
-import java.net.*;
-import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;

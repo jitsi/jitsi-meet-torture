@@ -15,15 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import java.util.concurrent.*;
-
-import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.*;
 import org.testng.annotations.*;
-import static org.testng.Assert.*;
+
 import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**

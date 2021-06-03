@@ -19,8 +19,6 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.web.*;
 
-import java.util.*;
-
 /**
  * A class of the test which utilizes {@link HybridParticipantFactory} which
  * means that it's capable of creating and operating on both
