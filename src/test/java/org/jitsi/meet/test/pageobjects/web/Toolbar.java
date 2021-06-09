@@ -38,7 +38,7 @@ public class Toolbar
     private final static String DESKTOP = "Start / Stop sharing your screen";
     private final static String ETHERPAD = "Toggle shared document";
     private final static String HANGUP = "Leave the meeting";
-    private final static String INVITE = "Invite people";
+    private final static String INVITE = "Invite Someone";
     private final static String OVERFLOW = "More actions";
     private final static String OVERFLOW_MENU = "More actions menu" ;
     private final static String PARTICIPANTS = "Participants" ;
