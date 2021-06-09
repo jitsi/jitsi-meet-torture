@@ -43,9 +43,9 @@ public class KnockingParticipantList
     /**
      * TestIds for the participant details: avatar, name, email and the action buttons for allow and reject.
      */
-    private final static String PARTICIPANT_AVATAR_TEST_ID = "knockingParticipant.avatar";
-    private final static String PARTICIPANT_EMAIL_TEST_ID = "knockingParticipant.email";
-    private final static String PARTICIPANT_NAME_TEST_ID = "knockingParticipant.name";
+    private final static String PARTICIPANT_AVATAR_TEST_ID = "lobby.avatar";
+    private final static String PARTICIPANT_EMAIL_TEST_ID = "lobby.email";
+    private final static String PARTICIPANT_NAME_TEST_ID = "lobby.name";
     private final static String PARTICIPANT_ALLOW_TEST_ID = "lobby.allow";
     private final static String PARTICIPANT_REJECT_TEST_ID = "lobby.reject";
 
