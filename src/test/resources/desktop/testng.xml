@@ -5,6 +5,11 @@
             <class name="org.jitsi.meet.test.ActiveSpeakerTest" />
         </classes>
     </test>
+    <test name="AllAuthenticatedModeratorsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.AllAuthenticatedModeratorsTest" />
+        </classes>
+    </test>
     <test name="AudioOnlyTest">
         <classes>
             <class name="org.jitsi.meet.test.AudioOnlyTest" />
