@@ -20,6 +20,11 @@
             <class name="org.jitsi.meet.test.AvatarTest" />
         </classes>
     </test>
+    <test name="BackendPasswordTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.BackendPasswordTest" />
+        </classes>
+    </test>
     <test name="BandwidthEstimationTest">
         <classes>
             <class name="org.jitsi.meet.test.BandwidthEstimationTest" />

@@ -236,7 +236,7 @@ public class LockRoomTest
      * password modal
      * @param password the password to enter and submit
      */
-    private void submitPassword(WebDriver driver, String password)
+    public static void submitPassword(WebDriver driver, String password)
     {
         waitForPasswordDialog(driver);
 
@@ -254,7 +254,7 @@ public class LockRoomTest
      * @param driver the participant that should be used to interact with the
      * password modal
      */
-    private void waitForPasswordDialog(WebDriver driver)
+    public static void waitForPasswordDialog(WebDriver driver)
     {
         TestUtils.waitForElementBy(
             driver,
