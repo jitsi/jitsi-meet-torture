@@ -177,6 +177,11 @@
             <class name="org.jitsi.meet.test.SwitchVideoTest" />
         </classes>
     </test>
+    <test name="TenantModeratorsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.TenantModeratorsTest" />
+        </classes>
+    </test>
     <test name="TileViewTest">
         <classes>
             <class name="org.jitsi.meet.test.TileViewTest" />
