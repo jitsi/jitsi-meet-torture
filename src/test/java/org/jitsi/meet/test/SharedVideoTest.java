@@ -40,27 +40,27 @@ public class SharedVideoTest
     private static String V1_VIDEO_ID = "xNXN7CZk8X0";
     private static String V1_LINK
         = "https://www.youtube.com/watch?v=" + V1_VIDEO_ID;
-    private static String V2_VIDEO_ID = "x-YGw3bgB_s";
-    private static String V2_LINK = "https://youtu.be/" + V2_VIDEO_ID;
+    private static String V2_VIDEO_ID = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
+    private static String V2_LINK = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
 
     /**
      * Assign to variable c the shared video container.
      * Used to obtain the player.
      */
     private static String JS_GET_SHARED_VIDEO_CONTAINER
-        = "var c = APP.UI.getLargeVideo().containers['sharedvideo']; ";
+        = "var c = window; ";
 
     /**
      * The javascript code which returns the current time of the player.
      */
     private static final String JS_GET_PLAYER_CURRENT_TIME
-        = JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getCurrentTime();";
+        = JS_GET_SHARED_VIDEO_CONTAINER + "return c._sharedVideoPlayer.getTime();";
 
     /**
      * The javascript code which returns the video URL from the player.
      */
     private static final String JS_GET_PLAYER_VIDEO_URL
-        = JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getVideoUrl();";
+        = JS_GET_SHARED_VIDEO_CONTAINER + "return c._sharedVideoPlayer.props._videoUrl;";
 
     private static String currentVideoId;
 
@@ -119,14 +119,11 @@ public class SharedVideoTest
         // give time for the internal frame to load and attach to the page.
         TestUtils.waitMillis(2000);
 
-        WebDriverWait wait = new WebDriverWait(driver1, 30);
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-            By.id("sharedVideoIFrame")));
         // make sure we are in meet, not in the frame
         driver1.switchTo().defaultContent();
 
         assertTrue(
-            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver1.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
 
         if (checkSecondParticipantState)
@@ -138,7 +135,7 @@ public class SharedVideoTest
 
             TestUtils.waitForDisplayedElementByID(
                 driver2,
-                "sharedVideoIFrame",
+                "sharedVideoPlayer",
                 10);
         }
     }
@@ -154,8 +151,8 @@ public class SharedVideoTest
         TestUtils.waitForBoolean(
             participant.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c && c.player "
-                    + "&& c.player.getPlayerState() === " + state + ");",
+                + "return (c && c._sharedVideoPlayer "
+                    + "&& c._sharedVideoPlayer.getPlaybackState() === '" + state + "');",
             15);
     }
 
@@ -187,9 +184,9 @@ public class SharedVideoTest
     private void checkRunning()
     {
         checkPlayerLoadedAndInState(
-            getParticipant1(), "YT.PlayerState.PLAYING");
+            getParticipant1(), "playing");
         checkPlayerLoadedAndInState(
-            getParticipant2(), "YT.PlayerState.PLAYING");
+            getParticipant2(), "playing");
     }
 
     /**
@@ -200,14 +197,14 @@ public class SharedVideoTest
     {
         WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
-            JS_GET_SHARED_VIDEO_CONTAINER + "c.player.pauseVideo();");
+            JS_GET_SHARED_VIDEO_CONTAINER + "c._sharedVideoPlayer.pause();");
 
         checkPlayerLoadedAndInState(
             participant1,
-            "YT.PlayerState.PAUSED");
+            "pause");
         checkPlayerLoadedAndInState(
             getParticipant2(),
-            "YT.PlayerState.PAUSED");
+            "pause");
     }
 
     /**
@@ -218,15 +215,15 @@ public class SharedVideoTest
     {
         WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
-            JS_GET_SHARED_VIDEO_CONTAINER + "c.player.playVideo();");
+            JS_GET_SHARED_VIDEO_CONTAINER + "c._sharedVideoPlayer.play();");
 
         checkPlayerLoadedAndInState(
             participant1,
-            "YT.PlayerState.PLAYING"
+            "playing"
         );
         checkPlayerLoadedAndInState(
             getParticipant2(),
-            "YT.PlayerState.PLAYING"
+            "playing"
         );
     }
 
@@ -241,13 +238,13 @@ public class SharedVideoTest
         WebParticipant participant2 = getParticipant2();
 
         participant1.executeScript(
-            JS_GET_SHARED_VIDEO_CONTAINER + "c.player.seekTo(86);");
+            JS_GET_SHARED_VIDEO_CONTAINER + "c._sharedVideoPlayer.seek(86);");
 
         // let's wait for the fast forward
         String waitForFastForwardScript
             = JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getCurrentTime() > 86);";
+                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + " && c._sharedVideoPlayer.getTime() > 86);";
         TestUtils.waitForBoolean(
             participant1.getDriver(),
             waitForFastForwardScript,
@@ -285,59 +282,27 @@ public class SharedVideoTest
     }
 
     /**
-     * Changes the current volume and checks for the change on the other side
-     */
-    @Test(dependsOnMethods = { "seekTest" })
-    public void volumeTest()
-    {
-        WebParticipant participant1 = getParticipant1();
-        Long participant1volume
-            = (Long) participant1.executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER + "return c.player.getVolume();");
-
-        long volumeToSet = participant1volume - 20;
-
-        participant1.executeScript(
-            JS_GET_SHARED_VIDEO_CONTAINER
-                + "c.player.setVolume(" + volumeToSet + ");");
-
-        // now check for volume on both sides
-        String checkVolumeScript
-            = JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.getVolume() == " + volumeToSet + ");";
-        TestUtils.waitForBoolean(
-            participant1.getDriver(),
-            checkVolumeScript,
-            10);
-        TestUtils.waitForBoolean(
-            getParticipant2().getDriver(),
-            checkVolumeScript,
-            10);
-    }
-
-    /**
      * Mutes the current volume and checks for the change on the other side
      */
-    @Test(dependsOnMethods = { "volumeTest" })
+    @Test(dependsOnMethods = { "playTest" })
     public void muteTest()
     {
         WebParticipant participant1 = getParticipant1();
         participant1.executeScript(
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "c.player.mute();");
+                + "c._sharedVideoPlayer.mute();");
         // now check for volume on both sides
         TestUtils.waitForBoolean(
             participant1.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && c.player.isMuted());",
+                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + " && c._sharedVideoPlayer.isMuted());",
             10);
         TestUtils.waitForBoolean(
             getParticipant2().getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c.player.getPlayerState() === YT.PlayerState.PLAYING"
-                + " && (c.player.isMuted() || c.player.getVolume() == 0));",
+                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + " && (c._sharedVideoPlayer.isMuted() || c._sharedVideoPlayer.getVolume() == 0));",
             10);
     }
 
@@ -365,7 +330,7 @@ public class SharedVideoTest
 
         assertTrue(
             getParticipant2().getDriver()
-                .findElement(By.id("sharedVideoIFrame"))
+                .findElement(By.id("sharedVideoPlayer"))
                 .isDisplayed(),
             "Video not displayed:");
     }
@@ -383,10 +348,10 @@ public class SharedVideoTest
         // video should be visible on both sides
         WebDriver driver2 = getParticipant2().getDriver();
         assertTrue(
-            driver1.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver1.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
         assertTrue(
-            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver2.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
 
         getParticipant1().getToolbar().clickSharedVideoButton();
@@ -394,7 +359,7 @@ public class SharedVideoTest
         try
         {
             TestUtils.waitForNotDisplayedElementByID(
-                driver1, "sharedVideoIFrame", 5);
+                driver1, "sharedVideoPlayer", 5);
         }
         catch (StaleElementReferenceException ex)
         {
@@ -404,7 +369,7 @@ public class SharedVideoTest
         try
         {
             TestUtils.waitForNotDisplayedElementByID(
-                driver2, "sharedVideoIFrame", 5);
+                driver2, "sharedVideoPlayer", 5);
         }
         catch (StaleElementReferenceException ex)
         {
@@ -448,7 +413,7 @@ public class SharedVideoTest
         getParticipant1().hangUp();
 
         TestUtils.waitForNotDisplayedElementByID(
-            getParticipant2().getDriver(), "sharedVideoIFrame", 5);
+            getParticipant2().getDriver(), "sharedVideoPlayer", 5);
     }
 
     /**
@@ -486,16 +451,16 @@ public class SharedVideoTest
         TestUtils.waitMillis(1000);
 
         startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, false);
-        checkPlayerLoadedAndInState(participant1, "YT.PlayerState.PLAYING");
+        checkPlayerLoadedAndInState(participant1, "playing");
 
-        String stateToCheck = "YT.PlayerState.PLAYING";
+        String stateToCheck = "playing";
         if (pause)
         {
-            stateToCheck = "YT.PlayerState.PAUSED";
+            stateToCheck = "pause";
             participant1.executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER + "c.player.seekTo(15);");
+                JS_GET_SHARED_VIDEO_CONTAINER + "c._sharedVideoPlayer.seek(15);");
             participant1.executeScript(
-                JS_GET_SHARED_VIDEO_CONTAINER + "c.player.pauseVideo();");
+                JS_GET_SHARED_VIDEO_CONTAINER + "c._sharedVideoPlayer.pause();");
         }
 
         ensureTwoParticipants();
@@ -509,7 +474,7 @@ public class SharedVideoTest
         checkPlayerLoadedAndInState(participant2, stateToCheck);
 
         assertTrue(
-            driver2.findElement(By.id("sharedVideoIFrame")).isDisplayed(),
+            driver2.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
     }
 
@@ -521,8 +486,8 @@ public class SharedVideoTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        checkPlayerLoadedAndInState(participant1, "YT.PlayerState.PAUSED");
-        checkPlayerLoadedAndInState(participant2, "YT.PlayerState.PAUSED");
+        checkPlayerLoadedAndInState(participant1, "pause");
+        checkPlayerLoadedAndInState(participant2, "pause");
 
         double time1
             = getDouble(participant1.executeScript(JS_GET_PLAYER_CURRENT_TIME));

@@ -24,9 +24,11 @@ import org.apache.http.util.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.io.*;
 import java.net.*;
 import java.text.*;
 
@@ -38,6 +40,9 @@ import static org.testng.Assert.*;
  * a REST http call, which is suppose to add a dial-in participant in the call.
  * We wait for some time for new participant, then wait for its audio and we
  * kick it and consider this test successful.
+ *
+ * The REST api result parsing expects the voximplant REST API results, but can
+ * be easily adjusted to any other, or that REST API can be adjust to follow same results.
  *
  * @author Damian Minkov
  */
@@ -66,6 +71,11 @@ public class DialInAudioTest
      * we skip all checks and return success.
      */
     private boolean userJoined = false;
+
+    /**
+     * The timestamp when we received an OK answer from the REST API request.
+     */
+    private long restAPIExecutionTS;
 
     @Override
     public boolean skipTestByDefault()
@@ -115,8 +125,8 @@ public class DialInAudioTest
     public void enterAndReadDialInPin()
     {
         this.restURLString = System.getProperty(DIAL_IN_PARTICIPANT_REST_URL);
-        Assert.assertTrue(
-            this.restURLString != null,
+        Assert.assertNotNull(
+            this.restURLString,
             "REST Url missing. Pass it using " +
                 "-D" + DIAL_IN_PARTICIPANT_REST_URL + "=");
 
@@ -141,8 +151,21 @@ public class DialInAudioTest
                 "No dial in configuration detected. Disabling test.");
         }
 
-        // get the dial-in pin
-        dialInPin = retrievePin(participant);
+        try
+        {
+            // get the dial-in pin
+            dialInPin = retrievePin(participant);
+        }
+        catch(TimeoutException e)
+        {
+            // failed retrieving will se it as empty string
+            dialInPin = "";
+        }
+
+        if (dialInPin.length() == 0)
+        {
+            print("dial-in.test.no-pin");
+        }
 
         assertTrue(dialInPin.length() > 1);
         print("Dial-in pin retrieved:" + dialInPin);
@@ -157,6 +180,7 @@ public class DialInAudioTest
     {
         if (!userJoined)
         {
+            // local participant did not join abort
             return;
         }
         try
@@ -180,32 +204,76 @@ public class DialInAudioTest
                 restURI.getScheme());
 
             HttpGet httpget = new HttpGet(restURI);
-            try (CloseableHttpResponse response = httpclient.execute(
-                targetHost, httpget))
+            CloseableHttpResponse response = httpclient.execute(targetHost, httpget);
+            if (response.getStatusLine().getStatusCode() != 200)
             {
-                if (response.getStatusLine().getStatusCode() != 200)
-                {
-                    fail("REST returned error:" + response.getStatusLine());
-                }
-                else
-                {
-                    print("Rest api returned:" + response.getStatusLine());
-                }
+                print("dial-in.test.restAPI.request.fail");
 
-                HttpEntity entity = response.getEntity();
-                String value = EntityUtils.toString(entity);
-
-                JsonElement jsonElem = new JsonParser().parse(value);
-
-                Assert.assertFalse(
-                    "1".equals(jsonElem.getAsJsonObject().get("result")),
-                    "Something is wrong, cannot join dial-in participant!");
+                fail("REST returned error:" + response.getStatusLine());
             }
+            else
+            {
+                restAPIExecutionTS = System.currentTimeMillis();
+                print("Rest api returned:" + response.getStatusLine());
+            }
+
+            HttpEntity entity = response.getEntity();
+            String value = EntityUtils.toString(entity);
+
+            JsonObject res = new JsonParser().parse(value).getAsJsonObject();
+
+            // do not fail test if log file is not available
+            try
+            {
+                print("dial-in.test.logUrl:"
+                    + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            Assert.assertEquals(
+                res.get("result").getAsString(),
+                "1",
+                "Something is wrong, cannot join dial-in participant!");
         }
         catch (Exception e)
         {
-            fail("Error sending REST request:" + e.getMessage());
+            fail("Error sending REST request:" + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Sends a POST request and returns the {@link HttpEntity} of the response as a String.
+     * @param httpclient the http client to use.
+     * @param mediaSessionAccessUrl the url to access.
+     * @return The {@link HttpEntity} of the response as a String.
+     * @throws URISyntaxException Problem parsing the url.
+     * @throws IOException Cannot read response.s
+     */
+    private String getLogUrl(CloseableHttpClient httpclient, String mediaSessionAccessUrl)
+        throws URISyntaxException,
+               IOException
+    {
+        URI mediaSessionUri = new URI(mediaSessionAccessUrl);
+
+        HttpHost targetHost = new HttpHost(
+            mediaSessionUri.getHost(),
+            mediaSessionUri.getPort(),
+            mediaSessionUri.getScheme());
+        HttpPost httppost = new HttpPost(mediaSessionUri);
+        CloseableHttpResponse response = httpclient.execute(targetHost, httppost);
+        if (response.getStatusLine().getStatusCode() != 200)
+        {
+            fail("POST returned error:" + response.getStatusLine());
+        }
+        else
+        {
+            print("POST api returned:" + response.getStatusLine());
+        }
+
+        return EntityUtils.toString(response.getEntity());
     }
 
     /**
@@ -217,16 +285,44 @@ public class DialInAudioTest
     {
         if (!userJoined)
         {
+            // local participant did not join abort
             return;
         }
 
         WebParticipant participant = getParticipant1();
 
-        participant.waitForParticipants(1);
+        try
+        {
+            participant.waitForParticipants(1);
+        }
+        catch(TimeoutException e)
+        {
+            print("dial-in.test.jigasi.participant.no.join.for:"
+                + (System.currentTimeMillis() - restAPIExecutionTS) + " ms.");
+            throw e;
+        }
+
+        long joinedTS = System.currentTimeMillis();
+
+        print("dial-in.test.jigasi.participant.join.after:"
+            + (joinedTS - restAPIExecutionTS) + " ms.");
 
         participant.waitForIceConnected();
         participant.waitForRemoteStreams(1);
-        participant.waitForSendReceiveData();
+
+        try
+        {
+            participant.waitForSendReceiveData();
+
+            print("dial-in.test.jigasi.participant.received.audio.after.join:"
+                + (System.currentTimeMillis() - joinedTS) + " ms.");
+        }
+        catch(TimeoutException e)
+        {
+            print("dial-in.test.jigasi.participant.no.audio.after.join.for:"
+                + (System.currentTimeMillis() - joinedTS) + " ms.");
+            throw e;
+        }
     }
 
     /**

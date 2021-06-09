@@ -130,12 +130,6 @@ public class DesktopSharingTest
             5);
     }
 
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
-    }
-
     /**
      * A case where do non dominant speaker is sharing screen for a participant in low bandwidth mode
      * where only a screen share can be received. A bug fixed in jvb 0c5dd91b where the video was not received.
@@ -229,23 +223,23 @@ public class DesktopSharingTest
 
         ensureThreeParticipants();
 
-        getParticipant3().getToolbar().clickDesktopSharingButton();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
+
+        participant3.getToolbar().clickDesktopSharingButton();
         // Let's make sure participant1 is not dominant
-        getParticipant1().getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickAudioMuteButton();
 
         WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
             .appendConfig("config.channelLastN=2").appendConfig("config.startWithAudioMuted=true"));
         WebDriver driver4 = participant4.getDriver();
 
-        WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = getParticipant2();
-        WebParticipant participant3 = getParticipant3();
-
         testDesktopSharingInPresence(participant1, participant3, "desktop");
         testDesktopSharingInPresence(participant2, participant3, "desktop");
 
         // Let's make sure participant3 is not dominant
-        getParticipant3().getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioMuteButton();
 
         String participant3EndpointId = participant3.getEndpointId();
 
@@ -274,10 +268,15 @@ public class DesktopSharingTest
         // some debugs and investigate, will comment for now to stop failing PR tests randomly
         //MeetUIUtils.waitForRemoteVideo(driver4, participant1EndpointId, false);
 
-        // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
-        getParticipant1().getToolbar().clickAudioMuteButton();
-        getParticipant2().getToolbar().clickAudioMuteButton();
+        // the FF audio is a constant beep sound and will not be detected and will not trigger dominant speaker
+        // switch. We skip it in this case
+        if (!participant1.getType().isFirefox())
+        {
+            // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
+            participant1.getToolbar().clickAudioMuteButton();
+            participant2.getToolbar().clickAudioMuteButton();
 
-        MeetUIUtils.waitForNinjaIcon(driver4, participant2EndpointId);
+            MeetUIUtils.waitForNinjaIcon(driver4, participant2EndpointId);
+        }
     }
 }

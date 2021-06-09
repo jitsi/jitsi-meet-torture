@@ -15,12 +15,15 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.*;
 import org.testng.annotations.*;
 
 import java.util.logging.*;
+
+import static org.testng.Assert.*;
 
 /**
  * Tests the kick functionality.
@@ -40,6 +43,7 @@ public class KickTest
 
     /**
      * Kick participant2 and checks at participant1 is this is visible.
+     * and whether participant2 sees a notification that was kicked.
      */
     @Test
     public void kickParticipant2AndCheck()
@@ -51,11 +55,31 @@ public class KickTest
             participant1.getRemoteParticipants().get(0).kick();
 
             participant1.waitForParticipants(0);
+
+            // check that the kicked participant sees the notification
+            assertTrue(
+                getParticipant2().getNotifications().hasKickedNotification(),
+                "The second participant should see a warning that was kicked.");
         }
         else
         {
             Logger.getGlobal().log(Level.WARNING, "Not testing kick as torture is not moderator.");
             throw new SkipException("skip as test's participant cannot be moderator");
         }
+    }
+
+    /**
+     * Executes the kick test kickParticipant2AndCheck in p2p mode.
+     */
+    @Test(dependsOnMethods = {"kickParticipant2AndCheck"})
+    public void kickP2PParticipant2AndCheck()
+    {
+        hangUpAllParticipants();
+
+        JitsiMeetUrl url
+            = getJitsiMeetUrl().appendConfig("config.p2p.enabled=true");
+        ensureTwoParticipants(url, url);
+
+        kickParticipant2AndCheck();
     }
 }

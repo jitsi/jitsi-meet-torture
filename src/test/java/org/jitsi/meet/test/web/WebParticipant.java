@@ -40,7 +40,7 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * Default config for Web participants.
      */
-    private static final String DEFAULT_CONFIG
+    public static final String DEFAULT_CONFIG
         = "config.requireDisplayName=false"
             + "&config.debug=true"
             + "&config.testing.testMode=true"
@@ -100,6 +100,7 @@ public class WebParticipant extends Participant<WebDriver>
     private LargeVideo largeVideo;
     private LobbyScreen lobbyScreen;
     private Notifications notifications;
+    private ParticipantsPane participantsPane;
     private PreJoinScreen preJoinScreen;
     private SecurityDialog securityDialog;
     private SettingsDialog settingsDialog;
@@ -636,6 +637,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return notifications;
+    }
+
+    /**
+     * @return a representation of the participants pane of this participant.
+     */
+    public ParticipantsPane getParticipantsPane()
+    {
+        if (participantsPane == null)
+        {
+             participantsPane = new ParticipantsPane(this);
+        }
+
+        return participantsPane;
     }
 
     /**
