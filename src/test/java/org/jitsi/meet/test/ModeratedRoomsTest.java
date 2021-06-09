@@ -73,7 +73,7 @@ public class ModeratedRoomsTest
      * @param localParticipant The local participant where checks will be performed.
      * @param remoteParticipant The remote participant which menu will be checked.
      */
-    private void checkModeratorMenuItems(WebParticipant localParticipant, WebParticipant remoteParticipant)
+    public static void checkModeratorMenuItems(WebParticipant localParticipant, WebParticipant remoteParticipant)
     {
         WebDriver driver = localParticipant.getDriver();
 

@@ -152,6 +152,11 @@
             <class name="org.jitsi.meet.test.SharedVideoTest" />
         </classes>
     </test>
+    <test name="SingleModeratorTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.SingleModeratorTest" />
+        </classes>
+    </test>
     <test name="SinglePortTest">
         <classes>
             <class name="org.jitsi.meet.test.SinglePortTest" />
