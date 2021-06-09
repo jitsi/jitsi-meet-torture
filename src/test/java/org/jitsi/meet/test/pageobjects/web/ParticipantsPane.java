@@ -18,7 +18,7 @@ public class ParticipantsPane
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link ParticipantsPane}.
      */
-    private final static String INVITE = "Invite people";
+    private final static String INVITE = "Invite Someone";
 
     /**
      * Classname of the closed/hidden participants pane
