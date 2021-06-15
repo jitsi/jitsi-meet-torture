@@ -15,15 +15,11 @@
  */
 package org.jitsi.meet.test;
 
-import java.util.concurrent.*;
-
-import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.*;
 import org.testng.annotations.*;
-import static org.testng.Assert.*;
+
 import static org.jitsi.meet.test.util.TestUtils.*;
 
 /**
@@ -67,12 +63,14 @@ public class ModeratorTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        if (!participant1.isModerator()) {
+        if (!participant1.isModerator())
+        {
             print("Participant 1 is not a moderator, skipping check!");
             return;
         }
 
-        if (participant2.isModerator()) {
+        if (participant2.isModerator())
+        {
             print("Participant 2 is already a moderator, skipping check!");
             return;
         }

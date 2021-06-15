@@ -5,6 +5,11 @@
             <class name="org.jitsi.meet.test.ActiveSpeakerTest" />
         </classes>
     </test>
+    <test name="AllAuthenticatedModeratorsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.AllAuthenticatedModeratorsTest" />
+        </classes>
+    </test>
     <test name="AudioOnlyTest">
         <classes>
             <class name="org.jitsi.meet.test.AudioOnlyTest" />
@@ -13,6 +18,16 @@
     <test name="AvatarTest">
         <classes>
             <class name="org.jitsi.meet.test.AvatarTest" />
+        </classes>
+    </test>
+    <test name="BackendLobbyTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.BackendLobbyTest" />
+        </classes>
+    </test>
+    <test name="BackendPasswordTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.BackendPasswordTest" />
         </classes>
     </test>
     <test name="BandwidthEstimationTest">
@@ -152,6 +167,11 @@
             <class name="org.jitsi.meet.test.SharedVideoTest" />
         </classes>
     </test>
+    <test name="SingleModeratorTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.SingleModeratorTest" />
+        </classes>
+    </test>
     <test name="SinglePortTest">
         <classes>
             <class name="org.jitsi.meet.test.SinglePortTest" />
@@ -170,6 +190,11 @@
     <test name="SwitchVideoTest">
         <classes>
             <class name="org.jitsi.meet.test.SwitchVideoTest" />
+        </classes>
+    </test>
+    <test name="TenantModeratorsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.misc.TenantModeratorsTest" />
         </classes>
     </test>
     <test name="TileViewTest">

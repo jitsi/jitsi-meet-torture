@@ -73,17 +73,16 @@ public class ModeratedRoomsTest
      * @param localParticipant The local participant where checks will be performed.
      * @param remoteParticipant The remote participant which menu will be checked.
      */
-    private void checkModeratorMenuItems(WebParticipant localParticipant, WebParticipant remoteParticipant)
+    public static void checkModeratorMenuItems(WebParticipant localParticipant, WebParticipant remoteParticipant)
     {
         WebDriver driver = localParticipant.getDriver();
 
-        // one should be moderator
-        // Open the remote video menu
-        WebElement remoteVideoElement = driver.findElement(By.id("participant_" + remoteParticipant.getEndpointId()));
-        WebElement menuElement = driver.findElement(By.xpath("//span[contains(@class, 'remotevideomenu')]"));
+        // Open the remote video menu for that participant
+        WebElement menuElement = driver.findElement(By.xpath(
+            "//span[@id='participant_" + remoteParticipant.getEndpointId()
+                + "']//span[contains(@class, 'remotevideomenu')]"));
 
         Actions action = new Actions(driver);
-        action.moveToElement(remoteVideoElement);
         action.moveToElement(menuElement);
         action.perform();
 

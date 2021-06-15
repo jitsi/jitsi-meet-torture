@@ -19,7 +19,6 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.mobile.base.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.*;
 
 import java.util.*;
 

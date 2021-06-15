@@ -1,5 +1,5 @@
 /*
- * Copyright @ 2015 Atlassian Pty Ltd
+ * Copyright @ 2018 8x8 Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jitsi.meet.test.hybrid;
+package org.jitsi.meet.test.misc;
 
-import org.jitsi.meet.test.base.*;
-import org.jitsi.meet.test.mobile.*;
-import org.jitsi.meet.test.web.*;
-
-/**
- * A class of the test which utilizes {@link HybridParticipantFactory} which
- * means that it's capable of creating and operating on both
- * {@link MobileParticipant} and {@link WebParticipant}.
- */
-public class HybridTestBase
-    extends TypedBaseTest<Participant, HybridParticipantFactory>
+public class Utils
 {
-    public HybridTestBase()
+    /**
+     * Checks for a missing(null) or empty config values.
+     * @param configs the Strings to check.
+     * @return <tt>true</tt> if there is any missing configuration, <tt>false</tt> otherwise.
+     */
+    public static boolean checkForMissingConfig(String ...configs)
     {
-        super(HybridParticipantFactory.class);
+        for (String c: configs)
+        {
+            if (c == null || c.trim().length() == 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

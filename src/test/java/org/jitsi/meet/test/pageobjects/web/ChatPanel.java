@@ -18,11 +18,8 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 
 import java.util.*;
-
-import static org.testng.AssertJUnit.fail;
 
 /**
  * Represents the chat panel in a particular {@link WebParticipant}.
