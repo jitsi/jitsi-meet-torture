@@ -43,7 +43,7 @@ public class TileViewTest
      * at the end of all the other remote videos, as the last tile.
      */
     private static final String TILE_VIEW_LOCAL_VIDEO_CSS_SELECTOR
-        = "#filmstripRemoteVideosContainer #localVideoContainer";
+        = ".remote-videos #localVideoContainer";
 
     @Override
     public void setupClass()

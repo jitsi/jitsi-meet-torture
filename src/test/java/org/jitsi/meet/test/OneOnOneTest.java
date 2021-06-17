@@ -148,7 +148,7 @@ public class OneOnOneTest
         Participant testee, boolean isDisplayed)
     {
         String filmstripRemoteVideosXpath
-            = "//div[@id='filmstripRemoteVideosContainer']";
+            = "//div[contains(@class, 'remote-videos')]/div";
 
         TestUtils.waitForDisplayedOrNotByXPath(
             testee.getDriver(),
