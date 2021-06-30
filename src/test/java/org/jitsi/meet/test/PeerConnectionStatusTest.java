@@ -211,9 +211,6 @@ public class PeerConnectionStatusTest
         // 2. Select 2nd participant on Owner
         MeetUIUtils.selectRemoteVideo(
             driver1, getParticipant2().getEndpointId());
-        // At this point user 2 thumb should be a display name
-        MeetUIUtils.assertDisplayNameVisible(
-            driver1, getParticipant2().getEndpointId());
 
         // Check if participant2 is marked as "disconnected" from participant1's
         // view

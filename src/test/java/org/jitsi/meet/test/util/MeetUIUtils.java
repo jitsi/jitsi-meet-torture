@@ -582,24 +582,6 @@ public class MeetUIUtils
     }
 
     /**
-     * Makes sure that a user's display name is displayed.
-     * @param driver instance of <tt>WebDriver</tt> on which we'll perform
-     * the verification.
-     * @param endpointId the resource part of MUC JID which identifies user's
-     * video thumbnail.
-     */
-    public static void assertDisplayNameVisible(
-            WebDriver driver, String endpointId)
-    {
-        // Display name - visible
-        TestUtils.waitForDisplayedElementByXPath(
-            driver,
-            "//span[@id='participant_" + endpointId + "']" +
-                "//span[@class='displayname']",
-            5);
-    }
-
-    /**
      * Helper for formatting the string to be used as a CSS selector for
      * an accessibility label.
      *
@@ -615,6 +597,9 @@ public class MeetUIUtils
     /**
      * Retrieves a remote participant display name.
      *
+     * NOTE: The display name DOM elements are only present in tile view, so ensure tile view has
+     * been clicked, prior to calling this method.
+     *
      * @param driver The driver where to check for the display name.
      * @param remoteParticipantEndpointId The participant id which display name to be returned.
      * @return The current display name of a participant.
@@ -622,8 +607,7 @@ public class MeetUIUtils
     public static String getRemoteDisplayName(WebDriver driver, String remoteParticipantEndpointId)
     {
         WebElement displayNameElem = driver.findElement(By.xpath(
-            "//span[@id='participant_" + remoteParticipantEndpointId + "']//span[@id='participant_" +
-                    remoteParticipantEndpointId + "_name']"));
+            "//div[@id='participant_" + remoteParticipantEndpointId + "_name']/div"));
         Actions action = new Actions(driver);
         action.moveToElement(displayNameElem);
         action.build().perform();

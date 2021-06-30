@@ -122,6 +122,25 @@ public class SettingsDialog
     }
 
     /**
+     * Enters the passed in name into the display name field.
+     */
+    public void setDisplayName(String name)
+    {
+        openProfileTab();
+
+        WebDriver driver = participant.getDriver();
+        WebElement inputElement = driver.findElement(By.cssSelector(DISPLAY_NAME_FIELD));
+
+        // Clear input before setting new name.
+        while(!inputElement.getAttribute("value").equals(""))
+        {
+            inputElement.sendKeys(Keys.BACK_SPACE);
+        }
+
+        inputElement.sendKeys(name);
+    }
+
+    /**
      * Enters the passed in email into the email field.
      */
     public void setEmail(String email)

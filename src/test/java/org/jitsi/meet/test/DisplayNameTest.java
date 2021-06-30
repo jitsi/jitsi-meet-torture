@@ -105,6 +105,9 @@ public class DisplayNameTest
         getParticipant2().hangUp();
         ensureTwoParticipants(null, null, null, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
+        // Ensure tile view is clicked to have the display name badges present for display name checks.
+        getParticipant2().getToolbar().clickTileViewButton();
+
         doLocalDisplayNameCheck(randomName);
     }
 
@@ -155,12 +158,13 @@ public class DisplayNameTest
      * @param nameToCheck the name to check.
      */
     public void checkRemoteVideoForName(
-        Participant localParticipant,
-        Participant remoteParticipant,
+        WebParticipant localParticipant,
+        WebParticipant remoteParticipant,
         String nameToCheck)
     {
         String remoteParticipantEndpointId = remoteParticipant.getEndpointId();
 
+        localParticipant.getToolbar().clickTileViewButton();
         String displayNameText
             = MeetUIUtils.getRemoteDisplayName(localParticipant.getDriver(), remoteParticipantEndpointId);
 
@@ -191,8 +195,7 @@ public class DisplayNameTest
         // now lets check whether display name is set locally
         WebElement displayNameElem
             = driver2.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//span[@id='localDisplayName']"));
+                "//div[@id='localDisplayName']/div"));
 
         // hover over local display name
         WebElement localVideoContainerElem
@@ -239,8 +242,8 @@ public class DisplayNameTest
      */
     public void doRemoteDisplayNameCheck(String newName)
     {
-        Participant participant1 = getParticipant1();
-        Participant participant2 = getParticipant2();
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         WebDriver driver1 = participant1.getDriver();
         final String participant2EndpointId = participant2.getEndpointId();
 

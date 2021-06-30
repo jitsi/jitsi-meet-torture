@@ -159,14 +159,12 @@ public class AvatarTest
         // His avatar should be on large video and
         // display name instead of an avatar, local video displayed
         MeetUIUtils.waitsForLargeVideoSwitch(driver3, participant1EndpointId);
-        MeetUIUtils.assertDisplayNameVisible(driver3, participant1EndpointId);
         MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId);
         MeetUIUtils.assertLocalThumbnailShowsVideo(driver3);
 
         // Click on participant2's video
         MeetUIUtils.clickOnRemoteVideo(driver3, participant2EndpointId);
         MeetUIUtils.waitsForLargeVideoSwitch(driver3, participant2EndpointId);
-        MeetUIUtils.assertDisplayNameVisible(driver3, participant2EndpointId);
         MeetUIUtils.assertAvatarDisplayed(driver3, participant1EndpointId);
         MeetUIUtils.assertLocalThumbnailShowsVideo(driver3);
 

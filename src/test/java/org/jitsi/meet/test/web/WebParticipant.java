@@ -482,40 +482,14 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     public void setDisplayName(String name)
     {
-        WebDriver driver = getDriver();
+        Toolbar toolbar = getToolbar();
+        toolbar.clickProfileButton();
 
-        WebElement elem =
-            driver.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//span[@id='localDisplayName']"));
-        // hover the element before clicking
-        Actions actions = new Actions(driver);
-        actions.moveToElement(elem);
-        actions.perform();
+        SettingsDialog dialog = getSettingsDialog();
 
-        elem.click();
-
-        WebElement inputElem =
-            driver.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//input[@id='editDisplayName']"));
-        actions = new Actions(driver);
-        actions.moveToElement(inputElem);
-
-        if (name != null && name.length() > 0)
-        {
-            actions.sendKeys(name);
-        }
-        else
-        {
-            actions.sendKeys(Keys.BACK_SPACE);
-        }
-
-        actions.sendKeys(Keys.RETURN);
-        actions.perform();
-
-        // just click somewhere to lose focus, to make sure editing has ended
-        MeetUIUtils.clickOnLocalVideo(driver);
+        dialog.waitForDisplay();
+        dialog.setDisplayName(name);
+        dialog.submit();
     }
 
     /**
