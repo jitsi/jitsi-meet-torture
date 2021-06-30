@@ -66,6 +66,11 @@
             <class name="org.jitsi.meet.test.DisplayNameTest" />
         </classes>
     </test>
+    <test name="EmbedMeetingTest">
+        <classes>
+            <class name="org.jitsi.meet.test.EmbedMeetingTest" />
+        </classes>
+    </test>
     <test name="EndConferenceTest">
         <classes>
             <class name="org.jitsi.meet.test.EndConferenceTest" />
