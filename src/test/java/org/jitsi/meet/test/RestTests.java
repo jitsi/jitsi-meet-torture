@@ -53,7 +53,7 @@ public class RestTests
     public void testRestAPI()
         throws MalformedURLException
     {
-        serverAddress = getJitsiMeetUrl().getHost();
+        serverAddress = getJitsiMeetUrl().getHostWithPort();
 
         checkJicofoHealth();
         checkJVBHealth();
