@@ -100,6 +100,7 @@ public class InviteDialog
         // click with the mouse over the button, as it is a modal dialog it will close
         Actions actions = new Actions(participant.getDriver());
         actions.moveToElement(participant.getToolbar().getInviteButton()).click().perform();
+        clickToolbarButton();
     }
 
     /**
