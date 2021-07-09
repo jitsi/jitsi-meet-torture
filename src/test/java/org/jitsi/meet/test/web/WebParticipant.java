@@ -71,7 +71,7 @@ public class WebParticipant extends Participant<WebDriver>
      */
     private static final String IS_MODERATOR =
         "return APP.store.getState()['features/base/participants']"
-            + ".find(p => p.local).role === 'moderator'";
+            + ".local.role === 'moderator'";
 
     /**
      * The javascript code which returns {@code true} if we have the
