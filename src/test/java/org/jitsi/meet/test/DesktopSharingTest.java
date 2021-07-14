@@ -84,7 +84,7 @@ public class DesktopSharingTest
             localParticipant.getDriver(),
             "return JitsiMeetJS.app.testing.getRemoteVideoType('" + participantEndpointId + "');",
             expectedResult,
-            5);
+            10);
     }
 
     /**
