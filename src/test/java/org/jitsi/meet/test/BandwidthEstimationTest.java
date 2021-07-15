@@ -343,13 +343,13 @@ public class BandwidthEstimationTest
      */
     private static String humanizeSchedule(String[] schedule)
     {
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (String s : schedule)
         {
             sb.append(s.replaceAll(",", ""));
             sb.append("s"); // append an to indicate the duration unit.
         }
-	return sb.toString();
+        return sb.toString();
     }
 
     /**
