@@ -49,6 +49,12 @@ public class JitsiMeetUrl
 
     /**
      * In the example URL:
+     * "https://server.com/tenant1/room1?login=true#config.debug=true" it's "tenant1".
+     */
+    private String tenantName;
+
+    /**
+     * In the example URL:
      * "https://server.com/room1?login=true#config.debug=true"
      * it's "login=true". Note that "?" sign is added automatically when the URL
      * string is being constructed, but at the same time any sub parameters
@@ -299,12 +305,28 @@ public class JitsiMeetUrl
     /**
      * Sets the {@link #roomName} part of the conference URL.
      *
-     * @param roomName a room name without any special characters.
+     * @param roomName a room name. Note that the provided string is not going to be URL-encoded, it's simply going to
+     * be appended to the URL string as is.
+     *
      * @return a reference to this object.
      */
     public JitsiMeetUrl setRoomName(String roomName)
     {
         this.roomName = roomName;
+        return this;
+    }
+
+    /**
+     * Sets the {@link #tenantName} part of the conference URL.
+     *
+     * @param tenantName a tenant name. Note that the provided string is not going to be URL-encoded, it's simply going
+     * to be appended to the URL string as is.
+     *
+     * @return a reference to this object.
+     */
+    public JitsiMeetUrl setTenantName(String tenantName)
+    {
+        this.tenantName = tenantName;
         return this;
     }
 
@@ -349,7 +371,14 @@ public class JitsiMeetUrl
     @Override
     public String toString()
     {
-        String url = serverUrl + "/" + roomName;
+        String url = serverUrl;
+
+        if (StringUtils.isNotBlank(tenantName))
+        {
+            url += "/" + tenantName;
+        }
+
+        url += "/" + roomName;
 
         if (StringUtils.isNotBlank(roomParameters))
         {
