@@ -269,4 +269,9 @@
             <class name="org.jitsi.meet.test.RestTests" />
         </classes>
     </test>
+    <test name="UrlNormalisationTest">
+        <classes>
+            <class name="org.jitsi.meet.test.UrlNormalisationTest" />
+        </classes>
+    </test>
 </suite>
