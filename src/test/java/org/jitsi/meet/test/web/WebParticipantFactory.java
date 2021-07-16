@@ -134,7 +134,7 @@ public class WebParticipantFactory
             FirefoxProfile profile = new FirefoxProfile();
             // Force firefox to use English instead of system language.
             // Not test because of having not firefox installed.
-            profile.setPreference("intl.accept_languages","en");
+            profile.setPreference("intl.accept_languages", "en");
             profile.setPreference("media.navigator.permission.disabled", true);
             // Enables tcp in firefox, disabled by default in 44
             profile.setPreference("media.peerconnection.ice.tcp", true);

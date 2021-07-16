@@ -89,7 +89,7 @@ public class LobbyScreen
         WebElement displayNameInput = getDisplayNameInput();
 
         // element.clear does not always work, make sure we delete the content
-        while(!displayNameInput.getAttribute("value").equals(""))
+        while (!displayNameInput.getAttribute("value").equals(""))
         {
             displayNameInput.sendKeys(Keys.BACK_SPACE);
         }

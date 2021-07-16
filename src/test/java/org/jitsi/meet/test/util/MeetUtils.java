@@ -283,7 +283,7 @@ public class MeetUtils
         Map stats = (Map)((JavascriptExecutor) driver)
             .executeScript("return APP.conference.getStats();");
 
-        Map<String,Long> bitrate = (Map<String,Long>)stats.get("bitrate");
+        Map<String, Long> bitrate = (Map<String, Long>)stats.get("bitrate");
 
         if (bitrate != null)
         {

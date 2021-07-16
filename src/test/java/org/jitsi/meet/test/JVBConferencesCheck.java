@@ -119,7 +119,7 @@ public class JVBConferencesCheck
             if (jsonElem.isJsonArray())
             {
                 JsonArray jsonArray = jsonElem.getAsJsonArray();
-                for(int i = 0; i < jsonArray.size(); i++)
+                for (int i = 0; i < jsonArray.size(); i++)
                 {
                     conferencesList.add(
                         ((JsonObject)jsonArray.get(i)).get("id").getAsString());

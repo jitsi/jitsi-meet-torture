@@ -136,8 +136,7 @@ public class FailureListener
     {
         // move all failed configurations to the failed tests set
         // in order to easily spot them in the html report
-        for(ITestResult r
-            : iTestContext.getFailedConfigurations().getAllResults())
+        for (ITestResult r : iTestContext.getFailedConfigurations().getAllResults())
         {
             iTestContext.getFailedTests().addResult(r, r.getMethod());
         }
