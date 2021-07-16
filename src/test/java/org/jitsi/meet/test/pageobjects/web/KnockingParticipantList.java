@@ -184,7 +184,7 @@ public class KnockingParticipantList
             // machine, so we will retry several times before giving up
             // the element should disappear once it was successfully clicked
             int retries = 5;
-            while(participantElement != null && retries > 0)
+            while (participantElement != null && retries > 0)
             {
                 new Actions(participant.getDriver())
                     .click(participantElement.findElement(ByTestId.testId(buttonId)))

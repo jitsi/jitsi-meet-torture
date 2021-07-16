@@ -355,13 +355,13 @@ public class ConnectionTimeTest
         Double[][] data
             = new Double[TimeMeasurements.length][NUMBER_OF_CONFERENCES];
 
-        for(int i = 0; i < NUMBER_OF_CONFERENCES; i++)
+        for (int i = 0; i < NUMBER_OF_CONFERENCES; i++)
         {
             refreshParticipant2();
 
             waitForMeasurements();
 
-            for(TimeMeasurements s : TimeMeasurements.values())
+            for (TimeMeasurements s : TimeMeasurements.values())
             {
                 data[s.ordinal()][i]
                     = s.execute(getParticipant2().getDriver());
@@ -369,7 +369,7 @@ public class ConnectionTimeTest
             }
         }
 
-        for(TimeMeasurements s : TimeMeasurements.values())
+        for (TimeMeasurements s : TimeMeasurements.values())
         {
             print(s + ": " + Arrays.toString(data[s.ordinal()]) );
         }
@@ -452,7 +452,7 @@ public class ConnectionTimeTest
     private static Double[] subtractArrays(Double[] a, Double[] b)
     {
         Double[] res = b.clone();
-        for(int i = 0; i < res.length; i++)
+        for (int i = 0; i < res.length; i++)
         {
             if (res[i] == null && a[i] == null)
             {

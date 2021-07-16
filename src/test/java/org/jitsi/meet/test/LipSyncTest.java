@@ -417,7 +417,7 @@ public class LipSyncTest
         private <T> int findSignalIdx(T[] series,
                                       Comparator<T> condition, int startIdx)
         {
-            for (int i = startIdx + 1; i + 1 < series.length;i++)
+            for (int i = startIdx + 1; i + 1 < series.length; i++)
             {
                 if (condition.compare(series[i-1], series[i]) > 0)
                 {

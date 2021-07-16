@@ -202,12 +202,13 @@ public class MeetUIUtils
             driver,
             5,
             (ExpectedCondition<Boolean>)
-                webDriver -> {
+                webDriver ->
+                {
                     WebElement el
                         = webDriver.findElement(By.xpath(largeVideoXPath));
 
-                    return !el.getAttribute("class")
-                        .contains("remoteVideoProblemFilter");});
+                    return !el.getAttribute("class").contains("remoteVideoProblemFilter");
+                });
 
         // Check if the message is displayed
         TestUtils.waitForDisplayedOrNotByXPath(

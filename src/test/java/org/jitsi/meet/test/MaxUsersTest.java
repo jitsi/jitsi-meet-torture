@@ -84,7 +84,7 @@ public class MaxUsersTest
             Participant[] participants = new Participant[MAX_USERS - 2];
             try
             {
-                for(int i = 0; i < participants.length; i++)
+                for (int i = 0; i < participants.length; i++)
                 {
                     participants[i] =
                         this.participants

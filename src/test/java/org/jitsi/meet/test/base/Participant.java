@@ -500,8 +500,7 @@ public abstract class Participant<T extends WebDriver>
                 = FileUtils.openOutputStream(
                         new File(outputDir, fileName)))
         {
-            fOut.write(
-                    driver.getPageSource().replace(">",">\n").getBytes());
+            fOut.write(driver.getPageSource().replace(">", ">\n").getBytes());
         }
         catch(Exception e)
         {
