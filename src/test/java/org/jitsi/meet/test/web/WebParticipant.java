@@ -94,6 +94,7 @@ public class WebParticipant extends Participant<WebDriver>
         "return APP.conference._room.getParticipants().map(p => p._id);";
 
     private ChatPanel chatPanel;
+    private AVModerationMenu avModerationMenu;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
     private KnockingParticipantList knockingParticipantList;
@@ -559,6 +560,20 @@ public class WebParticipant extends Participant<WebDriver>
     public Object getConfigValue(String key)
     {
         return executeScript("return config." + key);
+    }
+
+
+    /**
+     * @return a representation of the av moderation menu of this participant.
+     */
+    public AVModerationMenu getAVModerationMenu()
+    {
+        if (avModerationMenu == null)
+        {
+            avModerationMenu = new AVModerationMenu(this);
+        }
+
+        return avModerationMenu;
     }
 
     /**

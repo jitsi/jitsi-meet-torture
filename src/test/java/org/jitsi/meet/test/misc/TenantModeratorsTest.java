@@ -82,7 +82,7 @@ public class TenantModeratorsTest
             url.copy().setRoomParameters("jwt=" + moderator2Token),
             url);
 
-        // FIXME: Showing remote video menu in tileview does not work
+        // FIXME: Showing remote video menu in tile view does not work
         getParticipant1().getToolbar().clickTileViewButton();
         getParticipant2().getToolbar().clickTileViewButton();
         getParticipant3().getToolbar().clickTileViewButton();

@@ -19,6 +19,8 @@ public class ParticipantsPane
      */
     private final static String INVITE = "Invite Someone";
 
+    private final static String CONTEXT_MENU = "Participants pane context menu";
+
     /**
      * Classname of the closed/hidden participants pane
      */
@@ -49,6 +51,27 @@ public class ParticipantsPane
             MeetUIUtils.getAccessibilityCSSSelector(INVITE),
             true
         );
+    }
+
+    /**
+     * Trys to click on the context menu button and fails if it cannot be clicked.
+     */
+    public void clickContextMenuButton()
+    {
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(CONTEXT_MENU),
+                true
+        );
+    }
+
+    /**
+     * Clicks the "participants" toolbar button to open the participants pane.
+     */
+    public void open()
+    {
+        participant.getToolbar().clickParticipantsButton();
+        participant.getToolbar().waitForVisible();
     }
 
     /**
