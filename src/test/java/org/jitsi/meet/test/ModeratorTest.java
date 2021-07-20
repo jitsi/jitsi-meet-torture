@@ -55,7 +55,7 @@ public class ModeratorTest
 
     /**
      * Grants moderator to participant2 and checks from participant2's
-     * perspective if this is viible.
+     * perspective if this is visible.
      */
     @Test
     public void grantModeratorToParticipant2AndValidate()

@@ -68,6 +68,11 @@ public class Notifications
      */
     private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
 
+    /**
+     * The test id of the notification shown to muted by moderator users.
+     */
+    private static final String AUDIO_MODERATION_NOTIFICATION_ID = "notify.moderationInEffectDescription";
+
     public Notifications(WebParticipant participant)
     {
         this.participant = participant;
@@ -195,5 +200,14 @@ public class Notifications
     public boolean hasKickedNotification()
     {
         return hasNotification(KICKED_NOTIFICATION_TEST_ID);
+    }
+
+    /**
+     * The notification on participants page when the participant tries to unmute.
+     * @return the notification on participants page when the participant tries to unmute.
+     */
+    public boolean hasAudioModerationNotification()
+    {
+        return hasNotification(AUDIO_MODERATION_NOTIFICATION_ID);
     }
 }
