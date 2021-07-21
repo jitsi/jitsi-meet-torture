@@ -71,7 +71,28 @@ public class Notifications
     /**
      * The test id of the notification shown to muted by moderator users.
      */
-    private static final String AUDIO_MODERATION_NOTIFICATION_ID = "notify.moderationInEffectDescription";
+    private static final String AUDIO_MODERATION_NOTIFICATION_ID = "notify.moderationInEffectTitle";
+
+    /**
+     * The test id of the notification shown to users when moderation started.
+     */
+    private static final String MODERATION_START_NOTIFICATION_ID = "notify.moderationStartedTitle";
+
+    /**
+     * The test id of the notification shown to users when moderation stopped.
+     */
+    private static final String MODERATION_STOP_NOTIFICATION_ID = "notify.moderationStoppedTitle";
+
+    /**
+     * The test id of the notification shown to moderator when participant wants to speak.
+     */
+    private static final String RAISE_HAND_NOTIFICATION_ID = "notify.raisedHand";
+
+    /**
+     * The test id of the notification shown to participant when moderator asks to unmute.
+     */
+    private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.unmute";
+
 
     public Notifications(WebParticipant participant)
     {
@@ -162,10 +183,7 @@ public class Notifications
      * The notification that a someone's access was approved.
      * @return the notification that a someone's access was approved.
      */
-    public String getLobbyParticipantAccessGranted()
-    {
-        return getNotificationText(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
-    }
+    public String getLobbyParticipantAccessGranted() { return getNotificationText(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID); }
 
     /**
      * Closes the notification.
@@ -206,8 +224,29 @@ public class Notifications
      * The notification on participants page when the participant tries to unmute.
      * @return the notification on participants page when the participant tries to unmute.
      */
-    public boolean hasAudioModerationNotification()
-    {
-        return hasNotification(AUDIO_MODERATION_NOTIFICATION_ID);
-    }
+    public boolean hasAudioModerationNotification() { return hasNotification(AUDIO_MODERATION_NOTIFICATION_ID); }
+
+    /**
+     * The notification on participants page when moderation starts.
+     * @return the notification on participants page when moderation starts.
+     */
+    public boolean hasModerationStartNotification() { return hasNotification(MODERATION_START_NOTIFICATION_ID); }
+
+    /**
+     * The notification on participants page when moderation stops.
+     * @return the notification on participants page when moderation stops.
+     */
+    public boolean hasModerationStopNotification() { return hasNotification(MODERATION_STOP_NOTIFICATION_ID); }
+
+    /**
+     * The notification on moderators page when the participant tries to unmute.
+     * @return the notification on moderators page when the participant wants to unmute.
+     */
+    public boolean hasRaisedHandNotification() { return hasNotification(RAISE_HAND_NOTIFICATION_ID); }
+
+    /**
+     * The notification on participants page when the moderator asks to unmute.
+     * @return the notification on participants page when the moderator asks to unmute.
+     */
+    public boolean hasUnmuteNotification() { return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID); }
 }

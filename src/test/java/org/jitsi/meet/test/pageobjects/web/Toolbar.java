@@ -43,6 +43,8 @@ public class Toolbar
     private final static String OVERFLOW_MENU = "More actions menu" ;
     private final static String PARTICIPANTS = "Participants" ;
     private final static String PROFILE = "Edit your profile";
+    private final static String REACTIONS_MENU = "Open / Close reactions menu";
+    private final static String RAISE_HAND = "Raise / Lower your hand";
     private final static String RECORD = "Toggle recording";
     private final static String SECURITY = "Security options";
     private final static String SETTINGS = "Toggle settings";
@@ -78,6 +80,23 @@ public class Toolbar
     public void clickAudioMuteButton()
     {
         clickButton(AUDIO_MUTE);
+    }
+
+    /**
+     * Clicks on the raise hand toolbar button and opens the reactions menu.
+     */
+    public void clickOpenReactionsMenuButton()
+    {
+        clickButton(REACTIONS_MENU);
+    }
+
+
+    /**
+     * Clicks on the raise/lower hand button that enables participants will to speak.
+     */
+    public void clickRaiseHandButton()
+    {
+        clickButton(RAISE_HAND);
     }
 
     /**
@@ -327,6 +346,15 @@ public class Toolbar
     public void waitForVideoMuteButtonDisplay()
     {
         waitForButtonDisplay(VIDEO_MUTE);
+    }
+
+    /**
+     * Waits up to 10 seconds for the audio mute button in the toolbar to be
+     * visible.
+     */
+    public void waitForAudioMuteButtonDisplay()
+    {
+        waitForButtonDisplay(AUDIO_MUTE);
     }
 
     /**
