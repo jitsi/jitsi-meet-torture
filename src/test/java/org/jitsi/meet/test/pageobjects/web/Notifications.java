@@ -183,7 +183,10 @@ public class Notifications
      * The notification that a someone's access was approved.
      * @return the notification that a someone's access was approved.
      */
-    public String getLobbyParticipantAccessGranted() { return getNotificationText(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID); }
+    public String getLobbyParticipantAccessGranted()
+    {
+        return getNotificationText(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
+    }
 
     /**
      * Closes the notification.
