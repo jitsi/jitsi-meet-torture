@@ -15,6 +15,11 @@
             <class name="org.jitsi.meet.test.AudioOnlyTest" />
         </classes>
     </test>
+    <test name="AudioVideoModerationTest">
+        <classes>
+            <class name="org.jitsi.meet.test.AudioVideoModerationTest" />
+        </classes>
+    </test>
     <test name="AvatarTest">
         <classes>
             <class name="org.jitsi.meet.test.AvatarTest" />
