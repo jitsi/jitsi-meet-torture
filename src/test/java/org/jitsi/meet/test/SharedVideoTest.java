@@ -151,7 +151,7 @@ public class SharedVideoTest
             participant.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
                 + "return (c && c._sharedVideoPlayer "
-                    + "&& c._sharedVideoPlayer.getPlaybackState() === '" + state + "');",
+                    + "&& c._sharedVideoPlayer.getPlaybackStatus() === '" + state + "');",
             15);
     }
 
@@ -242,7 +242,7 @@ public class SharedVideoTest
         // let's wait for the fast forward
         String waitForFastForwardScript
             = JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + "return (c._sharedVideoPlayer.getPlaybackStatus() === 'playing'"
                 + " && c._sharedVideoPlayer.getTime() > 86);";
         TestUtils.waitForBoolean(
             participant1.getDriver(),
@@ -294,13 +294,13 @@ public class SharedVideoTest
         TestUtils.waitForBoolean(
             participant1.getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + "return (c._sharedVideoPlayer.getPlaybackStatus() === 'playing'"
                 + " && c._sharedVideoPlayer.isMuted());",
             10);
         TestUtils.waitForBoolean(
             getParticipant2().getDriver(),
             JS_GET_SHARED_VIDEO_CONTAINER
-                + "return (c._sharedVideoPlayer.getPlaybackState() === 'playing'"
+                + "return (c._sharedVideoPlayer.getPlaybackStatus() === 'playing'"
                 + " && (c._sharedVideoPlayer.isMuted() || c._sharedVideoPlayer.getVolume() == 0));",
             10);
     }
