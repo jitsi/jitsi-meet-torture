@@ -1,3 +1,18 @@
+/*
+ * Copyright @ 2017 Atlassian Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jitsi.meet.test;
 
 
@@ -58,6 +73,8 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.clickContextMenuButton();
 
+        checkModerationEnableDisable(participant2);
+
         avModerationMenu.clickStartModeration();
 
         startModerationForParticipant(participant3);
@@ -78,6 +95,27 @@ public class AudioVideoModerationTest extends WebTestBase
     }
 
     /**
+     * Checks moderation by enabling and disabling it
+     * @param participant the participant to unmute
+     */
+    private void checkModerationEnableDisable(WebParticipant participant)
+    {
+        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+
+        avModerationMenu.clickStartModeration();
+
+        TestUtils.waitMillis(2000);
+
+        checkAudioVideoParticipantMute(participant);
+
+        avModerationMenu.clickStopModeration();
+
+        TestUtils.waitMillis(2000);
+
+        checkAudioVideoParticipantUnmute(participant);
+    }
+
+    /**
      * Participant raises hand to speak during moderation
      * @param participant the participant that wants to speak
      */
@@ -90,8 +128,6 @@ public class AudioVideoModerationTest extends WebTestBase
         assertTrue(
                 participant.getNotifications().hasAudioModerationNotification(),
                 "The participant should see a notification that has to raise his hand.");
-
-        participant.getToolbar().clickOpenReactionsMenuButton();
 
         participant.getToolbar().clickRaiseHandButton();
 
