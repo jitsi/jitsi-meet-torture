@@ -96,7 +96,8 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             changeModeratorOnParticipantReload();
 
-        } else
+        }
+        else
         {
             askParticipantToUnmute(participant3);
 
