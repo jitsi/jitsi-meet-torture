@@ -60,7 +60,7 @@ public class AudioVideoModerationTest extends WebTestBase
     @Test
     public void AVModeration()
     {
-
+        JitsiMeetUrl url = getJitsiMeetUrl();
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
 
@@ -82,11 +82,22 @@ public class AudioVideoModerationTest extends WebTestBase
 
         startModerationForParticipant(participant3);
 
-        changeModeratorOnParticipantReload();
+        participant1.hangUp();
 
-        if (participant1.isModerator())
+        joinFirstParticipant(url, null);
+
+        TestUtils.waitMillis(5000);
+
+        assertTrue(participant2.isModerator(), "Participant 2 must be moderator");
+        assertFalse(participant1.isModerator(), "Participant 1 must not be moderator");
+        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
+
+        if (participant2.isModerator())
         {
+            changeModeratorOnParticipantReload();
 
+        } else
+        {
             askParticipantToUnmute(participant3);
 
             TestUtils.waitMillis(2000);
@@ -112,18 +123,9 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void changeModeratorOnParticipantReload()
     {
-        JitsiMeetUrl url = getJitsiMeetUrl();
 
         ParticipantsPane participantsPane = participant2.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant2.getAVModerationMenu();
-
-        participant1.hangUp();
-
-        joinFirstParticipant(url, null);
-
-        assertTrue(participant2.isModerator(), "Participant 2 must be moderator");
-        assertFalse(participant1.isModerator(), "Participant 1 must not be moderator");
-        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
 
         participantsPane.open();
 
