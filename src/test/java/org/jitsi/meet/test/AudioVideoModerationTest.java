@@ -84,7 +84,8 @@ public class AudioVideoModerationTest extends WebTestBase
 
         changeModeratorOnParticipantReload();
 
-        if (participant1.isModerator()) {
+        if (participant1.isModerator())
+        {
 
             askParticipantToUnmute(participant3);
 
