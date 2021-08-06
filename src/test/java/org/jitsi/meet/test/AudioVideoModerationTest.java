@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 
+import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.AVModerationMenu;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.util.MeetUIUtils;
@@ -71,17 +72,71 @@ public class AudioVideoModerationTest extends WebTestBase
 
         TestUtils.waitMillis(2000);
 
-        participantsPane.clickContextMenuButton();
-
         checkModerationEnableDisable(participant2);
+
+        TestUtils.waitMillis(2000);
+
+        participantsPane.clickContextMenuButton();
 
         avModerationMenu.clickStartModeration();
 
         startModerationForParticipant(participant3);
 
-        checkAudioVideoParticipant(participant3);
+        changeModeratorOnParticipantReload();
+
+        if (participant1.isModerator()) {
+
+            askParticipantToUnmute(participant3);
+
+            TestUtils.waitMillis(2000);
+
+            checkAudioVideoParticipant(participant3);
+
+            TestUtils.waitMillis(2000);
+
+            participantsPane.clickContextMenuButton();
+
+            avModerationMenu.clickStopModeration();
+
+            TestUtils.waitMillis(2000);
+
+            assertTrue(
+                    participant3.getNotifications().hasModerationStopNotification(),
+                    "The participant should see a notification that moderation stopped.");
+        }
+    }
+
+    /**
+     * Initial moderator reloads and next participant becomes the new moderator
+     */
+    private void changeModeratorOnParticipantReload()
+    {
+        JitsiMeetUrl url = getJitsiMeetUrl();
+
+        ParticipantsPane participantsPane = participant2.getParticipantsPane();
+        AVModerationMenu avModerationMenu = participant2.getAVModerationMenu();
+
+        participant1.hangUp();
+
+        joinFirstParticipant(url, null);
+
+        assertTrue(participant2.isModerator(), "Participant 2 must be moderator");
+        assertFalse(participant1.isModerator(), "Participant 1 must not be moderator");
+        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
+
+        participantsPane.open();
+
+        TestUtils.waitMillis(1000);
+
+        participantsPane.askToUnmute(participant2);
 
         TestUtils.waitMillis(2000);
+
+        MeetUIUtils.toggleAudioAndCheck(participant3, participant2, false, false);
+
+        TestUtils.waitMillis(2000);
+
+        MeetUIUtils.unmuteVideoAndCheck(participant3, participant2);
 
         participantsPane.clickContextMenuButton();
 
@@ -92,6 +147,8 @@ public class AudioVideoModerationTest extends WebTestBase
         assertTrue(
                 participant3.getNotifications().hasModerationStopNotification(),
                 "The participant should see a notification that moderation stopped.");
+
+        TestUtils.waitMillis(1000);
     }
 
     /**
@@ -100,7 +157,10 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void checkModerationEnableDisable(WebParticipant participant)
     {
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+
+        participantsPane.clickContextMenuButton();
 
         avModerationMenu.clickStartModeration();
 
@@ -140,7 +200,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
     /**
      * Moderator asks participant to unmute
-     * @param participant the participant to unmute
+     * @param participant the participant who is requested to unmute
      */
     private void askParticipantToUnmute(WebParticipant participant)
     {
@@ -157,7 +217,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
     /**
      * Checks audio/video mute state for participant
-     * @param participant the participant to unmute
+     * @param participant the participant that is checked
      */
     private void checkAudioVideoParticipantMute(WebParticipant participant)
     {
@@ -168,7 +228,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
     /**
      * Checks audio/video unmute state for participant
-     * @param participant the participant to unmute
+     * @param participant the participant that is checked
      */
     private void checkAudioVideoParticipantUnmute(WebParticipant participant)
     {
@@ -190,8 +250,6 @@ public class AudioVideoModerationTest extends WebTestBase
                 "The participant should see a notification that moderation started.");
 
         raiseHandToSpeak(participant);
-
-        askParticipantToUnmute(participant);
     }
 
     /**
