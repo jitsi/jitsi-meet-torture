@@ -251,5 +251,5 @@ public class Notifications
      * The notification on participants page when the moderator asks to unmute.
      * @return the notification on participants page when the moderator asks to unmute.
      */
-    public boolean hasUnmuteNotification() { return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID); }
+    public boolean hasAskToUnmuteNotification() { return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID); }
 }

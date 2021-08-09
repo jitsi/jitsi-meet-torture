@@ -31,7 +31,7 @@ public class ParticipantsPane
     /**
      * Classname of the closed/hidden participants pane
      */
-    private final static String PANE_CLOSED = "participants_pane--closed";
+    private final static String PARTICIPANTS_PANE = "participants_pane";
 
     /**
      * The participant.
@@ -107,7 +107,16 @@ public class ParticipantsPane
     public void open()
     {
         participant.getToolbar().clickParticipantsButton();
-        participant.getToolbar().waitForVisible();
+        waitForVisible();
+    }
+
+    /**
+     * Clicks the "participants" toolbar button to close the participants pane.
+     */
+    public void close()
+    {
+        participant.getToolbar().clickParticipantsButton();
+        waitForHidden();
     }
 
     /**
@@ -117,8 +126,20 @@ public class ParticipantsPane
     {
         TestUtils.waitForElementDisplayToBe(
             participant.getDriver(),
-            By.className(PANE_CLOSED),
+            By.className(PARTICIPANTS_PANE),
             3,
-            false);
+            true);
+    }
+
+    /**
+     * Waits up to 3 seconds for the participants pane to be hidden.
+     */
+    public void waitForHidden()
+    {
+        TestUtils.waitForElementDisplayToBe(
+                participant.getDriver(),
+                By.className(PARTICIPANTS_PANE),
+                3,
+                false);
     }
 }

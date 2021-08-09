@@ -19,11 +19,14 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.AVModerationMenu;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
+import org.jitsi.meet.test.pageobjects.web.UnmuteModalDialogHelper;
 import org.jitsi.meet.test.util.MeetUIUtils;
 import org.jitsi.meet.test.util.TestUtils;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.jitsi.meet.test.web.WebTestBase;
-import org.testng.annotations.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.*;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -54,27 +57,53 @@ public class AudioVideoModerationTest extends WebTestBase
     }
 
     /**
-     * Opens the context menu from the participants pane
-     * and enables moderation
+     * Checks moderation by enabling and disabling it
      */
     @Test
-    public void AVModeration()
+    public void testCheckModerationEnableDisable()
     {
-        JitsiMeetUrl url = getJitsiMeetUrl();
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
 
-        participantsPane.open();
+        TestUtils.waitMillis(2000);
 
         assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
         assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
         assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
 
+        participantsPane.open();
+
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStartModeration();
+
+        checkAudioVideoParticipantMute(participant3);
+
+        avModerationMenu.clickStopModeration();
+
+        checkAudioVideoParticipantUnmute(participant3);
+
+        participantsPane.close();
+    }
+
+    /**
+     * Opens the context menu from the participants pane
+     * and enables moderation
+     */
+    @Test
+    public void testEnableModerationForParticipant()
+    {
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+        WebDriver driver1 = participant1.getDriver();
+
         TestUtils.waitMillis(2000);
 
-        checkModerationEnableDisable(participant2);
+        assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
+        assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
+        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
 
-        TestUtils.waitMillis(2000);
+        participantsPane.open();
 
         participantsPane.clickContextMenuButton();
 
@@ -82,65 +111,33 @@ public class AudioVideoModerationTest extends WebTestBase
 
         startModerationForParticipant(participant3);
 
-        participant1.hangUp();
+        raiseHandToSpeak(participant3);
 
-        joinFirstParticipant(url, null);
+        askParticipantToUnmute(participant3);
 
-        TestUtils.waitMillis(5000);
+        checkAudioVideoParticipantUnmute(participant3);
 
-        assertTrue(participant2.isModerator(), "Participant 2 must be moderator");
-        assertFalse(participant1.isModerator(), "Participant 1 must not be moderator");
-        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
+        participantsPane.close();
 
-        if (participant2.isModerator())
-        {
-            changeModeratorOnParticipantReload();
+        raiseHandToSpeak(participant2);
 
-        }
-        else
-        {
-            askParticipantToUnmute(participant3);
+        TestUtils.waitForElementDisplayToBe(
+                driver1,
+                By.id("notification-participant-list"),
+                3,
+                true);
 
-            TestUtils.waitMillis(2000);
+        UnmuteModalDialogHelper.clickUnmuteButton(driver1);
 
-            checkAudioVideoParticipant(participant3);
+        TestUtils.waitMillis(2000);
 
-            TestUtils.waitMillis(2000);
+        assertTrue(
+                participant2.getNotifications().hasAskToUnmuteNotification(),
+                "The participant should see a notification that the moderator requests to unmute.");
 
-            participantsPane.clickContextMenuButton();
-
-            avModerationMenu.clickStopModeration();
-
-            TestUtils.waitMillis(2000);
-
-            assertTrue(
-                    participant3.getNotifications().hasModerationStopNotification(),
-                    "The participant should see a notification that moderation stopped.");
-        }
-    }
-
-    /**
-     * Initial moderator reloads and next participant becomes the new moderator
-     */
-    private void changeModeratorOnParticipantReload()
-    {
-
-        ParticipantsPane participantsPane = participant2.getParticipantsPane();
-        AVModerationMenu avModerationMenu = participant2.getAVModerationMenu();
+        checkAudioVideoParticipantUnmute(participant2);
 
         participantsPane.open();
-
-        TestUtils.waitMillis(1000);
-
-        participantsPane.askToUnmute(participant2);
-
-        TestUtils.waitMillis(2000);
-
-        MeetUIUtils.toggleAudioAndCheck(participant3, participant2, false, false);
-
-        TestUtils.waitMillis(2000);
-
-        MeetUIUtils.unmuteVideoAndCheck(participant3, participant2);
 
         participantsPane.clickContextMenuButton();
 
@@ -149,34 +146,58 @@ public class AudioVideoModerationTest extends WebTestBase
         TestUtils.waitMillis(2000);
 
         assertTrue(
-                participant3.getNotifications().hasModerationStopNotification(),
+                participant2.getNotifications().hasModerationStopNotification(),
                 "The participant should see a notification that moderation stopped.");
-
-        TestUtils.waitMillis(1000);
     }
 
+
     /**
-     * Checks moderation by enabling and disabling it
-     * @param participant the participant to unmute
+     * Initial moderator reloads and next participant becomes the new moderator
      */
-    private void checkModerationEnableDisable(WebParticipant participant)
+    public void testHangUpAndChangeModerator()
     {
-        ParticipantsPane participantsPane = participant1.getParticipantsPane();
-        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+        ParticipantsPane participantsPane1 = participant1.getParticipantsPane();
+        AVModerationMenu avModerationMenu1 = participant1.getAVModerationMenu();
 
-        participantsPane.clickContextMenuButton();
+        participant2.hangUp();
+        participant3.hangUp();
 
-        avModerationMenu.clickStartModeration();
+        joinSecondParticipant();
+        joinThirdParticipant();
 
-        TestUtils.waitMillis(2000);
+        participant2.muteAudio(true);
 
-        checkAudioVideoParticipantMute(participant);
+        participant3.muteAudio(true);
 
-        avModerationMenu.clickStopModeration();
+        participantsPane1.open();
 
-        TestUtils.waitMillis(2000);
+        participantsPane1.clickContextMenuButton();
 
-        checkAudioVideoParticipantUnmute(participant);
+        avModerationMenu1.clickStartModeration();
+
+        participant2.getToolbar().clickRaiseHandButton();
+
+        participant3.getToolbar().clickRaiseHandButton();
+
+        participantsPane1.askToUnmute(participant1);
+
+        participant1.hangUp();
+
+        joinFirstParticipant();
+//
+//        MeetUIUtils.toggleAudioAndCheck(participant3, participant2, false, false);
+//
+//        MeetUIUtils.unmuteVideoAndCheck(participant3, participant2);
+//
+//        participantsPane.clickContextMenuButton();
+//
+//        avModerationMenu.clickStopModeration();
+//
+//        TestUtils.waitMillis(2000);
+//
+//        assertTrue(
+//                participant3.getNotifications().hasModerationStopNotification(),
+//                "The participant should see a notification that moderation stopped.");
     }
 
     /**
@@ -215,7 +236,7 @@ public class AudioVideoModerationTest extends WebTestBase
         TestUtils.waitMillis(2000);
 
         assertTrue(
-                participant.getNotifications().hasUnmuteNotification(),
+                participant.getNotifications().hasAskToUnmuteNotification(),
                 "The participant should see a notification that the moderator requests to unmute.");
     }
 
@@ -225,7 +246,11 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void checkAudioVideoParticipantMute(WebParticipant participant)
     {
+        TestUtils.waitMillis(2000);
+
         MeetUIUtils.toggleAudioAndCheck(participant, participant1, true, false);
+
+        TestUtils.waitMillis(2000);
 
         MeetUIUtils.muteVideoAndCheck(participant, participant1);
     }
@@ -236,7 +261,11 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void checkAudioVideoParticipantUnmute(WebParticipant participant)
     {
+        TestUtils.waitMillis(2000);
+
         MeetUIUtils.toggleAudioAndCheck(participant, participant1, false, false);
+
+        TestUtils.waitMillis(2000);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
     }
@@ -252,8 +281,6 @@ public class AudioVideoModerationTest extends WebTestBase
         assertTrue(
                 participant.getNotifications().hasModerationStartNotification(),
                 "The participant should see a notification that moderation started.");
-
-        raiseHandToSpeak(participant);
     }
 
     /**
