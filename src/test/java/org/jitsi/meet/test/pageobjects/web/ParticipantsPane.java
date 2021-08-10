@@ -78,6 +78,23 @@ public class ParticipantsPane
     }
 
     /**
+     * Trys to click ask to unmute button after moderator reloads.
+     *
+     * @param moderator the participant for this {@link ParticipantsPane} that has moderator rights.
+     */
+    public void askToUnmuteAfterReload(WebParticipant moderator)
+    {
+        WebDriver driver = moderator.getDriver();
+        WebElement meetingParticipantListItem = driver.findElement(By.id("participant-item"));
+
+        Actions hoverOnMeetingParticipantListItem = new Actions(driver);
+        hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
+        hoverOnMeetingParticipantListItem.perform();
+
+        clickAskToUnmuteButton();
+    }
+
+    /**
      * Try to click on the ask to unmute button and fails if it cannot be clicked.
      */
     public void clickAskToUnmuteButton()
