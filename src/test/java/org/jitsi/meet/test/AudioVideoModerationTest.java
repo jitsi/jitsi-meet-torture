@@ -16,7 +16,6 @@
 package org.jitsi.meet.test;
 
 
-import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.AVModerationMenu;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.pageobjects.web.UnmuteModalDialogHelper;
@@ -54,6 +53,10 @@ public class AudioVideoModerationTest extends WebTestBase
         participant1 = getParticipant1();
         participant2 = getParticipant2();
         participant3 = getParticipant3();
+
+        assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
+        assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
+        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
     }
 
     /**
@@ -64,12 +67,6 @@ public class AudioVideoModerationTest extends WebTestBase
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
-
-        TestUtils.waitMillis(2000);
-
-        assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
-        assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
-        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
 
         participantsPane.open();
 
@@ -82,8 +79,6 @@ public class AudioVideoModerationTest extends WebTestBase
         avModerationMenu.clickStopModeration();
 
         checkAudioVideoParticipantUnmute(participant3);
-
-        participantsPane.close();
     }
 
     /**
@@ -91,19 +86,11 @@ public class AudioVideoModerationTest extends WebTestBase
      * and enables moderation
      */
     @Test
-    public void testEnableModerationForParticipant()
+    public void testUnmuteByModeratorDialog()
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
         WebDriver driver1 = participant1.getDriver();
-
-        TestUtils.waitMillis(2000);
-
-        assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
-        assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
-        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
-
-        participantsPane.open();
 
         participantsPane.clickContextMenuButton();
 
@@ -156,9 +143,6 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     public void testHangUpAndChangeModerator()
     {
-        ParticipantsPane participantsPane1 = participant1.getParticipantsPane();
-        AVModerationMenu avModerationMenu1 = participant1.getAVModerationMenu();
-
         participant2.hangUp();
         participant3.hangUp();
 
@@ -166,38 +150,63 @@ public class AudioVideoModerationTest extends WebTestBase
         joinThirdParticipant();
 
         participant2.muteAudio(true);
-
         participant3.muteAudio(true);
 
-        participantsPane1.open();
+        participant1.getParticipantsPane().open();
 
-        participantsPane1.clickContextMenuButton();
+        participant1.getParticipantsPane().clickContextMenuButton();
 
-        avModerationMenu1.clickStartModeration();
+        participant1.getAVModerationMenu().clickStartModeration();
 
         participant2.getToolbar().clickRaiseHandButton();
 
+        TestUtils.waitMillis(2000);
+
         participant3.getToolbar().clickRaiseHandButton();
 
-        participantsPane1.askToUnmute(participant1);
+        TestUtils.waitMillis(2000);
 
         participant1.hangUp();
 
         joinFirstParticipant();
-//
-//        MeetUIUtils.toggleAudioAndCheck(participant3, participant2, false, false);
-//
-//        MeetUIUtils.unmuteVideoAndCheck(participant3, participant2);
-//
-//        participantsPane.clickContextMenuButton();
-//
-//        avModerationMenu.clickStopModeration();
-//
-//        TestUtils.waitMillis(2000);
-//
-//        assertTrue(
-//                participant3.getNotifications().hasModerationStopNotification(),
-//                "The participant should see a notification that moderation stopped.");
+
+        if (participant2.isModerator())
+        {
+            participant2.getParticipantsPane().open();
+
+            askParticipantToUnmute(participant3);
+
+            checkAudioVideoParticipantUnmute(participant3);
+
+            participant2.getParticipantsPane().clickContextMenuButton();
+
+            participant2.getAVModerationMenu().clickStopModeration();
+
+            TestUtils.waitMillis(2000);
+
+            assertTrue(
+                    participant3.getNotifications().hasModerationStopNotification(),
+                    "The participant should see a notification that moderation stopped.");
+        }
+
+        if (participant3.isModerator())
+        {
+            participant3.getParticipantsPane().open();
+
+            askParticipantToUnmute(participant2);
+
+            checkAudioVideoParticipantUnmute(participant2);
+
+            participant3.getParticipantsPane().clickContextMenuButton();
+
+            participant3.getAVModerationMenu().clickStopModeration();
+
+            TestUtils.waitMillis(2000);
+
+            assertTrue(
+                    participant2.getNotifications().hasModerationStopNotification(),
+                    "The participant should see a notification that moderation stopped.");
+        }
     }
 
     /**
@@ -281,20 +290,5 @@ public class AudioVideoModerationTest extends WebTestBase
         assertTrue(
                 participant.getNotifications().hasModerationStartNotification(),
                 "The participant should see a notification that moderation started.");
-    }
-
-    /**
-     * Checks audio/video state for participant
-     * @param participant the participant that is checked
-     */
-    private void checkAudioVideoParticipant(WebParticipant participant)
-    {
-        TestUtils.waitMillis(2000);
-
-        checkAudioVideoParticipantUnmute(participant);
-
-        TestUtils.waitMillis(2000);
-
-        checkAudioVideoParticipantMute(participant);
     }
 }
