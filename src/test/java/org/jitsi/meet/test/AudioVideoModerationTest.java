@@ -239,11 +239,7 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void checkAudioVideoParticipantUnmute(WebParticipant participant)
     {
-        TestUtils.waitMillis(2000);
-
         MeetUIUtils.toggleAudioAndCheck(participant, participant1, false, false);
-
-        TestUtils.waitMillis(2000);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
     }
