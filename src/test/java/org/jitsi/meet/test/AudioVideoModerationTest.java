@@ -169,7 +169,7 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             participant2.getParticipantsPane().open();
 
-            participant2.getParticipantsPane().askToUnmuteAfterReload(participant2);
+            participant2.getParticipantsPane().askToUnmuteAfterReload(participant3);
 
             participant3.getNotifications().getAskToUnmuteNotification();
 
@@ -188,7 +188,7 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             participant3.getParticipantsPane().open();
 
-            participant3.getParticipantsPane().askToUnmuteAfterReload(participant3);
+            participant3.getParticipantsPane().askToUnmuteAfterReload(participant2);
 
             participant2.getNotifications().getAskToUnmuteNotification();
 
@@ -228,7 +228,7 @@ public class AudioVideoModerationTest extends WebTestBase
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
 
-        participantsPane.askToUnmute(participant1);
+        participantsPane.askToUnmute();
 
         participant.getNotifications().getAskToUnmuteNotification();
     }

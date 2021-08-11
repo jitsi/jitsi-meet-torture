@@ -62,15 +62,13 @@ public class ParticipantsPane
 
     /**
      * Trys to click ask to unmute button.
-     *
-     * @param moderator the participant for this {@link ParticipantsPane} that has moderator rights.
      */
-    public void askToUnmute(WebParticipant moderator)
+    public void askToUnmute()
     {
-        WebDriver driver = moderator.getDriver();
-        WebElement meetingParticipantListItem = driver.findElement(By.id("raised-hand-participant"));
+        WebElement meetingParticipantListItem =
+                participant.getDriver().findElement(By.id("raised-hand-participant"));
 
-        Actions hoverOnMeetingParticipantListItem = new Actions(driver);
+        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
@@ -80,18 +78,21 @@ public class ParticipantsPane
     /**
      * Trys to click ask to unmute button after moderator reloads.
      *
-     * @param moderator the participant for this {@link ParticipantsPane} that has moderator rights.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void askToUnmuteAfterReload(WebParticipant moderator)
+    public void askToUnmuteAfterReload(WebParticipant participantToUnmute)
     {
-        WebDriver driver = moderator.getDriver();
-        WebElement meetingParticipantListItem = driver.findElement(By.id("participant-item"));
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        WebElement meetingParticipantListItem =
+                participant.getDriver().findElement(
+                        By.id("participant-item-" + remoteParticipantEndpointId)
+                );
 
-        Actions hoverOnMeetingParticipantListItem = new Actions(driver);
+        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
-        clickAskToUnmuteButton();
+        clickAskToUnmuteButtonById(participantToUnmute);
     }
 
     /**
@@ -102,6 +103,22 @@ public class ParticipantsPane
         MeetUIUtils.clickOnElement(
                 participant.getDriver(),
                 MeetUIUtils.getAccessibilityCSSSelector(ASK_TO_UNMUTE),
+                true
+        );
+    }
+
+    /**
+     * Try to click on the ask to unmute button and fails if it cannot be clicked.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(
+                        "unmute-" + remoteParticipantEndpointId
+                ),
                 true
         );
     }
