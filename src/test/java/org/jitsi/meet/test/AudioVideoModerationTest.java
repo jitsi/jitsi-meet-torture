@@ -74,9 +74,13 @@ public class AudioVideoModerationTest extends WebTestBase
 
         avModerationMenu.clickStartModeration();
 
-        TestUtils.waitMillis(2000);
+        participant2.getNotifications().getModerationStartNotification();
+
+        participantsPane.clickContextMenuButton();
 
         avModerationMenu.clickStopModeration();
+
+        participant2.getNotifications().getModerationStopNotification();
 
         checkAudioVideoParticipantUnmute(participant3);
     }
@@ -96,7 +100,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         avModerationMenu.clickStartModeration();
 
-        startModerationForParticipant(participant3);
+        participant3.getNotifications().getModerationStartNotification();
 
         raiseHandToSpeak(participant3);
 
@@ -116,11 +120,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         UnmuteModalDialogHelper.clickUnmuteButton(driver1);
 
-        TestUtils.waitMillis(2000);
-
-        assertTrue(
-                participant2.getNotifications().hasAskToUnmuteNotification(),
-                "The participant should see a notification that the moderator requests to unmute.");
+        participant2.getNotifications().getAskToUnmuteNotification();
 
         checkAudioVideoParticipantUnmute(participant2);
 
@@ -130,11 +130,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         avModerationMenu.clickStopModeration();
 
-        TestUtils.waitMillis(2000);
-
-        assertTrue(
-                participant2.getNotifications().hasModerationStopNotification(),
-                "The participant should see a notification that moderation stopped.");
+        participant2.getNotifications().getModerationStopNotification();
 
         participantsPane.close();
     }
@@ -163,11 +159,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant2.getToolbar().clickRaiseHandButton();
 
-        TestUtils.waitMillis(2000);
-
         participant3.getToolbar().clickRaiseHandButton();
-
-        TestUtils.waitMillis(2000);
 
         participant1.hangUp();
 
@@ -179,11 +171,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant2.getParticipantsPane().askToUnmuteAfterReload(participant2);
 
-            TestUtils.waitMillis(2000);
-
-            assertTrue(
-                    participant3.getNotifications().hasAskToUnmuteNotification(),
-                    "The participant should see a notification that the moderator requests to unmute.");
+            participant3.getNotifications().getAskToUnmuteNotification();
 
             checkAudioVideoParticipantUnmute(participant3);
 
@@ -191,11 +179,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant2.getAVModerationMenu().clickStopModeration();
 
-            TestUtils.waitMillis(2000);
-
-            assertTrue(
-                    participant3.getNotifications().hasModerationStopNotification(),
-                    "The participant should see a notification that moderation stopped.");
+            participant3.getNotifications().getModerationStopNotification();
 
             participant2.getParticipantsPane().close();
         }
@@ -206,11 +190,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant3.getParticipantsPane().askToUnmuteAfterReload(participant3);
 
-            TestUtils.waitMillis(2000);
-
-            assertTrue(
-                    participant2.getNotifications().hasAskToUnmuteNotification(),
-                    "The participant should see a notification that the moderator requests to unmute.");
+            participant2.getNotifications().getAskToUnmuteNotification();
 
             checkAudioVideoParticipantUnmute(participant2);
 
@@ -218,11 +198,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant3.getAVModerationMenu().clickStopModeration();
 
-            TestUtils.waitMillis(2000);
-
-            assertTrue(
-                    participant2.getNotifications().hasModerationStopNotification(),
-                    "The participant should see a notification that moderation stopped.");
+            participant2.getNotifications().getModerationStopNotification();
 
             participant3.getParticipantsPane().close();
         }
@@ -236,19 +212,12 @@ public class AudioVideoModerationTest extends WebTestBase
     {
         participant.getToolbar().clickAudioMuteButton();
 
-        TestUtils.waitMillis(2000);
+        participant.getNotifications().getAudioModerationNotification();
 
-        assertTrue(
-                participant.getNotifications().hasAudioModerationNotification(),
-                "The participant should see a notification that has to raise his hand.");
 
         participant.getToolbar().clickRaiseHandButton();
 
-        TestUtils.waitMillis(2000);
-
-        assertTrue(
-                participant1.getNotifications().hasRaisedHandNotification(),
-                "The moderator should see a notification that a participant wants to unmute.");
+        participant1.getNotifications().getRaisedHandNotification();
     }
 
     /**
@@ -261,11 +230,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.askToUnmute(participant1);
 
-        TestUtils.waitMillis(2000);
-
-        assertTrue(
-                participant.getNotifications().hasAskToUnmuteNotification(),
-                "The participant should see a notification that the moderator requests to unmute.");
+        participant.getNotifications().getAskToUnmuteNotification();
     }
 
     /**
@@ -281,18 +246,5 @@ public class AudioVideoModerationTest extends WebTestBase
         TestUtils.waitMillis(2000);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
-    }
-
-    /**
-     * Starts moderation for participant
-     * @param participant the moderated participant
-     */
-    private void startModerationForParticipant(WebParticipant participant)
-    {
-        TestUtils.waitMillis(2000);
-
-        assertTrue(
-                participant.getNotifications().hasModerationStartNotification(),
-                "The participant should see a notification that moderation started.");
     }
 }

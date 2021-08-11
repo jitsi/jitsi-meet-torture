@@ -227,29 +227,44 @@ public class Notifications
      * The notification on participants page when the participant tries to unmute.
      * @return the notification on participants page when the participant tries to unmute.
      */
-    public boolean hasAudioModerationNotification() { return hasNotification(AUDIO_MODERATION_NOTIFICATION_ID); }
+    public String getAudioModerationNotification()
+    {
+        return getNotificationText(AUDIO_MODERATION_NOTIFICATION_ID);
+    }
 
     /**
      * The notification on participants page when moderation starts.
      * @return the notification on participants page when moderation starts.
      */
-    public boolean hasModerationStartNotification() { return hasNotification(MODERATION_START_NOTIFICATION_ID); }
+    public String getModerationStartNotification()
+    {
+        return getNotificationText(MODERATION_START_NOTIFICATION_ID);
+    }
 
     /**
      * The notification on participants page when moderation stops.
      * @return the notification on participants page when moderation stops.
      */
-    public boolean hasModerationStopNotification() { return hasNotification(MODERATION_STOP_NOTIFICATION_ID); }
+    public String getModerationStopNotification()
+    {
+        return getNotificationText(MODERATION_STOP_NOTIFICATION_ID);
+    }
 
     /**
      * The notification on moderators page when the participant tries to unmute.
      * @return the notification on moderators page when the participant wants to unmute.
      */
-    public boolean hasRaisedHandNotification() { return hasNotification(RAISE_HAND_NOTIFICATION_ID); }
+    public String getRaisedHandNotification()
+    {
+        return getNotificationText(RAISE_HAND_NOTIFICATION_ID);
+    }
 
     /**
      * The notification on participants page when the moderator asks to unmute.
      * @return the notification on participants page when the moderator asks to unmute.
      */
-    public boolean hasAskToUnmuteNotification() { return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID); }
+    public String getAskToUnmuteNotification()
+    {
+        return getNotificationText(ASK_TO_UNMUTE_NOTIFICATION_ID);
+    }
 }
