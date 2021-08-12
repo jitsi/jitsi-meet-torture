@@ -169,7 +169,7 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             participant2.getParticipantsPane().open();
 
-            participant2.getParticipantsPane().askToUnmuteAfterReload(participant3);
+            participant2.getParticipantsPane().askToUnmute();
 
             participant3.getNotifications().getAskToUnmuteNotification();
 
