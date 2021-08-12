@@ -112,12 +112,6 @@ public class AudioVideoModerationTest extends WebTestBase
 
         raiseHandToSpeak(participant2);
 
-        TestUtils.waitForElementDisplayToBe(
-                driver1,
-                By.id("notification-participant-list"),
-                3,
-                true);
-
         UnmuteModalDialogHelper.clickUnmuteButton(driver1);
 
         participant2.getNotifications().getAskToUnmuteNotification();
