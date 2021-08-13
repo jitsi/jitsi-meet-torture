@@ -238,19 +238,33 @@ public class TestUtils
         final By by,
         long timeout)
     {
-        final String[] foundElement = new String[1];
-        new WebDriverWait(driver, timeout)
-            .until((ExpectedCondition<Boolean>) d -> {
-                List<WebElement> elements = d.findElements(by);
+        final String[] foundElement = new String[2];
+        try
+        {
+            new WebDriverWait(driver, timeout)
+                .until((ExpectedCondition<Boolean>) d -> {
+                    List<WebElement> elements = d.findElements(by);
 
-                if (!elements.isEmpty())
-                {
-                    foundElement[0] = elements.get(0).getText();
-                    return true;
-                }
-                else
-                    return false;
-            });
+                    if (!elements.isEmpty())
+                    {
+                        foundElement[1] = Boolean.TRUE.toString();
+                        foundElement[0] = elements.get(0).getText();
+                        return true;
+                    }
+                    else
+                        return false;
+                });
+        }
+        catch (StaleElementReferenceException e)
+        {
+            // sometimes while getting the text we get:
+            // StaleElementReferenceException: stale element reference: element is not attached to the page document
+            // Then we will try one more time, hoping for no re-render.
+            if (foundElement[1] != null)
+            {
+                return driver.findElement(by).getText();
+            }
+        }
 
         return foundElement[0];
     }
@@ -260,12 +274,12 @@ public class TestUtils
      * @param driver the {@code WebDriver}.
      * @param by the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
-     * @return WebElement the found element
      */
     public static void waitForElementNotPresentBy(
         WebDriver driver,
         final By by,
-        long timeout) {
+        long timeout)
+    {
         new WebDriverWait(driver, timeout)
             .until((ExpectedCondition<Boolean>) d -> d.findElements(by)
                 .isEmpty());
