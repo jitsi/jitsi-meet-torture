@@ -16,19 +16,14 @@
 package org.jitsi.meet.test;
 
 
-import org.jitsi.meet.test.pageobjects.web.AVModerationMenu;
-import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
-import org.jitsi.meet.test.pageobjects.web.UnmuteModalDialogHelper;
-import org.jitsi.meet.test.util.MeetUIUtils;
-import org.jitsi.meet.test.util.TestUtils;
-import org.jitsi.meet.test.web.WebParticipant;
-import org.jitsi.meet.test.web.WebTestBase;
-import org.openqa.selenium.WebDriver;
+import org.jitsi.meet.test.pageobjects.web.*;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * Tests the A-V moderation functionality.
