@@ -23,8 +23,8 @@ import org.jitsi.meet.test.util.MeetUIUtils;
 import org.jitsi.meet.test.util.TestUtils;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.jitsi.meet.test.web.WebTestBase;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.assertFalse;
@@ -102,6 +102,10 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant3.getNotifications().getModerationStartNotification();
 
+        // wait for the moderation start notification to disappear
+        TestUtils.waitForCondition(participant3.getDriver(), 8,
+            (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
+
         raiseHandToSpeak(participant3);
 
         askParticipantToUnmute(participant3);
@@ -139,8 +143,7 @@ public class AudioVideoModerationTest extends WebTestBase
         participant2.hangUp();
         participant3.hangUp();
 
-        joinSecondParticipant();
-        joinThirdParticipant();
+        ensureThreeParticipants();
 
         participant2.muteAudio(true);
         participant3.muteAudio(true);
@@ -163,7 +166,7 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             participant2.getParticipantsPane().open();
 
-            participant2.getParticipantsPane().askToUnmute();
+            participant2.getParticipantsPane().askToUnmute(participant3);
 
             participant3.getNotifications().getAskToUnmuteNotification();
 
@@ -182,7 +185,7 @@ public class AudioVideoModerationTest extends WebTestBase
         {
             participant3.getParticipantsPane().open();
 
-            participant3.getParticipantsPane().askToUnmuteAfterReload(participant2);
+            participant3.getParticipantsPane().askToUnmute(participant2);
 
             participant2.getNotifications().getAskToUnmuteNotification();
 
@@ -222,7 +225,7 @@ public class AudioVideoModerationTest extends WebTestBase
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
 
-        participantsPane.askToUnmute();
+        participantsPane.askToUnmute(participant);
 
         participant.getNotifications().getAskToUnmuteNotification();
     }

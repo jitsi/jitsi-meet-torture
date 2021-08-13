@@ -61,32 +61,16 @@ public class ParticipantsPane
     }
 
     /**
-     * Trys to click ask to unmute button.
-     */
-    public void askToUnmute()
-    {
-        WebElement meetingParticipantListItem =
-                participant.getDriver().findElement(By.id("raised-hand-participant"));
-
-        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
-        hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
-        hoverOnMeetingParticipantListItem.perform();
-
-        clickAskToUnmuteButton();
-    }
-
-    /**
      * Trys to click ask to unmute button after moderator reloads.
      *
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void askToUnmuteAfterReload(WebParticipant participantToUnmute)
+    public void askToUnmute(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
-        WebElement meetingParticipantListItem =
-                participant.getDriver().findElement(
-                        By.id("participant-item-" + remoteParticipantEndpointId)
-                );
+
+        WebElement meetingParticipantListItem = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id("participant-item-" + remoteParticipantEndpointId), 5);
 
         Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
@@ -97,30 +81,15 @@ public class ParticipantsPane
 
     /**
      * Try to click on the ask to unmute button and fails if it cannot be clicked.
-     */
-    public void clickAskToUnmuteButton()
-    {
-        MeetUIUtils.clickOnElement(
-                participant.getDriver(),
-                MeetUIUtils.getAccessibilityCSSSelector(ASK_TO_UNMUTE),
-                true
-        );
-    }
-
-    /**
-     * Try to click on the ask to unmute button and fails if it cannot be clicked.
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
     public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
-        MeetUIUtils.clickOnElement(
-                participant.getDriver(),
-                MeetUIUtils.getAccessibilityCSSSelector(
-                        "unmute-" + remoteParticipantEndpointId
-                ),
-                true
-        );
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector("unmute-" + remoteParticipantEndpointId);
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
     }
 
     /**

@@ -242,6 +242,15 @@ public class Notifications
     }
 
     /**
+     * Whether there is a notification on participants page when moderation starts.
+     * @return <tt>true</tt> if the notification is found.
+     */
+    public boolean hasModerationStartNotification()
+    {
+        return hasNotification(MODERATION_START_NOTIFICATION_ID);
+    }
+
+    /**
      * The notification on participants page when moderation stops.
      * @return the notification on participants page when moderation stops.
      */
