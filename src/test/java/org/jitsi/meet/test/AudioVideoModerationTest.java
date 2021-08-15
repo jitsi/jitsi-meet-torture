@@ -21,6 +21,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
@@ -49,9 +50,10 @@ public class AudioVideoModerationTest extends WebTestBase
         participant2 = getParticipant2();
         participant3 = getParticipant3();
 
-        assertTrue(participant1.isModerator(), "Participant 1 must be moderator");
-        assertFalse(participant2.isModerator(), "Participant 2 must not be moderator");
-        assertFalse(participant3.isModerator(), "Participant 3 must not be moderator");
+        if (participant1.isModerator() && participant2.isModerator() && participant3.isModerator())
+        {
+            throw new SkipException("Skipping as all participants are moderators.");
+        }
     }
 
     /**
