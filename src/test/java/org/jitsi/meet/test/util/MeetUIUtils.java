@@ -1159,6 +1159,47 @@ public class MeetUIUtils
     }
 
     /**
+     * Toggles mute/unmute <tt>participant</tt>'s audio, checks if the local UI has been
+     * updated accordingly and then does the verification from
+     * the <tt>participantCheck</tt> perspective.
+     * @param participant the {@link WebParticipant} of the participant to be
+     * "audio unmuted"
+     * @param participantCheck the {@link WebParticipant} of the participant
+     * which observes and checks if the audio has been unmuted correctly.
+     * @param isMuted the {@link Boolean} of the participant
+     * which checks if the audio is muted.
+     * @param isVideo the {@link Boolean} of the participant
+     * which checks for video or audio.
+     */
+    public static void toggleAudioAndCheck(WebParticipant participant,
+                                           WebParticipant participantCheck,
+                                           Boolean isMuted,
+                                           Boolean isVideo)
+    {
+        WebDriver driver = participant.getDriver();
+
+        // Make sure that there is the audio mute button
+        participant.getToolbar().waitForAudioMuteButtonDisplay();
+
+        // Mute participant's audio
+        participant.getToolbar().clickAudioMuteButton();
+
+        // Check if local audio muted icon disappeared
+        assertMuteIconIsDisplayed(
+                driver, driver, isMuted, isVideo, participant.getName());
+
+        if (participantCheck != null)
+        {
+            MeetUIUtils.assertMuteIconIsDisplayed(
+                    participantCheck.getDriver(),
+                    driver,
+                    isMuted,
+                    isVideo,
+                    "");
+        }
+    }
+
+    /**
      * Checks whether a participant is viewing the conference in tile view.
      *
      * @param participant the <tt>WebParticipant</tt> of the participant for

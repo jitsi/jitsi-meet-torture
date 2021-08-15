@@ -3,6 +3,7 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.*;
 
@@ -19,10 +20,18 @@ public class ParticipantsPane
      */
     private final static String INVITE = "Invite Someone";
 
+    private final static String ASK_TO_UNMUTE = "Ask to unmute";
+
+
+    /**
+     * The ID of the context menu button.
+     */
+    private final static String CONTEXT_MENU = "participants-pane-context-menu";
+
     /**
      * Classname of the closed/hidden participants pane
      */
-    private final static String PANE_CLOSED = "participants_pane--closed";
+    private final static String PARTICIPANTS_PANE = "participants_pane";
 
     /**
      * The participant.
@@ -52,14 +61,88 @@ public class ParticipantsPane
     }
 
     /**
+     * Trys to click ask to unmute button after moderator reloads.
+     *
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void askToUnmute(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+
+        WebElement meetingParticipantListItem = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id("participant-item-" + remoteParticipantEndpointId), 5);
+
+        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
+        hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
+        hoverOnMeetingParticipantListItem.perform();
+
+        clickAskToUnmuteButtonById(participantToUnmute);
+    }
+
+    /**
+     * Try to click on the ask to unmute button and fails if it cannot be clicked.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector("unmute-" + remoteParticipantEndpointId);
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+
+    /**
+     * Trys to click on the context menu button and fails if it cannot be clicked.
+     */
+    public void clickContextMenuButton()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement contextMenuButton
+                = driver.findElement(By.id(CONTEXT_MENU));
+
+        contextMenuButton.click();
+    }
+
+    /**
+     * Clicks the "participants" toolbar button to open the participants pane.
+     */
+    public void open()
+    {
+        participant.getToolbar().clickParticipantsButton();
+        waitForVisible();
+    }
+
+    /**
+     * Clicks the "participants" toolbar button to close the participants pane.
+     */
+    public void close()
+    {
+        participant.getToolbar().clickParticipantsButton();
+        waitForHidden();
+    }
+
+    /**
      * Waits up to 3 seconds for the participants pane to be visible.
      */
     public void waitForVisible()
     {
         TestUtils.waitForElementDisplayToBe(
             participant.getDriver(),
-            By.className(PANE_CLOSED),
+            By.className(PARTICIPANTS_PANE),
             3,
-            false);
+            true);
+    }
+
+    /**
+     * Waits up to 3 seconds for the participants pane to be hidden.
+     */
+    public void waitForHidden()
+    {
+        TestUtils.waitForElementDisplayToBe(
+                participant.getDriver(),
+                By.className(PARTICIPANTS_PANE),
+                3,
+                false);
     }
 }

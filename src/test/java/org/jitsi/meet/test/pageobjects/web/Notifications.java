@@ -68,6 +68,32 @@ public class Notifications
      */
     private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
 
+    /**
+     * The test id of the notification shown to muted by moderator users.
+     */
+    private static final String AUDIO_MODERATION_NOTIFICATION_ID = "notify.moderationInEffectTitle";
+
+    /**
+     * The test id of the notification shown to users when moderation started.
+     */
+    private static final String MODERATION_START_NOTIFICATION_ID = "notify.moderationStartedTitle";
+
+    /**
+     * The test id of the notification shown to users when moderation stopped.
+     */
+    private static final String MODERATION_STOP_NOTIFICATION_ID = "notify.moderationStoppedTitle";
+
+    /**
+     * The test id of the notification shown to moderator when participant wants to speak.
+     */
+    private static final String RAISE_HAND_NOTIFICATION_ID = "notify.raisedHand";
+
+    /**
+     * The test id of the notification shown to participant when moderator asks to unmute.
+     */
+    private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.unmute";
+
+
     public Notifications(WebParticipant participant)
     {
         this.participant = participant;
@@ -195,5 +221,59 @@ public class Notifications
     public boolean hasKickedNotification()
     {
         return hasNotification(KICKED_NOTIFICATION_TEST_ID);
+    }
+
+    /**
+     * The notification on participants page when the participant tries to unmute.
+     * @return the notification on participants page when the participant tries to unmute.
+     */
+    public String getAudioModerationNotification()
+    {
+        return getNotificationText(AUDIO_MODERATION_NOTIFICATION_ID);
+    }
+
+    /**
+     * The notification on participants page when moderation starts.
+     * @return the notification on participants page when moderation starts.
+     */
+    public String getModerationStartNotification()
+    {
+        return getNotificationText(MODERATION_START_NOTIFICATION_ID);
+    }
+
+    /**
+     * Whether there is a notification on participants page when moderation starts.
+     * @return <tt>true</tt> if the notification is found.
+     */
+    public boolean hasModerationStartNotification()
+    {
+        return hasNotification(MODERATION_START_NOTIFICATION_ID);
+    }
+
+    /**
+     * The notification on participants page when moderation stops.
+     * @return the notification on participants page when moderation stops.
+     */
+    public String getModerationStopNotification()
+    {
+        return getNotificationText(MODERATION_STOP_NOTIFICATION_ID);
+    }
+
+    /**
+     * The notification on moderators page when the participant tries to unmute.
+     * @return the notification on moderators page when the participant wants to unmute.
+     */
+    public String getRaisedHandNotification()
+    {
+        return getNotificationText(RAISE_HAND_NOTIFICATION_ID);
+    }
+
+    /**
+     * The notification on participants page when the moderator asks to unmute.
+     * @return the notification on participants page when the moderator asks to unmute.
+     */
+    public String getAskToUnmuteNotification()
+    {
+        return getNotificationText(ASK_TO_UNMUTE_NOTIFICATION_ID);
     }
 }
