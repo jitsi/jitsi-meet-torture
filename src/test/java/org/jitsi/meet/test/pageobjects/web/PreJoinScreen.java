@@ -18,6 +18,7 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 
 /**
  * The pre join screen representation.
@@ -28,6 +29,11 @@ public class PreJoinScreen
      * The participant used to interact with the pre join screen.
      */
     private final WebParticipant participant;
+
+    /**
+     * The testId of the join meeting button.
+     */
+    private final static String PREJOIN_SCREEN_TEST_ID = "prejoin.screen";
 
     /**
      * The testId of the join meeting button.
@@ -59,8 +65,8 @@ public class PreJoinScreen
      */
     public void waitForLoading()
     {
-        // pre join and lobby share the same id for the UI
-        this.participant.getLobbyScreen().waitForLoading();
+        new WebDriverWait(this.participant.getDriver(), 3).until(
+            (ExpectedCondition<Boolean>) d -> d.findElements(ByTestId.testId(PREJOIN_SCREEN_TEST_ID)).size() > 0);
     }
 
     /**
