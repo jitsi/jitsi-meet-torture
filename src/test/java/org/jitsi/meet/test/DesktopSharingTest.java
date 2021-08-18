@@ -251,20 +251,11 @@ public class DesktopSharingTest
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
 
-        // one inactive icon should appear in few seconds
-        MeetUIUtils.waitForNinjaIcon(driver4);
-
-        // and there is video for the other participant
-        String participant1EndpointId = participant1.getEndpointId();
-        String participant2EndpointId = participant2.getEndpointId();
-
-        MeetUIUtils.waitForNinjaIcon(driver4, participant1EndpointId);
-
-        boolean p1IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant1EndpointId);
-
-        assertTrue(p1IsNinja, "Participant 1 should be ninja");
+        // participant 1 should eventually become a ninja (outside lastN).
+        MeetUIUtils.waitForNinjaIcon(driver4, participant1.getEndpointId());
 
         // check participant 2 whether video is received
+        String participant2EndpointId = participant2.getEndpointId();
         MeetUIUtils.waitForRemoteVideo(driver4, participant2EndpointId, true);
         // We are getting too many false positives here we need to add
         // some debugs and investigate, will comment for now to stop failing PR tests randomly
