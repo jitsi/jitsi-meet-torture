@@ -258,6 +258,8 @@ public class DesktopSharingTest
         String participant1EndpointId = participant1.getEndpointId();
         String participant2EndpointId = participant2.getEndpointId();
 
+        MeetUIUtils.waitForNinjaIcon(driver4, participant1EndpointId);
+
         boolean p1IsNinja = MeetUIUtils.hasNinjaUserConnStatusIndication(driver4, participant1EndpointId);
 
         assertTrue(p1IsNinja, "Participant 1 should be ninja");
