@@ -24,7 +24,6 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
-import static org.testng.Assert.*;
 
 /**
  * Tests the A-V moderation functionality.
@@ -97,8 +96,6 @@ public class AudioVideoModerationTest extends WebTestBase
 
         avModerationMenu.clickStartModeration();
 
-        participant3.getNotifications().getModerationStartNotification();
-
         // wait for the moderation start notification to disappear
         TestUtils.waitForCondition(participant3.getDriver(), 8,
             (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
@@ -125,7 +122,9 @@ public class AudioVideoModerationTest extends WebTestBase
 
         avModerationMenu.clickStopModeration();
 
-        participant2.getNotifications().getModerationStopNotification();
+        // wait for the moderation stop notification to disappear
+        TestUtils.waitForCondition(participant2.getDriver(), 8,
+                (ExpectedCondition<Boolean>) d -> !participant2.getNotifications().hasModerationStopNotification());
 
         participantsPane.close();
     }
@@ -204,11 +203,6 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     private void raiseHandToSpeak(WebParticipant participant)
     {
-        participant.getToolbar().clickAudioMuteButton();
-
-        participant.getNotifications().getAudioModerationNotification();
-
-
         participant.getToolbar().clickRaiseHandButton();
 
         participant1.getNotifications().getRaisedHandNotification();
