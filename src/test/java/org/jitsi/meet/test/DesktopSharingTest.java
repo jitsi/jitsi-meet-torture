@@ -216,11 +216,13 @@ public class DesktopSharingTest
             10);
     }
 
+    /**
+     * Test screensharing with lastN. We add p4 with lastN=2 and verify that it receives the expected streams.
+     */
     @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
     public void testLastNAndScreenshare()
     {
         hangUpAllParticipants();
-
         ensureThreeParticipants();
 
         WebParticipant participant1 = getParticipant1();
@@ -228,35 +230,36 @@ public class DesktopSharingTest
         WebParticipant participant3 = getParticipant3();
 
         participant3.getToolbar().clickDesktopSharingButton();
-        // Let's make sure participant1 is not dominant
+
         participant1.getToolbar().clickAudioMuteButton();
-
-        WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
-            .appendConfig("config.channelLastN=2").appendConfig("config.startWithAudioMuted=true"));
-        WebDriver driver4 = participant4.getDriver();
-
-        testDesktopSharingInPresence(participant1, participant3, "desktop");
-        testDesktopSharingInPresence(participant2, participant3, "desktop");
-
-        // Let's make sure participant3 is not dominant
         participant3.getToolbar().clickAudioMuteButton();
 
-        String participant3EndpointId = participant3.getEndpointId();
+        WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
+            .appendConfig("config.channelLastN=2")
+            .appendConfig("config.startWithAudioMuted=true"));
+        WebDriver driver4 = participant4.getDriver();
 
-        // video on large, the screenshare from p3
-        MeetUIUtils.waitsForLargeVideoSwitch(driver4, participant3EndpointId);
+        // We now have p1, p2, p3, p4.
+        // p3 is screensharing.
+        // p1, p3, p4 are audio muted, so p2 should eventually become dominant speaker.
 
-        // the video should be playing
+        // Participants should have received signaling that p3 is screensharing.
+        testDesktopSharingInPresence(participant1, participant3, "desktop");
+        testDesktopSharingInPresence(participant2, participant3, "desktop");
+        testDesktopSharingInPresence(participant4, participant3, "desktop");
+
+        // Participants should display p3 on-stage because it is screensharing.
+        MeetUIUtils.waitsForLargeVideoSwitch(driver4, participant3.getEndpointId());
+        // And the video should be playing
         TestUtils.waitForBoolean(driver4,
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
 
-        // participant 1 should eventually become a ninja (outside lastN).
+        // Participant4 has lastN=2 and has selected p3. With p2 being dominant speaker p4 should eventually
+        // see video for [p3, p2] and p1 as ninja.
         MeetUIUtils.waitForNinjaIcon(driver4, participant1.getEndpointId());
 
-        // check participant 2 whether video is received
-        String participant2EndpointId = participant2.getEndpointId();
-        MeetUIUtils.waitForRemoteVideo(driver4, participant2EndpointId, true);
+        MeetUIUtils.waitForRemoteVideo(driver4, participant2.getEndpointId(), true);
         // We are getting too many false positives here we need to add
         // some debugs and investigate, will comment for now to stop failing PR tests randomly
         //MeetUIUtils.waitForRemoteVideo(driver4, participant1EndpointId, false);
@@ -269,7 +272,9 @@ public class DesktopSharingTest
             participant1.getToolbar().clickAudioMuteButton();
             participant2.getToolbar().clickAudioMuteButton();
 
-            MeetUIUtils.waitForNinjaIcon(driver4, participant2EndpointId);
+            // Participant4 should eventually see video for [p3, p1] and p2 as a ninja.
+            MeetUIUtils.waitForNinjaIcon(driver4, participant2.getEndpointId());
+            MeetUIUtils.waitForRemoteVideo(driver4, participant1.getEndpointId(), true);
         }
     }
 }
