@@ -245,10 +245,6 @@ public class AudioVideoModerationTest extends WebTestBase
      */
     public void clickCloseAskToUnmuteNotification(WebParticipant participant)
     {
-        WebDriver driver = participant.getDriver();
-        WebElement startModerationMenuItem
-                = driver.findElement(ByTestId.testId(NOTIFY_UNMUTE_DISMISS_ID));
-
-        startModerationMenuItem.click();
+        TestUtils.click(participant.getDriver(), ByTestId.testId(NOTIFY_UNMUTE_DISMISS_ID));
     }
 }
