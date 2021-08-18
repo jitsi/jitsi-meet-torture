@@ -49,12 +49,12 @@ public class Notifications
     private static final String LOBBY_NOTIFICATIONS_TITLE_TEST_ID = "lobby.notificationTitle";
 
     /**
-     * The test id of the notification that a someone's access was denied.
+     * The test id of the notification that someone's access was denied.
      */
     private static final String LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID = "lobby.notificationLobbyAccessDenied";
 
     /**
-     * The test id of the notification that a someone's access was approved.
+     * The test id of the notification that someone's access was approved.
      */
     private static final String LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID = "lobby.notificationLobbyAccessGranted";
 
@@ -67,11 +67,6 @@ public class Notifications
      * The test id of the notification shown to kicked users.
      */
     private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
-
-    /**
-     * The test id of the notification shown to muted by moderator users.
-     */
-    private static final String AUDIO_MODERATION_NOTIFICATION_ID = "notify.moderationInEffectTitle";
 
     /**
      * The test id of the notification shown to users when moderation started.
@@ -163,8 +158,8 @@ public class Notifications
     }
 
     /**
-     * The notification test that a someone's access was denied.
-     * @return the notification test that a someone's access was denied.
+     * The notification test that someone's access was denied.
+     * @return the notification test that someone's access was denied.
      */
     public String getLobbyParticipantAccessDenied()
     {
@@ -180,8 +175,8 @@ public class Notifications
     }
 
     /**
-     * The notification that a someone's access was approved.
-     * @return the notification that a someone's access was approved.
+     * The notification that someone's access was approved.
+     * @return the notification that someone's access was approved.
      */
     public String getLobbyParticipantAccessGranted()
     {
@@ -197,8 +192,8 @@ public class Notifications
     }
 
     /**
-     * Returns whether the notification for access denied to enter lobby is shown.
-     * @return whether the notification for access denied to enter lobby is shown.
+     * Returns whether the notification for access denied for entering the lobby is shown.
+     * @return whether the notification for access denied for entering the lobby is shown.
      */
     public boolean hasLobbyAccessDenied()
     {
@@ -221,15 +216,6 @@ public class Notifications
     public boolean hasKickedNotification()
     {
         return hasNotification(KICKED_NOTIFICATION_TEST_ID);
-    }
-
-    /**
-     * The notification on participants page when the participant tries to unmute.
-     * @return the notification on participants page when the participant tries to unmute.
-     */
-    public String getAudioModerationNotification()
-    {
-        return getNotificationText(AUDIO_MODERATION_NOTIFICATION_ID);
     }
 
     /**
@@ -257,6 +243,15 @@ public class Notifications
     public String getModerationStopNotification()
     {
         return getNotificationText(MODERATION_STOP_NOTIFICATION_ID);
+    }
+
+    /**
+     * Whether there is a notification on participants page when moderation stops.
+     * @return <tt>true</tt> if the notification is found.
+     */
+    public boolean hasModerationStopNotification()
+    {
+        return hasNotification(MODERATION_STOP_NOTIFICATION_ID);
     }
 
     /**

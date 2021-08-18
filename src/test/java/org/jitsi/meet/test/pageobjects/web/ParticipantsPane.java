@@ -20,9 +20,6 @@ public class ParticipantsPane
      */
     private final static String INVITE = "Invite Someone";
 
-    private final static String ASK_TO_UNMUTE = "Ask to unmute";
-
-
     /**
      * The ID of the context menu button.
      */
