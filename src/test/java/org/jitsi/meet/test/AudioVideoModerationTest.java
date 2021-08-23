@@ -235,6 +235,8 @@ public class AudioVideoModerationTest extends WebTestBase
 
         UnmuteModalDialogHelper.hasUnmuteButton(participant1.getDriver());
 
+        // FIXME: Showing remote video menu in tileview does not work (3-dot menu behind subject)
+        participant1.getToolbar().clickTileViewButton();
         participant1
             .getRemoteParticipantById(participant2.getEndpointId())
             .grantModerator();
