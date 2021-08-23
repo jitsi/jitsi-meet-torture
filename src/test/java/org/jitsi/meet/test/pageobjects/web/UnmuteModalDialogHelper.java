@@ -49,4 +49,14 @@ public class UnmuteModalDialogHelper
     {
         TestUtils.click(driver, By.id(DISMISS_BUTTON));
     }
+
+    /**
+     * Checks whether there is unmute button, waits 2 seconds for the button to appear if missing.
+     * @param driver the driver to check.
+     * @return <tt>true</tt>
+     */
+    public static boolean hasUnmuteButton(WebDriver driver)
+    {
+        return TestUtils.waitForElementBy(driver, By.id(UNMUTE_BUTTON), 2) != null;
+    }
 }

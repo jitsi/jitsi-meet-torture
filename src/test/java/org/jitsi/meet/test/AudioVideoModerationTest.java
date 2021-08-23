@@ -205,6 +205,46 @@ public class AudioVideoModerationTest extends WebTestBase
     }
 
     /**
+     * Test that after granting moderator to a participant, that new moderator sees the existing requests for unmute.
+     */
+    @Test(dependsOnMethods = { "testHangUpAndChangeModerator" })
+    public void testGrantModerator()
+    {
+        hangUpAllParticipants();
+
+        ensureThreeParticipants();
+
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+
+        participantsPane.open();
+
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStartModeration();
+
+        participant2.getNotifications().getModerationStartNotification();
+
+        participantsPane.close();
+
+        // wait for the moderation start notification to disappear
+        TestUtils.waitForCondition(participant3.getDriver(), 10,
+            (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
+
+        raiseHandToSpeak(participant3);
+
+        UnmuteModalDialogHelper.hasUnmuteButton(participant1.getDriver());
+
+        participant1
+            .getRemoteParticipantById(participant2.getEndpointId())
+            .grantModerator();
+
+        participant2.waitToBecomeModerator();
+
+        UnmuteModalDialogHelper.hasUnmuteButton(participant2.getDriver());
+    }
+
+    /**
      * Participant raises hand to speak during moderation
      * @param participant the participant that wants to speak
      */

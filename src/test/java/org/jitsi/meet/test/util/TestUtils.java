@@ -78,7 +78,17 @@ public class TestUtils
         WebElement element = wait.until(
             ExpectedConditions.elementToBeClickable(by));
 
-        element.click();
+        try
+        {
+            element.click();
+        }
+        catch (StaleElementReferenceException e)
+        {
+            // when we want to click on notification and a new one comes
+            // we can hit StaleElementReferenceException because of re-render
+            // a workaround is to try again
+            driver.findElement(by).click();
+        }
     }
 
     /**
