@@ -77,6 +77,11 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant2.getNotifications().getModerationStartNotification();
 
+        // wait for the moderation start notification to disappear
+        // it may interfere with the stopping (showing the context menu)
+        TestUtils.waitForCondition(participant1.getDriver(), 8,
+            (ExpectedCondition<Boolean>) d -> !participant1.getNotifications().hasModerationStartNotification());
+
         participantsPane.clickContextMenuButton();
 
         avModerationMenu.clickStopModeration();
