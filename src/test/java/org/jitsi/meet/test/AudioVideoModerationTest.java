@@ -77,6 +77,11 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant2.getNotifications().getModerationStartNotification();
 
+        // wait for the moderation start notification to disappear
+        // it may interfere with the stopping (showing the context menu)
+        TestUtils.waitForCondition(participant1.getDriver(), 8,
+            (ExpectedCondition<Boolean>) d -> !participant1.getNotifications().hasModerationStartNotification());
+
         participantsPane.clickContextMenuButton();
 
         avModerationMenu.clickStopModeration();
@@ -202,6 +207,49 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant3.getParticipantsPane().close();
         }
+    }
+
+    /**
+     * Test that after granting moderator to a participant, that new moderator sees the existing requests for unmute.
+     */
+    @Test(dependsOnMethods = { "testHangUpAndChangeModerator" })
+    public void testGrantModerator()
+    {
+        hangUpAllParticipants();
+
+        ensureThreeParticipants();
+
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+
+        participantsPane.open();
+
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStartModeration();
+
+        participant2.getNotifications().getModerationStartNotification();
+
+        participantsPane.close();
+
+        // wait for the moderation start notification to disappear
+        TestUtils.waitForCondition(participant3.getDriver(), 10,
+            (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
+
+        // FIXME: Showing remote video menu in tileview does not work (3-dot menu behind subject)
+        participant1.getToolbar().clickTileViewButton();
+
+        raiseHandToSpeak(participant3);
+
+        UnmuteModalDialogHelper.hasUnmuteButton(participant1.getDriver());
+
+        participant1
+            .getRemoteParticipantById(participant2.getEndpointId())
+            .grantModerator();
+
+        participant2.waitToBecomeModerator();
+
+        UnmuteModalDialogHelper.hasUnmuteButton(participant2.getDriver());
     }
 
     /**
