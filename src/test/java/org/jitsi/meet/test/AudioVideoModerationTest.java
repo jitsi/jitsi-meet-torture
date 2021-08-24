@@ -231,12 +231,13 @@ public class AudioVideoModerationTest extends WebTestBase
         TestUtils.waitForCondition(participant3.getDriver(), 10,
             (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
 
+        // FIXME: Showing remote video menu in tileview does not work (3-dot menu behind subject)
+        participant1.getToolbar().clickTileViewButton();
+
         raiseHandToSpeak(participant3);
 
         UnmuteModalDialogHelper.hasUnmuteButton(participant1.getDriver());
 
-        // FIXME: Showing remote video menu in tileview does not work (3-dot menu behind subject)
-        participant1.getToolbar().clickTileViewButton();
         participant1
             .getRemoteParticipantById(participant2.getEndpointId())
             .grantModerator();
