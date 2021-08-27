@@ -1,24 +1,32 @@
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>iframe API test</title>
 </head>
 <body>
 <script>
     const params = new URLSearchParams(document.location.search);
     const config = JSON.parse(params.get("config"));
+    const interfaceConfig = JSON.parse(params.get("interfaceConfig"));
+
+    const uInfoObj = params.get("userInfo");
+    const userInfo = uInfoObj && uInfoObj.length > 0 ?
+        JSON.parse(uInfoObj) : undefined;
 
     var domain = params.get("domain");
     var options = {
         roomName: params.get("room"),
-        configOverwrite: config
+        configOverwrite: config,
+        interfaceConfigOverwrite: interfaceConfig,
+        userInfo
     };
 
     var externalAPIScript = document.createElement('script');
     externalAPIScript.src = `https://${domain}/external_api.js`;
     externalAPIScript.type = "text/javascript";
     externalAPIScript.onload = function(){
-        var api = new JitsiMeetExternalAPI(domain, options);
+        window.jitsiAPI = new JitsiMeetExternalAPI(domain, options);
     }
     document.getElementsByTagName('head')[0].appendChild(externalAPIScript);
 </script>
