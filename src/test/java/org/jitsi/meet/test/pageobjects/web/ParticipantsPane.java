@@ -3,7 +3,7 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.*;
 
 import java.util.*;
 
@@ -94,9 +94,8 @@ public class ParticipantsPane
      */
     public void clickContextMenuButton()
     {
-        WebDriver driver = participant.getDriver();
-        WebElement contextMenuButton
-                = driver.findElement(By.id(CONTEXT_MENU));
+        WebElement contextMenuButton = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id(CONTEXT_MENU), 3);
 
         contextMenuButton.click();
     }

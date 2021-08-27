@@ -1,11 +1,10 @@
 package org.jitsi.meet.test.pageobjects.web;
 
-import org.jitsi.meet.test.web.WebParticipant;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents the av moderation context menu in a particular {@link WebParticipant}.
@@ -42,9 +41,8 @@ public class AVModerationMenu
      */
     public void clickStartModeration()
     {
-        WebDriver driver = participant.getDriver();
-        WebElement startModerationMenuItem
-                = driver.findElement(By.id(START_MODERATION));
+        WebElement startModerationMenuItem = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id(START_MODERATION), 3);
 
         startModerationMenuItem.click();
     }
@@ -54,9 +52,8 @@ public class AVModerationMenu
      */
     public void clickStopModeration()
     {
-        WebDriver driver = participant.getDriver();
-        WebElement startModerationMenuItem
-                = driver.findElement(By.id(STOP_MODERATION));
+        WebElement startModerationMenuItem = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id(STOP_MODERATION), 3);
 
         startModerationMenuItem.click();
     }
