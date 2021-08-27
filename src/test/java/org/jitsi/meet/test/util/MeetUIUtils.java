@@ -34,6 +34,12 @@ import static org.testng.Assert.*;
 public class MeetUIUtils
 {
     /**
+     * The string template for finding thumbnail by endpoint id using xpath.
+     */
+    private static String REMOTE_THUMB_BY_ENDPOINT_ID_TMPL
+        = "//span[starts-with(@id, 'participant_%s') and contains(@class,'videocontainer')]";
+
+    /**
      * Check if on the large video there is "grey" avatar displayed and if not
      * fails the current test. The check consists of 3 steps:
      * 1. check if the "user is having networking issues" message is displayed
@@ -831,12 +837,7 @@ public class MeetUIUtils
     static public void selectRemoteVideo(WebDriver driver,
                                          String endpointId)
     {
-        String remoteThumbXpath
-            = "//span[starts-with(@id, 'participant_" + endpointId + "') "
-                + " and contains(@class,'videocontainer')]";
-
-        String remoteThumbVideoXpath
-            = remoteThumbXpath + "//video[starts-with(@id, 'remoteVideo_')]";
+        String remoteThumbXpath = String.format(REMOTE_THUMB_BY_ENDPOINT_ID_TMPL, endpointId);
 
         WebElement remoteThumbnail
             = TestUtils.waitForElementByXPath(
@@ -845,6 +846,21 @@ public class MeetUIUtils
 
         // click on remote
         remoteThumbnail.click();
+
+        waitForLargeVideoSwitchToEndpoint(driver, endpointId);
+    }
+
+    /**
+     * Waits for large video to switch to video for the endpoint id.
+     * @param driver the <tt>WebDriver</tt> instance on which the wait will
+     * be performed.
+     * @param endpointId the <tt>WebDriver</tt> instance which belongs to
+     * the participant that is to be displayed on "the large video".
+     */
+    static public void waitForLargeVideoSwitchToEndpoint(WebDriver driver, String endpointId)
+    {
+        String remoteThumbVideoXpath
+            = String.format(REMOTE_THUMB_BY_ENDPOINT_ID_TMPL, endpointId) + "//video[starts-with(@id, 'remoteVideo_')]";
 
         WebElement remoteThumbnailVideo
             = TestUtils.waitForElementByXPath(
@@ -879,7 +895,7 @@ public class MeetUIUtils
      * @param expectedVideoSrc a string which identifies the video stream
      * (the source set on HTML5 video element to attach WebRTC media stream).
      */
-    static private void waitForLargeVideoSwitch(
+    public static void waitForLargeVideoSwitch(
         WebDriver driver,
         final String expectedVideoSrc)
     {

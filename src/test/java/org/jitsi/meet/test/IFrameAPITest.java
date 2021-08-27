@@ -53,7 +53,7 @@ public class IFrameAPITest
     private static final String IFRAME_ROOM_NAME = "iframeAPITest.html";
 
     /**
-     * A url for a page that loads the iframe API.
+     * An url for a page that loads the iframe API.
      */
     private static final String IFRAME_ROOM_PARAMS
         = "domain=%s&room=%s"
@@ -119,7 +119,7 @@ public class IFrameAPITest
     }
 
     /**
-     * Switches to the meeting inside the iframe so we can execute UI tests.
+     * Switches to the meeting inside the iframe, so we can execute UI tests.
      * @param iFrameUrl the iframe page URL.
      * @param driver the driver to use.
      */
@@ -127,7 +127,7 @@ public class IFrameAPITest
     {
         if (iFrameUrl.getIframeToNavigateTo() != null)
         {
-            // let's wait for switch to that iframe so we can continue with regular tests
+            // let's wait for switch to that iframe, so we can continue with regular tests
             WebDriverWait wait = new WebDriverWait(driver, 10);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(iFrameUrl.getIframeToNavigateTo())));
@@ -179,7 +179,7 @@ public class IFrameAPITest
 
         this.iFrameUrl = getIFrameUrl(userInfo);
 
-        ensureOneParticipant(iFrameUrl);
+        ensureOneParticipant(this.iFrameUrl);
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver = participant1.getDriver();
@@ -197,7 +197,7 @@ public class IFrameAPITest
             participantsInfo.get("formattedDisplayName").getAsString().contains(displayName),
             "Wrong display name from iframeAPI.getParticipantsInfo");
 
-        switchToMeetContent(iFrameUrl, driver);
+        switchToMeetContent(this.iFrameUrl, driver);
 
         DisplayNameTest.checkDisplayNameOnLocalVideo(participant1, displayName);
 
@@ -238,5 +238,40 @@ public class IFrameAPITest
             "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
         // audio only switches to 180
         assertEquals(s, "180");
+
+        switchToMeetContent(this.iFrameUrl, driver);
+
+        AudioOnlyTest.setAudioOnly(participant1, false);
+    }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#pinparticipant
+     *
+     * Test pinning participant.
+     */
+    @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
+    public void testFunctionPinParticipant()
+    {
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        // the previous test left it in meeting content
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        // selects local
+        MeetUIUtils.selectLocalVideo(getParticipant1().getDriver());
+
+        String endpoint2Id = getParticipant2().getEndpointId();
+
+        switchToIframeAPI(driver1);
+        TestUtils.executeScriptAndReturnString(driver1,
+            "JSON.stringify(window.jitsiAPI.pinParticipant('" + endpoint2Id + "'));");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(
+            driver1,
+            endpoint2Id);
     }
 }
