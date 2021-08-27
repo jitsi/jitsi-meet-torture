@@ -257,10 +257,10 @@ public class IFrameAPITest
         WebDriver driver1 = participant1.getDriver();
 
         // the previous test left it in meeting content
-        ensureTwoParticipants(this.iFrameUrl, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
 
         // selects local
-        MeetUIUtils.selectLocalVideo(getParticipant1().getDriver());
+        MeetUIUtils.selectLocalVideo(driver1);
 
         String endpoint2Id = getParticipant2().getEndpointId();
 
@@ -270,8 +270,73 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(
-            driver1,
-            endpoint2Id);
+        // we must not be in tile view
+        MeetUIUtils.waitForTileViewDisplay(participant1, false);
+
+        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
+
+        // unpin second so we clear the state for next in line for testing
+        SwitchVideoTest.unpinRemoteVideoAndTest(participant1, endpoint2Id);
+    }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant
+     *
+     * Test selecting participant on large.
+     */
+    @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
+    public void testFunctionSetLargeVideoParticipant()
+    {
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
+        WebDriver driver1 = participant1.getDriver();
+        String endpoint2Id = participant2.getEndpointId();
+        String endpoint3Id = participant3.getEndpointId();
+
+        // selects third
+        switchToIframeAPI(driver1);
+        TestUtils.executeScriptAndReturnString(driver1,
+            "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant('" + endpoint3Id + "'));");
+
+        // will check that third is on large now
+        switchToMeetContent(this.iFrameUrl, driver1);
+        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
+
+        // we must not be in tile view
+        // FIXME: Currently there is a bug in jitsi-meet ans using setLargeVideoParticipant
+        // does not switch automatically yo stage view, when in grid view
+        getParticipant1().getToolbar().clickTileViewButton();
+        MeetUIUtils.waitForTileViewDisplay(participant1, false);
+
+        // selects second
+        switchToIframeAPI(driver1);
+        TestUtils.executeScriptAndReturnString(driver1,
+            "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant('" + endpoint2Id + "'));");
+
+        // will check that second is on large now
+        switchToMeetContent(this.iFrameUrl, driver1);
+        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
+
+        // mute second and first
+        participant2.getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickAudioMuteButton();
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
+
+        // only the third is unmuted
+        MeetUIUtils.waitForDominantspeaker(driver1, endpoint3Id);
+
+        switchToIframeAPI(driver1);
+        TestUtils.executeScriptAndReturnString(driver1, "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant());");
+
+        // will check that third - the dominant speaker is on large now
+        switchToMeetContent(this.iFrameUrl, driver1);
+        MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
     }
 }
