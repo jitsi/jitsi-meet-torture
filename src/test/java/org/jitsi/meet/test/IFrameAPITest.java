@@ -339,4 +339,41 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
     }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getnumberofparticipants
+     *
+     * Test retrieving number of participants.
+     */
+    @Test(dependsOnMethods = { "testFunctionSetLargeVideoParticipant" })
+    public void testFunctionGetNumberOfParticipants()
+    {
+        WebDriver driver1 = getParticipant1().getDriver();
+        switchToIframeAPI(driver1);
+
+        double numOfParticipants = TestUtils.executeScriptAndReturnDouble(driver1,
+            "return window.jitsiAPI.getNumberOfParticipants();");
+
+        assertEquals(numOfParticipants, 3d);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        getParticipant3().hangUp();
+
+        switchToIframeAPI(driver1);
+        numOfParticipants = TestUtils.executeScriptAndReturnDouble(driver1,
+            "return window.jitsiAPI.getNumberOfParticipants();");
+
+        assertEquals(numOfParticipants, 2d);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        switchToIframeAPI(driver1);
+
+        numOfParticipants = TestUtils.executeScriptAndReturnDouble(driver1,
+            "return window.jitsiAPI.getNumberOfParticipants();");
+
+        assertEquals(numOfParticipants, 3d);
+    }
 }
