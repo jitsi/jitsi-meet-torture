@@ -35,6 +35,9 @@ import static org.testng.Assert.*;
  * Loads the meeting and we switch to that iframe and then run several
  * tests over it, to make sure iframe API is working fine.
  *
+ * functions
+ * TODO Need to compare two images: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#capturelargevideoscreenshot
+ *
  * @author Damian Minkov
  */
 public class IFrameAPITest
@@ -56,6 +59,11 @@ public class IFrameAPITest
         = "domain=%s&room=%s"
         // here goes the default settings, used in Participant join function
         + "&config=%s&interfaceConfig=%s&userInfo=%s";
+
+    /**
+     * The url to be reused between tests.
+     */
+    private JitsiMeetUrl iFrameUrl;
 
     /**
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
@@ -102,6 +110,31 @@ public class IFrameAPITest
     }
 
     /**
+     * Switches selenium so to be able to execute iframeAPI commands.
+     * @param driver the driver to use.
+     */
+    private static void switchToIframeAPI(WebDriver driver)
+    {
+        driver.switchTo().defaultContent();
+    }
+
+    /**
+     * Switches to the meeting inside the iframe so we can execute UI tests.
+     * @param iFrameUrl the iframe page URL.
+     * @param driver the driver to use.
+     */
+    private static void switchToMeetContent(JitsiMeetUrl iFrameUrl, WebDriver driver)
+    {
+        if (iFrameUrl.getIframeToNavigateTo() != null)
+        {
+            // let's wait for switch to that iframe so we can continue with regular tests
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.id(iFrameUrl.getIframeToNavigateTo())));
+        }
+    }
+
+    /**
      * Opens the iframe and executes SwitchVideoTest and MuteTest.
      */
     @Test
@@ -135,7 +168,7 @@ public class IFrameAPITest
      * Tests and passing userInfo to JitsiMeetExternalAPI options
      */
     @Test(dependsOnMethods = { "testIFrameAPI" })
-    public void testGetParticipantsInfo()
+    public void testFunctionGetParticipantsInfo()
     {
         String displayName = "John Doe";
         String email = "email@jitsiexamplemail.com";
@@ -144,14 +177,14 @@ public class IFrameAPITest
         userInfo.addProperty("email", email);
         userInfo.addProperty("displayName", displayName);
 
-        JitsiMeetUrl iFrameUrl = getIFrameUrl(userInfo);
+        this.iFrameUrl = getIFrameUrl(userInfo);
 
         ensureOneParticipant(iFrameUrl);
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver = participant1.getDriver();
 
-        driver.switchTo().defaultContent();
+        switchToIframeAPI(driver);
         String s = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.getParticipantsInfo());");
 
@@ -164,13 +197,7 @@ public class IFrameAPITest
             participantsInfo.get("formattedDisplayName").getAsString().contains(displayName),
             "Wrong display name from iframeAPI.getParticipantsInfo");
 
-        if (iFrameUrl.getIframeToNavigateTo() != null)
-        {
-            // let's wait for switch to that iframe so we can continue with regular tests
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.id(iFrameUrl.getIframeToNavigateTo())));
-        }
+        switchToMeetContent(iFrameUrl, driver);
 
         DisplayNameTest.checkDisplayNameOnLocalVideo(participant1, displayName);
 
@@ -180,5 +207,36 @@ public class IFrameAPITest
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), displayName);
         assertEquals(settingsDialog.getEmail(), email);
+    }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getvideoquality
+     *
+     * Test retrieving video quality.
+     */
+    @Test(dependsOnMethods = { "testFunctionGetParticipantsInfo" })
+    public void testFunctionGetVideoQuality()
+    {
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver = participant1.getDriver();
+
+        switchToIframeAPI(driver);
+        String s = TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
+
+        // by default, we start with high quality
+        assertEquals(s, "2160");
+
+        switchToMeetContent(this.iFrameUrl, driver);
+
+        AudioOnlyTest.setAudioOnly(participant1, true);
+
+        switchToIframeAPI(driver);
+
+        s = TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
+        // audio only switches to 180
+        assertEquals(s, "180");
     }
 }
