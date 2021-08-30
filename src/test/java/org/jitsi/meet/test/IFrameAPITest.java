@@ -472,4 +472,31 @@ public class IFrameAPITest
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displayname
+     *
+     * Test command displayName
+     */
+    @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
+    public void testCommandDisplayName()
+    {
+        ensureOneParticipant(this.iFrameUrl);
+
+        String newName = "P1 New Name-" + (int) (Math.random() * 1_000_000);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('displayName', '" + newName + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getToolbar().clickSettingsButton();
+        SettingsDialog settingsDialog = participant1.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        assertEquals(settingsDialog.getDisplayName(), newName);
+    }
 }
