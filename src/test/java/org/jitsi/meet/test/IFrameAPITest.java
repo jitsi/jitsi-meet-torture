@@ -536,4 +536,42 @@ public class IFrameAPITest
 
         ensureTwoParticipants(this.iFrameUrl, getIFrameUrl(null, randomPassword));
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglelobby
+     *
+     * Test command toggleLobby.
+     */
+    @Test(dependsOnMethods = { "testCommandPassword" })
+    public void testCommandToggleLobby()
+    {
+        hangUpAllParticipants();
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleLobby', true);");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        joinSecondParticipant();
+
+        WebParticipant participant2 = getParticipant2();
+        LobbyScreen lobbyScreen = participant2.getLobbyScreen();
+
+        // participant 2 should be now on pre-join screen
+        lobbyScreen.waitForLoading();
+    }
 }
