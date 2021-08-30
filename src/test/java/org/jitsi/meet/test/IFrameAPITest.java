@@ -164,8 +164,9 @@ public class IFrameAPITest
     /**
      * Functions testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getparticipantsinfo
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getdisplayname
      *
-     * Tests and passing userInfo to JitsiMeetExternalAPI options
+     * Tests and passing userInfo to JitsiMeetExternalAPI options and getDisplayName
      */
     @Test(dependsOnMethods = { "testIFrameAPI" })
     public void testFunctionGetParticipantsInfo()
@@ -182,11 +183,14 @@ public class IFrameAPITest
         ensureOneParticipant(this.iFrameUrl);
 
         WebParticipant participant1 = getParticipant1();
+        String endpointId1 = participant1.getEndpointId();
         WebDriver driver = participant1.getDriver();
 
         switchToIframeAPI(driver);
         String s = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.getParticipantsInfo());");
+        String apiDisplayName = TestUtils.executeScriptAndReturnString(driver,
+            "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
 
         // returns an array of participants, in this case just us
         JsonObject participantsInfo
@@ -196,6 +200,7 @@ public class IFrameAPITest
         assertTrue(
             participantsInfo.get("formattedDisplayName").getAsString().contains(displayName),
             "Wrong display name from iframeAPI.getParticipantsInfo");
+        assertEquals(apiDisplayName, displayName);
 
         switchToMeetContent(this.iFrameUrl, driver);
 
@@ -207,6 +212,24 @@ public class IFrameAPITest
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), displayName);
         assertEquals(settingsDialog.getEmail(), email);
+
+        settingsDialog.close();
+
+        String newName = displayName + (int) (Math.random() * 1_000_000);
+        participant1.setDisplayName(newName);
+
+        participant1.getToolbar().clickSettingsButton();
+        settingsDialog = participant1.getSettingsDialog();
+        settingsDialog.waitForDisplay();
+        assertEquals(settingsDialog.getDisplayName(), newName);
+
+        // make sure we are not selecting local video so we mess up the pin tests later
+        MeetUIUtils.clickOnLocalVideo(driver);
+
+        switchToIframeAPI(driver);
+        apiDisplayName = TestUtils.executeScriptAndReturnString(driver,
+            "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
+        assertEquals(apiDisplayName, newName);
     }
 
     /**
