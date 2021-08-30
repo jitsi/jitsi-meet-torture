@@ -27,6 +27,7 @@ import org.testng.*;
 import org.testng.annotations.*;
 
 import java.net.*;
+import java.util.function.*;
 
 import static org.testng.Assert.*;
 
@@ -230,6 +231,8 @@ public class IFrameAPITest
         apiDisplayName = TestUtils.executeScriptAndReturnString(driver,
             "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
         assertEquals(apiDisplayName, newName);
+
+        switchToMeetContent(this.iFrameUrl, driver);
     }
 
     /**
@@ -241,6 +244,8 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionGetParticipantsInfo" })
     public void testFunctionGetVideoQuality()
     {
+        ensureOneParticipant(this.iFrameUrl);
+
         WebParticipant participant1 = getParticipant1();
         WebDriver driver = participant1.getDriver();
 
@@ -276,11 +281,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
     public void testFunctionPinParticipant()
     {
-        WebParticipant participant1 = getParticipant1();
-        WebDriver driver1 = participant1.getDriver();
-
         // the previous test left it in meeting content
         ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
 
         // selects local
         MeetUIUtils.selectLocalVideo(driver1);
@@ -311,6 +316,8 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
     public void testFunctionSetLargeVideoParticipant()
     {
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
         WebParticipant participant3 = getParticipant3();
@@ -361,6 +368,12 @@ public class IFrameAPITest
         // will check that third - the dominant speaker is on large now
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
+
+        // let's unmute everyone as it was initially
+        participant2.getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickAudioMuteButton();
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
     }
 
     /**
@@ -372,6 +385,8 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionSetLargeVideoParticipant" })
     public void testFunctionGetNumberOfParticipants()
     {
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
         WebDriver driver1 = getParticipant1().getDriver();
         switchToIframeAPI(driver1);
 
@@ -398,5 +413,63 @@ public class IFrameAPITest
             "return window.jitsiAPI.getNumberOfParticipants();");
 
         assertEquals(numOfParticipants, 3d);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+    }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isaudiomuted
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isvideomuted
+     *
+     * Test retrieving local audio/video muted state.
+     */
+    @Test(dependsOnMethods = { "testFunctionGetNumberOfParticipants" })
+    public void testFunctionIsAudioOrVideoMuted()
+    {
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+
+        Function<WebDriver, Boolean[]> getAPIAudioAndVideoState = d -> {
+            TestUtils.executeScript(d,
+                "return window.jitsiAPI.isAudioMuted().then(r => window.jitsiAPI.testisAudioOrVideoMutedR1 = r);");
+            TestUtils.executeScript(d,
+                "return window.jitsiAPI.isVideoMuted().then(r => window.jitsiAPI.testisAudioOrVideoMutedR2 = r);");
+
+            boolean result1 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisAudioOrVideoMutedR1;");
+            boolean result2 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisAudioOrVideoMutedR2;");
+
+            return new Boolean[] { result1, result2 };
+        };
+
+        switchToIframeAPI(driver1);
+        Boolean[] result = getAPIAudioAndVideoState.apply(driver1);
+
+        assertFalse(result[0], "Audio must be initially unmuted");
+        assertFalse(result[1], "Video must be initially unmuted");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickVideoMuteButton();
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
+
+        switchToIframeAPI(driver1);
+        result = getAPIAudioAndVideoState.apply(driver1);
+
+        assertTrue(result[0], "Audio must be muted");
+        assertTrue(result[1], "Video must be muted");
+
+        // let's revert to the initial state
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickVideoMuteButton();
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
     }
 }
