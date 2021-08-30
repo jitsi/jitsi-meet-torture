@@ -59,7 +59,9 @@ public class IFrameAPITest
     private static final String IFRAME_ROOM_PARAMS
         = "domain=%s&room=%s"
         // here goes the default settings, used in Participant join function
-        + "&config=%s&interfaceConfig=%s&userInfo=%s";
+        + "&config=%s&interfaceConfig=%s"
+        + "&userInfo=%s"
+        + "&password=%s";
 
     /**
      * The url to be reused between tests.
@@ -70,7 +72,7 @@ public class IFrameAPITest
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
      * @return url that will load a meeting in an iframe.
      */
-    private JitsiMeetUrl getIFrameUrl(JsonObject userInfo)
+    private JitsiMeetUrl getIFrameUrl(JsonObject userInfo, String password)
     {
         String pagePath = System.getProperty(IFRAME_PAGE_PATH_PNAME);
 
@@ -99,7 +101,8 @@ public class IFrameAPITest
             currentRoomName,
             defaultParams.get("config").toString(),
             defaultParams.get("interfaceConfig").toString(),
-            userInfo != null ? userInfo : "");
+            userInfo != null ? userInfo : "",
+            password != null ? password : "");
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);
@@ -141,7 +144,7 @@ public class IFrameAPITest
     @Test
     public void testIFrameAPI()
     {
-        JitsiMeetUrl iFrameUrl = getIFrameUrl(null);
+        JitsiMeetUrl iFrameUrl = getIFrameUrl(null, null);
 
         ensureOneParticipant(iFrameUrl);
         ensureThreeParticipants(iFrameUrl, null, null);
@@ -179,7 +182,7 @@ public class IFrameAPITest
         userInfo.addProperty("email", email);
         userInfo.addProperty("displayName", displayName);
 
-        this.iFrameUrl = getIFrameUrl(userInfo);
+        this.iFrameUrl = getIFrameUrl(userInfo, null);
 
         ensureOneParticipant(this.iFrameUrl);
 
@@ -498,5 +501,39 @@ public class IFrameAPITest
         SettingsDialog settingsDialog = participant1.getSettingsDialog();
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), newName);
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#password
+     *
+     * Test command password.
+     */
+    @Test(dependsOnMethods = { "testCommandDisplayName" })
+    public void testCommandPassword()
+    {
+        hangUpAllParticipants();
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        String randomPassword = "TestPassword" + (int) (Math.random() * 1_000_000);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('password', '" + randomPassword + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        ensureTwoParticipants(this.iFrameUrl, getIFrameUrl(null, randomPassword));
     }
 }
