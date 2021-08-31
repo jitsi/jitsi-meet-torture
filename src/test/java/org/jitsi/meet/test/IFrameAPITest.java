@@ -776,4 +776,42 @@ public class IFrameAPITest
 
         participant1.getChatPanel().assertClosed();
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggleraisehand
+     *
+     * Test command toggleRaiseHand.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleChat" })
+    public void testCommandToggleRaiseHand()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleRaiseHand');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d ->
+            participant2.getNotifications().hasRaisedHandNotification());
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleRaiseHand');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d ->
+            !participant2.getNotifications().hasRaisedHandNotification());
+    }
 }
