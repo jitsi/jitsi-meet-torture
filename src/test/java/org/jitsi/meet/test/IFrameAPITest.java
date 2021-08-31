@@ -574,4 +574,73 @@ public class IFrameAPITest
         // participant 2 should be now on pre-join screen
         lobbyScreen.waitForLoading();
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#startsharevideo
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#stopsharevideo
+     *
+     * Test command startShareVideo & stopShareVideo.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleLobby" })
+    public void testCommandStartStopShareVideo()
+    {
+        hangUpAllParticipants();
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('startShareVideo', '" + SharedVideoTest.V2_LINK + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForDisplayedElementByID(
+            driver1,
+            "sharedVideoPlayer",
+            10);
+
+        // Now let's check the second participant state
+        // make sure we are in meet, not in the frame
+        driver2.switchTo().defaultContent();
+        TestUtils.waitForDisplayedElementByID(
+            driver2,
+            "sharedVideoPlayer",
+            10);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('stopShareVideo');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                driver1, "sharedVideoPlayer", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means it is not visible anymore
+        }
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByID(
+                driver2, "sharedVideoPlayer", 5);
+        }
+        catch (StaleElementReferenceException ex)
+        {
+            // if the element is detached in a process of checking its display
+            // status, means it is not visible anymore
+        }
+    }
 }
