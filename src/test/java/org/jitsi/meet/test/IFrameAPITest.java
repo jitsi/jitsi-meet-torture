@@ -742,4 +742,38 @@ public class IFrameAPITest
             LOCAL_VIDEO_XPATH,
             5);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglechat
+     *
+     * Test command toggleChat.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleFilmStrip" })
+    public void testCommandToggleChat()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleChat');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant1.getChatPanel().assertOpen();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleChat');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant1.getChatPanel().assertClosed();
+    }
 }
