@@ -643,4 +643,49 @@ public class IFrameAPITest
             // status, means it is not visible anymore
         }
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#subject
+     *
+     * Test command subject.
+     */
+    @Test(dependsOnMethods = { "testCommandStartStopShareVideo" })
+    public void testCommandSubject()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        String randomSubject = "My Random Subject " + (int) (Math.random() * 1_000_000);
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('subject', '" + randomSubject + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        String subjectXpath = "//div[@id='subject-details-container']//span[contains(@class,'subject-text')]";
+        TestUtils.waitForDisplayedElementByXPath(
+            driver1,
+            subjectXpath,
+            10);
+
+        assertEquals(driver1.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
+
+        TestUtils.waitForDisplayedElementByXPath(
+            driver2,
+            subjectXpath,
+            10);
+
+        assertEquals(driver2.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
+    }
 }
