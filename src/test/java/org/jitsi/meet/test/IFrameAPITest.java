@@ -699,4 +699,47 @@ public class IFrameAPITest
 
         assertEquals(driver2.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglefilmstrip
+     *
+     * Test command toggleFilmStrip.
+     */
+    @Test(dependsOnMethods = { "testCommandSubject" })
+    public void testCommandToggleFilmStrip()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleFilmStrip');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        // The xpath for the local video element.
+        String LOCAL_VIDEO_XPATH = "//span[@id='localVideoWrapper']";
+
+        TestUtils.waitForNotDisplayedElementByXPath(
+            driver1,
+            LOCAL_VIDEO_XPATH,
+            5);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleFilmStrip');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForDisplayedElementByXPath(
+            driver1,
+            LOCAL_VIDEO_XPATH,
+            5);
+    }
 }
