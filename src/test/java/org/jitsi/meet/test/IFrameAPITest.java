@@ -814,4 +814,40 @@ public class IFrameAPITest
         TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d ->
             !participant2.getNotifications().hasRaisedHandNotification());
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglesharescreen
+     *
+     * Test command toggleShareScreen.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleRaiseHand" })
+    public void testCommandToggleShareScreen()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleShareScreen');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleShareScreen');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
+    }
 }
