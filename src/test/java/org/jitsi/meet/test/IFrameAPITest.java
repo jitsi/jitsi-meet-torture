@@ -425,11 +425,16 @@ public class IFrameAPITest
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isaudiomuted
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isvideomuted
      *
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggleaudio
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggleVideo
+     *
      * Test retrieving local audio/video muted state.
      */
     @Test(dependsOnMethods = { "testFunctionGetNumberOfParticipants" })
     public void testFunctionIsAudioOrVideoMuted()
     {
+        this.iFrameUrl = getIFrameUrl(null, null);
         ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
@@ -456,9 +461,12 @@ public class IFrameAPITest
         assertFalse(result[0], "Audio must be initially unmuted");
         assertFalse(result[1], "Video must be initially unmuted");
 
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleAudio');");
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleVideo');");
+
         switchToMeetContent(this.iFrameUrl, driver1);
-        participant1.getToolbar().clickAudioMuteButton();
-        participant1.getToolbar().clickVideoMuteButton();
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
 
@@ -469,11 +477,14 @@ public class IFrameAPITest
         assertTrue(result[1], "Video must be muted");
 
         // let's revert to the initial state
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleAudio');");
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleVideo');");
+
         switchToMeetContent(this.iFrameUrl, driver1);
-        participant1.getToolbar().clickAudioMuteButton();
-        participant1.getToolbar().clickVideoMuteButton();
-        participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
-        participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
     }
 
     /**
