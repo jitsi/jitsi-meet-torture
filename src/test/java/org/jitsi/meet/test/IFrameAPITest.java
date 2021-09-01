@@ -324,6 +324,16 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
     public void testFunctionSetLargeVideoParticipant()
     {
+        testSetLargeVideoParticipant(true);
+    }
+
+    /**
+     * Test setLargeVideoParticipant the function or command.
+     * @param function whether to use the function, uses the command if false.
+     */
+    private void testSetLargeVideoParticipant(boolean function)
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
         WebParticipant participant1 = getParticipant1();
@@ -335,8 +345,21 @@ public class IFrameAPITest
 
         // selects third
         switchToIframeAPI(driver1);
-        TestUtils.executeScriptAndReturnString(driver1,
-            "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant('" + endpoint3Id + "'));");
+
+        String setLargeCommand;
+        String setLocalLargeCommand;
+        if (function)
+        {
+            setLargeCommand = "window.jitsiAPI.setLargeVideoParticipant('%s');";
+            setLocalLargeCommand= "window.jitsiAPI.setLargeVideoParticipant();";
+        }
+        else
+        {
+            setLargeCommand = "window.jitsiAPI.executeCommand('setLargeVideoParticipant', '%s');";
+            setLocalLargeCommand = "window.jitsiAPI.executeCommand('setLargeVideoParticipant');";
+        }
+
+        TestUtils.executeScript(driver1, String.format(setLargeCommand, endpoint3Id));
 
         // will check that third is on large now
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -350,8 +373,7 @@ public class IFrameAPITest
 
         // selects second
         switchToIframeAPI(driver1);
-        TestUtils.executeScriptAndReturnString(driver1,
-            "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant('" + endpoint2Id + "'));");
+        TestUtils.executeScript(driver1, String.format(setLargeCommand, endpoint2Id));
 
         // will check that second is on large now
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -371,7 +393,7 @@ public class IFrameAPITest
         MeetUIUtils.waitForDominantspeaker(driver1, endpoint3Id);
 
         switchToIframeAPI(driver1);
-        TestUtils.executeScriptAndReturnString(driver1, "JSON.stringify(window.jitsiAPI.setLargeVideoParticipant());");
+        TestUtils.executeScript(driver1, setLocalLargeCommand);
 
         // will check that third - the dominant speaker is on large now
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -997,5 +1019,17 @@ public class IFrameAPITest
 
                 return resultMsg != null && resultMsg.equals(testMessage);
             });
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant-1
+     *
+     * Test command setLargeVideoParticipant.
+     */
+    @Test(dependsOnMethods = { "testCommandSendEndpointTextMessage" })
+    public void testCommandSetLargeVideoParticipant()
+    {
+        testSetLargeVideoParticipant(false);
     }
 }
