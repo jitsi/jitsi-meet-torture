@@ -33,25 +33,25 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE = "Mute / Unmute";
-    private final static String CHAT = "Open / Close chat";
-    private final static String DESKTOP = "Start / Stop sharing your screen";
-    private final static String ETHERPAD = "Toggle shared document";
-    private final static String HANGUP = "Leave the meeting";
-    private final static String INVITE = "Invite Someone";
-    private final static String OVERFLOW = "More actions";
-    private final static String OVERFLOW_MENU = "More actions menu" ;
-    private final static String PARTICIPANTS = "Participants" ;
-    private final static String PROFILE = "Edit your profile";
-    private final static String REACTIONS_MENU = "Open / Close reactions menu";
-    private final static String RAISE_HAND = "Raise / Lower your hand";
-    private final static String RECORD = "Toggle recording";
-    private final static String SECURITY = "Security options";
-    private final static String SETTINGS = "Toggle settings";
-    private final static String SHARE_VIDEO = "Toggle YouTube video sharing";
-    private final static String TILE_VIEW_BUTTON = "Toggle tile view";
-    private final static String VIDEO_MUTE = "Start / Stop camera";
-    private final static String VIDEO_QUALITY = "Manage video quality";
+    public final static String AUDIO_MUTE = "Mute / Unmute";
+    public final static String CHAT = "Open / Close chat";
+    public final static String DESKTOP = "Start / Stop sharing your screen";
+    public final static String ETHERPAD = "Toggle shared document";
+    public final static String HANGUP = "Leave the meeting";
+    public final static String INVITE = "Invite Someone";
+    public final static String OVERFLOW = "More actions";
+    public final static String OVERFLOW_MENU = "More actions menu" ;
+    public final static String PARTICIPANTS = "Participants" ;
+    public final static String PROFILE = "Edit your profile";
+    public final static String REACTIONS_MENU = "Open / Close reactions menu";
+    public final static String RAISE_HAND = "Raise / Lower your hand";
+    public final static String RECORD = "Toggle recording";
+    public final static String SECURITY = "Security options";
+    public final static String SETTINGS = "Toggle settings";
+    public final static String SHARE_VIDEO = "Toggle YouTube video sharing";
+    public final static String TILE_VIEW_BUTTON = "Toggle tile view";
+    public final static String VIDEO_MUTE = "Start / Stop camera";
+    public final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -463,5 +463,18 @@ public class Toolbar
                 selector,
                 waitTime);
         }
+    }
+
+    /**
+     * Checks whether a button is available.
+     * @param id the id of the button (accessibility label).
+     * @return true if the button is available.
+     */
+    public boolean hasButton(String id)
+    {
+        List<WebElement> elements
+            = participant.getDriver().findElements(By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(id)));
+
+        return !elements.isEmpty();
     }
 }

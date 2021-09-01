@@ -1098,9 +1098,9 @@ public class IFrameAPITest
 
     /**
      * Commands testing:
-     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant-1
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#muteeveryone-1
      *
-     * Test command setLargeVideoParticipant.
+     * Test command muteEveryone.
      */
     @Test(dependsOnMethods = { "testCommandSetLargeVideoParticipant" })
     public void testCommandMuteEveryone()
@@ -1170,7 +1170,7 @@ public class IFrameAPITest
 
     /**
      * Commands testing:
-     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#kickparticipant-1
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#kickparticipant
      *
      * Test command kickParticipant.
      */
@@ -1201,5 +1201,31 @@ public class IFrameAPITest
         assertTrue(
             getParticipant2().getNotifications().hasKickedNotification(),
             "The second participant should see a warning that was kicked.");
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#overwriteconfig
+     *
+     * Test command overwriteConfig.
+     */
+    @Test(dependsOnMethods = { "testCommandKickParticipant" })
+    public void testCommandOverwriteConfig()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('overwriteConfig', { toolbarButtons: ['chat'] });");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        assertTrue(getParticipant1().getToolbar().hasButton(Toolbar.CHAT));
+        assertFalse(getParticipant1().getToolbar().hasButton(Toolbar.AUDIO_MUTE));
     }
 }
