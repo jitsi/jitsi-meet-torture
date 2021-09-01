@@ -69,6 +69,11 @@ public class IFrameAPITest
     private JitsiMeetUrl iFrameUrl;
 
     /**
+     * JS to execute getting the number of participants.
+     */
+    private static final String APP_JS_PARTICIPANTS_COUNT = "return APP.conference._room.getParticipantCount();";
+
+    /**
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
      * @return url that will load a meeting in an iframe.
      */
@@ -885,5 +890,36 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#hangup
+     *
+     * Test command hangup.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleTileView" })
+    public void testCommandHangup()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = getParticipant2().getDriver();
+
+
+        double numOfParticipants1 = TestUtils.executeScriptAndReturnDouble(driver1, APP_JS_PARTICIPANTS_COUNT);
+        assertEquals(numOfParticipants1, 2d);
+        double numOfParticipants2 = TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT);
+        assertEquals(numOfParticipants2, 2d);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('hangup');");
+
+        TestUtils.waitForCondition(driver2, 3000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT) == 1d);
     }
 }
