@@ -914,7 +914,6 @@ public class IFrameAPITest
         WebDriver driver1 = participant1.getDriver();
         WebDriver driver2 = getParticipant2().getDriver();
 
-
         double numOfParticipants1 = TestUtils.executeScriptAndReturnDouble(driver1, APP_JS_PARTICIPANTS_COUNT);
         assertEquals(numOfParticipants1, 2d);
         double numOfParticipants2 = TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT);
@@ -925,7 +924,39 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('hangup');");
 
+        switchToMeetContent(this.iFrameUrl, driver1);
+
         TestUtils.waitForCondition(driver2, 3000, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT) == 1d);
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#avatarurl
+     *
+     * Test command avatarUrl.
+     */
+    @Test(dependsOnMethods = { "testCommandHangup" })
+    public void testCommandAvatarUrl()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        String endpointId1 = participant1.getEndpointId();
+        WebDriver driver2 = getParticipant2().getDriver();
+
+        switchToIframeAPI(driver1);
+
+        String avatarUrl = "https://avatars0.githubusercontent.com/u/3671647";
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('avatarUrl', '" + avatarUrl + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        assertEquals(AvatarTest.getLocalThumbnailSrc(driver1), avatarUrl);
+        assertEquals(AvatarTest.getThumbnailSrc(driver2, endpointId1), avatarUrl);
     }
 }

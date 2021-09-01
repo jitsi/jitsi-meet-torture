@@ -40,6 +40,12 @@ public class MeetUIUtils
         = "//span[starts-with(@id, 'participant_%s') and contains(@class,'videocontainer')]";
 
     /**
+     * The string template for finding thumbnail by id using xpath.
+     * ID can be `localVideoContainer` or "participant_" + participantEndpointId.
+     */
+    private static String AVATAR_XPATH_TMPL = "//span[@id='%s']//img[contains(@class,'userAvatar')]";
+
+    /**
      * Check if on the large video there is "grey" avatar displayed and if not
      * fails the current test. The check consists of 3 steps:
      * 1. check if the "user is having networking issues" message is displayed
@@ -571,8 +577,7 @@ public class MeetUIUtils
     {
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
-            driver, "//span[@id='participant_" + endpointId + "']" +
-                    "//img[contains(@class,'userAvatar')]",
+            driver, MeetUIUtils.getAvatarXpathForParticipant(endpointId),
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -675,7 +680,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForNotDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
+            MeetUIUtils.getAvatarXpathForLocal(),
             5);
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -691,7 +696,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
+            MeetUIUtils.getAvatarXpathForLocal(),
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -1238,5 +1243,24 @@ public class MeetUIUtils
 
                 return currentDisplay == isDisplayed;
             });
+    }
+
+    /**
+     * The xpath for participant avatar.
+     * @param endpointId the endpoint Id.
+     * @return the xpath.
+     */
+    public static String getAvatarXpathForParticipant(String endpointId)
+    {
+        return String.format(AVATAR_XPATH_TMPL, "participant_" + endpointId);
+    }
+
+    /**
+     * The xpath for the local participant avatar.
+     * @return the xpath.
+     */
+    public static String getAvatarXpathForLocal()
+    {
+        return String.format(AVATAR_XPATH_TMPL, "localVideoContainer");
     }
 }
