@@ -830,7 +830,6 @@ public class IFrameAPITest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
         WebDriver driver1 = participant1.getDriver();
-        WebDriver driver2 = participant2.getDriver();
 
         switchToIframeAPI(driver1);
 
@@ -849,5 +848,42 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggletileview
+     *
+     * Test command toggleTileView.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleShareScreen" })
+    public void testCommandToggleTileView()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        // one or two participants not in tile view
+        MeetUIUtils.waitForTileViewDisplay(participant1, false);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleTileView');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        MeetUIUtils.waitForTileViewDisplay(participant1, true);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleTileView');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        MeetUIUtils.waitForTileViewDisplay(participant1, false);
     }
 }
