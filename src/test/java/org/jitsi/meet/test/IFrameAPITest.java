@@ -1049,4 +1049,36 @@ public class IFrameAPITest
     {
         testSetLargeVideoParticipant(false);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant-1
+     *
+     * Test command setLargeVideoParticipant.
+     */
+    @Test(dependsOnMethods = { "testCommandSetLargeVideoParticipant" })
+    public void testCommandMuteEveryone()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
+        WebDriver driver1 = participant1.getDriver();
+
+        // selects third
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        TestUtils.executeScript(driver1, "window.jitsiAPI.executeCommand('muteEveryone');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant2.getFilmstrip().assertAudioMuteIcon(participant3, true);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
+    }
 }
