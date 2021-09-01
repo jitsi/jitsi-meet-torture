@@ -1081,4 +1081,44 @@ public class IFrameAPITest
         participant2.getFilmstrip().assertAudioMuteIcon(participant3, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#initiateprivatechat
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#cancelprivatechat
+     *
+     * Test command initiatePrivateChat & cancelPrivateChat.
+     */
+    @Test(dependsOnMethods = { "testCommandMuteEveryone" })
+    public void testCommandInitiateCancelPrivateChat()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        String endpointId2 = getParticipant2().getEndpointId();
+
+        participant1.setDisplayName("John Doe");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('initiatePrivateChat', '" + endpointId2 + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForDisplayedElementByID(driver1, "chat-recipient", 3);
+        assertTrue(driver1.findElement(By.xpath("//div[@id='chat-recipient']/span")).getText()
+            .contains("Private message to"));
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('cancelPrivateChat');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForNotDisplayedElementByID(driver1, "chat-recipient", 3);
+    }
 }
