@@ -36,8 +36,10 @@ import static org.testng.Assert.*;
  * Loads the meeting and we switch to that iframe and then run several
  * tests over it, to make sure iframe API is working fine.
  *
+ * TODO:
  * functions
- * TODO Need to compare two images: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#capturelargevideoscreenshot
+ * Need to compare two images for:
+ *  https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#capturelargevideoscreenshot
  *
  * @author Damian Minkov
  */
@@ -246,12 +248,15 @@ public class IFrameAPITest
     /**
      * Functions testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getvideoquality
+     * Command:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setvideoquality
      *
      * Test retrieving video quality.
      */
     @Test(dependsOnMethods = { "testFunctionGetParticipantsInfo" })
     public void testFunctionGetVideoQuality()
     {
+        this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
         WebParticipant participant1 = getParticipant1();
@@ -278,6 +283,18 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver);
 
         AudioOnlyTest.setAudioOnly(participant1, false);
+
+        // now let's test the command
+        switchToIframeAPI(driver);
+
+        TestUtils.executeScript(driver,
+            "window.jitsiAPI.executeCommand('setVideoQuality', 360);");
+
+        s = TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
+        assertEquals(s, "360");
+
+        switchToMeetContent(this.iFrameUrl, driver);
     }
 
     /**
