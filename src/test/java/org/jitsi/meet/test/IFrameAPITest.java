@@ -959,4 +959,43 @@ public class IFrameAPITest
         assertEquals(AvatarTest.getLocalThumbnailSrc(driver1), avatarUrl);
         assertEquals(AvatarTest.getThumbnailSrc(driver2, endpointId1), avatarUrl);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendendpointtextmessage
+     *
+     * Test command sendEndpointTextMessage.
+     */
+    @Test(dependsOnMethods = { "testCommandAvatarUrl" })
+    public void testCommandSendEndpointTextMessage()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver2 = participant2.getDriver();
+        String endpointId2 = participant2.getEndpointId();
+
+        // adds the listener at the receiver
+        TestUtils.executeScript(driver2,
+            "APP.conference._room.on('conference.endpoint_message_received', (p, m) => window.testEndpointCommandTxt = m.text);");
+
+        switchToIframeAPI(driver1);
+
+        String testMessage = "this is a test message";
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('sendEndpointTextMessage', '" + endpointId2 + "', '" + testMessage + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d -> {
+                String resultMsg = TestUtils.executeScriptAndReturnString(driver2,
+                    "return window.testEndpointCommandTxt;");
+
+                return resultMsg != null && resultMsg.equals(testMessage);
+            });
+    }
 }
