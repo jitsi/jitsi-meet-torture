@@ -586,7 +586,7 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
 
@@ -620,7 +620,7 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
 
@@ -726,7 +726,7 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
 
@@ -853,7 +853,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
             participant2.getNotifications().hasRaisedHandNotification());
 
         switchToIframeAPI(driver1);
@@ -863,7 +863,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
             !participant2.getNotifications().hasRaisedHandNotification());
     }
 
@@ -902,7 +902,7 @@ public class IFrameAPITest
             "window.jitsiAPI.getContentSharingParticipants()" +
                 ".then(res => window.jitsiAPI.test.getContentSharing1 = JSON.stringify(res.sharingParticipantIds));");
 
-        TestUtils.waitForCondition(driver1, 3000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 3, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.getContentSharing1 !== undefined;"));
 
@@ -1011,7 +1011,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        TestUtils.waitForCondition(driver2, 3000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver2, 3, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT) == 1d);
     }
 
@@ -1076,7 +1076,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        TestUtils.waitForCondition(driver2, 5000, (ExpectedCondition<Boolean>) d -> {
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d -> {
                 String resultMsg = TestUtils.executeScriptAndReturnString(driver2,
                     "return window.testEndpointCommandTxt;");
 
@@ -1116,7 +1116,7 @@ public class IFrameAPITest
         // selects third
         switchToIframeAPI(driver1);
 
-        TestUtils.waitForCondition(driver1, 5000, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
 
@@ -1166,5 +1166,40 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         TestUtils.waitForNotDisplayedElementByID(driver1, "chat-recipient", 3);
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#kickparticipant-1
+     *
+     * Test command kickParticipant.
+     */
+    @Test(dependsOnMethods = { "testCommandInitiateCancelPrivateChat" })
+    public void testCommandKickParticipant()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        String endpointId2 = getParticipant2().getEndpointId();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('kickParticipant', '" + endpointId2 + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant1.waitForParticipants(0);
+
+        // check that the kicked participant sees the notification
+        assertTrue(
+            getParticipant2().getNotifications().hasKickedNotification(),
+            "The second participant should see a warning that was kicked.");
     }
 }
