@@ -27,6 +27,7 @@ import org.testng.*;
 import org.testng.annotations.*;
 
 import java.net.*;
+import java.util.*;
 import java.util.function.*;
 
 import static org.testng.Assert.*;
@@ -200,6 +201,7 @@ public class IFrameAPITest
         switchToIframeAPI(driver);
         String s = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.getParticipantsInfo());");
+        assertNotNull(s);
         String apiDisplayName = TestUtils.executeScriptAndReturnString(driver,
             "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
 
@@ -868,8 +870,10 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglesharescreen
+     * Function
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getcontentsharingparticipants
      *
-     * Test command toggleShareScreen.
+     * Test command toggleShareScreen and getContentSharingParticipants.
      */
     @Test(dependsOnMethods = { "testCommandToggleRaiseHand" })
     public void testCommandToggleShareScreen()
@@ -878,7 +882,9 @@ public class IFrameAPITest
         ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
+        String endpointId1 = participant1.getEndpointId();
         WebParticipant participant2 = getParticipant2();
+        String endpointId2 = participant2.getEndpointId();
         WebDriver driver1 = participant1.getDriver();
 
         switchToIframeAPI(driver1);
@@ -893,11 +899,51 @@ public class IFrameAPITest
         switchToIframeAPI(driver1);
 
         TestUtils.executeScript(driver1,
+            "window.jitsiAPI.getContentSharingParticipants()" +
+                ".then(res => window.jitsiAPI.test.getContentSharing1 = JSON.stringify(res.sharingParticipantIds));");
+
+        TestUtils.waitForCondition(driver1, 3000, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.getContentSharing1 !== undefined;"));
+
+        String res = TestUtils.executeScriptAndReturnString(driver1,
+            "return window.jitsiAPI.test.getContentSharing1;");
+        assertNotNull(res);
+        assertEquals(new JsonParser().parse(res).getAsJsonArray().get(0).getAsString(), endpointId1);
+
+        TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
         DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
+
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant3 = getParticipant3();
+        String endpointId3 = participant3.getEndpointId();
+
+        participant2.getToolbar().clickDesktopSharingButton();
+        participant3.getToolbar().clickDesktopSharingButton();
+        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant2, "desktop");
+        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant3, "desktop");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.getContentSharingParticipants()"
+                + ".then(res => window.jitsiAPI.test.getContentSharing2 = res.sharingParticipantIds);");
+
+        res = TestUtils.executeScriptAndReturnString(driver1, "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);");
+        assertNotNull(res);
+
+        List<String> resultIds = new ArrayList<>();
+        new JsonParser().parse(res).getAsJsonArray().forEach(el -> resultIds.add(el.getAsString()));
+
+        assertTrue(resultIds.contains(endpointId2));
+        assertTrue(resultIds.contains(endpointId3));
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
