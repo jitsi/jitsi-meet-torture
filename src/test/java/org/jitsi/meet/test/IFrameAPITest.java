@@ -495,15 +495,18 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displayname
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#email
      *
-     * Test command displayName
+     * Test command displayName and email.
      */
     @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
     public void testCommandDisplayName()
     {
+        this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
         String newName = "P1 New Name-" + (int) (Math.random() * 1_000_000);
+        String newEmail = "example@example.com";
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
@@ -511,12 +514,15 @@ public class IFrameAPITest
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('displayName', '" + newName + "');");
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('email', '" + newEmail + "');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
         participant1.getToolbar().clickSettingsButton();
         SettingsDialog settingsDialog = participant1.getSettingsDialog();
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), newName);
+        assertEquals(settingsDialog.getEmail(), newEmail);
     }
 
     /**
