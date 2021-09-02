@@ -1228,4 +1228,60 @@ public class IFrameAPITest
         assertTrue(getParticipant1().getToolbar().hasButton(Toolbar.CHAT));
         assertFalse(getParticipant1().getToolbar().hasButton(Toolbar.AUDIO_MUTE));
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendchatmessage
+     *
+     * Test command sendChatMessage.
+     */
+    @Test(dependsOnMethods = { "testCommandOverwriteConfig" })
+    public void testCommandSendChatMessage()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant3 = getParticipant3();
+        WebDriver driver1 = participant1.getDriver();
+        WebDriver driver2 = participant2.getDriver();
+        WebDriver driver3 = participant3.getDriver();
+        String endpointId2 = participant2.getEndpointId();
+
+        String testMessageTxt = "Test message text:";
+
+        switchToIframeAPI(driver1);
+
+        String msg1 = testMessageTxt + "1";
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('sendChatMessage', '" + msg1 + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant2.getToolbar().clickChatButton();
+        participant3.getToolbar().clickChatButton();
+
+        assertTrue(driver2.findElement(By.xpath("//div[contains(@class,'chatmessage')]"
+                +"//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
+                    .getText().contains(msg1));
+        assertTrue(driver3.findElement(By.xpath(
+            "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
+                    .getText().contains(msg1));
+
+        switchToIframeAPI(driver1);
+
+        String msg2 = testMessageTxt + "2";
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('sendChatMessage', '" + msg2 + "', '" + endpointId2 + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        WebElement privateMessage = TestUtils.waitForElementBy(
+            driver2,
+            By.xpath("//div[contains(@class,'privatemessage')]"
+                + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"), 2);
+        assertNotNull(privateMessage);
+        assertTrue(privateMessage.getText().contains(msg2));
+    }
 }
