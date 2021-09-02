@@ -1341,4 +1341,44 @@ public class IFrameAPITest
 
         MeetUIUtils.waitForTileViewDisplay(participant2, true);
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglecameramirror
+     *
+     * Test command toggleCameraMirror.
+     */
+    @Test(dependsOnMethods = { "testCommandSetFollowMe" })
+    public void testCommandToggleCameraMirror()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        String localVideoXpath = "//span[@id='localVideoWrapper']/video[contains(@class,'flipVideoX')]";
+        assertTrue(driver1.findElements(By.xpath(localVideoXpath)).size() > 0,
+            "Local video should be flipped by default");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleCameraMirror');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        assertTrue(driver1.findElements(By.xpath(localVideoXpath)).size() == 0,
+            "Local video should not be flipped");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleCameraMirror');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        assertTrue(driver1.findElements(By.xpath(localVideoXpath)).size() > 0,
+            "Local video should be flipped now");
+    }
 }
