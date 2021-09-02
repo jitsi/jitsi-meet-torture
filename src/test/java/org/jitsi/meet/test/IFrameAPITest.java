@@ -1284,4 +1284,61 @@ public class IFrameAPITest
         assertNotNull(privateMessage);
         assertTrue(privateMessage.getText().contains(msg2));
     }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setfollowme
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#settileview
+     *
+     * Test command setFollowMe and setTileView.
+     */
+    @Test(dependsOnMethods = { "testCommandSendChatMessage" })
+    public void testCommandSetFollowMe()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isModerator;"));
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('setFollowMe', true);");
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('setTileView', false);");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, false));
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('setTileView', true);");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        getAllParticipants().forEach(participant ->
+            MeetUIUtils.waitForTileViewDisplay(participant, true));
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('setFollowMe', false);");
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('setTileView', false);");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        MeetUIUtils.waitForTileViewDisplay(participant2, true);
+    }
 }
