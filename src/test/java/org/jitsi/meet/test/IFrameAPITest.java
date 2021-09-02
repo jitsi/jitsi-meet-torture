@@ -1368,7 +1368,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        assertTrue(driver1.findElements(By.xpath(localVideoXpath)).size() == 0,
+        assertEquals(driver1.findElements(By.xpath(localVideoXpath)).size(), 0,
             "Local video should not be flipped");
 
         switchToIframeAPI(driver1);
@@ -1380,5 +1380,44 @@ public class IFrameAPITest
 
         assertTrue(driver1.findElements(By.xpath(localVideoXpath)).size() > 0,
             "Local video should be flipped now");
+    }
+
+    /**
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglevirtualbackgrounddialog
+     *
+     * Test command toggleVirtualBackgroundDialog.
+     */
+    @Test(dependsOnMethods = { "testCommandToggleCameraMirror" })
+    public void testCommandToggleVirtualBackgroundDialog()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleVirtualBackgroundDialog');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        String virtualBackgroundDialogXpath = "//span[@id='dialog-heading-1']";
+        String dialogTitle = "Virtual backgrounds";
+
+        TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 1);
+
+        assertEquals(driver1.findElement(By.xpath(virtualBackgroundDialogXpath)).getText(), dialogTitle,
+            "Virtual background dialog should be visible");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.executeScript(driver1,
+            "window.jitsiAPI.executeCommand('toggleVirtualBackgroundDialog');");
+
+        assertEquals(driver1.findElements(By.xpath(virtualBackgroundDialogXpath)).size(), 0,
+            "Virtual background dialog should not be visible");
     }
 }
