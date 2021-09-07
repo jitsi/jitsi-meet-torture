@@ -38,9 +38,11 @@ import static org.testng.Assert.*;
  * tests over it, to make sure iframe API is working fine.
  *
  * TODO:
- * functions
+ * Functions:
  * Need to compare two images for:
  *  https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#capturelargevideoscreenshot
+ * Events:
+ * Need to be fixed: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#largevideochanged
  *
  * @author Damian Minkov
  */
@@ -346,6 +348,7 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
     public void testFunctionPinParticipant()
     {
+        this.iFrameUrl = getIFrameUrl(null, null);
         // the previous test left it in meeting content
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
