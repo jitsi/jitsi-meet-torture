@@ -147,6 +147,32 @@ public class IFrameAPITest
     }
 
     /**
+     * Adds a listener to the iframe API.
+     * @param driver the driver to use.
+     * @param eventName the event name to add a listener for.
+     */
+    private static void addIframeAPIListener(WebDriver driver, String eventName)
+    {
+        TestUtils.executeScript(driver,
+            "window.jitsiAPI.addListener('" + eventName + "', (evt) => {"
+                + "    if (!window.jitsiAPI.test." + eventName + ") window.jitsiAPI.test." + eventName + " = {};"
+                + "    window.jitsiAPI.test." + eventName + " = evt;"
+                + "});");
+    }
+
+    /**
+     * Returns the result of an iframe API event.
+     * @param driver the driver to use.
+     * @param eventName the event name.
+     * @return The value of the result as String.
+     */
+    private static String getEventResult(WebDriver driver, String eventName)
+    {
+        return TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.test." + eventName + ");");
+    }
+
+    /**
      * Opens the iframe and executes SwitchVideoTest and MuteTest.
      */
     @Test
@@ -245,6 +271,7 @@ public class IFrameAPITest
         assertEquals(apiDisplayName, newName);
 
         switchToMeetContent(this.iFrameUrl, driver);
+        settingsDialog.close();
     }
 
     /**
@@ -1018,6 +1045,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#avatarurl
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#avatarchanged
      *
      * Test command avatarUrl.
      */
@@ -1036,13 +1065,31 @@ public class IFrameAPITest
 
         String avatarUrl = "https://avatars0.githubusercontent.com/u/3671647";
 
+        addIframeAPIListener(driver1, "avatarChanged");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('avatarUrl', '" + avatarUrl + "');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        assertEquals(AvatarTest.getLocalThumbnailSrc(driver1), avatarUrl);
+        TestUtils.waitForCondition(driver2, 2, (ExpectedCondition<Boolean>) d ->
+            AvatarTest.getLocalThumbnailSrc(driver1).equals(avatarUrl));
+
         assertEquals(AvatarTest.getThumbnailSrc(driver2, endpointId1), avatarUrl);
+
+        switchToIframeAPI(driver1);
+
+        // waits for the event
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
+            getEventResult(driver1, "avatarChanged").contains(avatarUrl));
+
+        String s = getEventResult(driver1, "avatarChanged");
+        JsonObject resObj = new JsonParser().parse(s).getAsJsonObject();
+
+        assertEquals(resObj.get("id").getAsString(), endpointId1);
+        assertEquals(resObj.get("avatarURL").getAsString(), avatarUrl);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
