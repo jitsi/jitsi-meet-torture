@@ -406,6 +406,8 @@ public class IFrameAPITest
         // selects third
         switchToIframeAPI(driver1);
 
+        addIframeAPIListener(driver1, "dominantSpeakerChanged");
+
         String setLargeCommand;
         String setLocalLargeCommand;
         if (function)
@@ -458,6 +460,13 @@ public class IFrameAPITest
         // will check that third - the dominant speaker is on large now
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
+
+        switchToIframeAPI(driver1);
+
+        JsonObject eventData = getEventResult(driver1, "dominantSpeakerChanged");
+        assertEquals(eventData.get("id").getAsString(), endpoint3Id);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
 
         // let's unmute everyone as it was initially
         participant2.getToolbar().clickAudioMuteButton();
