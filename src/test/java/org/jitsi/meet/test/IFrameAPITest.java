@@ -942,6 +942,7 @@ public class IFrameAPITest
         switchToIframeAPI(driver1);
 
         addIframeAPIListener(driver1, "contentSharingParticipantsChanged");
+        addIframeAPIListener(driver1, "screenSharingStatusChanged");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
@@ -965,6 +966,9 @@ public class IFrameAPITest
         assertNotNull(res);
         assertEquals(new JsonParser().parse(res).getAsJsonArray().get(0).getAsString(), endpointId1);
 
+        JsonObject sharingData = getEventResult(driver1, "screenSharingStatusChanged");
+        assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing mst be on");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
 
@@ -983,6 +987,9 @@ public class IFrameAPITest
         DesktopSharingTest.testDesktopSharingInPresence(participant1, participant3, "desktop");
 
         switchToIframeAPI(driver1);
+
+        sharingData = getEventResult(driver1, "screenSharingStatusChanged");
+        assertFalse(sharingData.get("on").getAsBoolean(), "Screen sharing mst be on");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.getContentSharingParticipants()"
