@@ -155,7 +155,6 @@ public class IFrameAPITest
     {
         TestUtils.executeScript(driver,
             "window.jitsiAPI.addListener('" + eventName + "', (evt) => {"
-                + "    if (!window.jitsiAPI.test." + eventName + ") window.jitsiAPI.test." + eventName + " = {};"
                 + "    window.jitsiAPI.test." + eventName + " = evt;"
                 + "});");
     }
@@ -164,16 +163,19 @@ public class IFrameAPITest
      * Returns the result of an iframe API event.
      * @param driver the driver to use.
      * @param eventName the event name.
-     * @return The value of the result as String.
+     * @return The value of the result as json object.
      */
-    private static String getEventResult(WebDriver driver, String eventName)
+    private static JsonObject getEventResult(WebDriver driver, String eventName)
     {
-        return TestUtils.executeScriptAndReturnString(driver,
-            "return JSON.stringify(window.jitsiAPI.test." + eventName + ");");
+        return new JsonParser().parse(TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.test." + eventName + ");")).getAsJsonObject();
     }
 
     /**
      * Opens the iframe and executes SwitchVideoTest and MuteTest.
+     *
+     * Includes test for audioAvailabilityChanged event.
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#audioavailabilitychanged
      */
     @Test
     public void testIFrameAPI()
@@ -181,7 +183,14 @@ public class IFrameAPITest
         JitsiMeetUrl iFrameUrl = getIFrameUrl(null, null);
 
         ensureOneParticipant(iFrameUrl);
+        WebDriver driver1 = getParticipant1().getDriver();
+
         ensureThreeParticipants(iFrameUrl, null, null);
+
+        // Tests event audioAvailabilityChanged
+        switchToIframeAPI(driver1);
+        assertTrue(getEventResult(driver1, "audioAvailabilityChanged").get("available").getAsBoolean() );
+        switchToMeetContent(iFrameUrl, driver1);
 
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
         switchVideoTest.participant1ClickOnLocalVideoAndTest();
@@ -1081,10 +1090,9 @@ public class IFrameAPITest
 
         // waits for the event
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-            getEventResult(driver1, "avatarChanged").contains(avatarUrl));
+            getEventResult(driver1, "avatarChanged").get("avatarURL").getAsString().equals(avatarUrl));
 
-        String s = getEventResult(driver1, "avatarChanged");
-        JsonObject resObj = new JsonParser().parse(s).getAsJsonObject();
+        JsonObject resObj = getEventResult(driver1, "avatarChanged");
 
         assertEquals(resObj.get("id").getAsString(), endpointId1);
         assertEquals(resObj.get("avatarURL").getAsString(), avatarUrl);

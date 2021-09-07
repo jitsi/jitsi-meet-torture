@@ -35,6 +35,9 @@
                 window.jitsiAPI.test.isModerator = true;
             }
         });
+        window.jitsiAPI.addListener('audioAvailabilityChanged', function(event) {
+            window.jitsiAPI.test.audioAvailabilityChanged = event;
+        });
         if (password && password.length > 0) {
             // join a protected channel with the password supplied
             window.jitsiAPI.on('passwordRequired', function ()
