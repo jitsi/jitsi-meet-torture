@@ -41,26 +41,27 @@ public class WebRemoteParticipant
     @Override
     public void grantModerator()
     {
-        clickOnRemoteMenuLink("grantmoderatorlink");
+        clickOnRemoteMenuLink("grantmoderatorlink", true);
     }
 
     @Override
     public void mute()
     {
-        clickOnRemoteMenuLink("mutelink");
+        clickOnRemoteMenuLink("mutelink", false);
     }
 
     @Override
     public void kick()
     {
-        clickOnRemoteMenuLink("kicklink");
+        clickOnRemoteMenuLink("kicklink", true);
     }
 
     /**
      * Opens the remote menu and waits for the desired link to appear.
      * @param linkClassname the class name to use identifying the link.
+     * @param dialogConfirm whether or not the action opens a confirmation dialog
      */
-    private void clickOnRemoteMenuLink(String linkClassname)
+    private void clickOnRemoteMenuLink(String linkClassname, Boolean dialogConfirm)
     {
         // Open the remote video menu
         WebElement remoteVideoElement
@@ -84,8 +85,10 @@ public class WebRemoteParticipant
         MeetUIUtils.clickOnElement(driver,
             "ul.popupmenu a." + linkClassname, true);
 
-        // confirm the action
-        ModalDialogHelper.clickOKButton(driver);
+        if(dialogConfirm) {
+            // confirm the action
+            ModalDialogHelper.clickOKButton(driver);
+        }
 
         action.release();
     }
