@@ -167,8 +167,10 @@ public class IFrameAPITest
      */
     private static JsonObject getEventResult(WebDriver driver, String eventName)
     {
-        return new JsonParser().parse(TestUtils.executeScriptAndReturnString(driver,
-            "return JSON.stringify(window.jitsiAPI.test." + eventName + ");")).getAsJsonObject();
+        String result = TestUtils.executeScriptAndReturnString(driver,
+            "return JSON.stringify(window.jitsiAPI.test." + eventName + ");");
+
+        return result == null ? null : new JsonParser().parse(result).getAsJsonObject();
     }
 
     /**
@@ -1139,7 +1141,10 @@ public class IFrameAPITest
         WebDriver driver1 = participant1.getDriver();
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
+        String endpointId1 = participant1.getEndpointId();
         String endpointId2 = participant2.getEndpointId();
+        String participant2Jid
+            = TestUtils.executeScriptAndReturnString(driver2, "return APP.conference._room.room.myroomjid;");
 
         // adds the listener at the receiver
         TestUtils.executeScript(driver2,
@@ -1160,6 +1165,28 @@ public class IFrameAPITest
 
                 return resultMsg != null && resultMsg.equals(testMessage);
             });
+
+        switchToIframeAPI(driver1);
+
+        addIframeAPIListener(driver1, "endpointTextMessageReceived");
+
+        String testMessage2 = testMessage + (int) (Math.random() * 1_000_000);
+        TestUtils.executeScript(driver2,
+            "APP.conference.sendEndpointMessage("
+                + "'" + endpointId1 + "', { name: 'endpoint-text-message', text: '" + testMessage2 + "' });");
+
+        TestUtils.waitForCondition(driver1, 5,
+            (ExpectedCondition<Boolean>) d -> getEventResult(d, "endpointTextMessageReceived") != null);
+
+        JsonObject data = getEventResult(driver1, "endpointTextMessageReceived").get("data").getAsJsonObject();
+        JsonObject senderInfo = data.get("senderInfo").getAsJsonObject();
+
+        assertEquals(senderInfo.get("id").getAsString(), endpointId2);
+        assertEquals(senderInfo.get("jid").getAsString(), participant2Jid);
+
+        JsonObject eventData = data.get("eventData").getAsJsonObject();
+        assertEquals(eventData.get("text").getAsString(), testMessage2);
+        assertEquals(eventData.get("name").getAsString(), "endpoint-text-message");
     }
 
     /**
