@@ -936,6 +936,8 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        addIframeAPIListener(driver1, "contentSharingParticipantsChanged");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
 
@@ -981,12 +983,22 @@ public class IFrameAPITest
             "window.jitsiAPI.getContentSharingParticipants()"
                 + ".then(res => window.jitsiAPI.test.getContentSharing2 = res.sharingParticipantIds);");
 
+        TestUtils.waitForCondition(driver1, 3, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnString(driver1,
+                "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);") != null);
+
         res = TestUtils.executeScriptAndReturnString(driver1, "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);");
         assertNotNull(res);
 
         List<String> resultIds = new ArrayList<>();
         new JsonParser().parse(res).getAsJsonArray().forEach(el -> resultIds.add(el.getAsString()));
 
+        assertTrue(resultIds.contains(endpointId2));
+        assertTrue(resultIds.contains(endpointId3));
+
+        resultIds.clear();
+        getEventResult(driver1, "contentSharingParticipantsChanged").get("data").getAsJsonArray()
+            .forEach(el -> resultIds.add(el.getAsString()));
         assertTrue(resultIds.contains(endpointId2));
         assertTrue(resultIds.contains(endpointId3));
 
