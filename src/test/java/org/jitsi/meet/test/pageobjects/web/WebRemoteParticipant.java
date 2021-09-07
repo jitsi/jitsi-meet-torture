@@ -85,7 +85,8 @@ public class WebRemoteParticipant
         MeetUIUtils.clickOnElement(driver,
             "ul.popupmenu a." + linkClassname, true);
 
-        if(dialogConfirm) {
+        if (dialogConfirm)
+        {
             // confirm the action
             ModalDialogHelper.clickOKButton(driver);
         }

@@ -240,7 +240,8 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.open();
 
-        if(!moderationOn) {
+        if (!moderationOn)
+        {
             participantsPane.clickContextMenuButton();
 
             avModerationMenu.clickStartAudioModeration();
