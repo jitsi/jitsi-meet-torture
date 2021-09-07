@@ -86,7 +86,7 @@ public class Notifications
     /**
      * The test id of the notification shown to participant when moderator asks to unmute.
      */
-    private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.unmute";
+    private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.hostAskedUnmute";
 
 
     public Notifications(WebParticipant participant)

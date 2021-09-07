@@ -42,7 +42,7 @@ public class AudioVideoModerationTest extends WebTestBase
     /**
      * The test id of the close button inside the notification shown to participant when moderator asks to unmute.
      */
-    private static final String NOTIFY_UNMUTE_DISMISS_ID = "notify.unmute-dismiss";
+    private static final String NOTIFY_UNMUTE_DISMISS_ID = "notify.hostAskedUnmute-dismiss";
 
     @Override
     public void setupClass()
@@ -61,10 +61,10 @@ public class AudioVideoModerationTest extends WebTestBase
     }
 
     /**
-     * Checks moderation by enabling and disabling it
+     * Checks audio moderation by enabling and disabling it
      */
     @Test
-    public void testCheckModerationEnableDisable()
+    public void testCheckAudioModerationEnableDisable()
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
@@ -73,79 +73,62 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.clickContextMenuButton();
 
-        avModerationMenu.clickStartModeration();
+        avModerationMenu.clickStartAudioModeration();
 
-        participant2.getNotifications().getModerationStartNotification();
-
-        // wait for the moderation start notification to disappear
-        // it may interfere with the stopping (showing the context menu)
-        TestUtils.waitForCondition(participant1.getDriver(), 8,
-            (ExpectedCondition<Boolean>) d -> !participant1.getNotifications().hasModerationStartNotification());
+        checkAudioParticipantUnmute(participant3, true);
 
         participantsPane.clickContextMenuButton();
 
-        avModerationMenu.clickStopModeration();
+        avModerationMenu.clickStopAudioModeration();
 
-        participant2.getNotifications().getModerationStopNotification();
+        participantsPane.close();
 
-        checkAudioVideoParticipantUnmute(participant3);
+        TestUtils.waitMillis(1000);
+
+        checkAudioParticipantUnmute(participant3, false);
     }
 
     /**
-     * Opens the context menu from the participants pane
-     * and enables moderation
+     * Checks audio moderation by enabling and disabling it
      */
-    @Test(dependsOnMethods = { "testCheckModerationEnableDisable" })
-    public void testUnmuteByModeratorDialog()
+    @Test
+    public void testCheckVideoModerationEnableDisable()
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
-        WebDriver driver1 = participant1.getDriver();
-
-        participantsPane.clickContextMenuButton();
-
-        avModerationMenu.clickStartModeration();
-
-        // wait for the moderation start notification to disappear
-        TestUtils.waitForCondition(participant3.getDriver(), 8,
-            (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
-
-        raiseHandToSpeak(participant3);
-
-        askParticipantToUnmute(participant3);
-
-        checkAudioVideoParticipantUnmute(participant3);
-
-        participantsPane.close();
-
-        raiseHandToSpeak(participant2);
-
-        UnmuteModalDialogHelper.clickUnmuteButton(driver1);
-
-        participant2.getNotifications().getAskToUnmuteNotification();
-
-        checkAudioVideoParticipantUnmute(participant2);
 
         participantsPane.open();
 
         participantsPane.clickContextMenuButton();
 
-        avModerationMenu.clickStopModeration();
+        avModerationMenu.clickStartVideoModeration();
 
-        clickCloseAskToUnmuteNotification(participant2);
+        checkVideoParticipantUnmute(participant3, true);
 
-        // wait for the moderation stop notification to disappear
-        TestUtils.waitForCondition(participant2.getDriver(), 8,
-                (ExpectedCondition<Boolean>) d -> !participant2.getNotifications().hasModerationStopNotification());
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStopVideoModeration();
 
         participantsPane.close();
+
+        TestUtils.waitMillis(1000);
+
+        checkVideoParticipantUnmute(participant3, false);
     }
 
+    /**
+     * Checks user can unmute after being asked by moderator.
+     */
+    @Test(dependsOnMethods = { "testCheckAudioModerationEnableDisable", "testCheckVideoModerationEnableDisable" })
+    public void testUnmuteByModerator()
+    {
+        unmuteByModerator(participant1, participant3, false);
+    }
 
     /**
      * Initial moderator reloads and next participant becomes the new moderator
      */
-    @Test(dependsOnMethods = { "testUnmuteByModeratorDialog" })
+    @Test(dependsOnMethods = { "testUnmuteByModerator" })
     public void testHangUpAndChangeModerator()
     {
         participant2.hangUp();
@@ -160,7 +143,9 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant1.getParticipantsPane().clickContextMenuButton();
 
-        participant1.getAVModerationMenu().clickStartModeration();
+        participant1.getAVModerationMenu().clickStartAudioModeration();
+
+        participant1.getAVModerationMenu().clickStartVideoModeration();
 
         participant2.getToolbar().clickRaiseHandButton();
 
@@ -182,9 +167,9 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant2.getParticipantsPane().clickContextMenuButton();
 
-            participant2.getAVModerationMenu().clickStopModeration();
+            participant2.getAVModerationMenu().clickStopAudioModeration();
 
-            participant3.getNotifications().getModerationStopNotification();
+            participant2.getAVModerationMenu().clickStopVideoModeration();
 
             participant2.getParticipantsPane().close();
         }
@@ -201,16 +186,16 @@ public class AudioVideoModerationTest extends WebTestBase
 
             participant3.getParticipantsPane().clickContextMenuButton();
 
-            participant3.getAVModerationMenu().clickStopModeration();
+            participant3.getAVModerationMenu().clickStopAudioModeration();
 
-            participant2.getNotifications().getModerationStopNotification();
+            participant3.getAVModerationMenu().clickStopVideoModeration();
 
             participant3.getParticipantsPane().close();
         }
     }
 
     /**
-     * Test that after granting moderator to a participant, that new moderator sees the existing requests for unmute.
+     * Test that after granting moderator to a participant, that new moderator can ask to unmute.
      */
     @Test(dependsOnMethods = { "testHangUpAndChangeModerator" })
     public void testGrantModerator()
@@ -226,22 +211,11 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.clickContextMenuButton();
 
-        avModerationMenu.clickStartModeration();
+        avModerationMenu.clickStartAudioModeration();
 
-        participant2.getNotifications().getModerationStartNotification();
+        avModerationMenu.clickStartVideoModeration();
 
         participantsPane.close();
-
-        // wait for the moderation start notification to disappear
-        TestUtils.waitForCondition(participant3.getDriver(), 10,
-            (ExpectedCondition<Boolean>) d -> !participant3.getNotifications().hasModerationStartNotification());
-
-        // FIXME: Showing remote video menu in tileview does not work (3-dot menu behind subject)
-        participant1.getToolbar().clickTileViewButton();
-
-        raiseHandToSpeak(participant3);
-
-        UnmuteModalDialogHelper.hasUnmuteButton(participant1.getDriver());
 
         participant1
             .getRemoteParticipantById(participant2.getEndpointId())
@@ -249,7 +223,46 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participant2.waitToBecomeModerator();
 
-        UnmuteModalDialogHelper.hasUnmuteButton(participant2.getDriver());
+        unmuteByModerator(participant2, participant3, true);
+    }
+
+    /**
+     * Checks a user can unmute after being asked by moderator.
+     * @param moderator - The participant that is moderator.
+     * @param participant - The participant being asked to unmute.
+     * @param moderationOn - Whether or not moderation is enabled.
+     */
+    private void unmuteByModerator(WebParticipant moderator, WebParticipant participant, Boolean moderationOn)
+    {
+        ParticipantsPane participantsPane = moderator.getParticipantsPane();
+        AVModerationMenu avModerationMenu = moderator.getAVModerationMenu();
+        WebDriver driver1 = moderator.getDriver();
+
+        participantsPane.open();
+
+        if(!moderationOn) {
+            participantsPane.clickContextMenuButton();
+
+            avModerationMenu.clickStartAudioModeration();
+
+            avModerationMenu.clickStartVideoModeration();
+        }
+
+        raiseHandToSpeak(participant);
+
+        askParticipantToUnmute(moderator, participant);
+
+        clickCloseAskToUnmuteNotification(participant);
+
+        checkAudioVideoParticipantUnmute(participant);
+
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStopAudioModeration();
+
+        avModerationMenu.clickStopVideoModeration();
+
+        participantsPane.close();
     }
 
     /**
@@ -267,13 +280,31 @@ public class AudioVideoModerationTest extends WebTestBase
      * Moderator asks participant to unmute
      * @param participant the participant who is requested to unmute
      */
-    private void askParticipantToUnmute(WebParticipant participant)
+    private void askParticipantToUnmute(WebParticipant moderator, WebParticipant participant)
     {
-        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        ParticipantsPane participantsPane = moderator.getParticipantsPane();
 
         participantsPane.askToUnmute(participant);
 
         participant.getNotifications().getAskToUnmuteNotification();
+    }
+
+    /**
+     * Checks audio unmute state for participant
+     * @param participant the participant that is checked
+     */
+    private void checkAudioParticipantUnmute(WebParticipant participant, Boolean isMuted)
+    {
+        MeetUIUtils.toggleAudioAndCheck(participant, participant1, isMuted, false);
+    }
+
+    /**
+     * Checks audio unmute state for participant
+     * @param participant the participant that is checked
+     */
+    private void checkVideoParticipantUnmute(WebParticipant participant, Boolean isMuted)
+    {
+        MeetUIUtils.toggleVideoAndCheck(participant, participant1, isMuted, true);
     }
 
     /**
@@ -288,7 +319,7 @@ public class AudioVideoModerationTest extends WebTestBase
     }
 
     /**
-     * Trys to click on the close button on ask to unmute notification and fails if it cannot be clicked.
+     * Tries to click on the close button on ask to unmute notification and fails if it cannot be clicked.
      * @param participant the participant who is requested to unmute
      */
     public void clickCloseAskToUnmuteNotification(WebParticipant participant)

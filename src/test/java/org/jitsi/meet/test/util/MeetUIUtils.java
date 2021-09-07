@@ -1159,6 +1159,47 @@ public class MeetUIUtils
     }
 
     /**
+     * Toggles mute/unmute <tt>participant</tt>'s video, checks if the local UI has been
+     * updated accordingly and then does the verification from
+     * the <tt>participantCheck</tt> perspective.
+     * @param participant the {@link WebParticipant} of the participant to be
+     * "video unmuted"
+     * @param participantCheck the {@link WebParticipant} of the participant
+     * which observes and checks if the video has been unmuted correctly.
+     * @param isMuted the {@link Boolean} of the participant
+     * which checks if the audio is muted.
+     * @param isVideo the {@link Boolean} of the participant
+     * which checks for video.
+     */
+    public static void toggleVideoAndCheck(WebParticipant participant,
+                                           WebParticipant participantCheck,
+                                           Boolean isMuted,
+                                           Boolean isVideo)
+    {
+        WebDriver driver = participant.getDriver();
+
+        // Make sure that there is the audio mute button
+        participant.getToolbar().waitForVideoMuteButtonDisplay();
+
+        // Mute participant's audio
+        participant.getToolbar().clickVideoMuteButton();
+
+        // Check if local video muted icon disappeared
+        assertMuteIconIsDisplayed(
+            driver, driver, isMuted, isVideo, participant.getName());
+
+        if (participantCheck != null)
+        {
+            MeetUIUtils.assertMuteIconIsDisplayed(
+                participantCheck.getDriver(),
+                driver,
+                isMuted,
+                isVideo,
+                "");
+        }
+    }
+
+    /**
      * Toggles mute/unmute <tt>participant</tt>'s audio, checks if the local UI has been
      * updated accordingly and then does the verification from
      * the <tt>participantCheck</tt> perspective.

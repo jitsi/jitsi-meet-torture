@@ -18,9 +18,13 @@ public class AVModerationMenu
      * ID of the moderation context menu items
      */
 
-    private final static String START_MODERATION = "participants-pane-context-menu-start-moderation";
+    private final static String START_AUDIO_MODERATION = "participants-pane-context-menu-start-audio-moderation";
 
-    private final static String STOP_MODERATION = "participants-pane-context-menu-stop-moderation";
+    private final static String START_VIDEO_MODERATION = "participants-pane-context-menu-start-video-moderation";
+
+    private final static String STOP_AUDIO_MODERATION = "participants-pane-context-menu-stop-audio-moderation";
+
+    private final static String STOP_VIDEO_MODERATION = "participants-pane-context-menu-stop-video-moderation";
 
     /**
      * The participant.
@@ -38,25 +42,49 @@ public class AVModerationMenu
     }
 
     /**
-     * Trys to click on the start moderation menu item and fails if it cannot be clicked.
+     * Tries to click on the start audio moderation menu item and fails if it cannot be clicked.
      */
-    public void clickStartModeration()
+    public void clickStartAudioModeration()
     {
         WebDriver driver = participant.getDriver();
         WebElement startModerationMenuItem
-                = driver.findElement(By.id(START_MODERATION));
+                = driver.findElement(By.id(START_AUDIO_MODERATION));
 
         startModerationMenuItem.click();
     }
 
     /**
-     * Trys to click on the stop moderation menu item and fails if it cannot be clicked.
+     * Tries to click on the start video moderation menu item and fails if it cannot be clicked.
      */
-    public void clickStopModeration()
+    public void clickStartVideoModeration()
     {
         WebDriver driver = participant.getDriver();
         WebElement startModerationMenuItem
-                = driver.findElement(By.id(STOP_MODERATION));
+                = driver.findElement(By.id(START_VIDEO_MODERATION));
+
+        startModerationMenuItem.click();
+    }
+
+    /**
+     * Tries to click on the stop audio moderation menu item and fails if it cannot be clicked.
+     */
+    public void clickStopAudioModeration()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement startModerationMenuItem
+                = driver.findElement(By.id(STOP_AUDIO_MODERATION));
+
+        startModerationMenuItem.click();
+    }
+
+    /**
+     * Tries to click on the stop video moderation menu item and fails if it cannot be clicked.
+     */
+    public void clickStopVideoModeration()
+    {
+        WebDriver driver = participant.getDriver();
+        WebElement startModerationMenuItem
+                = driver.findElement(By.id(STOP_VIDEO_MODERATION));
 
         startModerationMenuItem.click();
     }
