@@ -69,16 +69,6 @@ public class Notifications
     private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
 
     /**
-     * The test id of the notification shown to users when moderation started.
-     */
-    private static final String MODERATION_START_NOTIFICATION_ID = "notify.moderationStartedTitle";
-
-    /**
-     * The test id of the notification shown to users when moderation stopped.
-     */
-    private static final String MODERATION_STOP_NOTIFICATION_ID = "notify.moderationStoppedTitle";
-
-    /**
      * The test id of the notification shown to moderator when participant wants to speak.
      */
     private static final String RAISE_HAND_NOTIFICATION_ID = "notify.raisedHand";
@@ -216,42 +206,6 @@ public class Notifications
     public boolean hasKickedNotification()
     {
         return hasNotification(KICKED_NOTIFICATION_TEST_ID);
-    }
-
-    /**
-     * The notification on participants page when moderation starts.
-     * @return the notification on participants page when moderation starts.
-     */
-    public String getModerationStartNotification()
-    {
-        return getNotificationText(MODERATION_START_NOTIFICATION_ID);
-    }
-
-    /**
-     * Whether there is a notification on participants page when moderation starts.
-     * @return <tt>true</tt> if the notification is found.
-     */
-    public boolean hasModerationStartNotification()
-    {
-        return hasNotification(MODERATION_START_NOTIFICATION_ID);
-    }
-
-    /**
-     * The notification on participants page when moderation stops.
-     * @return the notification on participants page when moderation stops.
-     */
-    public String getModerationStopNotification()
-    {
-        return getNotificationText(MODERATION_STOP_NOTIFICATION_ID);
-    }
-
-    /**
-     * Whether there is a notification on participants page when moderation stops.
-     * @return <tt>true</tt> if the notification is found.
-     */
-    public boolean hasModerationStopNotification()
-    {
-        return hasNotification(MODERATION_STOP_NOTIFICATION_ID);
     }
 
     /**
