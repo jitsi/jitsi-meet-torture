@@ -711,6 +711,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#password
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#passwordrequired (this is in the html impl)
      *
      * Test command password.
      */
