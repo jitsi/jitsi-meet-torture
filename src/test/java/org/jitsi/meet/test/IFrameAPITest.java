@@ -216,6 +216,9 @@ public class IFrameAPITest
      * Functions testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getparticipantsinfo
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getdisplayname
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displaynamechange
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#emailchange
      *
      * Tests and passing userInfo to JitsiMeetExternalAPI options and getDisplayName
      */
@@ -238,6 +241,9 @@ public class IFrameAPITest
         WebDriver driver = participant1.getDriver();
 
         switchToIframeAPI(driver);
+
+        addIframeAPIListener(driver, "displayNameChange");
+
         String s = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.getParticipantsInfo());");
         assertNotNull(s);
@@ -279,6 +285,11 @@ public class IFrameAPITest
         MeetUIUtils.clickOnLocalVideo(driver);
 
         switchToIframeAPI(driver);
+
+        JsonObject displayNameEvent = getEventResult(driver, "displayNameChange");
+        assertEquals(displayNameEvent.get("displayname").getAsString(), newName);
+        assertEquals(displayNameEvent.get("id").getAsString(), endpointId1);
+
         apiDisplayName = TestUtils.executeScriptAndReturnString(driver,
             "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
         assertEquals(apiDisplayName, newName);
@@ -600,6 +611,9 @@ public class IFrameAPITest
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displayname
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#email
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displaynamechange
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#emailchange
      *
      * Test command displayName and email.
      */
@@ -607,13 +621,15 @@ public class IFrameAPITest
     public void testCommandDisplayName()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
-        ensureOneParticipant(this.iFrameUrl);
+        ensureTwoParticipants(this.iFrameUrl, null);
 
         String newName = "P1 New Name-" + (int) (Math.random() * 1_000_000);
         String newEmail = "example@example.com";
 
         WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
         WebDriver driver1 = participant1.getDriver();
+        String endpointId2 = participant2.getEndpointId();
 
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1,
@@ -621,12 +637,42 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('email', '" + newEmail + "');");
 
+        addIframeAPIListener(driver1, "displayNameChange");
+        addIframeAPIListener(driver1, "emailChange");
+
         switchToMeetContent(this.iFrameUrl, driver1);
         participant1.getToolbar().clickSettingsButton();
         SettingsDialog settingsDialog = participant1.getSettingsDialog();
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), newName);
         assertEquals(settingsDialog.getEmail(), newEmail);
+
+        String newName2 = "P2 New Name-" + (int) (Math.random() * 1_000_000);
+        participant2.setDisplayName(newName2);
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            getEventResult(d, "displayNameChange") != null);
+        JsonObject displayNameEvent = getEventResult(driver1, "displayNameChange");
+        assertEquals(displayNameEvent.get("displayname").getAsString(), newName2);
+        assertEquals(displayNameEvent.get("id").getAsString(), endpointId2);
+
+        // FIXME: this seems to be broken in jitsi-meet
+//        String newEmail2 = "example2@example.com";
+//        participant2.getToolbar().clickSettingsButton();
+//        SettingsDialog settingsDialog2 = participant2.getSettingsDialog();
+//        settingsDialog2.waitForDisplay();
+//        settingsDialog2.setEmail(newEmail2);
+//        settingsDialog2.submit();;
+//
+//        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+//            JsonObject emailEvent = getEventResult(d, "emailChange");
+//            return emailEvent.get("id").getAsString().equals(endpointId2)
+//                && emailEvent.get("email").getAsString().equals(newEmail2);
+//        });
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
