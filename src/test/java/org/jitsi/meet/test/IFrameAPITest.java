@@ -252,6 +252,7 @@ public class IFrameAPITest
      * Event:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displaynamechange
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#emailchange
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#videoconferencejoined
      *
      * Tests and passing userInfo to JitsiMeetExternalAPI options and getDisplayName
      */
@@ -274,6 +275,11 @@ public class IFrameAPITest
         WebDriver driver = participant1.getDriver();
 
         switchToIframeAPI(driver);
+
+        JsonObject joinedEvent = getEventResult(driver, "videoConferenceJoined");
+        assertEquals(joinedEvent.get("roomName").getAsString(), getJitsiMeetUrl().getRoomName());
+        assertEquals(joinedEvent.get("id").getAsString(), endpointId1);
+        assertEquals(joinedEvent.get("displayName").getAsString(), displayName);
 
         addIframeAPIListener(driver, "displayNameChange");
 
