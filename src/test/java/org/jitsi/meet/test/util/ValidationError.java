@@ -15,8 +15,11 @@
  */
 package org.jitsi.meet.test.util;
 
-public class ValidationError extends RuntimeException {
-      public ValidationError(String message) {
+public class ValidationError
+    extends RuntimeException
+{
+      public ValidationError(String message)
+      {
          super(message);
       }
 }

@@ -75,7 +75,8 @@ public class InviteTest extends WebTestBase
      * Checks if the info dialog shows a dial in number and pin (conference ID).
      */
     @Test(dependsOnMethods = { "testInviteURLDisplays" })
-    public void testDialInDisplays() {
+    public void testDialInDisplays()
+    {
         if (!MeetUtils.isDialInEnabled(participant.getDriver()))
         {
             throw new SkipException(

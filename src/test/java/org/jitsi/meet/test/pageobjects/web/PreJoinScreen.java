@@ -91,7 +91,8 @@ public class PreJoinScreen
      * The join options button.
      * @return option button.
      */
-    public WebElement getJoinOptions() {
+    public WebElement getJoinOptions()
+    {
         return participant.getDriver().findElement(ByTestId.testId(OPTIONS_BUTTON));
     }
 
@@ -99,7 +100,8 @@ public class PreJoinScreen
      * The 'joinWithoutAudio' button.
      * @return join without audio button
      */
-    public WebElement getJoinWithoutAudioButton() {
+    public WebElement getJoinWithoutAudioButton()
+    {
         return participant.getDriver().findElement(ByTestId.testId(JOIN_WITHOUT_AUDIO));
     }
 }

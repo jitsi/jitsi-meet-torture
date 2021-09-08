@@ -168,7 +168,10 @@ public class MobileParticipant extends Participant<AppiumDriver<MobileElement>>
      *
      * @return <tt>null</tt>
      */
-    public Object getConfigValue(String key) { return null; }
+    public Object getConfigValue(String key)
+    {
+        return null;
+    }
 
     /**
      * {@inheritDoc}

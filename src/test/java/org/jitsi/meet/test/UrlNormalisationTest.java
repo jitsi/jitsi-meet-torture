@@ -46,7 +46,8 @@ public class UrlNormalisationTest
      * Hang up the call and check if we're redirected to the main page.
      */
     @Test
-    public void test() throws MalformedURLException {
+    public void test() throws MalformedURLException
+    {
         final WebDriver driver1 = getParticipant1().getDriver();
         final URL url = new URL(driver1.getCurrentUrl());
         String[] path = url.getPath().split("/");

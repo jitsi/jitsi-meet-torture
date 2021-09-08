@@ -304,7 +304,8 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Waits 5 seconds for this participant to become a moderator.
      */
-    public void waitToBecomeModerator() {
+    public void waitToBecomeModerator()
+    {
         waitToBecomeModerator(5);
     }
 

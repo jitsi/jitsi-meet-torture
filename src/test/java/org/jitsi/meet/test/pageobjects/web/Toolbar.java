@@ -174,7 +174,8 @@ public class Toolbar
      * Clicks on the overflow toolbar button which opens or closes the overflow
      * menu.
      */
-    public void clickOverflowButton() {
+    public void clickOverflowButton()
+    {
         clickButton(OVERFLOW);
     }
 
@@ -444,7 +445,8 @@ public class Toolbar
      * @param visible Whether to wait for the overflow menu to be visible or
      * not visible.
      */
-    private void waitForOverFlowMenu(boolean visible) {
+    private void waitForOverFlowMenu(boolean visible)
+    {
         By selector = getOverflowMenuSelector();
         WebDriver driver = participant.getDriver();
         int waitTime = 10;
