@@ -861,6 +861,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglechat
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#chatupdated
      *
      * Test command toggleChat.
      */
@@ -875,8 +877,15 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        addIframeAPIListener(driver1, "chatUpdated");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleChat');");
+
+        TestUtils.waitForCondition(driver1, 1, (ExpectedCondition<Boolean>) d ->
+            getEventResult(d, "chatUpdated") != null);
+
+        assertTrue(getEventResult(driver1, "chatUpdated").get("isOpen").getAsBoolean());
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
@@ -890,6 +899,10 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         participant1.getChatPanel().assertClosed();
+
+        switchToIframeAPI(driver1);
+        assertFalse(getEventResult(driver1, "chatUpdated").get("isOpen").getAsBoolean());
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
@@ -1422,6 +1435,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendchatmessage
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#chatupdated
      *
      * Test command sendChatMessage.
      */
@@ -1442,6 +1457,8 @@ public class IFrameAPITest
         String testMessageTxt = "Test message text:";
 
         switchToIframeAPI(driver1);
+
+        addIframeAPIListener(driver1, "chatUpdated");
 
         String msg1 = testMessageTxt + "1";
         TestUtils.executeScript(driver1,
@@ -1473,6 +1490,16 @@ public class IFrameAPITest
                 + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"), 2);
         assertNotNull(privateMessage);
         assertTrue(privateMessage.getText().contains(msg2));
+
+        TestUtils.executeScript(driver2, "APP.conference._room.sendMessage('" + msg2 + "')");
+        TestUtils.executeScript(driver2, "APP.conference._room.sendMessage('" + msg2 + "')");
+
+        switchToIframeAPI(driver1);
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            getEventResult(d, "chatUpdated").get("unreadCount").getAsInt() == 2);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
