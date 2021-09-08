@@ -1437,6 +1437,8 @@ public class IFrameAPITest
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendchatmessage
      * Event:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#chatupdated
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#incomingmessage
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#outgoingmessage
      *
      * Test command sendChatMessage.
      */
@@ -1453,12 +1455,15 @@ public class IFrameAPITest
         WebDriver driver2 = participant2.getDriver();
         WebDriver driver3 = participant3.getDriver();
         String endpointId2 = participant2.getEndpointId();
+        String endpointName2 = participant2.getName().replaceAll("web\\.", "");
 
         String testMessageTxt = "Test message text:";
 
         switchToIframeAPI(driver1);
 
         addIframeAPIListener(driver1, "chatUpdated");
+        addIframeAPIListener(driver1, "incomingMessage");
+        addIframeAPIListener(driver1, "outgoingMessage");
 
         String msg1 = testMessageTxt + "1";
         TestUtils.executeScript(driver1,
@@ -1478,6 +1483,10 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        JsonObject sentMsgEvent = getEventResult(driver1, "outgoingMessage");
+        assertEquals(sentMsgEvent.get("message").getAsString(), msg1);
+        assertFalse(sentMsgEvent.get("privateMessage").getAsBoolean());
+
         String msg2 = testMessageTxt + "2";
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('sendChatMessage', '" + msg2 + "', '" + endpointId2 + "');");
@@ -1492,12 +1501,23 @@ public class IFrameAPITest
         assertTrue(privateMessage.getText().contains(msg2));
 
         TestUtils.executeScript(driver2, "APP.conference._room.sendMessage('" + msg2 + "')");
-        TestUtils.executeScript(driver2, "APP.conference._room.sendMessage('" + msg2 + "')");
+        String msg3 = testMessageTxt + "2";
+        TestUtils.executeScript(driver2, "APP.conference._room.sendMessage('" + msg3 + "')");
 
         switchToIframeAPI(driver1);
 
+        sentMsgEvent = getEventResult(driver1, "outgoingMessage");
+        assertEquals(sentMsgEvent.get("message").getAsString(), msg2);
+        assertTrue(sentMsgEvent.get("privateMessage").getAsBoolean());
+
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             getEventResult(d, "chatUpdated").get("unreadCount").getAsInt() == 2);
+
+        JsonObject lastReceivedMsgEvent = getEventResult(driver1, "incomingMessage");
+        assertEquals(lastReceivedMsgEvent.get("from").getAsString(), endpointId2);
+        assertEquals(lastReceivedMsgEvent.get("message").getAsString(), msg3);
+        assertEquals(lastReceivedMsgEvent.get("nick").getAsString(), endpointName2);
+        assertFalse(lastReceivedMsgEvent.get("privateMessage").getAsBoolean());
 
         switchToMeetContent(this.iFrameUrl, driver1);
     }
