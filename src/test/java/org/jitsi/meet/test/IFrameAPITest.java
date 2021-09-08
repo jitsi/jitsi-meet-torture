@@ -581,6 +581,7 @@ public class IFrameAPITest
      *
      * Events testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#audiomutestatuschanged
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#videomutestatuschanged
      *
      * Test retrieving local audio/video muted state.
      */
@@ -615,6 +616,7 @@ public class IFrameAPITest
         assertFalse(result[1], "Video must be initially unmuted");
 
         addIframeAPIListener(driver1, "audioMuteStatusChanged");
+        addIframeAPIListener(driver1, "videoMuteStatusChanged");
 
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('toggleAudio');");
@@ -633,6 +635,8 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
             getEventResult(d, "audioMuteStatusChanged").get("muted").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+            getEventResult(d, "videoMuteStatusChanged").get("muted").getAsBoolean());
 
         // let's revert to the initial state
         TestUtils.executeScript(driver1,
@@ -642,6 +646,8 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
             !getEventResult(d, "audioMuteStatusChanged").get("muted").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+            !getEventResult(d, "videoMuteStatusChanged").get("muted").getAsBoolean());
 
         switchToMeetContent(this.iFrameUrl, driver1);
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
