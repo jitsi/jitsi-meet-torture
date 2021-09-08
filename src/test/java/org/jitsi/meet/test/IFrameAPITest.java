@@ -864,6 +864,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglefilmstrip
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#filmstripdisplaychanged
      *
      * Test command toggleFilmStrip.
      */
@@ -877,6 +879,8 @@ public class IFrameAPITest
         WebDriver driver1 = participant1.getDriver();
 
         switchToIframeAPI(driver1);
+
+        addIframeAPIListener(driver1, "filmstripDisplayChanged");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleFilmStrip');");
@@ -893,6 +897,8 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        assertFalse(getEventResult(driver1, "filmstripDisplayChanged").get("visible").getAsBoolean());
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleFilmStrip');");
 
@@ -902,6 +908,11 @@ public class IFrameAPITest
             driver1,
             LOCAL_VIDEO_XPATH,
             5);
+
+        switchToIframeAPI(driver1);
+        assertTrue(getEventResult(driver1, "filmstripDisplayChanged").get("visible").getAsBoolean());
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
