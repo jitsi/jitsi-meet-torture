@@ -1071,6 +1071,9 @@ public class IFrameAPITest
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggletileview
      *
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#tileviewchanged
+     *
      * Test command toggleTileView.
      */
     @Test(dependsOnMethods = { "testCommandToggleShareScreen" })
@@ -1087,6 +1090,8 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        addIframeAPIListener(driver1, "tileViewChanged");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleTileView');");
 
@@ -1096,12 +1101,20 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        assertTrue(getEventResult(driver1, "tileViewChanged").get("enabled").getAsBoolean());
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleTileView');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
+
+        switchToIframeAPI(driver1);
+
+        assertFalse(getEventResult(driver1, "tileViewChanged").get("enabled").getAsBoolean());
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
