@@ -180,6 +180,11 @@ public class IFrameAPITest
      *
      * Includes test for audioAvailabilityChanged event.
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#audioavailabilitychanged
+     *
+     * Event
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantjoined
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantleft
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantkickedout
      */
     @Test
     public void testIFrameAPI()
@@ -189,11 +194,25 @@ public class IFrameAPITest
         ensureOneParticipant(iFrameUrl);
         WebDriver driver1 = getParticipant1().getDriver();
 
-        ensureThreeParticipants(iFrameUrl, null, null);
-
         // Tests event audioAvailabilityChanged
         switchToIframeAPI(driver1);
         assertTrue(getEventResult(driver1, "audioAvailabilityChanged").get("available").getAsBoolean() );
+        addIframeAPIListener(driver1, "participantJoined");
+        addIframeAPIListener(driver1, "participantLeft");
+        addIframeAPIListener(driver1, "participantKickedOut");
+        switchToMeetContent(iFrameUrl, driver1);
+
+        ensureThreeParticipants(iFrameUrl, null, null);
+
+        String endpointId2 = getParticipant2().getEndpointId();
+        String endpointId3 = getParticipant3().getEndpointId();
+
+        // testing event participantJoined
+        switchToIframeAPI(driver1);
+        JsonObject joinedEvent = getEventResult(driver1, "participantJoined");
+        // we get the last participant joined stored
+        assertEquals(joinedEvent.get("id").getAsString(), endpointId3);
+
         switchToMeetContent(iFrameUrl, driver1);
 
         SwitchVideoTest switchVideoTest = new SwitchVideoTest(this);
@@ -208,6 +227,20 @@ public class IFrameAPITest
         muteTest.muteParticipant1AndCheck();
         muteTest.muteParticipant2AndCheck();
         muteTest.muteParticipant3AndCheck(iFrameUrl, null, null);
+
+        // test event participantLeft
+        getParticipant2().hangUp();
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+            getEventResult(driver1, "participantLeft").get("id").getAsString().equals(endpointId2));
+        switchToMeetContent(iFrameUrl, driver1);
+
+        // testing event participantKickedOut
+        // FIXME seems participantKickedOut is not working
+//        getParticipant1().getRemoteParticipantById(getParticipant3().getEndpointId()).kick();
+//        switchToIframeAPI(driver1);
+//        getEventResult(driver1, "participantKickedOut")
+//        switchToMeetContent(iFrameUrl, driver1);
 
         hangUpAllParticipants();
     }
