@@ -1496,6 +1496,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#kickparticipant
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantkickedout
      *
      * Test command kickParticipant.
      */
@@ -1515,6 +1517,8 @@ public class IFrameAPITest
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
 
+        addIframeAPIListener(driver1, "participantKickedOut");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('kickParticipant', '" + endpointId2 + "');");
 
@@ -1526,6 +1530,10 @@ public class IFrameAPITest
         assertTrue(
             getParticipant2().getNotifications().hasKickedNotification(),
             "The second participant should see a warning that was kicked.");
+
+//        switchToIframeAPI(driver1);
+//         FIXME getEventResult(driver1, "participantKickedOut")
+//        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
