@@ -43,6 +43,7 @@ import static org.testng.Assert.*;
  *  https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#capturelargevideoscreenshot
  * Events:
  * Need to be fixed: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#largevideochanged
+ * TODO: https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantrolechanged
  *
  * @author Damian Minkov
  */
