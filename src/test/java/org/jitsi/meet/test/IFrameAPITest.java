@@ -1238,6 +1238,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#hangup
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#videoconferenceleft
      *
      * Test command hangup.
      */
@@ -1258,6 +1260,8 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        addIframeAPIListener(driver1, "videoConferenceLeft");
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('hangup');");
 
@@ -1265,6 +1269,12 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver2, 3, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT) == 1d);
+
+        switchToIframeAPI(driver1);
+        assertEquals(
+            getEventResult(driver1, "videoConferenceLeft").get("roomName").getAsString(),
+            getJitsiMeetUrl().getRoomName());
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
