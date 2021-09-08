@@ -344,6 +344,8 @@ public class IFrameAPITest
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getvideoquality
      * Command:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setvideoquality
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#videoqualitychanged
      *
      * Test retrieving video quality.
      */
@@ -357,6 +359,8 @@ public class IFrameAPITest
         WebDriver driver = participant1.getDriver();
 
         switchToIframeAPI(driver);
+        addIframeAPIListener(driver, "videoQualityChanged");
+
         String s = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
 
@@ -369,10 +373,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver);
 
-        s = TestUtils.executeScriptAndReturnString(driver,
-            "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
         // audio only switches to 180
-        assertEquals(s, "180");
+        TestUtils.waitForCondition(driver, 2, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver, "return window.jitsiAPI.getVideoQuality() === 180;"));
+
+        assertEquals(getEventResult(driver, "videoQualityChanged").get("videoQuality").getAsString(), "180");
 
         switchToMeetContent(this.iFrameUrl, driver);
 
@@ -384,9 +389,10 @@ public class IFrameAPITest
         TestUtils.executeScript(driver,
             "window.jitsiAPI.executeCommand('setVideoQuality', 360);");
 
-        s = TestUtils.executeScriptAndReturnString(driver,
-            "return JSON.stringify(window.jitsiAPI.getVideoQuality());");
-        assertEquals(s, "360");
+        TestUtils.waitForCondition(driver, 2, (ExpectedCondition<Boolean>) d ->
+            TestUtils.executeScriptAndReturnBoolean(driver, "return window.jitsiAPI.getVideoQuality() === 360;"));
+
+        assertEquals(getEventResult(driver, "videoQualityChanged").get("videoQuality").getAsString(), "360");
 
         switchToMeetContent(this.iFrameUrl, driver);
     }
