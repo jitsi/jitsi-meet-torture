@@ -38,6 +38,9 @@
         window.jitsiAPI.addListener('audioAvailabilityChanged', function(event) {
             window.jitsiAPI.test.audioAvailabilityChanged = event;
         });
+        window.jitsiAPI.addListener('videoAvailabilityChanged', function(event) {
+            window.jitsiAPI.test.videoAvailabilityChanged = event;
+        });
         window.jitsiAPI.addListener('videoConferenceJoined', function(event) {
             window.jitsiAPI.test.videoConferenceJoined = event;
         });

@@ -180,6 +180,7 @@ public class IFrameAPITest
      *
      * Includes test for audioAvailabilityChanged event.
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#audioavailabilitychanged
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#videoavailabilitychanged
      *
      * Event
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#participantjoined
@@ -197,6 +198,7 @@ public class IFrameAPITest
         // Tests event audioAvailabilityChanged
         switchToIframeAPI(driver1);
         assertTrue(getEventResult(driver1, "audioAvailabilityChanged").get("available").getAsBoolean() );
+        assertTrue(getEventResult(driver1, "videoAvailabilityChanged").get("available").getAsBoolean() );
         addIframeAPIListener(driver1, "participantJoined");
         addIframeAPIListener(driver1, "participantLeft");
         addIframeAPIListener(driver1, "participantKickedOut");
