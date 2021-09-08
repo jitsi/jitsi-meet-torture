@@ -874,6 +874,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#subject
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#subjectchange
      *
      * Test command subject.
      */
@@ -893,6 +895,8 @@ public class IFrameAPITest
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             TestUtils.executeScriptAndReturnBoolean(driver1,
                 "return window.jitsiAPI.test.isModerator;"));
+
+        addIframeAPIListener(driver1, "subjectChange");
 
         String randomSubject = "My Random Subject " + (int) (Math.random() * 1_000_000);
         TestUtils.executeScript(driver1,
@@ -914,6 +918,11 @@ public class IFrameAPITest
             10);
 
         assertEquals(driver2.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
+
+        switchToIframeAPI(driver1);
+        assertEquals(getEventResult(driver1, "subjectChange").get("subject").getAsString(), randomSubject);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
