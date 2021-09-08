@@ -577,7 +577,7 @@ public class IFrameAPITest
         assertTrue(result[0], "Audio must be muted");
         assertTrue(result[1], "Video must be muted");
 
-        TestUtils.waitForCondition(driver1, 2,(ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
             getEventResult(d, "audioMuteStatusChanged").get("muted").getAsBoolean());
 
         // let's revert to the initial state
@@ -586,7 +586,7 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('toggleVideo');");
 
-        TestUtils.waitForCondition(driver1, 2,(ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
             !getEventResult(d, "audioMuteStatusChanged").get("muted").getAsBoolean());
 
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -1048,7 +1048,8 @@ public class IFrameAPITest
             TestUtils.executeScriptAndReturnString(driver1,
                 "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);") != null);
 
-        res = TestUtils.executeScriptAndReturnString(driver1, "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);");
+        res = TestUtils.executeScriptAndReturnString(driver1,
+            "return JSON.stringify(window.jitsiAPI.test.getContentSharing2);");
         assertNotNull(res);
 
         List<String> resultIds = new ArrayList<>();
@@ -1207,7 +1208,8 @@ public class IFrameAPITest
 
         // adds the listener at the receiver
         TestUtils.executeScript(driver2,
-            "APP.conference._room.on('conference.endpoint_message_received', (p, m) => window.testEndpointCommandTxt = m.text);");
+            "APP.conference._room.on('conference.endpoint_message_received', "
+                + "(p, m) => window.testEndpointCommandTxt = m.text);");
 
         switchToIframeAPI(driver1);
 
