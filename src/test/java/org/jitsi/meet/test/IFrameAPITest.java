@@ -906,8 +906,12 @@ public class IFrameAPITest
         WebParticipant participant2 = getParticipant2();
         WebDriver driver1 = participant1.getDriver();
         WebDriver driver2 = participant2.getDriver();
+        String endpointId1 = participant1.getEndpointId();
+        String endpointId2 = participant2.getEndpointId();
 
         switchToIframeAPI(driver1);
+
+        addIframeAPIListener(driver1, "raiseHandUpdated");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleRaiseHand');");
@@ -919,6 +923,10 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
+        JsonObject event = getEventResult(driver1, "raiseHandUpdated");
+        assertEquals(event.get("id").getAsString(), endpointId1);
+        assertTrue(event.get("handRaised").getAsBoolean());
+
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleRaiseHand');");
 
@@ -926,6 +934,38 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
             !participant2.getNotifications().hasRaisedHandNotification());
+
+        switchToIframeAPI(driver1);
+
+        event = getEventResult(driver1, "raiseHandUpdated");
+        assertEquals(event.get("id").getAsString(), endpointId1);
+        assertFalse(event.get("handRaised").getAsBoolean());
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant2.getToolbar().clickRaiseHandButton();
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            participant1.getNotifications().hasRaisedHandNotification());
+
+        switchToIframeAPI(driver1);
+
+        event = getEventResult(driver1, "raiseHandUpdated");
+        assertEquals(event.get("id").getAsString(), endpointId2);
+        assertTrue(event.get("handRaised").getAsBoolean());
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        participant2.getToolbar().clickRaiseHandButton();
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            !participant1.getNotifications().hasRaisedHandNotification());
+
+        switchToIframeAPI(driver1);
+
+        event = getEventResult(driver1, "raiseHandUpdated");
+        assertEquals(event.get("id").getAsString(), endpointId2);
+        assertFalse(event.get("handRaised").getAsBoolean());
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
