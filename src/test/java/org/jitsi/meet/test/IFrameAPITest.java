@@ -378,6 +378,8 @@ public class IFrameAPITest
     /**
      * Functions testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#dominantspeakerchanged
      *
      * Test selecting participant on large.
      */
@@ -893,6 +895,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggleraisehand
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#raisehandupdated
      *
      * Test command toggleRaiseHand.
      */
@@ -973,6 +977,9 @@ public class IFrameAPITest
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglesharescreen
      * Function
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getcontentsharingparticipants
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#screensharingstatuschanged
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#contentsharingparticipantschanged
      *
      * Test command toggleShareScreen and getContentSharingParticipants.
      */
@@ -1201,6 +1208,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendendpointtextmessage
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#endpointtextmessagereceived
      *
      * Test command sendEndpointTextMessage.
      */
@@ -1266,6 +1275,8 @@ public class IFrameAPITest
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#setlargevideoparticipant-1
+     * Event:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#dominantspeakerchanged
      *
      * Test command setLargeVideoParticipant.
      */
