@@ -253,8 +253,6 @@ public class AudioVideoModerationTest extends WebTestBase
 
         askParticipantToUnmute(moderator, participant);
 
-        clickCloseAskToUnmuteNotification(participant);
-
         checkAudioVideoParticipantUnmute(participant);
 
         participantsPane.clickContextMenuButton();
@@ -317,14 +315,5 @@ public class AudioVideoModerationTest extends WebTestBase
         MeetUIUtils.toggleAudioAndCheck(participant, participant1, false, false);
 
         MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
-    }
-
-    /**
-     * Tries to click on the close button on ask to unmute notification and fails if it cannot be clicked.
-     * @param participant the participant who is requested to unmute
-     */
-    public void clickCloseAskToUnmuteNotification(WebParticipant participant)
-    {
-        TestUtils.click(participant.getDriver(), ByTestId.testId(NOTIFY_UNMUTE_DISMISS_ID));
     }
 }
