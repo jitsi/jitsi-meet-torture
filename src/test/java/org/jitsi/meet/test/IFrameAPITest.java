@@ -524,8 +524,10 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        JsonObject eventData = getEventResult(driver1, "dominantSpeakerChanged");
-        assertEquals(eventData.get("id").getAsString(), endpoint3Id);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+                JsonObject eventData = getEventResult(d, "dominantSpeakerChanged");
+                return eventData != null && eventData.get("id").getAsString().equals(endpoint3Id);
+        });
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
@@ -706,11 +708,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
-            getEventResult(d, "displayNameChange") != null);
-        JsonObject displayNameEvent = getEventResult(driver1, "displayNameChange");
-        assertEquals(displayNameEvent.get("displayname").getAsString(), newName2);
-        assertEquals(displayNameEvent.get("id").getAsString(), endpointId2);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+                JsonObject displayNameEvent = getEventResult(d, "displayNameChange");
+                return displayNameEvent != null && displayNameEvent.get("displayname").getAsString().equals(newName2)
+                    && displayNameEvent.get("id").getAsString().equals(endpointId2);
+            });
 
         // FIXME: this seems to be broken in jitsi-meet
 //        String newEmail2 = "example2@example.com";
@@ -937,6 +939,8 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandSubject" })
     public void testCommandToggleFilmStrip()
     {
+        hangUpAllParticipants();
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl, null);
 
@@ -1100,9 +1104,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        event = getEventResult(driver1, "raiseHandUpdated");
-        assertEquals(event.get("id").getAsString(), endpointId2);
-        assertFalse(event.get("handRaised").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            JsonObject e = getEventResult(d, "raiseHandUpdated");
+            return e.get("id").getAsString().equals(endpointId2)
+                && !e.get("handRaised").getAsBoolean();
+        });
 
         switchToMeetContent(this.iFrameUrl, driver1);
     }
@@ -1299,6 +1305,8 @@ public class IFrameAPITest
             getEventResult(driver1, "videoConferenceLeft").get("roomName").getAsString(),
             getJitsiMeetUrl().getRoomName());
         switchToMeetContent(this.iFrameUrl, driver1);
+
+        hangUpAllParticipants();
     }
 
     /**
@@ -1415,6 +1423,8 @@ public class IFrameAPITest
         JsonObject eventData = data.get("eventData").getAsJsonObject();
         assertEquals(eventData.get("text").getAsString(), testMessage2);
         assertEquals(eventData.get("name").getAsString(), "endpoint-text-message");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
@@ -1570,6 +1580,8 @@ public class IFrameAPITest
 
         assertTrue(getParticipant1().getToolbar().hasButton(Toolbar.CHAT));
         assertFalse(getParticipant1().getToolbar().hasButton(Toolbar.AUDIO_MUTE));
+
+        hangUpAllParticipants();
     }
 
     /**
@@ -1784,10 +1796,18 @@ public class IFrameAPITest
         String virtualBackgroundDialogXpath = "//span[@id='dialog-heading-1']";
         String dialogTitle = "Virtual backgrounds";
 
-        TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 1);
+        TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 2);
 
-        assertEquals(driver1.findElement(By.xpath(virtualBackgroundDialogXpath)).getText(), dialogTitle,
-            "Virtual background dialog should be visible");
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d -> {
+                try
+                {
+                    return driver1.findElement(By.xpath(virtualBackgroundDialogXpath)).getText().equals(dialogTitle);
+                }
+                catch(StaleElementReferenceException e)
+                {
+                    return false;
+                }
+            });
 
         switchToIframeAPI(driver1);
 
@@ -1796,6 +1816,8 @@ public class IFrameAPITest
 
         assertEquals(driver1.findElements(By.xpath(virtualBackgroundDialogXpath)).size(), 0,
             "Virtual background dialog should not be visible");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
@@ -1837,22 +1859,21 @@ public class IFrameAPITest
         mainButtons.put("stats", Toolbar.STATS);
         mainButtons.put("videoquality", Toolbar.VIDEO_QUALITY);
 
-        mainButtons.entrySet().forEach(en ->
-        {
+        mainButtons.forEach((key, value) -> {
             switchToIframeAPI(driver1);
 
             TestUtils.executeScript(driver1,
-                "window.jitsiAPI.executeCommand('overwriteConfig', { toolbarButtons: ['" + en.getKey() + "'] });");
+                "window.jitsiAPI.executeCommand('overwriteConfig', { toolbarButtons: ['" + key + "'] });");
 
             switchToMeetContent(this.iFrameUrl, driver1);
 
             assertEquals(participant1.getToolbar().mainToolbarButtonsCount(), 1,
-                "Expected only " + en.getKey() + " button in the toolbar");
+                "Expected only " + key + " button in the toolbar");
 
             assertEquals(participant1.getToolbar().overFlowMenuButtonsCount(), 0,
                 "Expected no buttons in the overflow menu");
 
-            assertTrue(getParticipant1().getToolbar().hasButton(en.getValue()));
+            assertTrue(getParticipant1().getToolbar().hasButton(value));
         });
     }
 }
