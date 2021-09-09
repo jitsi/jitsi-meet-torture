@@ -218,12 +218,12 @@ public class AudioVideoModerationTest extends WebTestBase
         participantsPane.close();
 
         participant1
-            .getRemoteParticipantById(participant2.getEndpointId())
+            .getRemoteParticipantById(participant3.getEndpointId())
             .grantModerator();
 
-        participant2.waitToBecomeModerator();
+        participant3.waitToBecomeModerator();
 
-        unmuteByModerator(participant2, participant3, true);
+        unmuteByModerator(participant3, participant2, true);
     }
 
     /**
