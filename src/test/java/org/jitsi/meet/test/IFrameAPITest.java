@@ -1797,4 +1797,62 @@ public class IFrameAPITest
         assertEquals(driver1.findElements(By.xpath(virtualBackgroundDialogXpath)).size(), 0,
             "Virtual background dialog should not be visible");
     }
+
+    /**
+     * Tests buttons setting through config.js toolbarButtons setting.
+     * https://developer.8x8.com/jaas/docs/customize-ui-buttons
+     */
+    @Test(dependsOnMethods = { "testCommandToggleVirtualBackgroundDialog" })
+    public void testCustomButtons()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        Map<String, String> mainButtons = new HashMap<>();
+        mainButtons.put("camera", Toolbar.VIDEO_MUTE);
+        mainButtons.put("chat", Toolbar.CHAT);
+        mainButtons.put("desktop", Toolbar.DESKTOP);
+        mainButtons.put("microphone", Toolbar.AUDIO_MUTE);
+        mainButtons.put("raisehand", Toolbar.RAISE_HAND);
+        mainButtons.put("participants-pane", Toolbar.PARTICIPANTS);
+        mainButtons.put("tileview", Toolbar.TILE_VIEW_BUTTON);
+        mainButtons.put("hangup", Toolbar.HANGUP);
+
+        mainButtons.put("embedmeeting", Toolbar.EMBED_MEETING);
+        mainButtons.put("fullscreen", Toolbar.FULLSCREEN);
+        mainButtons.put("help", Toolbar.HELP);
+        mainButtons.put("invite", Toolbar.INVITE);
+        mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
+        mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
+        mainButtons.put("profile", Toolbar.PROFILE);
+        mainButtons.put("security", Toolbar.SECURITY);
+        mainButtons.put("select-background", Toolbar.SELECT_BACKGROUND);
+        mainButtons.put("settings", Toolbar.SETTINGS);
+        mainButtons.put("shareaudio", Toolbar.SHARE_AUDIO);
+        mainButtons.put("sharedvideo", Toolbar.SHARE_VIDEO);
+        mainButtons.put("shortcuts", Toolbar.SHORTCUTS);
+        mainButtons.put("stats", Toolbar.STATS);
+        mainButtons.put("videoquality", Toolbar.VIDEO_QUALITY);
+
+        mainButtons.entrySet().forEach(en ->
+        {
+            switchToIframeAPI(driver1);
+
+            TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('overwriteConfig', { toolbarButtons: ['" + en.getKey() + "'] });");
+
+            switchToMeetContent(this.iFrameUrl, driver1);
+
+            assertEquals(participant1.getToolbar().mainToolbarButtonsCount(), 1,
+                "Expected only " + en.getKey() + " button in the toolbar");
+
+            assertEquals(participant1.getToolbar().overFlowMenuButtonsCount(), 0,
+                "Expected no buttons in the overflow menu");
+
+            assertTrue(getParticipant1().getToolbar().hasButton(en.getValue()));
+        });
+    }
 }
