@@ -79,6 +79,18 @@ public class IFrameAPITest
      */
     private static final String APP_JS_PARTICIPANTS_COUNT = "return APP.conference._room.getParticipantCount();";
 
+    private boolean isModeratorSupported = false;
+
+    @Override
+    public void setupClass()
+    {
+        super.setupClass();
+
+        ensureOneParticipant();
+
+        this.isModeratorSupported = getParticipant1().isModerator();
+    }
+
     /**
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
      * @return url that will load a meeting in an iframe.
@@ -454,6 +466,8 @@ public class IFrameAPITest
      */
     private void testSetLargeVideoParticipant(boolean function)
     {
+        hangUpAllParticipants();
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
@@ -742,6 +756,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandDisplayName" })
     public void testCommandPassword()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         hangUpAllParticipants();
 
         this.iFrameUrl = getIFrameUrl(null, null);
@@ -776,6 +795,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandPassword" })
     public void testCommandToggleLobby()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         hangUpAllParticipants();
 
         this.iFrameUrl = getIFrameUrl(null, null);
@@ -885,6 +909,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandStartStopShareVideo" })
     public void testCommandSubject()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureTwoParticipants(this.iFrameUrl, null);
 
@@ -1450,6 +1479,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandSetLargeVideoParticipant" })
     public void testCommandMuteEveryone()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
@@ -1524,6 +1558,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandInitiateCancelPrivateChat" })
     public void testCommandKickParticipant()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureTwoParticipants(this.iFrameUrl, null);
 
@@ -1684,6 +1723,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testCommandSendChatMessage" })
     public void testCommandSetFollowMe()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
