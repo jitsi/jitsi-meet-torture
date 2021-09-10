@@ -20,6 +20,7 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
 import org.testng.annotations.*;
 
 /**
@@ -152,16 +153,27 @@ public class AudioOnlyTest
 
         int activeValue
             = Integer.parseInt(videoQualitySlider.getAttribute("value"));
-        int targetValue
-            = audioOnly ? audioOnlySliderValue : maxDefinitionSliderValue;
 
-        int distanceToTargetValue = targetValue - activeValue;
-        Keys keyDirection = distanceToTargetValue > 0 ? Keys.RIGHT : Keys.LEFT;
-
-        // Move the slider to the target value.
-        for (int i = 0; i < Math.abs(distanceToTargetValue); i++)
+        if (audioOnly)
         {
-            videoQualitySlider.sendKeys(keyDirection);
+            // a workaround to directly go to audio only mode without going through the rest of the settings
+            new Actions(participantDriver)
+                .moveByOffset(videoQualitySlider.getLocation().getX(), videoQualitySlider.getLocation().getY())
+                .build()
+                .perform();
+
+            new Actions(participantDriver).click().perform();
+        }
+        else
+        {
+            int distanceToTargetValue = maxDefinitionSliderValue - activeValue;
+            Keys keyDirection = distanceToTargetValue > 0 ? Keys.RIGHT : Keys.LEFT;
+
+            // Move the slider to the target value.
+            for (int i = 0; i < Math.abs(distanceToTargetValue); i++)
+            {
+                videoQualitySlider.sendKeys(keyDirection);
+            }
         }
 
         // Close the video quality dialog.
