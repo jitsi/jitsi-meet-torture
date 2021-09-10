@@ -41,35 +41,33 @@ public class WebRemoteParticipant
     @Override
     public void grantModerator()
     {
-        clickOnRemoteMenuLink("grantmoderatorlink");
+        clickOnRemoteMenuLink("grantmoderatorlink", true);
     }
 
     @Override
     public void mute()
     {
-        clickOnRemoteMenuLink("mutelink");
+        clickOnRemoteMenuLink("mutelink", false);
     }
 
     @Override
     public void kick()
     {
-        clickOnRemoteMenuLink("kicklink");
+        clickOnRemoteMenuLink("kicklink", true);
     }
 
     /**
      * Opens the remote menu and waits for the desired link to appear.
      * @param linkClassname the class name to use identifying the link.
+     * @param dialogConfirm whether or not the action opens a confirmation dialog
      */
-    private void clickOnRemoteMenuLink(String linkClassname)
+    private void clickOnRemoteMenuLink(String linkClassname, Boolean dialogConfirm)
     {
-        // Open the remote video menu
-        WebElement remoteVideoElement
-            = driver.findElement(By.id("participant_" + this.getEndpointId()));
         WebElement menuElement = driver.findElement(
-            By.xpath("//span[contains(@class, 'remotevideomenu')]"));
+            By.xpath("//span[@id='participant_" + this.getEndpointId()
+            + "']/span[contains(@class, 'remotevideomenu')]"));
 
         Actions action = new Actions(driver);
-        action.moveToElement(remoteVideoElement);
         action.moveToElement(menuElement);
         action.perform();
 
@@ -84,8 +82,11 @@ public class WebRemoteParticipant
         MeetUIUtils.clickOnElement(driver,
             "ul.popupmenu a." + linkClassname, true);
 
-        // confirm the action
-        ModalDialogHelper.clickOKButton(driver);
+        if (dialogConfirm)
+        {
+            // confirm the action
+            ModalDialogHelper.clickOKButton(driver);
+        }
 
         action.release();
     }
