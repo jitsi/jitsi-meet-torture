@@ -64,7 +64,8 @@ public class WebRemoteParticipant
     private void clickOnRemoteMenuLink(String linkClassname, Boolean dialogConfirm)
     {
         WebElement menuElement = driver.findElement(
-            By.xpath("//span[@id='participant_" + this.getEndpointId() + "']/span[contains(@class, 'remotevideomenu')]"));
+            By.xpath("//span[@id='participant_" + this.getEndpointId()
+            + "']/span[contains(@class, 'remotevideomenu')]"));
 
         Actions action = new Actions(driver);
         action.moveToElement(menuElement);
