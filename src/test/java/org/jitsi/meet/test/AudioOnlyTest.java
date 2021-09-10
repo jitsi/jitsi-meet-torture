@@ -168,13 +168,6 @@ public class AudioOnlyTest
                 .perform();
 
             new Actions(participantDriver).click().perform();
-
-            TestUtils.waitForCondition(
-                participantDriver,
-                2,
-                (ExpectedCondition<Boolean>) d -> Integer.parseInt(
-                    d.findElement(By.className(VIDEO_QUALITY_SLIDER_CLASS)).getAttribute("value"))
-                        == audioOnlySliderValue);
         }
         else
         {
