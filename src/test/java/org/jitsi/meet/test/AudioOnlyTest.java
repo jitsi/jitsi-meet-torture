@@ -21,6 +21,7 @@ import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
 /**
@@ -156,13 +157,23 @@ public class AudioOnlyTest
 
         if (audioOnly)
         {
+            // audio only is the first option (the min)
+            // give time for the opening of the dialog, we see that the following click does not succeed on FF
+            TestUtils.waitMillis(500);
+
             // a workaround to directly go to audio only mode without going through the rest of the settings
             new Actions(participantDriver)
-                .moveByOffset(videoQualitySlider.getLocation().getX(), videoQualitySlider.getLocation().getY())
+                .moveByOffset(videoQualitySlider.getLocation().getX() + 3, videoQualitySlider.getLocation().getY() + 3)
                 .build()
                 .perform();
 
             new Actions(participantDriver).click().perform();
+
+            TestUtils.waitForCondition(
+                participantDriver,
+                2,
+                (ExpectedCondition<Boolean>) d -> Integer.parseInt(videoQualitySlider.getAttribute("value"))
+                    == audioOnlySliderValue);
         }
         else
         {
