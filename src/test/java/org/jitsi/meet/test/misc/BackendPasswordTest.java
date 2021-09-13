@@ -68,6 +68,7 @@ public class BackendPasswordTest
 
         if (Utils.checkForMissingConfig(tenantName, roomName, moderator1Token, moderator2Token, roomPass))
         {
+            cleanupClass();
             throw new SkipException("missing configuration");
         }
     }

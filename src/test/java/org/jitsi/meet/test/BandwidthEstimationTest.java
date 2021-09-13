@@ -400,6 +400,7 @@ public class BandwidthEstimationTest
                     "WARN no tc script has been specified and "
                         + "the BandwidthEstimationTest will not be "
                         + "executed!");
+                cleanupClass();
                 throw new SkipException("no tc script has been specified");
             }
         }
@@ -417,6 +418,7 @@ public class BandwidthEstimationTest
                     "WARN no benchmark script has been specified and "
                         + "the BandwidthEstimationTest will not be "
                         + "executed!");
+                cleanupClass();
                 throw new SkipException("no tc script has been specified");
             }
         }
@@ -434,6 +436,7 @@ public class BandwidthEstimationTest
                     "WARN no chrome wrapper has been specified and "
                         + "the BandwidthEstimationTest will not be "
                         + "executed!");
+                cleanupClass();
                 throw new SkipException("no tc script has been specified");
             }
         }

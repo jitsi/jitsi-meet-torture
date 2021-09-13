@@ -75,6 +75,7 @@ public class BackendLobbyTest
         if (Utils.checkForMissingConfig(
                 tenantName, roomName, moderatorToken, nonModerator1Token, nonModerator1RoomName, nonModerator2Token))
         {
+            cleanupClass();
             throw new SkipException("missing configuration");
         }
     }

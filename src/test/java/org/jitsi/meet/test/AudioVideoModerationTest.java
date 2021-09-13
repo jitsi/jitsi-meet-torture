@@ -56,6 +56,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         if (participant1.isModerator() && participant2.isModerator() && participant3.isModerator())
         {
+            cleanupClass();
             throw new SkipException("Skipping as all participants are moderators.");
         }
     }
