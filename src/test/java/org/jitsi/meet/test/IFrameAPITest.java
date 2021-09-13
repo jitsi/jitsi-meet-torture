@@ -1883,10 +1883,8 @@ public class IFrameAPITest
         mainButtons.put("desktop", Toolbar.DESKTOP);
         mainButtons.put("microphone", Toolbar.AUDIO_MUTE);
 
-        // this will evaluate the value of Toolbar.RAISE_HAND depending on the config
-        participant1.getToolbar();
-
-        mainButtons.put("raisehand", Toolbar.RAISE_HAND);
+        mainButtons.put("raisehand", participant1.getToolbar().areReactionsEnabled()
+            ? Toolbar.REACTIONS_MENU : Toolbar.RAISE_HAND);
         mainButtons.put("participants-pane", Toolbar.PARTICIPANTS);
         mainButtons.put("tileview", Toolbar.TILE_VIEW_BUTTON);
         mainButtons.put("hangup", Toolbar.HANGUP);
