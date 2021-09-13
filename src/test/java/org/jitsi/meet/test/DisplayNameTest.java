@@ -188,21 +188,33 @@ public class DisplayNameTest
         action0.moveToElement(remoteVideoElem);
         action0.perform();
 
+        checkDisplayNameOnLocalVideo(getParticipant2(), newName);
+    }
+
+    /**
+     * Checks the shown display name on local video.
+     * @param participant the participant to check.
+     * @param newName the name to check.
+     */
+    public static void checkDisplayNameOnLocalVideo(WebParticipant participant, String newName)
+    {
+        WebDriver driver = participant.getDriver();
+
         // now lets check whether display name is set locally
         WebElement displayNameElem
-            = driver2.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//span[@id='localDisplayName']"));
+            = driver.findElement(By.xpath(
+            "//span[@id='localVideoContainer']"
+                + "//span[@id='localDisplayName']"));
 
         // hover over local display name
         WebElement localVideoContainerElem
-            = driver2.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"));
-        Actions action = new Actions(driver2);
+            = driver.findElement(By.xpath(
+            "//span[@id='localVideoContainer']"));
+        Actions action = new Actions(driver);
         action.moveToElement(localVideoContainerElem);
         action.build().perform();
 
-        boolean isFF = getParticipant2().getType().isFirefox();
+        boolean isFF = participant.getType().isFirefox();
         if (!isFF)
         {
             assertTrue(

@@ -159,7 +159,7 @@ public class LobbyScreen
     public void waitForLoading()
     {
         // we wait for LOBBY_SCREEN_ID to successfully appear
-        new WebDriverWait(this.participant.getDriver(), 3).until(
+        new WebDriverWait(this.participant.getDriver(), 5).until(
             (ExpectedCondition<Boolean>) d -> d.findElements(By.className(LOBBY_SCREEN_ID)).size() > 0);
     }
 

@@ -218,6 +218,15 @@ public class Notifications
     }
 
     /**
+     * Whether there is a notification on participants page for raised hand.
+     * @return <tt>true</tt> if the notification is found.
+     */
+    public boolean hasRaisedHandNotification()
+    {
+        return hasNotification(RAISE_HAND_NOTIFICATION_ID);
+    }
+
+    /**
      * The notification on participants page when the moderator asks to unmute.
      * @return the notification on participants page when the moderator asks to unmute.
      */

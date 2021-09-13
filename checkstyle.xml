@@ -19,6 +19,8 @@
             <property name="tokens" value="LITERAL_FINALLY"/>
             <property name="tokens" value="LITERAL_IF"/>
             <property name="tokens" value="LITERAL_TRY"/>
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="tokens" value="CLASS_DEF"/>
         </module>
 
         <!-- Skips empty blocks {}, to not skip them: value="alone" -->

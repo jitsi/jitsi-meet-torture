@@ -34,6 +34,18 @@ import static org.testng.Assert.*;
 public class MeetUIUtils
 {
     /**
+     * The string template for finding thumbnail by endpoint id using xpath.
+     */
+    private static String REMOTE_THUMB_BY_ENDPOINT_ID_TMPL
+        = "//span[starts-with(@id, 'participant_%s') and contains(@class,'videocontainer')]";
+
+    /**
+     * The string template for finding thumbnail by id using xpath.
+     * ID can be `localVideoContainer` or "participant_" + participantEndpointId.
+     */
+    private static String AVATAR_XPATH_TMPL = "//span[@id='%s']//img[contains(@class,'userAvatar')]";
+
+    /**
      * Check if on the large video there is "grey" avatar displayed and if not
      * fails the current test. The check consists of 3 steps:
      * 1. check if the "user is having networking issues" message is displayed
@@ -565,8 +577,7 @@ public class MeetUIUtils
     {
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
-            driver, "//span[@id='participant_" + endpointId + "']" +
-                    "//img[contains(@class,'userAvatar')]",
+            driver, MeetUIUtils.getAvatarXpathForParticipant(endpointId),
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -669,7 +680,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForNotDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
+            MeetUIUtils.getAvatarXpathForLocal(),
             5);
         TestUtils.waitForDisplayedElementByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -685,7 +696,7 @@ public class MeetUIUtils
     {
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]",
+            MeetUIUtils.getAvatarXpathForLocal(),
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
@@ -831,12 +842,7 @@ public class MeetUIUtils
     static public void selectRemoteVideo(WebDriver driver,
                                          String endpointId)
     {
-        String remoteThumbXpath
-            = "//span[starts-with(@id, 'participant_" + endpointId + "') "
-                + " and contains(@class,'videocontainer')]";
-
-        String remoteThumbVideoXpath
-            = remoteThumbXpath + "//video[starts-with(@id, 'remoteVideo_')]";
+        String remoteThumbXpath = String.format(REMOTE_THUMB_BY_ENDPOINT_ID_TMPL, endpointId);
 
         WebElement remoteThumbnail
             = TestUtils.waitForElementByXPath(
@@ -845,6 +851,21 @@ public class MeetUIUtils
 
         // click on remote
         remoteThumbnail.click();
+
+        waitForLargeVideoSwitchToEndpoint(driver, endpointId);
+    }
+
+    /**
+     * Waits for large video to switch to video for the endpoint id.
+     * @param driver the <tt>WebDriver</tt> instance on which the wait will
+     * be performed.
+     * @param endpointId the <tt>WebDriver</tt> instance which belongs to
+     * the participant that is to be displayed on "the large video".
+     */
+    static public void waitForLargeVideoSwitchToEndpoint(WebDriver driver, String endpointId)
+    {
+        String remoteThumbVideoXpath
+            = String.format(REMOTE_THUMB_BY_ENDPOINT_ID_TMPL, endpointId) + "//video[starts-with(@id, 'remoteVideo_')]";
 
         WebElement remoteThumbnailVideo
             = TestUtils.waitForElementByXPath(
@@ -879,7 +900,7 @@ public class MeetUIUtils
      * @param expectedVideoSrc a string which identifies the video stream
      * (the source set on HTML5 video element to attach WebRTC media stream).
      */
-    static private void waitForLargeVideoSwitch(
+    public static void waitForLargeVideoSwitch(
         WebDriver driver,
         final String expectedVideoSrc)
     {
@@ -1263,5 +1284,24 @@ public class MeetUIUtils
 
                 return currentDisplay == isDisplayed;
             });
+    }
+
+    /**
+     * The xpath for participant avatar.
+     * @param endpointId the endpoint Id.
+     * @return the xpath.
+     */
+    public static String getAvatarXpathForParticipant(String endpointId)
+    {
+        return String.format(AVATAR_XPATH_TMPL, "participant_" + endpointId);
+    }
+
+    /**
+     * The xpath for the local participant avatar.
+     * @return the xpath.
+     */
+    public static String getAvatarXpathForLocal()
+    {
+        return String.format(AVATAR_XPATH_TMPL, "localVideoContainer");
     }
 }

@@ -437,7 +437,8 @@ public class ConnectionTimeTest
      * @param data the array
      * @return the median
      */
-    private static Double getMedian(Double[] data) {
+    private static Double getMedian(Double[] data)
+    {
         Arrays.sort(data);
         return data[data.length/2];
     }

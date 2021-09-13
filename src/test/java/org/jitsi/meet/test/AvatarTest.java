@@ -236,9 +236,7 @@ public class AvatarTest
 
         final String participant1EndpointId = participant1.getEndpointId();
 
-        String participant1AvatarXPath
-            = "//span[@id='participant_" + participant1EndpointId
-                + "']//img[contains(@class,'userAvatar')]";
+        String participant1AvatarXPath = MeetUIUtils.getAvatarXpathForParticipant(participant1EndpointId);
 
         // Wait for the avatar element to be created
         TestUtils.waitForElementByXPath(
@@ -341,12 +339,9 @@ public class AvatarTest
      *                    whom we want to obtain avatar src
      * @return string value of avatar's 'src' attribute
      */
-    private String getThumbnailSrc(WebDriver perspective, String endpointId)
+    public static String getThumbnailSrc(WebDriver perspective, String endpointId)
     {
-        return getSrcByXPath(
-            perspective,
-            "//span[@id='participant_" + endpointId
-                + "']//img[contains(@class,'userAvatar')]");
+        return getSrcByXPath(perspective, MeetUIUtils.getAvatarXpathForParticipant(endpointId));
     }
 
     /**
@@ -354,11 +349,9 @@ public class AvatarTest
      * @param perspective where are we checking this ?
      * @return string value of avatar's 'src' attribute
      */
-    private String getLocalThumbnailSrc(WebDriver perspective)
+    public static String getLocalThumbnailSrc(WebDriver perspective)
     {
-        return getSrcByXPath(
-            perspective,
-            "//span[@id='localVideoContainer']//img[contains(@class,'userAvatar')]");
+        return getSrcByXPath(perspective, MeetUIUtils.getAvatarXpathForLocal());
     }
 
     /**

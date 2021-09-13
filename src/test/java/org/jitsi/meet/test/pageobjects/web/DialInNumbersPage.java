@@ -58,7 +58,8 @@ public class DialInNumbersPage
      *
      * @return The help text for dialing in, which includes the conference pin.
      */
-    public String getConferenceIdMessage() {
+    public String getConferenceIdMessage()
+    {
         WebDriver driver = participant.getDriver();
         WebElement conferenceIDMessage
             = driver.findElement(By.className(CONFERENCE_ID_MESSAGE));
@@ -73,7 +74,8 @@ public class DialInNumbersPage
      * @param number - The number to find in the page.
      * @return Whether or not the passed in number is displayed.
      */
-    public boolean includesNumber(String number) {
+    public boolean includesNumber(String number)
+    {
         WebDriver driver = participant.getDriver();
 
         List<WebElement> elements = driver.findElements(By.className(NUMBER));
@@ -90,7 +92,8 @@ public class DialInNumbersPage
     /**
      * Performs a wait for the dial in numbers page to load phone numbers.
      */
-    public void waitForLoad() {
+    public void waitForLoad()
+    {
         WebDriver driver = participant.getDriver();
 
         TestUtils.waitForElementBy(

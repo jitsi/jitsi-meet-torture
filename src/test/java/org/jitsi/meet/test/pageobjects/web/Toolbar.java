@@ -33,25 +33,35 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    private final static String AUDIO_MUTE = "Mute / Unmute";
-    private final static String CHAT = "Open / Close chat";
-    private final static String DESKTOP = "Start / Stop sharing your screen";
-    private final static String ETHERPAD = "Toggle shared document";
-    private final static String HANGUP = "Leave the meeting";
-    private final static String INVITE = "Invite Someone";
-    private final static String OVERFLOW = "More actions";
-    private final static String OVERFLOW_MENU = "More actions menu" ;
-    private final static String PARTICIPANTS = "Participants" ;
-    private final static String PROFILE = "Edit your profile";
-    private final static String REACTIONS_MENU = "Open / Close reactions menu";
-    private final static String RAISE_HAND = "Raise / Lower your hand";
-    private final static String RECORD = "Toggle recording";
-    private final static String SECURITY = "Security options";
-    private final static String SETTINGS = "Toggle settings";
-    private final static String SHARE_VIDEO = "Toggle YouTube video sharing";
-    private final static String TILE_VIEW_BUTTON = "Toggle tile view";
-    private final static String VIDEO_MUTE = "Start / Stop camera";
-    private final static String VIDEO_QUALITY = "Manage video quality";
+    public final static String AUDIO_MUTE = "Mute / Unmute";
+    public final static String CHAT = "Open / Close chat";
+    public final static String DESKTOP = "Start / Stop sharing your screen";
+    public final static String EMBED_MEETING = "Embed meeting";
+    public final static String ETHERPAD = "Toggle shared document";
+    public final static String FULLSCREEN = "Toggle full screen";
+    public final static String HANGUP = "Leave the meeting";
+    public final static String HELP = "Help";
+    public final static String INVITE = "Invite people";
+    public final static String INVITE_CSS = "Invite Someone";
+    public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
+    public final static String MUTE_EVERYONE_VIDEO = "Disable everyone's camera";
+    public final static String OVERFLOW = "More actions";
+    public final static String OVERFLOW_MENU = "More actions menu" ;
+    public final static String PARTICIPANTS = "Participants" ;
+    public final static String PROFILE = "Edit your profile";
+    public final static String REACTIONS_MENU = "Open / Close reactions menu";
+    public final static String RAISE_HAND = "Raise / Lower your hand";
+    public final static String RECORD = "Toggle recording";
+    public final static String SECURITY = "Security options";
+    public final static String SELECT_BACKGROUND = "Select Background";
+    public final static String SETTINGS = "Toggle settings";
+    public final static String SHARE_AUDIO = "Share audio";
+    public final static String SHARE_VIDEO = "Toggle YouTube video sharing";
+    public final static String SHORTCUTS = "Toggle shortcuts";
+    public final static String STATS = "Toggle speaker statistics";
+    public final static String TILE_VIEW_BUTTON = "Toggle tile view";
+    public final static String VIDEO_MUTE = "Start / Stop camera";
+    public final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -167,14 +177,15 @@ public class Toolbar
      */
     public WebElement getInviteButton()
     {
-        return participant.getDriver().findElement(By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(INVITE)));
+        return participant.getDriver().findElement(By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(INVITE_CSS)));
     }
 
     /**
      * Clicks on the overflow toolbar button which opens or closes the overflow
      * menu.
      */
-    public void clickOverflowButton() {
+    public void clickOverflowButton()
+    {
         clickButton(OVERFLOW);
     }
 
@@ -289,17 +300,6 @@ public class Toolbar
                 MeetUIUtils.getAccessibilityCSSSelector(RECORD)));
 
         return !elements.isEmpty();
-    }
-
-    /**
-     * Returns whether or not this the participant is using the new toolbar.
-     * This method is used to help transition tests over to the new toolbar.
-     *
-     * @return true to indicate this is the new toolbar.
-     */
-    public boolean isNewToolbar()
-    {
-        return true;
     }
 
     /**
@@ -444,7 +444,8 @@ public class Toolbar
      * @param visible Whether to wait for the overflow menu to be visible or
      * not visible.
      */
-    private void waitForOverFlowMenu(boolean visible) {
+    private void waitForOverFlowMenu(boolean visible)
+    {
         By selector = getOverflowMenuSelector();
         WebDriver driver = participant.getDriver();
         int waitTime = 10;
@@ -463,5 +464,49 @@ public class Toolbar
                 selector,
                 waitTime);
         }
+    }
+
+    /**
+     * Checks whether a button is available.
+     * @param id the id of the button (accessibility label).
+     * @return true if the button is available.
+     */
+    public boolean hasButton(String id)
+    {
+        List<WebElement> elements
+            = participant.getDriver().findElements(By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(id)));
+
+        return !elements.isEmpty();
+    }
+
+    /**
+     * Returns the number of buttons in the main toolbar.
+     * @return the number of buttons in the main toolbar.
+     */
+    public int mainToolbarButtonsCount()
+    {
+        return participant.getDriver().findElements(By.xpath(
+            "//div[contains(@class,'toolbox-content')]//div[contains(@class,'toolbox-content-items')]/div")).size();
+    }
+
+    /**
+     * Returns the number of buttons in the overflow menu.
+     * @return the number of buttons in the overflow menu.
+     */
+    public int overFlowMenuButtonsCount()
+    {
+        // if there is no overflow menu there are no items in it
+        if (!hasButton(OVERFLOW))
+        {
+            return 0;
+        }
+
+        this.openOverflowMenu();
+
+        int count = participant.getDriver().findElements(By.xpath("//ul[@id='overflow-menu']//li")).size();
+
+        this.closeOverflowMenu();
+
+        return count;
     }
 }

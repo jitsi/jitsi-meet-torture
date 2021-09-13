@@ -73,7 +73,7 @@ public class DesktopSharingTest
      * @param remoteParticipant the participant doing the sharing
      * @param expectedResult camera/desktop
      */
-    private void testDesktopSharingInPresence(
+    public static void testDesktopSharingInPresence(
         WebParticipant localParticipant,
         WebParticipant remoteParticipant,
         final String expectedResult)

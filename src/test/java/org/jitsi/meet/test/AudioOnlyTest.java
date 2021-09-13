@@ -201,8 +201,8 @@ public class AudioOnlyTest
     private void verifyVideoMute(
         WebParticipant testee,
         WebParticipant observer,
-        boolean muted
-    ) {
+        boolean muted)
+    {
         // Verify the observer sees the testee in the desired muted state.
         observer.getFilmstrip().assertVideoMuteIcon(testee, muted);
 

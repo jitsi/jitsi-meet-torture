@@ -304,7 +304,8 @@ public abstract class Participant<T extends WebDriver>
     /**
      * Waits 5 seconds for this participant to become a moderator.
      */
-    public void waitToBecomeModerator() {
+    public void waitToBecomeModerator()
+    {
         waitToBecomeModerator(5);
     }
 
@@ -496,6 +497,14 @@ public abstract class Participant<T extends WebDriver>
      */
     public void saveHtmlSource(File outputDir, String fileName)
     {
+        if (getMeetUrl().getIframeToNavigateTo() != null)
+        {
+            // let's wait for switch to that iframe, so we can save the correct page
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                By.id(getMeetUrl().getIframeToNavigateTo())));
+        }
+
         try(FileOutputStream fOut
                 = FileUtils.openOutputStream(
                         new File(outputDir, fileName)))

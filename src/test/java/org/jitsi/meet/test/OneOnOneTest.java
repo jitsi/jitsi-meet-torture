@@ -74,7 +74,8 @@ public class OneOnOneTest
      * two total participants.
      */
     @Test(dependsOnMethods = { "testFilmstripHiddenInOneOnOne" })
-    public void testFilmstripVisibleWithMoreThanTwo() {
+    public void testFilmstripVisibleWithMoreThanTwo()
+    {
         ensureThreeParticipants(
             null, null,
             getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES));

@@ -111,7 +111,7 @@ public class SwitchVideoTest
      * @param participant the {@link Participant} which will do the unpinning.
      * @param endpointId the endpoint ID to unpin.
      */
-    private void unpinRemoteVideoAndTest(Participant participant, String endpointId)
+    public static void unpinRemoteVideoAndTest(Participant participant, String endpointId)
     {
         // Remote video with 'videoContainerFocused' is the pinned one
         String pinnedThumbXpath
