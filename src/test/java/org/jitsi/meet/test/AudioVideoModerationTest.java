@@ -39,18 +39,21 @@ public class AudioVideoModerationTest extends WebTestBase
     private WebParticipant participant2;
     private WebParticipant participant3;
 
-    /**
-     * The test id of the close button inside the notification shown to participant when moderator asks to unmute.
-     */
-    private static final String NOTIFY_UNMUTE_DISMISS_ID = "notify.hostAskedUnmute-dismiss";
-
     @Override
     public void setupClass()
     {
         super.setupClass();
 
-        ensureThreeParticipants();
+        ensureOneParticipant();
         participant1 = getParticipant1();
+
+        if (!participant1.isModerator())
+        {
+            cleanupClass();
+            throw new SkipException("Skipping as anonymous participants are not moderators.");
+        }
+
+        ensureThreeParticipants();
         participant2 = getParticipant2();
         participant3 = getParticipant3();
 
