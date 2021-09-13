@@ -38,6 +38,11 @@ public class WebParticipant extends Participant<WebDriver>
     implements JavascriptExecutor
 {
     /**
+     * Temporary added to be able to test Plan-B till it is completely dropped from Chrome.
+     */
+    private static final boolean DISABLE_UNIFIED = Boolean.getBoolean("jitsi-meet-torture.disable.unified");
+
+    /**
      * Default config for Web participants.
      */
     public static final String DEFAULT_CONFIG
@@ -53,6 +58,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.p2p.useStunTurn=false"
             + "&config.pcStatsInterval=1500"
             + "&config.prejoinPageEnabled=false"
+            + (DISABLE_UNIFIED ? "&config.p2p.enableUnifiedOnChrome=false&config.enableUnifiedOnChrome=false" : "")
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
             + "&config.analytics.disabled=true"
