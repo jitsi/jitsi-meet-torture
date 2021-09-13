@@ -50,7 +50,8 @@ public class Toolbar
     public final static String PARTICIPANTS = "Participants" ;
     public final static String PROFILE = "Edit your profile";
     public final static String REACTIONS_MENU = "Open / Close reactions menu";
-    public final static String RAISE_HAND = "Raise / Lower your hand";
+    public static String RAISE_HAND = "Raise / Lower your hand";
+    public final static String REACTIONS = "Open / Close reactions menu";
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
     public final static String SELECT_BACKGROUND = "Select Background";
@@ -82,6 +83,11 @@ public class Toolbar
     public Toolbar(WebParticipant participant)
     {
         this.participant = Objects.requireNonNull(participant, "participant");
+
+        if (MeetUtils.areReactionsEnabled(this.participant.getDriver()))
+        {
+            RAISE_HAND = REACTIONS;
+        }
     }
 
     /**

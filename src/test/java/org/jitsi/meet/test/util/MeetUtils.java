@@ -72,6 +72,12 @@ public class MeetUtils
         "return config.etherpad_base !== undefined;";
 
     /**
+     * The javascript code which returns {@code true} if reactions are enabled.
+     */
+    public static final String REACTIONS_ENABLED_CHECK_SCRIPT =
+        "return config.enableReactions === true;";
+
+    /**
      * Returns the webrtc stats (in JSON format) of the specific participant
      * of the specified peer connection.
      *
@@ -405,5 +411,15 @@ public class MeetUtils
     {
         return TestUtils.executeScriptAndReturnBoolean(
             driver, ETHERPAD_ENABLED_CHECK_SCRIPT);
+    }
+
+    /**
+     * Checks whether reactions are enabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if reactions are enabled.
+     */
+    public static boolean areReactionsEnabled(WebDriver driver)
+    {
+        return TestUtils.executeScriptAndReturnBoolean(driver, REACTIONS_ENABLED_CHECK_SCRIPT);
     }
 }
