@@ -61,6 +61,7 @@ public class ReloadTest
 
         if (hookScript == null || host == null)
         {
+            cleanupClass();
             throw new SkipException(
                 "no hook script or host has been specified");
         }

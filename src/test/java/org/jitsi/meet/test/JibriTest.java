@@ -73,6 +73,7 @@ public class JibriTest
         publicUrl = System.getProperty(PUBLIC_URL_PROP);
         if (streamKey == null || publicUrl == null)
         {
+            cleanupClass();
             throw new SkipException(
                 "no streamKey or publicUrl");
         }

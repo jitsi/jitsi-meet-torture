@@ -105,6 +105,7 @@ public class PeerConnectionStatusTest
                     "WARN no firewall script has been specified and "
                         + "the PeerConnectionStatusTest will not be "
                         + "executed!");
+                cleanupClass();
                 throw new SkipException(
                     "no firewall script has been specified");
             }

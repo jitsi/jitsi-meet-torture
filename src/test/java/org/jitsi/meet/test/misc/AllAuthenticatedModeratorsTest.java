@@ -62,6 +62,7 @@ public class AllAuthenticatedModeratorsTest
 
         if (Utils.checkForMissingConfig(tenantName, roomName, moderator1Token, moderator2Token))
         {
+            cleanupClass();
             throw new SkipException("missing configuration");
         }
     }
