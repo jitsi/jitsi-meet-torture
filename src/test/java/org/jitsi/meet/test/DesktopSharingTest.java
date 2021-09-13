@@ -165,7 +165,7 @@ public class DesktopSharingTest
         // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
-            10);
+            20);
     }
 
     /**
