@@ -1893,7 +1893,12 @@ public class IFrameAPITest
 
         mainButtons.put("embedmeeting", Toolbar.EMBED_MEETING);
         mainButtons.put("fullscreen", Toolbar.FULLSCREEN);
-        mainButtons.put("help", Toolbar.HELP);
+
+        if (MeetUtils.isHelpEnabled(driver1))
+        {
+            mainButtons.put("help", Toolbar.HELP);
+        }
+
         mainButtons.put("invite", Toolbar.INVITE);
         mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
         mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
