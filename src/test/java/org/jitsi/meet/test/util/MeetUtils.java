@@ -78,6 +78,12 @@ public class MeetUtils
         "return config.enableReactions === true;";
 
     /**
+     * The javascript code which returns {@code true} if help button enabled.
+     */
+    public static final String HELP_ENABLED_CHECK_SCRIPT =
+        "return config.deploymentUrls && config.deploymentUrls.userDocumentationURL !== undefined;";
+
+    /**
      * Returns the webrtc stats (in JSON format) of the specific participant
      * of the specified peer connection.
      *
@@ -411,6 +417,16 @@ public class MeetUtils
     {
         return TestUtils.executeScriptAndReturnBoolean(
             driver, ETHERPAD_ENABLED_CHECK_SCRIPT);
+    }
+
+    /**
+     * Checks whether help is enabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if help is enabled.
+     */
+    public static boolean isHelpEnabled(WebDriver driver)
+    {
+        return TestUtils.executeScriptAndReturnBoolean(driver, HELP_ENABLED_CHECK_SCRIPT);
     }
 
     /**
