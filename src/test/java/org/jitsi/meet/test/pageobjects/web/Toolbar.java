@@ -50,8 +50,7 @@ public class Toolbar
     public final static String PARTICIPANTS = "Participants" ;
     public final static String PROFILE = "Edit your profile";
     public final static String REACTIONS_MENU = "Open / Close reactions menu";
-    public static String RAISE_HAND = "Raise / Lower your hand";
-    public final static String REACTIONS = "Open / Close reactions menu";
+    public final static String RAISE_HAND = "Raise / Lower your hand";
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
     public final static String SELECT_BACKGROUND = "Select Background";
@@ -63,6 +62,11 @@ public class Toolbar
     public final static String TILE_VIEW_BUTTON = "Toggle tile view";
     public final static String VIDEO_MUTE = "Start / Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
+
+    /**
+     * Whether reactions are enabled.
+     */
+    private boolean reactionsEnabled = false;
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -86,7 +90,7 @@ public class Toolbar
 
         if (MeetUtils.areReactionsEnabled(this.participant.getDriver()))
         {
-            RAISE_HAND = REACTIONS;
+            reactionsEnabled = true;
         }
     }
 
@@ -112,6 +116,11 @@ public class Toolbar
      */
     public void clickRaiseHandButton()
     {
+        if (areReactionsEnabled())
+        {
+            clickOpenReactionsMenuButton();
+        }
+
         clickButton(RAISE_HAND);
     }
 
@@ -514,5 +523,14 @@ public class Toolbar
         this.closeOverflowMenu();
 
         return count;
+    }
+
+    /**
+     * Whether reactions are enabled, that changes the raise hand button behaviour.
+     * @return <tt>true</tt> if reactions are enabled.
+     */
+    public boolean areReactionsEnabled()
+    {
+        return reactionsEnabled;
     }
 }
