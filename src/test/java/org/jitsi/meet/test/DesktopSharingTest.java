@@ -142,7 +142,13 @@ public class DesktopSharingTest
         hangUpAllParticipants();
 
         ensureOneParticipant();
-        AudioOnlyTest.setAudioOnly(getParticipant1(), true);
+
+        WebDriver driver1 = getParticipant1().getDriver();
+
+        // a workaround to directly set audio only mode without going through the rest of the settings in the UI
+        TestUtils.executeScript(driver1, "APP.store.dispatch({type: 'SET_AUDIO_ONLY', audioOnly: true});");
+        TestUtils.executeScript(driver1, "APP.UI.emitEvent('UI.toggle_audioonly', true);");
+
         getParticipant1().getToolbar().clickAudioMuteButton();
 
         WebParticipant participant2 = joinSecondParticipant();
@@ -188,7 +194,11 @@ public class DesktopSharingTest
 
         ensureOneParticipant(meetUrl1);
 
-        AudioOnlyTest.setAudioOnly(getParticipant1(), true);
+        WebDriver driver1 = getParticipant1().getDriver();
+
+        // a workaround to directly set audio only mode without going through the rest of the settings in the UI
+        TestUtils.executeScript(driver1, "APP.store.dispatch({type: 'SET_AUDIO_ONLY', audioOnly: true});");
+        TestUtils.executeScript(driver1, "APP.UI.emitEvent('UI.toggle_audioonly', true);");
 
         WebParticipant participant2 = joinSecondParticipant(meetUrl2);
         participant2.waitToJoinMUC();
@@ -213,7 +223,7 @@ public class DesktopSharingTest
         // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
-            10);
+            20);
     }
 
     /**
