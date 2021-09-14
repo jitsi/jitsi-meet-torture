@@ -1343,9 +1343,12 @@ public class IFrameAPITest
             TestUtils.executeScriptAndReturnDouble(driver2, APP_JS_PARTICIPANTS_COUNT) == 1d);
 
         switchToIframeAPI(driver1);
-        assertEquals(
-            getEventResult(driver1, "videoConferenceLeft").get("roomName").getAsString(),
-            getJitsiMeetUrl().getRoomName());
+
+        TestUtils.waitForCondition(driver1, 3, (ExpectedCondition<Boolean>) d -> {
+                JsonObject event = getEventResult(driver1, "videoConferenceLeft");
+
+                return event != null && event.get("roomName").getAsString().equals(getJitsiMeetUrl().getRoomName());
+            });
         switchToMeetContent(this.iFrameUrl, driver1);
 
         hangUpAllParticipants();

@@ -251,7 +251,14 @@ public class WebParticipant extends Participant<WebDriver>
     {
         if (!isLoadTest)
         {
-            getToolbar().clickHangUpButton();
+            try
+            {
+                getToolbar().clickHangUpButton();
+            }
+            catch(Exception e)
+            {
+                // there are cases where the toolbar is not available as we had already hanged up
+            }
 
             TestUtils.waitMillis(500);
         }
