@@ -1384,16 +1384,16 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+            AvatarTest.getLocalThumbnailSrc(d).equals(avatarUrl));
         TestUtils.waitForCondition(driver2, 2, (ExpectedCondition<Boolean>) d ->
-            AvatarTest.getLocalThumbnailSrc(driver1).equals(avatarUrl));
-
-        assertEquals(AvatarTest.getThumbnailSrc(driver2, endpointId1), avatarUrl);
+            AvatarTest.getThumbnailSrc(d, endpointId1).equals(avatarUrl));
 
         switchToIframeAPI(driver1);
 
         // waits for the event
-        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-            getEventResult(driver1, "avatarChanged").get("avatarURL").getAsString().equals(avatarUrl));
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+            getEventResult(d, "avatarChanged").get("avatarURL").getAsString().equals(avatarUrl));
 
         JsonObject resObj = getEventResult(driver1, "avatarChanged");
 
