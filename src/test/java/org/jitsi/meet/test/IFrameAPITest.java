@@ -29,6 +29,7 @@ import org.testng.annotations.*;
 import java.net.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 
 import static org.testng.Assert.*;
 
@@ -1082,6 +1083,10 @@ public class IFrameAPITest
         String endpointId1 = participant1.getEndpointId();
         String endpointId2 = participant2.getEndpointId();
 
+        Logger logger = Logger.getGlobal();
+        logger.log(Level.INFO, "EndpointId 1:" + endpointId1);
+        logger.log(Level.INFO, "EndpointId 2:" + endpointId2);
+
         switchToIframeAPI(driver1);
 
         addIframeAPIListener(driver1, "raiseHandUpdated");
@@ -1136,8 +1141,15 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
-            return e.get("id").getAsString().equals(endpointId2)
+            boolean result = e.get("id").getAsString().equals(endpointId2)
                 && !e.get("handRaised").getAsBoolean();
+
+            if (!result)
+            {
+                Logger.getGlobal().log(Level.WARNING, "No raise hand event:" + e);
+            }
+
+            return result;
         });
 
         switchToMeetContent(this.iFrameUrl, driver1);
