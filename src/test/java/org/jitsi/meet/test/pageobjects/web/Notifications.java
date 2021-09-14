@@ -109,10 +109,11 @@ public class Notifications
      */
     private void close(String testId)
     {
-        TestUtils.waitForElementBy(this.participant.getDriver(), ByTestId.testId(testId), 3);
+        WebDriver driver = this.participant.getDriver();
+        TestUtils.waitForElementBy(driver, ByTestId.testId(testId), 3);
 
         List<WebElement> lobbyNotifications
-            = this.participant.getDriver().findElements(ByTestId.testId(LOBBY_NOTIFICATIONS_TITLE_TEST_ID));
+            = driver.findElements(ByTestId.testId(LOBBY_NOTIFICATIONS_TITLE_TEST_ID));
 
         WebElement notification = lobbyNotifications.stream()
             .filter(webElement -> webElement.findElements(ByTestId.testId(testId)).size() > 0)
@@ -120,9 +121,13 @@ public class Notifications
 
         if (notification != null)
         {
+            // wait for the element to be available (notification maybe still animating)
+            TestUtils.waitForCondition(driver, 2, d ->
+                !notification.findElements(By.tagName("button")).isEmpty());
+
             WebElement closeButton = notification.findElement(By.tagName("button"));
 
-            new Actions(this.participant.getDriver()).moveToElement(closeButton).click().perform();
+            new Actions(driver).moveToElement(closeButton).click().perform();
         }
         else
         {

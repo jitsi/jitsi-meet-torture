@@ -286,7 +286,7 @@ public class LobbyTest
     /**
      * Checks that third tries to enter, sees lobby, and rest notifications are correct and the access is approved.
      */
-    @Test(dependsOnMethods = {"testEnteringInLobbyAndApprove"})
+    @Test(dependsOnMethods = {"testEnteringInLobbyAndDeny"})
     public void testLobbyUserLeaves()
     {
         enterLobby(getParticipant1(), false);
