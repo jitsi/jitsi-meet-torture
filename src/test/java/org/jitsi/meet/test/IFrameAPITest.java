@@ -934,6 +934,12 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('subject', '" + randomSubject + "');");
 
+        TestUtils.waitForCondition(driver1, 1, (ExpectedCondition<Boolean>) d ->{
+            JsonObject result = getEventResult(driver1, "subjectChange");
+
+            return result != null && result.get("subject").getAsString().equals(randomSubject);
+        });
+
         switchToMeetContent(this.iFrameUrl, driver1);
 
         String subjectXpath = "//div[@id='subject-details-container']//span[contains(@class,'subject-text')]";
@@ -950,11 +956,6 @@ public class IFrameAPITest
             10);
 
         assertEquals(driver2.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
-
-        switchToIframeAPI(driver1);
-        assertEquals(getEventResult(driver1, "subjectChange").get("subject").getAsString(), randomSubject);
-
-        switchToMeetContent(this.iFrameUrl, driver1);
     }
 
     /**
