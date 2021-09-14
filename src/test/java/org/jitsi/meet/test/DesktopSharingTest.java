@@ -142,7 +142,13 @@ public class DesktopSharingTest
         hangUpAllParticipants();
 
         ensureOneParticipant();
-        AudioOnlyTest.setAudioOnly(getParticipant1(), true);
+
+        WebDriver driver1 = getParticipant1().getDriver();
+
+        // a workaround to directly set audio only mode without going through the rest of the settings in the UI
+        TestUtils.executeScript(driver1, "APP.store.dispatch({type: 'SET_AUDIO_ONLY', audioOnly: true});");
+        TestUtils.executeScript(driver1, "APP.UI.emitEvent('UI.toggle_audioonly', true);");
+
         getParticipant1().getToolbar().clickAudioMuteButton();
 
         WebParticipant participant2 = joinSecondParticipant();
