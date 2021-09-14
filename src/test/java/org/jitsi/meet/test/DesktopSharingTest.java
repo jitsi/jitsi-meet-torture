@@ -136,7 +136,7 @@ public class DesktopSharingTest
      *
      * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
      */
-    @Test(dependsOnMethods = { "testDesktopSharingStop" })
+//    @Test(dependsOnMethods = { "testDesktopSharingStop" })
     public void testAudioOnlyAndNonDominantScreenShare()
     {
         hangUpAllParticipants();
@@ -171,7 +171,7 @@ public class DesktopSharingTest
         // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
-            20);
+            10);
     }
 
     /**
@@ -181,7 +181,7 @@ public class DesktopSharingTest
      *
      * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
      */
-    @Test(dependsOnMethods = { "testAudioOnlyAndNonDominantScreenShare" })
+//    @Test(dependsOnMethods = { "testAudioOnlyAndNonDominantScreenShare" })
     public void testAudioOnlyAndDominantScreenShare()
     {
         hangUpAllParticipants();
@@ -223,13 +223,14 @@ public class DesktopSharingTest
         // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
-            20);
+            10);
     }
 
     /**
      * Test screensharing with lastN. We add p4 with lastN=2 and verify that it receives the expected streams.
      */
-    @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
+//    @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
+    @Test(dependsOnMethods = { "testDesktopSharingStop" })
     public void testLastNAndScreenshare()
     {
         hangUpAllParticipants();
