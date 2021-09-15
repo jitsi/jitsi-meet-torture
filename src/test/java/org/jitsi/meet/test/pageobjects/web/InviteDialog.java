@@ -63,11 +63,21 @@ public class InviteDialog
     {
         open();
 
-        WebDriver driver = participant.getDriver();
-        WebElement moreNumbersElement
-            = driver.findElement(By.className(MORE_NUMBERS));
-
-        moreNumbersElement.click();
+        // there are cases where a popup may prevent clicking, wait for some time the popup to clear
+        TestUtils.waitForCondition(
+            participant.getDriver(),
+            5,
+            (ExpectedCondition<Boolean>) d -> {
+                try
+                {
+                    d.findElement(By.className(MORE_NUMBERS)).click();
+                    return true;
+                }
+                catch(ElementClickInterceptedException e)
+                {
+                    return false;
+                }
+            });
     }
 
     /**
