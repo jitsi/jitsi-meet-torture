@@ -479,6 +479,10 @@ public class IFrameAPITest
         String endpoint2Id = participant2.getEndpointId();
         String endpoint3Id = participant3.getEndpointId();
 
+        // let's mute participant so dominant speaker will not overwrite setLargeVideoParticipant execution
+        participant2.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioMuteButton();
+
         // selects third
         switchToIframeAPI(driver1);
 
@@ -504,8 +508,8 @@ public class IFrameAPITest
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
 
         // we must not be in tile view
-        // FIXME: Currently there is a bug in jitsi-meet ans using setLargeVideoParticipant
-        // does not switch automatically yo stage view, when in grid view
+        // FIXME: Currently there is a bug in jitsi-meet and using setLargeVideoParticipant
+        // does not switch automatically to stage view, when in grid view
         getParticipant1().getToolbar().clickTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
 
@@ -517,15 +521,18 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
-        // mute second and first
-        participant2.getToolbar().clickAudioMuteButton();
+        // leave muted second and first and third is unmuted
+        participant3.getToolbar().clickAudioMuteButton();
         participant1.getToolbar().clickAudioMuteButton();
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
         participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
         // only the third is unmuted
         MeetUIUtils.waitForDominantspeaker(driver1, endpoint3Id);
