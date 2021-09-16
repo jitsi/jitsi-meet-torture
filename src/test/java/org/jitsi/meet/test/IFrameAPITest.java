@@ -1108,9 +1108,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        JsonObject event = getEventResult(driver1, "raiseHandUpdated");
-        assertEquals(event.get("id").getAsString(), endpointId1);
-        assertTrue(event.get("handRaised").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            JsonObject e = getEventResult(d, "raiseHandUpdated");
+            return e != null && e.get("id").getAsString().equals(endpointId1)
+                && e.get("handRaised").getAsBoolean();
+        });
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleRaiseHand');");
@@ -1122,9 +1124,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        event = getEventResult(driver1, "raiseHandUpdated");
-        assertEquals(event.get("id").getAsString(), endpointId1);
-        assertFalse(event.get("handRaised").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            JsonObject e = getEventResult(d, "raiseHandUpdated");
+            return e != null && e.get("id").getAsString().equals(endpointId1)
+                && !e.get("handRaised").getAsBoolean();
+        });
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
@@ -1134,9 +1138,11 @@ public class IFrameAPITest
 
         switchToIframeAPI(driver1);
 
-        event = getEventResult(driver1, "raiseHandUpdated");
-        assertEquals(event.get("id").getAsString(), endpointId2);
-        assertTrue(event.get("handRaised").getAsBoolean());
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            JsonObject e = getEventResult(d, "raiseHandUpdated");
+            return e != null && e.get("id").getAsString().equals(endpointId2)
+                && e.get("handRaised").getAsBoolean();
+        });
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
