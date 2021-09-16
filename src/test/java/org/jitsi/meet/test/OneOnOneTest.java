@@ -44,7 +44,7 @@ public class OneOnOneTest
      */
     private static final String ONE_ON_ONE_CONFIG_OVERRIDES
         = "config.disable1On1Mode=false"
-        + "&interfaceConfig.TOOLBAR_TIMEOUT=250"
+        + "&interfaceConfig.TOOLBAR_TIMEOUT=500"
         + "&config.alwaysVisibleToolbar=false";
 
     /**
