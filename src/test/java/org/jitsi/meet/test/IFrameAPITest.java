@@ -1154,7 +1154,11 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickRaiseHandButton();
+        String raiseHandSelector = participant2.getToolbar().clickRaiseHandButton();
+
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
+            d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("true"));
+
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             participant1.getNotifications().hasRaisedHandNotification());
 
@@ -1169,6 +1173,24 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         participant2.getToolbar().clickRaiseHandButton();
+
+        try
+        {
+            TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
+                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+        }
+        catch(TimeoutException te)
+        {
+            TestUtils.print("Retrying clicking raise hand for:" + endpointId2);
+
+            // We sometimes see that the second click (to lower the hand) is not propagated for some reason
+            // So let's do a retry waiting for the UI to set that the button is not toggled anymore
+            participant2.getToolbar().clickRaiseHandButton();
+
+            TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
+                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+        }
+
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             !participant1.getNotifications().hasRaisedHandNotification());
 
