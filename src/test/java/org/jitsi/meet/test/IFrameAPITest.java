@@ -481,7 +481,13 @@ public class IFrameAPITest
         hangUpAllParticipants();
 
         this.iFrameUrl = getIFrameUrl(null, null);
-        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        // let's mute participants in the beginning so dominant speaker will not overwrite
+        // setLargeVideoParticipant execution, or they will not become dominant speaker too early and later
+        // will skip becoming dominant speaker
+        JitsiMeetUrl meetUrlAudioMuted = getJitsiMeetUrl().appendConfig("config.startWithAudioMuted=true");
+
+        ensureThreeParticipants(this.iFrameUrl, meetUrlAudioMuted, meetUrlAudioMuted);
 
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
@@ -494,10 +500,6 @@ public class IFrameAPITest
         logger.log(Level.INFO, "EndpointId 1:" + participant1.getEndpointId());
         logger.log(Level.INFO, "EndpointId 2:" + endpoint2Id);
         logger.log(Level.INFO, "EndpointId 3:" + endpoint3Id);
-
-        // let's mute participant so dominant speaker will not overwrite setLargeVideoParticipant execution
-        participant2.getToolbar().clickAudioMuteButton();
-        participant3.getToolbar().clickAudioMuteButton();
 
         // selects third
         switchToIframeAPI(driver1);
