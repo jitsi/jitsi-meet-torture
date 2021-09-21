@@ -819,6 +819,9 @@ public class IFrameAPITest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         ensureTwoParticipants(this.iFrameUrl, getIFrameUrl(null, randomPassword));
+
+        // make sure we leave the room, so it will be destroyed and there will be no password set
+        hangUpAllParticipants();
     }
 
     /**
