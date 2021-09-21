@@ -490,6 +490,11 @@ public class IFrameAPITest
         String endpoint2Id = participant2.getEndpointId();
         String endpoint3Id = participant3.getEndpointId();
 
+        Logger logger = Logger.getGlobal();
+        logger.log(Level.INFO, "EndpointId 1:" + participant1.getEndpointId());
+        logger.log(Level.INFO, "EndpointId 2:" + endpoint2Id);
+        logger.log(Level.INFO, "EndpointId 3:" + endpoint3Id);
+
         // let's mute participant so dominant speaker will not overwrite setLargeVideoParticipant execution
         participant2.getToolbar().clickAudioMuteButton();
         participant3.getToolbar().clickAudioMuteButton();
@@ -559,6 +564,15 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
                 JsonObject eventData = getEventResult(d, "dominantSpeakerChanged");
+                if (eventData != null)
+                {
+                    logger.log(Level.INFO, "dominantSpeakerChanged:" + eventData.get("id").getAsString());
+                }
+                else
+                {
+                    logger.log(Level.WARNING, "No dominantSpeakerChanged");
+                }
+
                 return eventData != null && eventData.get("id").getAsString().equals(endpoint3Id);
         });
 
@@ -1166,7 +1180,7 @@ public class IFrameAPITest
 
             if (!result)
             {
-                Logger.getGlobal().log(Level.WARNING, "No raise hand event:" + e);
+                logger.log(Level.WARNING, "No raise hand event:" + e);
             }
 
             return result;
