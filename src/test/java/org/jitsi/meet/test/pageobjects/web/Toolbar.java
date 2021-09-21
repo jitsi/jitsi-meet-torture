@@ -105,23 +105,23 @@ public class Toolbar
     /**
      * Clicks on the raise hand toolbar button and opens the reactions menu.
      */
-    public void clickOpenReactionsMenuButton()
+    public String clickOpenReactionsMenuButton()
     {
-        clickButton(REACTIONS_MENU);
+        return clickButton(REACTIONS_MENU);
     }
 
 
     /**
      * Clicks on the raise/lower hand button that enables participants will to speak.
      */
-    public void clickRaiseHandButton()
+    public String clickRaiseHandButton()
     {
         if (areReactionsEnabled())
         {
-            clickOpenReactionsMenuButton();
+            return clickOpenReactionsMenuButton();
         }
 
-        clickButton(RAISE_HAND);
+        return clickButton(RAISE_HAND);
     }
 
     /**
@@ -403,14 +403,15 @@ public class Toolbar
      *
      * @param accessibilityLabel The accessibility label of the button to be
      * clicked.
+     * @return the css-selector String.
      */
-    private void clickButton(String accessibilityLabel)
+    private String clickButton(String accessibilityLabel)
     {
-        MeetUIUtils.clickOnElement(
-            participant.getDriver(),
-            MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel),
-            true
-        );
+        String selector = MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), selector, true);
+
+        return selector;
     }
 
     /**
