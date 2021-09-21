@@ -89,7 +89,18 @@ public class IFrameAPITest
 
         ensureOneParticipant();
 
-        this.isModeratorSupported = getParticipant1().isModerator();
+        // make sure we wait a bit if we got updated later to moderator
+        try
+        {
+            TestUtils.waitForCondition(getParticipant1().getDriver(), 2,
+                (ExpectedCondition<Boolean>) d -> getParticipant1().isModerator());
+
+            this.isModeratorSupported = true;
+        }
+        catch(TimeoutException e)
+        {
+            this.isModeratorSupported = false;
+        }
     }
 
     /**
@@ -950,20 +961,16 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String subjectXpath = "//div[@id='subject-details-container']//span[contains(@class,'subject-text')]";
-        TestUtils.waitForDisplayedElementByXPath(
-            driver1,
-            subjectXpath,
-            10);
+        String subjectXpath = "//div[contains(@class,'subject-info-container')]"
+            + "//div[contains(@class,'subject-text--content')]";
 
-        assertEquals(driver1.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
-
-        TestUtils.waitForDisplayedElementByXPath(
-            driver2,
-            subjectXpath,
-            10);
-
-        assertEquals(driver2.findElement(By.xpath(subjectXpath)).getText(), randomSubject);
+        // waits for element to be available, displayed and with the correct text
+        ExpectedCondition<Boolean> expectedSubject = d ->{
+            List<WebElement> res = driver1.findElements(By.xpath(subjectXpath));
+            return res.size() > 0 && res.get(0).isDisplayed() && res.get(0).getText().equals(randomSubject);
+        };
+        TestUtils.waitForCondition(driver1, 10, expectedSubject);
+        TestUtils.waitForCondition(driver2, 10, expectedSubject);
     }
 
     /**
