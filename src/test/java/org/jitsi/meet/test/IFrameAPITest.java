@@ -496,10 +496,9 @@ public class IFrameAPITest
         String endpoint2Id = participant2.getEndpointId();
         String endpoint3Id = participant3.getEndpointId();
 
-        Logger logger = Logger.getGlobal();
-        logger.log(Level.INFO, "EndpointId 1:" + participant1.getEndpointId());
-        logger.log(Level.INFO, "EndpointId 2:" + endpoint2Id);
-        logger.log(Level.INFO, "EndpointId 3:" + endpoint3Id);
+        TestUtils.print("EndpointId 1:" + participant1.getEndpointId());
+        TestUtils.print("EndpointId 2:" + endpoint2Id);
+        TestUtils.print("EndpointId 3:" + endpoint3Id);
 
         // selects third
         switchToIframeAPI(driver1);
@@ -568,11 +567,12 @@ public class IFrameAPITest
                 JsonObject eventData = getEventResult(d, "dominantSpeakerChanged");
                 if (eventData != null)
                 {
-                    logger.log(Level.INFO, "dominantSpeakerChanged:" + eventData.get("id").getAsString());
+                    TestUtils.print("dominantSpeakerChanged:" + eventData.get("id").getAsString());
                 }
                 else
                 {
-                    logger.log(Level.WARNING, "No dominantSpeakerChanged");
+
+                    TestUtils.print("No dominantSpeakerChanged");
                 }
 
                 return eventData != null && eventData.get("id").getAsString().equals(endpoint3Id);
@@ -1113,9 +1113,8 @@ public class IFrameAPITest
         String endpointId1 = participant1.getEndpointId();
         String endpointId2 = participant2.getEndpointId();
 
-        Logger logger = Logger.getGlobal();
-        logger.log(Level.INFO, "EndpointId 1:" + endpointId1);
-        logger.log(Level.INFO, "EndpointId 2:" + endpointId2);
+        TestUtils.print("EndpointId 1:" + endpointId1);
+        TestUtils.print("EndpointId 2:" + endpointId2);
 
         switchToIframeAPI(driver1);
 
@@ -1182,7 +1181,7 @@ public class IFrameAPITest
 
             if (!result)
             {
-                logger.log(Level.WARNING, "No raise hand event:" + e);
+                TestUtils.print("raise hand event:" + e);
             }
 
             return result;
