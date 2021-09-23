@@ -260,6 +260,8 @@ public class MeetUIUtils
             "try {" +
                 "var e = document.querySelector('" + selector + "');" +
                 "if (!e) { return false;}" +
+                "APP.debugLogs.getLogs().push(new Date().toISOString() + ' [MeetUIUtils] Clicking on: "
+                    + selector + "');" +
                 "e.click();" +
                 "return true;" +
                 "} catch (err) { return 'error: ' + err; }");
