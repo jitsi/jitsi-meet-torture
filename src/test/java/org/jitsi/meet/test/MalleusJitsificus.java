@@ -66,6 +66,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.switch_speakers";
     public static final String USE_STAGE_VIEW
         = "org.jitsi.malleus.use_stage_view";
+    public static final String USE_HEADLESS
+        = "org.jitsi.malleus.enable.headless";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -349,10 +351,12 @@ public class MalleusJitsificus
         {
             boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
             boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
+            boolean useHeadless = Boolean.parseBoolean(System.getProperty(USE_HEADLESS));
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                 .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
+                .setHeadless(useHeadless)
                 .setLoadTest(useLoadTest);
 
             if (useNodeTypes)
