@@ -99,10 +99,15 @@ public class WebParticipantOptions
         = "chrome.disable.sandbox";
 
     /**
-     * The property to enable headless parameter for chrome.
+     * The property to enable headless parameter.
      */
-    private static final String PROP_ENABLE_HEADLESS
-        = "chrome.enable.headless";
+    private static final String PROP_ENABLE_HEADLESS = "enable.headless";
+
+    /**
+     * The property to enable headless parameter for.
+     * To be removed.
+     */
+    private static final String PROP_ENABLE_HEADLESS_LEGACY = "chrome.enable.headless";
 
     /**
      * The name of the system property that holds the path to the packet
@@ -136,6 +141,7 @@ public class WebParticipantOptions
         globalKeys.add(PROP_ALLOW_INSECURE_CERTS);
         globalKeys.add(PROP_DISABLE_NOSANBOX);
         globalKeys.add(PROP_ENABLE_HEADLESS);
+        globalKeys.add(PROP_ENABLE_HEADLESS_LEGACY);
         globalKeys.add(PROP_REMOTE_ADDRESS_NAME);
         globalKeys.add(PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
 
@@ -228,7 +234,7 @@ public class WebParticipantOptions
      */
     public boolean isHeadless()
     {
-        return getBooleanProperty(PROP_ENABLE_HEADLESS);
+        return getBooleanProperty(PROP_ENABLE_HEADLESS) || getBooleanProperty(PROP_ENABLE_HEADLESS_LEGACY);
     }
 
     /**
