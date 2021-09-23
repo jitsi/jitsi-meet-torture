@@ -238,6 +238,18 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets whether to use headless mode.
+     * @param value new value.
+     * @return a reference to this object.
+     */
+    public WebParticipantOptions setHeadless(boolean value)
+    {
+        setProperty(PROP_ENABLE_HEADLESS, String.valueOf(value));
+
+        return this;
+    }
+
+    /**
      * Sets the name of wav audio file which will be streamed through fake audio
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
