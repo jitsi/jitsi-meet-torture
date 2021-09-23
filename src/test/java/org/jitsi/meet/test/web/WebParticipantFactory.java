@@ -121,7 +121,7 @@ public class WebParticipantFactory
         // by default we load chrome, but we can load safari or firefox
         if (participantType.isFirefox())
         {
-            WebDriverManager.getInstance(DriverManagerType.FIREFOX).setup();
+            WebDriverManager.firefoxdriver().setup();
 
             if (browserBinaryAPath != null
                     && (browserBinaryAPath.exists() || isRemote))
@@ -145,6 +145,12 @@ public class WebParticipantFactory
                 profile.setAcceptUntrustedCertificates(true);
             }
 
+            FirefoxOptions ffOptions = new FirefoxOptions();
+            if (options.isHeadless())
+            {
+                ffOptions.addArguments("--headless");
+            }
+
             profile.setPreference(
                 "webdriver.log.file", FailureListener.createLogsFolder() +
                 "/firefox-js-console-"
@@ -155,21 +161,19 @@ public class WebParticipantFactory
                     "/firefox-console-"
                     + options.getName() + ".log");
 
+            ffOptions.setProfile(profile);
+
             if (isRemote)
             {
-                FirefoxOptions ffOptions = new FirefoxOptions();
-                ffOptions.setProfile(profile);
-
                 if (version != null && version.length() > 0)
                 {
                     ffOptions.setCapability(CapabilityType.VERSION, version);
                 }
 
-                return new RemoteWebDriver(
-                        options.getRemoteDriverAddress(), ffOptions);
+                return new RemoteWebDriver(options.getRemoteDriverAddress(), ffOptions);
             }
 
-            return new FirefoxDriver(new FirefoxOptions().setProfile(profile));
+            return new FirefoxDriver(ffOptions);
         }
         else if (participantType == ParticipantType.safari)
         {
@@ -186,7 +190,7 @@ public class WebParticipantFactory
         }
         else if (participantType == ParticipantType.edge)
         {
-            WebDriverManager.getInstance(DriverManagerType.EDGE).setup();
+            WebDriverManager.edgedriver().setup();
 
             InternetExplorerOptions ieOptions = new InternetExplorerOptions();
             ieOptions.ignoreZoomSettings();
@@ -197,7 +201,7 @@ public class WebParticipantFactory
         }
         else
         {
-            WebDriverManager.getInstance(DriverManagerType.CHROME).setup();
+            WebDriverManager.chromedriver().setup();
 
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty(
