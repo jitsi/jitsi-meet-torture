@@ -1116,6 +1116,15 @@ public class IFrameAPITest
         TestUtils.print("EndpointId 1:" + endpointId1);
         TestUtils.print("EndpointId 2:" + endpointId2);
 
+        // Make sure we mute both participants so dominant speaker changes will not clear the raise hand we are
+        // about to test
+        participant1.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioMuteButton();
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
+
         switchToIframeAPI(driver1);
 
         addIframeAPIListener(driver1, "raiseHandUpdated");
