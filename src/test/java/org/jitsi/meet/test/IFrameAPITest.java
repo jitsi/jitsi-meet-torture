@@ -2005,7 +2005,7 @@ public class IFrameAPITest
             assertEquals(participant1.getToolbar().overFlowMenuButtonsCount(), 0,
                 "Expected no buttons in the overflow menu");
 
-            assertTrue(getParticipant1().getToolbar().hasButton(value));
+            assertTrue(getParticipant1().getToolbar().hasButton(value), "Missing button:" + value);
         });
     }
 }
