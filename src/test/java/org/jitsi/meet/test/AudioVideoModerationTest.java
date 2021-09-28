@@ -19,8 +19,6 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -30,7 +28,8 @@ import org.testng.annotations.*;
  *
  * @author Calin Chitu
  */
-public class AudioVideoModerationTest extends WebTestBase
+public class AudioVideoModerationTest
+    extends WebTestBase
 {
     /**
      * The participant.
@@ -87,6 +86,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.close();
 
+        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
         checkAudioParticipantUnmute(participant3, false);
@@ -95,7 +95,7 @@ public class AudioVideoModerationTest extends WebTestBase
     /**
      * Checks audio moderation by enabling and disabling it
      */
-    @Test
+    @Test(dependsOnMethods = { "testCheckAudioModerationEnableDisable" })
     public void testCheckVideoModerationEnableDisable()
     {
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
@@ -115,6 +115,7 @@ public class AudioVideoModerationTest extends WebTestBase
 
         participantsPane.close();
 
+        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
         checkVideoParticipantUnmute(participant3, false);
@@ -123,10 +124,18 @@ public class AudioVideoModerationTest extends WebTestBase
     /**
      * Checks user can unmute after being asked by moderator.
      */
-    @Test(dependsOnMethods = { "testCheckAudioModerationEnableDisable", "testCheckVideoModerationEnableDisable" })
+    @Test(dependsOnMethods = { "testCheckVideoModerationEnableDisable" })
     public void testUnmuteByModerator()
     {
         unmuteByModerator(participant1, participant3, false);
+
+        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
+        TestUtils.waitMillis(1000);
+
+        // moderation is stopped at this point, make sure participants 1 & 2 are also unmuted,
+        // participant3 was unmuted by unmuteByModerator
+        checkAudioVideoParticipantUnmute(participant2);
+        checkAudioVideoParticipantUnmute(participant1);
     }
 
     /**
@@ -240,7 +249,6 @@ public class AudioVideoModerationTest extends WebTestBase
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
         AVModerationMenu avModerationMenu = moderator.getAVModerationMenu();
-        WebDriver driver1 = moderator.getDriver();
 
         participantsPane.open();
 
