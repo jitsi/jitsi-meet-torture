@@ -332,10 +332,8 @@ public class WebParticipant extends Participant<WebDriver>
         }
         catch (Exception e)
         {
-            Logger.getGlobal().log(
-                    Level.SEVERE,
-                    "Failed to get meet logs from " + name,
-                    e);
+            Logger.getGlobal().log(Level.SEVERE,
+                "Failed to get meet logs from " + name + ": " + e.getMessage());
 
             return null;
         }
@@ -357,10 +355,8 @@ public class WebParticipant extends Participant<WebDriver>
         }
         catch (Exception e)
         {
-            Logger.getGlobal().log(
-                    Level.SEVERE,
-                    "Failed to get meet rtp stats from " + name,
-                    e);
+            Logger.getGlobal().log(Level.SEVERE,
+                "Failed to get meet rtp stats from " + name + " " + e.getMessage());
 
             return null;
         }
