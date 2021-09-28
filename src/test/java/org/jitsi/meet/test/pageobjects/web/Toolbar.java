@@ -44,7 +44,7 @@ public class Toolbar
     public final static String INVITE = "Invite people";
     public final static String INVITE_CSS = "Invite Someone";
     public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
-    public final static String MUTE_EVERYONE_VIDEO = "Disable everyone's camera";
+    public final static String MUTE_EVERYONE_VIDEO = "Disable everyone's video";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
     public final static String PARTICIPANTS = "Participants" ;
