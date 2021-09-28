@@ -301,6 +301,16 @@ public class DialInAudioTest
                 + (System.currentTimeMillis() - restAPIExecutionTS) + " ms.");
             throw e;
         }
+        catch(WebDriverException e)
+        {
+            if (e.getMessage().contains("crash"))
+            {
+                e.printStackTrace();
+                // page crashed we don't want to fail on this one
+                userJoined = false;
+                return;
+            }
+        }
 
         long joinedTS = System.currentTimeMillis();
 
