@@ -284,23 +284,9 @@ public class WebTestBase
 
         if (p == null)
         {
-            // There's an assumption that the participants are created
-            // starting from 0, 1, 2, so throw an Exception if they happen to be
-            // created in different order.
-            int size = participants.getAll().size();
-            if (index != size)
-            {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "New participant would have been inserted at different "
-                                        + "index than expected. Index: %d, size %d.",
-                                index,
-                                size));
-            }
-
             String configPrefix = "web.participant" + (index + 1);
 
-            p = participants.createParticipant(configPrefix, options);
+            p = participants.createParticipant(index, configPrefix, options);
 
             // Adds a print in the console/selenium-node logs
             // useful when checking crashes or failures in node logs
