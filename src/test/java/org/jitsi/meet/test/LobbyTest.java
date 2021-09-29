@@ -318,6 +318,13 @@ public class LobbyTest
         assertFalse(participant3.getLobbyScreen().isLobbyRoomJoined(), "Lobby room not left");
 
         participant3.hangUp();
+
+        hangUpAllParticipants();
+
+        // waits just wait a little to be sure the conference had been destroyed
+        // we see sometimes the first participant not able to join in next test as maybe the conference is still there
+        // with lobby enabled and waiting for a minute the ghost to expire and destroy the conference
+        TestUtils.waitMillis(500);
     }
 
     /**
