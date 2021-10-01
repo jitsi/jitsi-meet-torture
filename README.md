@@ -2,7 +2,7 @@ jitsi-meet-torture
 ==================
 
 # Running 
-To run tests against a Jitsi-Meet instance running on `https://meet.example.com use`:
+To run tests against a Jitsi-Meet instance running on `https://meet.example.com` use:
 
 ```mvn test -Djitsi-meet.instance.url="https://meet.example.com"```
 
@@ -18,6 +18,12 @@ To disable certain tests from being run set the `jitsi-meet.tests.toExclude` pro
 
 
 Note that `SetupConference` will always be run as the first test, and `DisposeConference` will always be run as the last test.
+
+## Running IFrameAPITest
+To run IFrameAPITest an iframe implementation is needed. You can upload the file resources/files/iframeAPITest.html to your deployment and pass it as a param:
+Make sure the file is accessible as `https://meet.example.com/iframeAPITest.html`
+
+```mvn test -Djitsi-meet.instance.url="https://meet.example.com" -Dorg.jitsi.iframe.page_path="https://meet.example.com" -Djitsi-meet.tests.toRun="IFrameAPITest"```
 
 # Mobile testing
 

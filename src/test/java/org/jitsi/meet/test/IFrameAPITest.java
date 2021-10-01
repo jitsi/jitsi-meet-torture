@@ -713,6 +713,165 @@ public class IFrameAPITest
     }
 
     /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#ismoderationon
+     *
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#togglemoderation
+     *
+     * Events testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#moderationstatuschanged
+     *
+     * Test retrieving local audio/video muted state.
+     */
+    @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
+    public void testFunctionIsModerationOn()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+
+        Function<WebDriver, Boolean[]> getAPIModerationState = d -> {
+            TestUtils.executeScript(d,
+                "return window.jitsiAPI.isModerationOn().then(r => window.jitsiAPI.testisAudioModerationOn = r);");
+            TestUtils.executeScript(d,
+                "return window.jitsiAPI.isModerationOn('video')" +
+                ".then(r => window.jitsiAPI.testisVideoModerationOn = r);");
+
+            boolean result1 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisAudioModerationOn;");
+            boolean result2 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisVideoModerationOn;");
+
+            return new Boolean[] { result1, result2 };
+        };
+
+        switchToIframeAPI(driver1);
+        Boolean[] result = getAPIModerationState.apply(driver1);
+
+        assertFalse(result[0], "Audio moderation must be initially off");
+        assertFalse(result[1], "Video moderation must be initially off");
+
+        // enable moderation and check
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', true);");
+        TestUtils.executeScript(driver1,
+                "return window.jitsiAPI.executeCommand('toggleModeration', true, 'video');");
+
+        TestUtils.waitMillis(500);
+        result = getAPIModerationState.apply(driver1);
+
+        assertTrue(result[0], "Audio moderation must be on");
+        assertTrue(result[1], "Video moderation must be on");
+
+        // let's revert to the initial state
+
+        // disable moderation
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', false);");
+        TestUtils.executeScript(driver1,
+                "return window.jitsiAPI.executeCommand('toggleModeration', false, 'video');");
+    }
+
+    /**
+     * Functions testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isparticipantforcemuted
+     *
+     * Commands testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#askToUnmute
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#approveVideo
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#rejectParticipant
+     *
+     * Events testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#moderationparticipantapproved
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#moderationparticipantrejected
+     *
+     * Test retrieving local audio/video muted state.
+     */
+    @Test(dependsOnMethods = { "testFunctionIsModerationOn" })
+    public void testFunctionIsParticipantForceMuted()
+    {
+        hangUpAllParticipants();
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        String endpointId2 = participant2.getEndpointId();
+        WebDriver driver1 = participant1.getDriver();
+
+        Function<WebDriver, Boolean[]> getAPIParticipantForceMutedState = d -> {
+            TestUtils.executeScript(d, String.format(
+                "return window.jitsiAPI.isParticipantForceMuted('%s')" +
+                ".then(r => window.jitsiAPI.testisAudioFroceMuted = r);",
+                endpointId2));
+            TestUtils.executeScript(d, String.format(
+                "return window.jitsiAPI.isParticipantForceMuted('%s', 'video')" +
+                ".then(r => window.jitsiAPI.testisVideoFroceMuted = r);",
+                endpointId2));
+
+            boolean result1 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisAudioFroceMuted;");
+            boolean result2 = TestUtils.executeScriptAndReturnBoolean(d,
+                "return window.jitsiAPI.testisVideoFroceMuted;");
+
+            return new Boolean[] { result1, result2 };
+        };
+
+        switchToIframeAPI(driver1);
+        Boolean[] result = getAPIParticipantForceMutedState.apply(driver1);
+
+        assertFalse(result[0], "Participant should not be audio force muted initially");
+        assertFalse(result[1], "Participant should not be video force muted initially");
+
+        // enable audio and video moderation
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', true);");
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', true, 'video');");
+
+        TestUtils.waitMillis(500);
+        result = getAPIParticipantForceMutedState.apply(driver1);
+
+        assertTrue(result[0], "Participant should be audio force muted");
+        assertTrue(result[1], "Participant should be video force muted");
+
+        // ask to unmute (approve audio) & approve video
+        TestUtils.executeScript(driver1, String.format(
+            "return window.jitsiAPI.executeCommand('askToUnmute', '%s');", endpointId2));
+        TestUtils.executeScript(driver1, String.format(
+            "return window.jitsiAPI.executeCommand('approveVideo', '%s');", endpointId2));
+
+        TestUtils.waitMillis(500);
+        result = getAPIParticipantForceMutedState.apply(driver1);
+
+        assertFalse(result[0], "Participant should not be audio force muted");
+        assertFalse(result[1], "Participant should not be video force muted");
+
+        // reject audio & video
+        TestUtils.executeScript(driver1, String.format(
+            "return window.jitsiAPI.executeCommand('rejectParticipant', '%s');", endpointId2));
+        TestUtils.executeScript(driver1, String.format(
+            "return window.jitsiAPI.executeCommand('rejectParticipant', '%s', 'video');", endpointId2));
+
+        TestUtils.waitMillis(500);
+        result = getAPIParticipantForceMutedState.apply(driver1);
+
+        assertTrue(result[0], "Participant should be audio force muted");
+        assertTrue(result[1], "Participant should be video force muted");
+
+        // let's revert to the initial state
+
+        // disable audio and video moderation
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', false);");
+        TestUtils.executeScript(driver1,
+            "return window.jitsiAPI.executeCommand('toggleModeration', false, 'video');");
+    }
+
+    /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displayname
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#email
@@ -722,9 +881,10 @@ public class IFrameAPITest
      *
      * Test command displayName and email.
      */
-    @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
+    @Test(dependsOnMethods = { "testFunctionIsParticipantForceMuted" })
     public void testCommandDisplayName()
     {
+        hangUpAllParticipants();
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureTwoParticipants(this.iFrameUrl, null);
 
