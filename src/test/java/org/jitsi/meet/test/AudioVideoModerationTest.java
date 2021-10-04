@@ -19,6 +19,8 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -93,7 +95,7 @@ public class AudioVideoModerationTest
     }
 
     /**
-     * Checks audio moderation by enabling and disabling it
+     * Checks video moderation by enabling and disabling it
      */
     @Test(dependsOnMethods = { "testCheckAudioModerationEnableDisable" })
     public void testCheckVideoModerationEnableDisable()
@@ -127,7 +129,7 @@ public class AudioVideoModerationTest
     @Test(dependsOnMethods = { "testCheckVideoModerationEnableDisable" })
     public void testUnmuteByModerator()
     {
-        unmuteByModerator(participant1, participant3, false);
+        unmuteByModerator(participant1, participant3, false, true);
 
         // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
@@ -236,7 +238,56 @@ public class AudioVideoModerationTest
 
         participant3.waitToBecomeModerator();
 
-        unmuteByModerator(participant3, participant2, true);
+        unmuteByModerator(participant3, participant2, true, true);
+    }
+
+    /**
+     * Test that Ask to Unmute works with moderation off.
+     */
+    @Test(dependsOnMethods = { "testGrantModerator" })
+    public void testAskToUnmute()
+    {
+        hangUpAllParticipants();
+
+        ensureTwoParticipants();
+
+        WebDriver driver2 = participant2.getDriver();
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+
+        // mute participant2
+        participant2.getToolbar().clickAudioMuteButton();
+
+        // ask participant2 to unmute
+        participantsPane.open();
+
+        participantsPane.askToUnmute(participant2);
+
+        TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
+                participant2.getNotifications().hasAskToUnmuteNotification());
+
+        participantsPane.close();
+    }
+
+    /**
+     * Test that mute removes participant from whitelist.
+     */
+    @Test(dependsOnMethods = { "testAskToUnmute" })
+    public void testRemoveFromWhitelist()
+    {
+
+        unmuteByModerator(participant1, participant2, false, false);
+
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+
+        // mute audio and check
+        participantsPane.muteParticipant(participant2);
+        checkAudioParticipantUnmute(participant2, true);
+
+        // stop video and check
+        participant1
+            .getRemoteParticipantById(participant2.getEndpointId())
+            .stopVideo();
+        checkVideoParticipantUnmute(participant2, true);
     }
 
     /**
@@ -244,8 +295,10 @@ public class AudioVideoModerationTest
      * @param moderator - The participant that is moderator.
      * @param participant - The participant being asked to unmute.
      * @param moderationOn - Whether or not moderation is enabled.
+     * @param stopModeration - Whether or not to stop moderation when done.
      */
-    private void unmuteByModerator(WebParticipant moderator, WebParticipant participant, Boolean moderationOn)
+    private void unmuteByModerator(WebParticipant moderator, WebParticipant participant,
+                                   Boolean moderationOn, Boolean stopModeration)
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
         AVModerationMenu avModerationMenu = moderator.getAVModerationMenu();
@@ -267,13 +320,16 @@ public class AudioVideoModerationTest
 
         checkAudioVideoParticipantUnmute(participant);
 
-        participantsPane.clickContextMenuButton();
+        if (stopModeration)
+        {
+            participantsPane.clickContextMenuButton();
 
-        avModerationMenu.clickStopAudioModeration();
+            avModerationMenu.clickStopAudioModeration();
 
-        avModerationMenu.clickStopVideoModeration();
+            avModerationMenu.clickStopVideoModeration();
 
-        participantsPane.close();
+            participantsPane.close();
+        }
     }
 
     /**

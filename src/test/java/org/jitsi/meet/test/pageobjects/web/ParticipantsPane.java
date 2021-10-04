@@ -90,6 +90,38 @@ public class ParticipantsPane
     }
 
     /**
+     * Trys to click mute button after moderator reloads.
+     *
+     * @param participantToMute the participant for this {@link ParticipantsPane} to mute.
+     */
+    public void muteParticipant(WebParticipant participantToMute)
+    {
+        String remoteParticipantEndpointId = participantToMute.getEndpointId();
+
+        WebElement meetingParticipantListItem = TestUtils.waitForElementBy(
+                participant.getDriver(), By.id("participant-item-" + remoteParticipantEndpointId), 5);
+
+        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
+        hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
+        hoverOnMeetingParticipantListItem.perform();
+
+        clickMuteButtonById(participantToMute);
+    }
+
+    /**
+     * Try to click on the mute button and fails if it cannot be clicked.
+     * @param participantToMute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickMuteButtonById(WebParticipant participantToMute)
+    {
+        String remoteParticipantEndpointId = participantToMute.getEndpointId();
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector("mute-" + remoteParticipantEndpointId);
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+
+    /**
      * Trys to click on the context menu button and fails if it cannot be clicked.
      */
     public void clickContextMenuButton()
