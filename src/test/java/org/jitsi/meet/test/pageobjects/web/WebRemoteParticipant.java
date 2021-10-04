@@ -56,6 +56,12 @@ public class WebRemoteParticipant
         clickOnRemoteMenuLink("kicklink", true);
     }
 
+    @Override
+    public void stopVideo()
+    {
+        clickOnRemoteMenuLink("mutevideolink", true);
+    }
+
     /**
      * Opens the remote menu and waits for the desired link to appear.
      * @param linkClassname the class name to use identifying the link.
