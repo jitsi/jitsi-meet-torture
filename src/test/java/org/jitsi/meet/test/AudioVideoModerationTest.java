@@ -20,10 +20,9 @@ import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
-
 
 /**
  * Tests the A-V moderation functionality.
@@ -285,20 +284,22 @@ public class AudioVideoModerationTest
     @Test(dependsOnMethods = { "testAskToUnmute" })
     public void testRemoveFromWhitelist()
     {
-
         unmuteByModerator(participant1, participant2, false, false);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
 
         // mute audio and check
         participantsPane.muteParticipant(participant2);
-        checkAudioParticipantUnmute(participant2, true);
+
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+
+        // we unmute and test it that it was indeed unmuted
+        checkAudioParticipantUnmute(participant2, false);
 
         // stop video and check
-        participant1
-            .getRemoteParticipantById(participant2.getEndpointId())
-            .stopVideo();
-        checkVideoParticipantUnmute(participant2, true);
+        participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
+        checkVideoParticipantUnmute(participant2, false);
     }
 
     /**
