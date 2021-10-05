@@ -78,6 +78,20 @@ public class Notifications
      */
     private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.hostAskedUnmute";
 
+    /**
+     * The id of the close button of the notification shown to participant when moderator asks to unmute.
+     */
+    private static final String ASK_TO_UNMUTE_CLOSE_NOTIFICATION = "notify.hostAskedUnmute-dismiss";
+
+    /**
+     * The id of the close button of the notification shown to participant when moderator mutes them.
+     */
+    private static final String REMOTELY_MUTED_CLOSE_NOTIFICATION = "notify.mutedRemotelyTitle-dismiss";
+
+    /**
+     * The id of the close button of the notification shown to participant when moderator video mutes them.
+     */
+    private static final String REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION = "notify.videoMutedRemotelyTitle-dismiss";
 
     public Notifications(WebParticipant participant)
     {
@@ -247,5 +261,73 @@ public class Notifications
     public boolean hasAskToUnmuteNotification()
     {
         return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID);
+    }
+
+    /**
+     * Closes the notification for moderator asks you to unmute.
+     */
+    public void closeAskToUnmuteNotification()
+    {
+        WebDriver driver = participant.getDriver();
+        TestUtils.waitForCondition(driver, 2, d ->
+            !d.findElements(ByTestId.testId(ASK_TO_UNMUTE_CLOSE_NOTIFICATION)).isEmpty());
+
+        WebElement closeButton = driver.findElement(ByTestId.testId(ASK_TO_UNMUTE_CLOSE_NOTIFICATION));
+
+        new Actions(driver).moveToElement(closeButton).click().perform();
+    }
+
+    /**
+     * Closes the notification for moderator remote muting.
+     */
+    public void closeRemoteMuteNotification()
+    {
+        try
+        {
+            WebDriver driver = participant.getDriver();
+            TestUtils.waitForCondition(driver, 5, d ->
+                !d.findElements(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION)).isEmpty());
+
+            // let's give time for the animation, or we will miss the button click for closings
+            TestUtils.waitMillis(200);
+
+            WebElement closeButton = driver.findElement(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION));
+            new Actions(driver).moveToElement(closeButton).click().perform();
+
+            TestUtils.waitForCondition(driver, 2, d ->
+                d.findElements(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION)).isEmpty());
+        }
+        catch(TimeoutException ex)
+        {
+            // if notification is not found it is closed
+            TestUtils.print("No remote audio muted notification found:" + ex.getMessage());
+        }
+    }
+
+    /**
+     * Closes the notification for moderator remote muting.
+     */
+    public void closeRemoteVideoMuteNotification()
+    {
+        try
+        {
+            WebDriver driver = participant.getDriver();
+            TestUtils.waitForCondition(driver, 5, d ->
+                !d.findElements(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION)).isEmpty());
+
+            // let's give time for the animation, or we will miss the button click for closings
+            TestUtils.waitMillis(200);
+
+            WebElement closeButton = driver.findElement(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION));
+
+            new Actions(driver).moveToElement(closeButton).click().perform();
+            TestUtils.waitForCondition(driver, 2, d ->
+                d.findElements(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION)).isEmpty());
+        }
+        catch(TimeoutException ex)
+        {
+            // if notification is not found it is closed
+            TestUtils.print("No remote video muted notification found:" + ex.getMessage());
+        }
     }
 }
