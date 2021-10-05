@@ -19,7 +19,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.testng.*;
 import org.testng.annotations.*;
@@ -48,7 +48,12 @@ public class AudioVideoModerationTest
         ensureOneParticipant();
         participant1 = getParticipant1();
 
-        if (!participant1.isModerator())
+        try
+        {
+            TestUtils.waitForCondition(participant1.getDriver(), 2,
+                (ExpectedCondition<Boolean>) d -> participant1.isModerator());
+        }
+        catch(TimeoutException e)
         {
             cleanupClass();
             throw new SkipException("Skipping as anonymous participants are not moderators.");
@@ -58,7 +63,13 @@ public class AudioVideoModerationTest
         participant2 = getParticipant2();
         participant3 = getParticipant3();
 
-        if (participant1.isModerator() && participant2.isModerator() && participant3.isModerator())
+        try
+        {
+            TestUtils.waitForCondition(participant1.getDriver(), 2,
+                (ExpectedCondition<Boolean>) d
+                    -> !(participant1.isModerator() && participant2.isModerator() && participant3.isModerator()));
+        }
+        catch(TimeoutException e)
         {
             cleanupClass();
             throw new SkipException("Skipping as all participants are moderators.");
