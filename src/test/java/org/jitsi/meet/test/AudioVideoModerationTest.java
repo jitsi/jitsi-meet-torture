@@ -19,11 +19,10 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
-
 
 /**
  * Tests the A-V moderation functionality.
@@ -48,7 +47,12 @@ public class AudioVideoModerationTest
         ensureOneParticipant();
         participant1 = getParticipant1();
 
-        if (!participant1.isModerator())
+        try
+        {
+            TestUtils.waitForCondition(participant1.getDriver(), 2,
+                (ExpectedCondition<Boolean>) d -> participant1.isModerator());
+        }
+        catch(TimeoutException e)
         {
             cleanupClass();
             throw new SkipException("Skipping as anonymous participants are not moderators.");
@@ -58,7 +62,13 @@ public class AudioVideoModerationTest
         participant2 = getParticipant2();
         participant3 = getParticipant3();
 
-        if (participant1.isModerator() && participant2.isModerator() && participant3.isModerator())
+        try
+        {
+            TestUtils.waitForCondition(participant1.getDriver(), 2,
+                (ExpectedCondition<Boolean>) d
+                    -> !(participant1.isModerator() && participant2.isModerator() && participant3.isModerator()));
+        }
+        catch(TimeoutException e)
         {
             cleanupClass();
             throw new SkipException("Skipping as all participants are moderators.");
@@ -80,7 +90,7 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartAudioModeration();
 
-        checkAudioParticipantUnmute(participant3, true);
+        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, true, false);
 
         participantsPane.clickContextMenuButton();
 
@@ -91,7 +101,7 @@ public class AudioVideoModerationTest
         // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        checkAudioParticipantUnmute(participant3, false);
+        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false, false);
     }
 
     /**
@@ -109,7 +119,7 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartVideoModeration();
 
-        checkVideoParticipantUnmute(participant3, true);
+        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, true, true);
 
         participantsPane.clickContextMenuButton();
 
@@ -120,7 +130,7 @@ public class AudioVideoModerationTest
         // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        checkVideoParticipantUnmute(participant3, false);
+        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, false, true);
     }
 
     /**
@@ -265,6 +275,8 @@ public class AudioVideoModerationTest
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
                 participant2.getNotifications().hasAskToUnmuteNotification());
 
+        participant2.getNotifications().closeAskToUnmuteNotification();
+
         participantsPane.close();
     }
 
@@ -274,20 +286,32 @@ public class AudioVideoModerationTest
     @Test(dependsOnMethods = { "testAskToUnmute" })
     public void testRemoveFromWhitelist()
     {
-
         unmuteByModerator(participant1, participant2, false, false);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
 
         // mute audio and check
         participantsPane.muteParticipant(participant2);
-        checkAudioParticipantUnmute(participant2, true);
+
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+
+        // make sure we close the notifications to avoid covering the mute button
+        participant2.getNotifications().closeAskToUnmuteNotification();
+        participant2.getNotifications().closeRemoteMuteNotification();
+
+        // we unmute and test it that it was indeed unmuted
+        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false, false);
 
         // stop video and check
-        participant1
-            .getRemoteParticipantById(participant2.getEndpointId())
-            .stopVideo();
-        checkVideoParticipantUnmute(participant2, true);
+        participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
+
+        participant1.getFilmstrip().assertVideoMuteIcon(participant2, true);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant2, true);
+
+        participant2.getNotifications().closeRemoteVideoMuteNotification();
+
+        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, false, false);
     }
 
     /**
@@ -354,24 +378,6 @@ public class AudioVideoModerationTest
         participantsPane.askToUnmute(participant);
 
         participant.getNotifications().getAskToUnmuteNotification();
-    }
-
-    /**
-     * Checks audio unmute state for participant
-     * @param participant the participant that is checked
-     */
-    private void checkAudioParticipantUnmute(WebParticipant participant, Boolean isMuted)
-    {
-        MeetUIUtils.toggleAudioAndCheck(participant, participant1, isMuted, false);
-    }
-
-    /**
-     * Checks audio unmute state for participant
-     * @param participant the participant that is checked
-     */
-    private void checkVideoParticipantUnmute(WebParticipant participant, Boolean isMuted)
-    {
-        MeetUIUtils.toggleVideoAndCheck(participant, participant1, isMuted, true);
     }
 
     /**

@@ -1204,10 +1204,10 @@ public class MeetUIUtils
         // Make sure that there is the audio mute button
         participant.getToolbar().waitForVideoMuteButtonDisplay();
 
-        // Mute participant's audio
+        // Toggle participant's video
         participant.getToolbar().clickVideoMuteButton();
 
-        // Check if local video muted icon disappeared
+        // Check local video muted icon state
         assertMuteIconIsDisplayed(
             driver, driver, isMuted, isVideo, participant.getName());
 
@@ -1245,10 +1245,10 @@ public class MeetUIUtils
         // Make sure that there is the audio mute button
         participant.getToolbar().waitForAudioMuteButtonDisplay();
 
-        // Mute participant's audio
+        // Toggle participant's audio
         participant.getToolbar().clickAudioMuteButton();
 
-        // Check if local audio muted icon disappeared
+        // Check local audio muted icon state
         assertMuteIconIsDisplayed(
                 driver, driver, isMuted, isVideo, participant.getName());
 
