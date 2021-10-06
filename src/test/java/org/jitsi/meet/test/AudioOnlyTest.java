@@ -34,7 +34,7 @@ public class AudioOnlyTest
         = "//div[@id='videoResolutionLabel'][contains(@class, 'audio-only')]";
     private static String LARGE_AVATAR_XPATH ="//div[@id='dominantSpeaker']";
     private static String VIDEO_QUALITY_SLIDER_CLASS
-        = "video-quality-dialog-slider";
+        = "custom-slider";
 
     @Override
     public void setupClass()
@@ -182,8 +182,8 @@ public class AudioOnlyTest
         }
         else
         {
-            // click done button
-            ModalDialogHelper.clickOKButton(participant.getDriver());
+            // click close button
+            ModalDialogHelper.clickCloseButton(participant.getDriver());
         }
     }
 
