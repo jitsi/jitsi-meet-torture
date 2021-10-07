@@ -190,8 +190,13 @@ public abstract class ParticipantHelper<P extends Participant>
      */
     public void cleanup()
     {
-        participants.stream().forEach(Participant::closeSafely);
-        participants.clear();
+        if (participants != null)
+        {
+            participants.stream()
+                .filter(participant -> participant != null)
+                .forEach(Participant::closeSafely);
+            participants.clear();
+        }
     }
 
     /**
