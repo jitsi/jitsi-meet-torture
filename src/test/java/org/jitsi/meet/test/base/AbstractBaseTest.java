@@ -367,7 +367,10 @@ public abstract class AbstractBaseTest<P extends Participant>
     @AfterClass
     public void cleanupClass()
     {
-        this.participants.cleanup();
+        if (this.participants != null)
+        {
+            this.participants.cleanup();
+        }
     }
 
     @BeforeMethod
