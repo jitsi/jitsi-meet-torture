@@ -66,7 +66,7 @@ public class Notifications
     /**
      * The test id of the notification shown to kicked users.
      */
-    private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle-toggle";
+    private static final String KICKED_NOTIFICATION_TEST_ID = "dialog.kickTitle";
 
     /**
      * The test id of the notification shown to moderator when participant wants to speak.
