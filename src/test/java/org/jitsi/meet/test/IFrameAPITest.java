@@ -758,13 +758,14 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('toggleModeration', true);");
         TestUtils.executeScript(driver1,
-                "return window.jitsiAPI.executeCommand('toggleModeration', true, 'video');");
+            "return window.jitsiAPI.executeCommand('toggleModeration', true, 'video');");
 
-        TestUtils.waitMillis(500);
-        result = getAPIModerationState.apply(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIModerationState.apply(d);
 
-        assertTrue(result[0], "Audio moderation must be on");
-        assertTrue(result[1], "Video moderation must be on");
+            // Audio and Video moderation must be on
+            return res[0] && res[1];
+        });
 
         // let's revert to the initial state
 
@@ -773,6 +774,14 @@ public class IFrameAPITest
             "return window.jitsiAPI.executeCommand('toggleModeration', false);");
         TestUtils.executeScript(driver1,
                 "return window.jitsiAPI.executeCommand('toggleModeration', false, 'video');");
+
+        // wait for the change to take effect
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIModerationState.apply(d);
+
+            // Audio and Video moderation must be on
+            return !res[0] && !res[1];
+        });
     }
 
     /**
@@ -832,11 +841,12 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('toggleModeration', true, 'video');");
 
-        TestUtils.waitMillis(500);
-        result = getAPIParticipantForceMutedState.apply(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIParticipantForceMutedState.apply(d);
 
-        assertTrue(result[0], "Participant should be audio force muted");
-        assertTrue(result[1], "Participant should be video force muted");
+            // Participant should be audio and video force muted
+            return res[0] && res[1];
+        });
 
         // ask to unmute (approve audio) & approve video
         TestUtils.executeScript(driver1, String.format(
@@ -844,11 +854,12 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1, String.format(
             "return window.jitsiAPI.executeCommand('approveVideo', '%s');", endpointId2));
 
-        TestUtils.waitMillis(500);
-        result = getAPIParticipantForceMutedState.apply(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIParticipantForceMutedState.apply(d);
 
-        assertFalse(result[0], "Participant should not be audio force muted");
-        assertFalse(result[1], "Participant should not be video force muted");
+            // Participant should not be audio and video force muted
+            return !res[0] && !res[1];
+        });
 
         // reject audio & video
         TestUtils.executeScript(driver1, String.format(
@@ -856,12 +867,12 @@ public class IFrameAPITest
         TestUtils.executeScript(driver1, String.format(
             "return window.jitsiAPI.executeCommand('rejectParticipant', '%s', 'video');", endpointId2));
 
-        TestUtils.waitMillis(500);
-        result = getAPIParticipantForceMutedState.apply(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIParticipantForceMutedState.apply(d);
 
-        assertTrue(result[0], "Participant should be audio force muted");
-        assertTrue(result[1], "Participant should be video force muted");
-
+            // Participant should be audio and video force muted
+            return res[0] && res[1];
+        });
         // let's revert to the initial state
 
         // disable audio and video moderation
@@ -869,6 +880,14 @@ public class IFrameAPITest
             "return window.jitsiAPI.executeCommand('toggleModeration', false);");
         TestUtils.executeScript(driver1,
             "return window.jitsiAPI.executeCommand('toggleModeration', false, 'video');");
+
+        // end wait for the change
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
+            Boolean[] res = getAPIParticipantForceMutedState.apply(d);
+
+            // Participant should not be audio and video force muted
+            return !res[0] && !res[1];
+        });
     }
 
     /**
