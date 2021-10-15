@@ -811,6 +811,17 @@ public class IFrameAPITest
         String endpointId2 = participant2.getEndpointId();
         WebDriver driver1 = participant1.getDriver();
 
+        try
+        {
+            TestUtils.waitForCondition(participant1.getDriver(), 2,
+                (ExpectedCondition<Boolean>) d -> !(participant1.isModerator() && participant2.isModerator()));
+        }
+        catch(TimeoutException e)
+        {
+            cleanupClass();
+            throw new SkipException("Skipping as all participants are moderators.");
+        }
+
         Function<WebDriver, Boolean[]> getAPIParticipantForceMutedState = d -> {
             TestUtils.executeScript(d, String.format(
                 "return window.jitsiAPI.isParticipantForceMuted('%s')" +
