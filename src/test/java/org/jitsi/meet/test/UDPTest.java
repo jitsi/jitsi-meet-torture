@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
@@ -43,6 +44,9 @@ public class UDPTest
     @Test
     public void udpTest()
     {
+        // just in case wait 1500, this is the interval we use for `config.pcStatsInterval`
+        TestUtils.waitMillis(1500);
+
         assertEquals(
             getParticipant1().getProtocol(),
              "udp",
