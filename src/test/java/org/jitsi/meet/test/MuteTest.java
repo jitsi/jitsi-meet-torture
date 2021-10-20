@@ -222,6 +222,48 @@ public class MuteTest
     }
 
     /**
+     * Run MuteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
+     */
+    public void MuteAfterJoinCanShareAndUnmute() {
+        muteParticipant1BeforeParticipant2JoinsAndScreenshare(true);
+        muteParticipant1BeforeParticipant2JoinsAndScreenshare(false);
+    }
+
+    /**
+     * Video mutes participant1 before participant2 joins and checks if participant1 can share or unmute video
+     * and that media is being received on participant2 in both the cases.
+     */
+    public void muteParticipant1BeforeParticipant2JoinsAndScreenshare(boolean enableP2p)
+    {
+        hangUpAllParticipants();
+
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.p2p.enabled=" + enableP2p);
+        ensureOneParticipant(url);
+
+        getParticipant1().getToolbar().clickVideoMuteButton();
+
+        ensureTwoParticipants(url, url);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+
+        // Start desktop share.
+        participant1.getToolbar().clickDesktopSharingButton();
+
+        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+        MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
+
+        // Stop desktop share and unmute video and check for video again.
+        participant1.getToolbar().clickDesktopSharingButton();
+
+        participant1.getToolbar().clickVideoMuteButton();
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+        MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
+    }
+
+    /**
      * Toggles the mute state of a specific Meet conference participant and
      * verifies that a specific other Meet conference participants sees a
      * specific mute state for the former.
