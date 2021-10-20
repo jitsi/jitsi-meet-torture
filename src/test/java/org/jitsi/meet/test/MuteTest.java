@@ -224,30 +224,35 @@ public class MuteTest
     /**
      * Run MuteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
      */
-    public void MuteAfterJoinCanShareAndUnmute() {
-        muteParticipant1BeforeParticipant2JoinsAndScreenshare(true);
-        muteParticipant1BeforeParticipant2JoinsAndScreenshare(false);
+     @Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
+    public void MuteAfterJoinCanShareAndUnmute()
+    {
+        muteParticipant1BeforeParticipant2JoinsAndScreenshare("true");
+        muteParticipant1BeforeParticipant2JoinsAndScreenshare("false");
     }
 
     /**
      * Video mutes participant1 before participant2 joins and checks if participant1 can share or unmute video
      * and that media is being received on participant2 in both the cases.
      */
-    public void muteParticipant1BeforeParticipant2JoinsAndScreenshare(boolean enableP2p)
+    private void muteParticipant1BeforeParticipant2JoinsAndScreenshare(String enableP2p)
     {
         hangUpAllParticipants();
 
         JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.p2p.enabled=" + enableP2p);
         ensureOneParticipant(url);
+        JitsiMeetUrl url2 = url.copy();
 
         getParticipant1().getToolbar().clickVideoMuteButton();
 
-        ensureTwoParticipants(url, url);
+        // Wait 3 secs before adding the second participant so that the stream is set to null on the local track
+        // before the peerconnection is created as p2 joins.
+        TestUtils.waitMillis(3000);
 
         WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = getParticipant2();
+        WebParticipant participant2 = joinSecondParticipant(url2);
 
-        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+        participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
 
         // Start desktop share.
         participant1.getToolbar().clickDesktopSharingButton();
