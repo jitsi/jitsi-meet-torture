@@ -1331,9 +1331,9 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
-            long handRaised = e.get("handRaised").getAsLong();
+            long handRaisedTimestamp = e.get("handRaised").getAsLong();
             return e != null && e.get("id").getAsString().equals(endpointId1)
-                && handRaised > 0;
+                && handRaisedTimestamp > 0;
         });
 
         TestUtils.executeScript(driver1,
@@ -1348,9 +1348,9 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
-            long handRaised = e.get("handRaised").getAsLong();
+            long handRaisedTimestamp = e.get("handRaised").getAsLong();
             return e != null && e.get("id").getAsString().equals(endpointId1)
-                && handRaised == 0;
+                && handRaisedTimestamp == 0;
         });
 
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -1367,9 +1367,9 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
-            long handRaised = e.get("handRaised").getAsLong();
+            long handRaisedTimestamp = e.get("handRaised").getAsLong();
             return e != null && e.get("id").getAsString().equals(endpointId2)
-                && handRaised > 0;
+                && handRaisedTimestamp > 0;
         });
 
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -1400,9 +1400,9 @@ public class IFrameAPITest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
-            long handRaised = e.get("handRaised").getAsLong();
+            long handRaisedTimestamp = e.get("handRaised").getAsLong();
             boolean result = e.get("id").getAsString().equals(endpointId2)
-                && handRaised == 0;
+                && handRaisedTimestamp == 0;
 
             if (!result)
             {
