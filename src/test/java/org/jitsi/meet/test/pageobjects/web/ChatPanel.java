@@ -18,6 +18,8 @@ package org.jitsi.meet.test.pageobjects.web;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
@@ -54,6 +56,23 @@ public class ChatPanel
     }
 
     /**
+     * Returns the chat element after waiting for 3 seconds or null if not opened.
+     * @return {@code WebElement}
+     */
+    public WebElement getChat()
+    {
+        try
+        {
+            return new WebDriverWait(this.participant.getDriver(), 3)
+                .until(driver -> driver.findElement(By.id("sideToolbarContainer")));
+        }
+        catch(Exception e)
+        {
+            return null;
+        }
+    }
+
+    /**
      * Clicks on the "chat" toolbar button which opens or closes the chat panel.
      */
     public void clickToolbarButton()
@@ -78,7 +97,7 @@ public class ChatPanel
      */
     public void assertOpen()
     {
-        waitForOpenedOrClosed(true /* open */);
+        assertNotNull(getChat());
     }
 
     /**
@@ -86,23 +105,6 @@ public class ChatPanel
      */
     public void assertClosed()
     {
-        waitForOpenedOrClosed(false /* closed */);
-    }
-
-    /**
-     * Will wait until chat panel is opened or closed. If the opened/closed
-     * condition is not met after given timeout it will fail the test.
-     *
-     * @param open - {@code true} to wait until the panel is open, and
-     * {@code false} to wait until it is closed.
-     */
-    private void waitForOpenedOrClosed(boolean open)
-    {
-        participant.waitForCondition(
-                () -> open == isOpen(),
-                2,
-                String.format(
-                        "The chat panel was expected to be %s.",
-                        open ? "open" : "closed"));
+        assertNull(getChat());
     }
 }

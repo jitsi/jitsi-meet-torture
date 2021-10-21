@@ -58,9 +58,8 @@ public class ChatPanelTest
         ChatPanel chatPanel = participant.getChatPanel();
         Toolbar toolbar = participant.getToolbar();
 
-        assertFalse(
-            chatPanel.isOpen(),
-            "The chat panel should be initially closed");
+
+        chatPanel.assertClosed();
 
         // The chat panel should be open after clicking the button
         toolbar.clickChatButton();
