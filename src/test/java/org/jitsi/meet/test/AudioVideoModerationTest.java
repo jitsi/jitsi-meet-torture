@@ -319,6 +319,46 @@ public class AudioVideoModerationTest
     }
 
     /**
+     * Test that checks join after moderation started.
+     */
+    @Test(dependsOnMethods = { "testRemoveFromWhitelist" })
+    public void testJoinModerated()
+    {
+        hangUpAllParticipants();
+
+        ensureOneParticipant();
+
+        //enable moderation
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        AVModerationMenu avModerationMenu = participant1.getAVModerationMenu();
+
+        participantsPane.open();
+
+        participantsPane.clickContextMenuButton();
+
+        avModerationMenu.clickStartAudioModeration();
+        avModerationMenu.clickStartVideoModeration();
+
+        participantsPane.close();
+
+        // join with second participant and check
+        ensureTwoParticipants();
+
+        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
+        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, true);
+
+        // asked to unmute and check
+        unmuteByModerator(participant1, participant2, false, false);
+
+        // mute and check
+        participantsPane.muteParticipant(participant2);
+        participant2.getNotifications().closeAskToUnmuteNotification();
+        participant2.getNotifications().closeRemoteMuteNotification();
+
+        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
+    }
+
+    /**
      * Checks a user can unmute after being asked by moderator.
      * @param moderator - The participant that is moderator.
      * @param participant - The participant being asked to unmute.
