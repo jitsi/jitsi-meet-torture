@@ -1191,13 +1191,10 @@ public class MeetUIUtils
      * which observes and checks if the video has been unmuted correctly.
      * @param isMuted the {@link Boolean} of the participant
      * which checks if the audio is muted.
-     * @param isVideo the {@link Boolean} of the participant
-     * which checks for video.
      */
     public static void toggleVideoAndCheck(WebParticipant participant,
                                            WebParticipant participantCheck,
-                                           Boolean isMuted,
-                                           Boolean isVideo)
+                                           Boolean isMuted)
     {
         WebDriver driver = participant.getDriver();
 
@@ -1209,7 +1206,7 @@ public class MeetUIUtils
 
         // Check local video muted icon state
         assertMuteIconIsDisplayed(
-            driver, driver, isMuted, isVideo, participant.getName());
+            driver, driver, isMuted, true, participant.getName());
 
         if (participantCheck != null)
         {
@@ -1217,7 +1214,7 @@ public class MeetUIUtils
                 participantCheck.getDriver(),
                 driver,
                 isMuted,
-                isVideo,
+                true,
                 "");
         }
     }
@@ -1232,13 +1229,10 @@ public class MeetUIUtils
      * which observes and checks if the audio has been unmuted correctly.
      * @param isMuted the {@link Boolean} of the participant
      * which checks if the audio is muted.
-     * @param isVideo the {@link Boolean} of the participant
-     * which checks for video or audio.
      */
     public static void toggleAudioAndCheck(WebParticipant participant,
                                            WebParticipant participantCheck,
-                                           Boolean isMuted,
-                                           Boolean isVideo)
+                                           Boolean isMuted)
     {
         WebDriver driver = participant.getDriver();
 
@@ -1250,7 +1244,7 @@ public class MeetUIUtils
 
         // Check local audio muted icon state
         assertMuteIconIsDisplayed(
-                driver, driver, isMuted, isVideo, participant.getName());
+                driver, driver, isMuted, false, participant.getName());
 
         if (participantCheck != null)
         {
@@ -1258,7 +1252,7 @@ public class MeetUIUtils
                     participantCheck.getDriver(),
                     driver,
                     isMuted,
-                    isVideo,
+                    false,
                     "");
         }
     }

@@ -90,7 +90,7 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartAudioModeration();
 
-        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, true, false);
+        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, true);
 
         participantsPane.clickContextMenuButton();
 
@@ -101,7 +101,7 @@ public class AudioVideoModerationTest
         // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false, false);
+        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false);
     }
 
     /**
@@ -119,7 +119,7 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartVideoModeration();
 
-        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, true, true);
+        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, true);
 
         participantsPane.clickContextMenuButton();
 
@@ -130,7 +130,7 @@ public class AudioVideoModerationTest
         // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, false, true);
+        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, false);
     }
 
     /**
@@ -139,15 +139,17 @@ public class AudioVideoModerationTest
     @Test(dependsOnMethods = { "testCheckVideoModerationEnableDisable" })
     public void testUnmuteByModerator()
     {
-        unmuteByModerator(participant1, participant3, false, true);
+        unmuteByModerator(participant1, participant3, true, true);
 
-        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
+        // we don't have a UI change when moderation is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
         // moderation is stopped at this point, make sure participants 1 & 2 are also unmuted,
         // participant3 was unmuted by unmuteByModerator
-        checkAudioVideoParticipantUnmute(participant2);
-        checkAudioVideoParticipantUnmute(participant1);
+        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false);
+        MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
+        MeetUIUtils.toggleAudioAndCheck(participant1, participant2, false);
+        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
     }
 
     /**
@@ -188,7 +190,8 @@ public class AudioVideoModerationTest
 
             participant3.getNotifications().getAskToUnmuteNotification();
 
-            checkAudioVideoParticipantUnmute(participant3);
+            MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false);
+            MeetUIUtils.unmuteVideoAndCheck(participant3, participant1);
 
             participant2.getParticipantsPane().clickContextMenuButton();
 
@@ -207,7 +210,8 @@ public class AudioVideoModerationTest
 
             participant2.getNotifications().getAskToUnmuteNotification();
 
-            checkAudioVideoParticipantUnmute(participant2);
+            MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false);
+            MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
 
             participant3.getParticipantsPane().clickContextMenuButton();
 
@@ -248,7 +252,7 @@ public class AudioVideoModerationTest
 
         participant3.waitToBecomeModerator();
 
-        unmuteByModerator(participant3, participant2, true, true);
+        unmuteByModerator(participant3, participant2, false, true);
     }
 
     /**
@@ -286,7 +290,7 @@ public class AudioVideoModerationTest
     @Test(dependsOnMethods = { "testAskToUnmute" })
     public void testRemoveFromWhitelist()
     {
-        unmuteByModerator(participant1, participant2, false, false);
+        unmuteByModerator(participant1, participant2, true, false);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
 
@@ -300,8 +304,8 @@ public class AudioVideoModerationTest
         participant2.getNotifications().closeAskToUnmuteNotification();
         participant2.getNotifications().closeRemoteMuteNotification();
 
-        // we unmute and test it that it was indeed unmuted
-        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false, false);
+        // we try to unmute and test it that it was still muted
+        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
 
         // stop video and check
         participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
@@ -311,25 +315,25 @@ public class AudioVideoModerationTest
 
         participant2.getNotifications().closeRemoteVideoMuteNotification();
 
-        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, false, false);
+        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, true);
     }
 
     /**
      * Checks a user can unmute after being asked by moderator.
      * @param moderator - The participant that is moderator.
      * @param participant - The participant being asked to unmute.
-     * @param moderationOn - Whether or not moderation is enabled.
-     * @param stopModeration - Whether or not to stop moderation when done.
+     * @param turnOnModeration - <tt></tt> if we want to turn on moderation before testing (when it is currently off).
+     * @param stopModeration - <tt>true</tt> if moderation to be stopped when done.
      */
     private void unmuteByModerator(WebParticipant moderator, WebParticipant participant,
-                                   Boolean moderationOn, Boolean stopModeration)
+                                   Boolean turnOnModeration, Boolean stopModeration)
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
         AVModerationMenu avModerationMenu = moderator.getAVModerationMenu();
 
         participantsPane.open();
 
-        if (!moderationOn)
+        if (turnOnModeration)
         {
             participantsPane.clickContextMenuButton();
 
@@ -342,7 +346,8 @@ public class AudioVideoModerationTest
 
         askParticipantToUnmute(moderator, participant);
 
-        checkAudioVideoParticipantUnmute(participant);
+        MeetUIUtils.toggleAudioAndCheck(participant, participant1, false);
+        MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
 
         if (stopModeration)
         {
@@ -378,16 +383,5 @@ public class AudioVideoModerationTest
         participantsPane.askToUnmute(participant);
 
         participant.getNotifications().getAskToUnmuteNotification();
-    }
-
-    /**
-     * Checks audio/video unmute state for participant
-     * @param participant the participant that is checked
-     */
-    private void checkAudioVideoParticipantUnmute(WebParticipant participant)
-    {
-        MeetUIUtils.toggleAudioAndCheck(participant, participant1, false, false);
-
-        MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
     }
 }
