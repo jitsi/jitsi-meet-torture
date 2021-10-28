@@ -86,6 +86,7 @@ public class KnockingParticipantList
         List<WebElement> listElements = participant.getDriver().findElements(By.xpath(PARTICIPANTS_XPATH));
 
         listElements.forEach(el -> {
+            String id = el.getAttribute("data-testid");
             String avatarUrl = el.findElement(ByTestId.testId(PARTICIPANT_AVATAR_TEST_ID)).getAttribute("src");
             String name = el.findElement(ByTestId.testId(PARTICIPANT_NAME_TEST_ID)).getText();
             String email = null;
@@ -97,7 +98,7 @@ public class KnockingParticipantList
                 {
                     // email is optional and may be missing
                 }
-            participants.add(new Participant(avatarUrl, name, email));
+            participants.add(new Participant(avatarUrl, name, email, id));
         });
 
         return participants;
@@ -130,12 +131,14 @@ public class KnockingParticipantList
         private final String avatarUrl;
         private final String name;
         private final String email;
+        private final String id;
 
-        public Participant(String avatarUrl, String name, String email)
+        public Participant(String avatarUrl, String name, String email, String id)
         {
             this.avatarUrl = avatarUrl;
             this.name = name;
             this.email = email;
+            this.id = id;
         }
 
         public String getAvatarUrl()
@@ -151,6 +154,11 @@ public class KnockingParticipantList
         public String getEmail()
         {
             return email;
+        }
+
+        public String getId()
+        {
+            return id;
         }
 
         /**
