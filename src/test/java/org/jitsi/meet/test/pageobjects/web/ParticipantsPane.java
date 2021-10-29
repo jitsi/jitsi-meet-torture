@@ -83,7 +83,7 @@ public class ParticipantsPane
     public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
-        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector("unmute-" + remoteParticipantEndpointId);
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-" + remoteParticipantEndpointId);
         TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
 
         MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
@@ -115,7 +115,7 @@ public class ParticipantsPane
     public void clickMuteButtonById(WebParticipant participantToMute)
     {
         String remoteParticipantEndpointId = participantToMute.getEndpointId();
-        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector("mute-" + remoteParticipantEndpointId);
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("mute-" + remoteParticipantEndpointId);
         TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
 
         MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
