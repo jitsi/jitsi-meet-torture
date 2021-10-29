@@ -627,6 +627,19 @@ public class MeetUIUtils
     }
 
     /**
+     * Helper for formatting the string to be used as a CSS selector for
+     * a test id.
+     *
+     * @param testId The test id to be used to search
+     * for a WebElement on the page.
+     * @return String intended to be used with By#cssSelector.
+     */
+    public static String getTestIdCSSSelector(String testId)
+    {
+        return String.format("[data-testid=\"%s\"]", testId);
+    }
+
+    /**
      * Retrieves a remote participant display name.
      *
      * @param driver The driver where to check for the display name.

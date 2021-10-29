@@ -122,6 +122,30 @@ public class ParticipantsPane
     }
 
     /**
+     * Tries to click on the reject button and fails if it cannot be clicked.
+     * @param participantIdToAdmit - the id of the participant for this {@link ParticipantsPane} to admit.
+     */
+    public void admitLobbyParticipant(String participantIdToAdmit)
+    {
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("admit-" + participantIdToAdmit);
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+
+    /**
+     * Tries to click on the reject button and fails if it cannot be clicked.
+     * @param participantIdToReject - the id of the participant for this {@link ParticipantsPane} to reject.
+     */
+    public void rejectLobbyParticipant(String participantIdToReject)
+    {
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("reject-" + participantIdToReject);
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+
+    /**
      * Trys to click on the context menu button and fails if it cannot be clicked.
      */
     public void clickContextMenuButton()

@@ -283,10 +283,88 @@ public class LobbyTest
         getParticipant3().hangUp();
     }
 
+    @Test(dependsOnMethods = {"testEnteringInLobbyAndDeny"})
+    public void testApproveFromParticipantsPane()
+    {
+        WebParticipant participant1 = getParticipant1();
+        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+
+        // moderator allows access
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        participantsPane.open();
+        participantsPane.admitLobbyParticipant(knockingParticipant.getId());
+        participantsPane.close();
+
+        // granted notification on 2nd participant
+        WebParticipant participant2 = getParticipant2();
+        String notificationText = participant2.getNotifications().getLobbyParticipantAccessGranted();
+
+        assertTrue(
+                notificationText.contains(participant1.getName()),
+                "Notification for second participant need to have actor of the granted access operation");
+
+        WebParticipant participant3 = getParticipant3();
+        assertTrue(
+                notificationText.contains(participant3.getName()),
+                "Notification for second participant need to have the name pf the participant that access was granted");
+
+        participant2.getNotifications().closeLobbyParticipantAccessGranted();
+
+        // ensure 3 participants in the call will check for the third one that muc is joined, ice connected,
+        // media is being receiving and there are two remote streams
+        joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
+
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
+        participant3.waitForRemoteStreams(2);
+
+        // now check third one display name in the room, is the one set in the prejoin screen
+        String name = MeetUIUtils.getRemoteDisplayName(participant1.getDriver(), participant3.getEndpointId());
+        assertEquals(name, participant3.getName());
+
+        getParticipant3().hangUp();
+    }
+
+    @Test(dependsOnMethods = {"testApproveFromParticipantsPane"})
+    public void testRejectFromParticipantsPane()
+    {
+        WebParticipant participant1 = getParticipant1();
+        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+
+        // moderator rejects access
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        participantsPane.open();
+        participantsPane.rejectLobbyParticipant(knockingParticipant.getId());
+        participantsPane.close();
+
+        // deny notification on 2nd participant
+        WebParticipant participant2 = getParticipant2();
+        String notificationText = participant2.getNotifications().getLobbyParticipantAccessDenied();
+
+        assertTrue(
+                notificationText.contains(participant1.getName()),
+                "Notification for second participant need to have actor of the deny access operation");
+        WebParticipant participant3 = getParticipant3();
+        assertTrue(
+                notificationText.contains(participant3.getName()),
+                "Notification for second participant need to have the name pf the participant that access was denied");
+
+        participant2.getNotifications().closeLobbyParticipantAccessDenied();
+
+        // check the denied one is out of lobby, sees the notification about it
+        assertTrue(
+                participant3.getNotifications().hasLobbyAccessDenied(),
+                "The third participant should see a warning that his access to the room was denied");
+
+        assertFalse(participant3.getLobbyScreen().isLobbyRoomJoined(), "Lobby room not left");
+
+        getParticipant3().hangUp();
+    }
+
     /**
      * Checks that third tries to enter, sees lobby, and rest notifications are correct and the access is approved.
      */
-    @Test(dependsOnMethods = {"testEnteringInLobbyAndDeny"})
+    @Test(dependsOnMethods = {"testRejectFromParticipantsPane"})
     public void testLobbyUserLeaves()
     {
         enterLobby(getParticipant1(), false);
