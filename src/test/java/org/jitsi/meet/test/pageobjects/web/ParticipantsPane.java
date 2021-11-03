@@ -31,6 +31,30 @@ public class ParticipantsPane
     private final static String PARTICIPANTS_PANE = "participants_pane";
 
     /**
+     * Accessibility label to be used as selectors for finding participants more
+     * button within the {@link ParticipantsPane}.
+     */
+    private final static String PARTICIPANT_MORE_LABEL = "More participant options";
+
+    /**
+     * Accessibility label to be used as selectors for finding Add breakout room
+     * button within the {@link ParticipantsPane}.
+     */
+    private final static String ADD_BREAKOUT_ROOM = "Add breakout room";
+
+    /**
+     * Accessibility label to be used as selectors for finding Leave breakout room
+     * button within the {@link ParticipantsPane}.
+     */
+    private final static String LEAVE_ROOM_LABEL = "Leave breakout room";
+
+    /**
+     * Accessibility label to be used as selectors for finding Auto assign
+     * button within the {@link ParticipantsPane}.
+     */
+    private final static String AUTO_ASSIGN_LABEL = "Auto assign to breakout rooms";
+
+    /**
      * The participant.
      */
     private final WebParticipant participant;
@@ -74,6 +98,39 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.perform();
 
         clickAskToUnmuteButtonById(participantToUnmute);
+    }
+
+    /**
+     * Trys to click add breakout room button.
+     */
+    public void addBreakoutRoom()
+    {
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(ADD_BREAKOUT_ROOM);
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.cssSelector(cssSelector), 5);
+        clickAddBreakoutRoomButton();
+    }
+
+    /**
+     * Trys to click auto assign to breakout rooms button.
+     */
+    public void autoAssignToBreakoutRooms()
+    {
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(AUTO_ASSIGN_LABEL);
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.cssSelector(cssSelector), 5);
+        clickAutoAssignButton();
+    }
+
+    /**
+     * Trys to click leave breakout room button.
+     */
+    public void leaveBreakoutRoom()
+    {
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(LEAVE_ROOM_LABEL);
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.cssSelector(cssSelector), 5);
+        clickLeaveBreakoutRoomButton();
     }
 
     /**
@@ -155,6 +212,78 @@ public class ParticipantsPane
                 = driver.findElement(By.id(CONTEXT_MENU));
 
         contextMenuButton.click();
+    }
+
+    /**
+     * Tries to click on add breakout room button and fails if it cannot be clicked.
+     */
+    private void clickAddBreakoutRoomButton()
+    {
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(ADD_BREAKOUT_ROOM),
+                true
+        );
+    }
+
+    /**
+     * Tries to click on leave breakout room button and fails if it cannot be clicked.
+     */
+    private void clickLeaveBreakoutRoomButton()
+    {
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(LEAVE_ROOM_LABEL),
+                true
+        );
+    }
+
+    /**
+     * Tries to click on auto assign button and fails if it cannot be clicked.
+     */
+    private void clickAutoAssignButton()
+    {
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(AUTO_ASSIGN_LABEL),
+                true
+        );
+    }
+
+    /**
+     * Open context menu for given participant.
+     *
+     * @param remoteId id the participant for which to open the menu
+     */
+    private void openParticipantContextMenu(String remoteId)
+    {
+        WebElement listItem = TestUtils.waitForElementBy(participant.getDriver(),
+                By.xpath("//div[@id='participant-item-" + remoteId + "']"), 5);
+
+        Actions hoverOnParticipantListItem = new Actions(participant.getDriver());
+        hoverOnParticipantListItem.moveToElement(listItem);
+        hoverOnParticipantListItem.perform();
+
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(PARTICIPANT_MORE_LABEL);
+        listItem.findElement(By.cssSelector(cssSelector)).click();
+    }
+
+    /**
+     * Tries to send a participant to a breakout room.
+     *
+     * @param participantToSend the participant to send to brekaout room
+     * @param roomName the name of the breakout room where to send the participant
+     */
+    public void sendParticipantToBreakoutRoom(WebParticipant participantToSend, String roomName)
+    {
+        String remoteParticipantId = participantToSend.getEndpointId();
+
+        openParticipantContextMenu(remoteParticipantId);
+
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(roomName);
+        WebElement sendButton = TestUtils.waitForElementBy(participant.getDriver(),
+                By.cssSelector(cssSelector), 2);
+        sendButton.click();
     }
 
     /**

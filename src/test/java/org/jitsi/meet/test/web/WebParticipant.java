@@ -87,6 +87,12 @@ public class WebParticipant extends Participant<WebDriver>
         "return typeof APP.conference._room.grantOwner === 'function'";
 
     /**
+     * The javascript code which returns {@code true} if breakout rooms are supported.
+     */
+    private static final String BREAKOUT_ROOMS_SUPPORTED =
+        "return APP.store.getState()['features/base/conference'].conference?.getBreakoutRooms()?.isSupported()";
+
+    /**
      * The javascript code which returns {@code true} if the ICE connection
      * is in state 'connected'.
      */
@@ -101,6 +107,7 @@ public class WebParticipant extends Participant<WebDriver>
 
     private ChatPanel chatPanel;
     private AVModerationMenu avModerationMenu;
+    private BreakoutRoomsList breakoutRoomsList;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
     private KnockingParticipantList knockingParticipantList;
@@ -440,6 +447,18 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     * Checks if the meeting supports breakout rooms.
+     *
+     * @retuns {@code true} if breakout rooms are supported
+     * otherwise {@code false}
+     */
+    public boolean supportsBreakoutRooms()
+    {
+        Object res = executeScript(BREAKOUT_ROOMS_SUPPORTED);
+        return Boolean.TRUE.equals(res);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -622,6 +641,19 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return knockingParticipantList;
+    }
+
+    /**
+     * @return a representation of the list of knocking participants.
+     */
+    public BreakoutRoomsList getBreakoutRoomsList()
+    {
+        if (breakoutRoomsList == null)
+        {
+            breakoutRoomsList = new BreakoutRoomsList(this);
+        }
+
+        return breakoutRoomsList;
     }
 
     /**
