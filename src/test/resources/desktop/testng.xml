@@ -40,6 +40,11 @@
             <class name="org.jitsi.meet.test.BandwidthEstimationTest" />
         </classes>
     </test>
+    <test name="BreakoutRoomsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.BreakoutRoomsTest" />
+        </classes>
+    </test>
     <test name="ChatPanelTest">
         <classes>
             <class name="org.jitsi.meet.test.ChatPanelTest" />
