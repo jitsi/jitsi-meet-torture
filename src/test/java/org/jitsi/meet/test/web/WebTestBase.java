@@ -304,7 +304,7 @@ public class WebTestBase
         {
             // participant names are `web.participantN` we drop `web.`. Shorter for display in thumbs and avatar is PN.
             String displayName = p.getName().replaceAll("web\\.", "");
-            meetURL.appendConfig("userInfo.displayName=\"" + displayName + "\"", false);
+            meetURL.appendConfig("userInfo.displayName=\"" + displayName + "\"", true);
         }
 
         p.joinConference(meetURL);
