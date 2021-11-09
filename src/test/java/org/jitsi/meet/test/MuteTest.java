@@ -245,15 +245,14 @@ public class MuteTest
 
         getParticipant1().getToolbar().clickVideoMuteButton();
 
-        // Wait 3 secs before adding the second participant so that the stream is set to null on the local track
-        // before the peerconnection is created as p2 joins.
-        TestUtils.waitMillis(3000);
-
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = joinSecondParticipant(url2);
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
-        participant2.waitForSendReceiveData(true, true);
+        participant2.waitForSendReceiveData(true, false);
+
+        // Wait for the media to switch over to the p2p connection.
+        TestUtils.waitMillis(2000);
 
         // Check if p1 appears video muted on p2.
         participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
