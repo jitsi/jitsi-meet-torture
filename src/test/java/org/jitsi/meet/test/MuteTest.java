@@ -251,7 +251,11 @@ public class MuteTest
 
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = joinSecondParticipant(url2);
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData(true, true);
 
+        // Check if p1 appears video muted on p2.
         participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
 
         // Start desktop share.
