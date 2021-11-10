@@ -295,21 +295,7 @@ public class LobbyTest
         participantsPane.admitLobbyParticipant(knockingParticipant.getId());
         participantsPane.close();
 
-        // granted notification on 2nd participant
-        WebParticipant participant2 = getParticipant2();
-        String notificationText = participant2.getNotifications().getLobbyParticipantAccessGranted();
-
-        assertTrue(
-                notificationText.contains(participant1.getName()),
-                "Notification for second participant need to have actor of the granted access operation");
-
         WebParticipant participant3 = getParticipant3();
-        assertTrue(
-                notificationText.contains(participant3.getName()),
-                "Notification for second participant need to have the name pf the participant that access was granted");
-
-        participant2.getNotifications().closeLobbyParticipantAccessGranted();
-
         // ensure 3 participants in the call will check for the third one that muc is joined, ice connected,
         // media is being receiving and there are two remote streams
         joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
@@ -337,26 +323,15 @@ public class LobbyTest
         participantsPane.rejectLobbyParticipant(knockingParticipant.getId());
         participantsPane.close();
 
-        // deny notification on 2nd participant
-        WebParticipant participant2 = getParticipant2();
-        String notificationText = participant2.getNotifications().getLobbyParticipantAccessDenied();
-
-        assertTrue(
-                notificationText.contains(participant1.getName()),
-                "Notification for second participant need to have actor of the deny access operation");
         WebParticipant participant3 = getParticipant3();
-        assertTrue(
-                notificationText.contains(participant3.getName()),
-                "Notification for second participant need to have the name pf the participant that access was denied");
-
-        participant2.getNotifications().closeLobbyParticipantAccessDenied();
-
         // check the denied one is out of lobby, sees the notification about it
-        assertTrue(
-                participant3.getNotifications().hasLobbyAccessDenied(),
-                "The third participant should see a warning that his access to the room was denied");
+        // The third participant should see a warning that his access to the room was denied
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+                (ExpectedCondition<Boolean>) d -> participant3.getNotifications().hasLobbyAccessDenied());
 
-        assertFalse(participant3.getLobbyScreen().isLobbyRoomJoined(), "Lobby room not left");
+        // check Lobby room not left
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+                (ExpectedCondition<Boolean>) d -> !participant3.getLobbyScreen().isLobbyRoomJoined());
 
         getParticipant3().hangUp();
     }
