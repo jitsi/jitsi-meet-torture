@@ -204,9 +204,9 @@ public class AudioOnlyTest
         boolean muted)
     {
         // Verify the observer sees the testee in the desired muted state.
-        observer.getFilmstrip().assertVideoMuteIcon(testee, muted);
+        observer.getParticipantsPane().assertIsParticipantVideoMuted(testee, muted);
 
         // Verify the testee sees itself in the desired muted state.
-        testee.getFilmstrip().assertVideoMuteIcon(testee, muted);
+        testee.getParticipantsPane().assertIsParticipantVideoMuted(testee, muted);
     }
 }

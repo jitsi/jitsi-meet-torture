@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.util;
 
+import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -412,14 +413,11 @@ public class MeetUIUtils
      *               checking the status of audio muted icon.
      * @param isMuted if {@code true}, the method will assert the presence of
      * the "mute" icon; otherwise, it will assert its absence.
-     * @param isVideo if {@code true} the icon for "video mute" will be checked;
-     * otherwise, the "audio mute" icon will be checked.
      */
     public static void assertMuteIconIsDisplayed(
             WebDriver observer,
             WebDriver testee,
             boolean isMuted,
-            boolean isVideo,
             String name)
     {
         String id;
@@ -434,12 +432,10 @@ public class MeetUIUtils
         }
 
         String mutedIconXPath
-            = "//span[@id='%s']//span[contains(@class, '%sMuted')]"
+            = "//span[@id='%s']//span[contains(@id, '%sMuted')]"
                 + "//*[local-name() = 'svg' and @id = '%s-disabled']";
 
-        mutedIconXPath = isVideo ?
-            String.format(mutedIconXPath, id, "video", "camera")
-            : String.format(mutedIconXPath, id, "audio", "mic");
+        mutedIconXPath = String.format(mutedIconXPath, id, "audio", "mic");
 
         try
         {
@@ -486,7 +482,6 @@ public class MeetUIUtils
             observer,
             testee,
             muted,
-            false, //audio
             testeeName);
 
         // The code below check verifies audio muted status by checking the
@@ -609,7 +604,7 @@ public class MeetUIUtils
         TestUtils.waitForDisplayedElementByXPath(
             driver,
             "//span[@id='participant_" + endpointId + "']" +
-                "//span[@class='displayname']",
+                "//span[starts-with(@class, 'displayname')]",
             5);
     }
 
@@ -1004,7 +999,7 @@ public class MeetUIUtils
     public static void waitForNinjaIcon(WebDriver driver, String endpointId)
     {
         TestUtils.waitForElementByXPath(driver,
-            "//span[@id='participant_" + endpointId + "']//span[contains(@class,'connection_ninja')]", 15);
+            "//span[@id='participant_" + endpointId + "']//span[@class='connection_ninja']", 15);
     }
 
     /**
@@ -1014,10 +1009,10 @@ public class MeetUIUtils
      * @param endpointId the endpoint ID of the participant whose dominant speaker icon
      * status will be checked.
      */
-    public static void waitForDominantspeaker(WebDriver driver, String endpointId)
+    public static void waitForDominantSpeaker(WebDriver driver, String endpointId)
     {
         TestUtils.waitForElementByXPath(driver,
-            "//span[@id='participant_" + endpointId + "']//span[@id='dominantspeakerindicator']", 5);
+            "//span[@id='participant_" + endpointId + "' and contains(@class, 'dominant-speaker')]", 5);
     }
 
     /**
@@ -1145,17 +1140,11 @@ public class MeetUIUtils
         participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon appears on local thumbnail
-        assertMuteIconIsDisplayed(
-            driver, driver, true, true, participant.getName());
+        participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
 
         if (participantCheck != null)
         {
-            MeetUIUtils.assertMuteIconIsDisplayed(
-                participantCheck.getDriver(),
-                driver,
-                true,
-                true,
-                "");
+            participantCheck.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
         }
     }
 
@@ -1180,17 +1169,11 @@ public class MeetUIUtils
         participant.getToolbar().clickVideoMuteButton();
 
         // Check if local video muted icon disappeared
-        assertMuteIconIsDisplayed(
-            driver, driver, false, true, participant.getName());
+        participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, false);
 
         if (participantCheck != null)
         {
-            MeetUIUtils.assertMuteIconIsDisplayed(
-                participantCheck.getDriver(),
-                driver,
-                false,
-                true,
-                "");
+            participantCheck.getParticipantsPane().assertIsParticipantVideoMuted(participant, false);
         }
     }
 
@@ -1218,17 +1201,11 @@ public class MeetUIUtils
         participant.getToolbar().clickVideoMuteButton();
 
         // Check local video muted icon state
-        assertMuteIconIsDisplayed(
-            driver, driver, isMuted, true, participant.getName());
+        participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, isMuted);
 
         if (participantCheck != null)
         {
-            MeetUIUtils.assertMuteIconIsDisplayed(
-                participantCheck.getDriver(),
-                driver,
-                isMuted,
-                true,
-                "");
+            participantCheck.getParticipantsPane().assertIsParticipantVideoMuted(participant, isMuted);
         }
     }
 
@@ -1257,7 +1234,7 @@ public class MeetUIUtils
 
         // Check local audio muted icon state
         assertMuteIconIsDisplayed(
-                driver, driver, isMuted, false, participant.getName());
+                driver, driver, isMuted, participant.getName());
 
         if (participantCheck != null)
         {
@@ -1265,7 +1242,6 @@ public class MeetUIUtils
                     participantCheck.getDriver(),
                     driver,
                     isMuted,
-                    false,
                     "");
         }
     }

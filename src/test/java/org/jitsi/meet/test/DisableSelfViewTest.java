@@ -21,6 +21,7 @@ import org.jitsi.meet.test.web.WebParticipant;
 import org.jitsi.meet.test.web.WebTestBase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.testng.annotations.Test;
 
@@ -38,12 +39,12 @@ public class DisableSelfViewTest
     /**
      * The local video menu trigger button xpath.
      */
-    private final static String LOCAL_VIDEO_MENU_BUTTON_XPATH = LOCAL_TILE_XPATH + "//span[@class='localvideomenu']";
+    private final static String LOCAL_VIDEO_MENU_BUTTON_XPATH = LOCAL_TILE_XPATH + "//span[@id='localvideomenu']";
 
     /**
      * The local video menu hide self view button xpath.
      */
-    private final static String HIDE_SELF_VIEW_BUTTON_XPATH = "//ul[@id='localVideoMenu']//a[@id='hideselfviewbutton']";
+    private final static String HIDE_SELF_VIEW_BUTTON_XPATH = "//div[@class='popover']//div[@id='hideselfviewButton']";
 
     /**
      * The participants.
@@ -67,6 +68,10 @@ public class DisableSelfViewTest
         checkSelfViewHidden(false);
 
         // open local video menu
+        WebElement localTile = participant1.getDriver().findElement(By.xpath(LOCAL_TILE_XPATH));
+        Actions hoverOnLocalTile = new Actions(participant1.getDriver());
+        hoverOnLocalTile.moveToElement(localTile);
+        hoverOnLocalTile.perform();
         WebElement menuButton = TestUtils.waitForElementBy(participant1.getDriver(),
                 By.xpath(LOCAL_VIDEO_MENU_BUTTON_XPATH), 5);
         menuButton.click();

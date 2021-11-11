@@ -61,29 +61,6 @@ public class WebFilmstrip
             participant.getDriver(),
             participantToCheck.getDriver(),
             isDisplayed,
-            false, // audio
-            participantToCheck.getName()
-        );
-    }
-
-    /**
-     * Asserts that {@code participant} shows or doesn't show the
-     * video mute icon for the conference participant identified by
-     * {@code participantToCheck}.
-     *
-     * @param participantToCheck the {@code WebParticipant} for whom we're
-     * checking the status of video muted icon.
-     * @param isDisplayed if {@code true}, the method will assert the presence
-     * of the "mute" icon; otherwise, it will assert its absence.
-     */
-    public void assertVideoMuteIcon(
-        WebParticipant participantToCheck, boolean isDisplayed)
-    {
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            participant.getDriver(),
-            participantToCheck.getDriver(),
-            isDisplayed,
-            true, // video
             participantToCheck.getName()
         );
     }

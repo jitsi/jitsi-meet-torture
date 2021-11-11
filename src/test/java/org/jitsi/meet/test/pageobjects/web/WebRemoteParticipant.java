@@ -69,9 +69,14 @@ public class WebRemoteParticipant
      */
     private void clickOnRemoteMenuLink(String linkClassname, Boolean dialogConfirm)
     {
+        WebElement thumbnail = driver.findElement(By.xpath("//span[@id='participant_" + this.getEndpointId()+ "']"));
+        Actions action1 = new Actions(driver);
+        action1.moveToElement(thumbnail);
+        action1.perform();
+
         WebElement menuElement = driver.findElement(
             By.xpath("//span[@id='participant_" + this.getEndpointId()
-            + "']/span[contains(@class, 'remotevideomenu')]"));
+                    + "']//span[@id='remotevideomenu']"));
 
         Actions action = new Actions(driver);
         action.moveToElement(menuElement);
@@ -80,13 +85,13 @@ public class WebRemoteParticipant
         // give time for the menu to appear
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//ul[@class='popupmenu']//a[contains(@class, '"
+            "//div[@class='popover']//div[contains(@class, '"
                 + linkClassname + "')]",
             5);
 
         // click the button
         MeetUIUtils.clickOnElement(driver,
-            "ul.popupmenu a." + linkClassname, true);
+            "div.popover div." + linkClassname, true);
 
         if (dialogConfirm)
         {

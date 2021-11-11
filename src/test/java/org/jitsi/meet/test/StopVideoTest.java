@@ -77,10 +77,10 @@ public class StopVideoTest
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
-        getParticipant2().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant1(), false);
-        getParticipant1().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant1(), false);
+        getParticipant2().getParticipantsPane()
+                .assertIsParticipantVideoMuted(getParticipant1(), false);
+        getParticipant1().getParticipantsPane()
+                .assertIsParticipantVideoMuted(getParticipant1(), false);
     }
 
     /**
@@ -163,10 +163,10 @@ public class StopVideoTest
     {
         getParticipant2().getToolbar().clickVideoMuteButton();
 
-        getParticipant1().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant1(), false);
-        getParticipant2().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant1(), false);
+        getParticipant1().getParticipantsPane()
+                .assertIsParticipantVideoMuted(getParticipant1(), false);
+        getParticipant2().getParticipantsPane()
+                .assertIsParticipantVideoMuted(getParticipant1(), false);
     }
 
     /**
@@ -189,8 +189,8 @@ public class StopVideoTest
 
         ensureTwoParticipants();
 
-        getParticipant2().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant1(), true);
+        getParticipant2().getParticipantsPane()
+                        .assertIsParticipantVideoMuted(getParticipant1(), true);
 
         // now lets start video for participant1
         startVideoOnParticipant1AndCheck();

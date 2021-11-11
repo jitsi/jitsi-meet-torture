@@ -4,8 +4,11 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.*;
+
+import static org.testng.Assert.fail;
 
 /**
  * Represents the participants pane in a particular {@link WebParticipant}.
@@ -79,6 +82,48 @@ public class ParticipantsPane
             MeetUIUtils.getAccessibilityCSSSelector(INVITE),
             true
         );
+    }
+
+    /**
+     * Checks if a participant has video muted.
+     *
+     * @param participantToCheck - the participant to be checked
+     * @param muted - whether the participant should have video muted or not
+     */
+    public void assertIsParticipantVideoMuted(WebParticipant participantToCheck, boolean muted)
+    {
+        boolean isOpen = isOpen();
+        String remoteParticipantEndpointId = participantToCheck.getEndpointId();
+        String iconXpath = "//div[@id='participant-item-" + remoteParticipantEndpointId
+                + "']//div[contains(@class, 'indicators')]//*[name()='svg' and @id='videoMuted']";
+        if (!isOpen)
+        {
+            open();
+        }
+        try
+        {
+            if (muted)
+            {
+                TestUtils.waitForElementByXPath(participant.getDriver(), iconXpath, 3);
+            }
+            else
+            {
+                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(participant.getDriver(), iconXpath, 3);
+            }
+        }
+        catch (TimeoutException exc)
+        {
+            fail(
+                    participantToCheck.getName() + (muted ? " should" : " shouldn't")
+                            + " be muted at this point, xpath: " + iconXpath);
+        }
+        finally
+        {
+            if (!isOpen)
+            {
+                close();
+            }
+        }
     }
 
     /**
@@ -303,6 +348,23 @@ public class ParticipantsPane
     {
         participant.getToolbar().clickParticipantsButton();
         waitForHidden();
+    }
+
+    /**
+     * Checks if the pane is open.
+     * @return {@code true} if it's open, {@code false} otherwise
+     */
+    private boolean isOpen()
+    {
+        try
+        {
+            TestUtils.waitForElementBy(participant.getDriver(), By.className(PARTICIPANTS_PANE), 3);
+            return true;
+        }
+        catch (TimeoutException ex)
+        {
+            return false;
+        }
     }
 
     /**

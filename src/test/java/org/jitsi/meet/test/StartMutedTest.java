@@ -153,21 +153,9 @@ public class StartMutedTest
                     "config.p2p.enabled=true");
         ensureTwoParticipants(url, url);
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            participant1.getDriver(),
-            participant2.getDriver(),
-            true,
-            true,
-            "participant2"
-        );
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
 
-        MeetUIUtils.assertMuteIconIsDisplayed(
-            participant2.getDriver(),
-            participant1.getDriver(),
-            true,
-            true,
-            "participant1"
-        );
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
 
         MeetUIUtils.waitsForLargeVideoSwitch(
             participant1.getDriver(),
@@ -241,8 +229,7 @@ public class StartMutedTest
 
         getParticipant2().getFilmstrip()
             .assertAudioMuteIcon(getParticipant2(), true);
-        getParticipant2().getFilmstrip()
-            .assertVideoMuteIcon(getParticipant2(), true);
+        getParticipant2().getParticipantsPane().assertIsParticipantVideoMuted(getParticipant2(), true);
 
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
@@ -251,6 +238,6 @@ public class StartMutedTest
             true);
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
-        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
     }
 }
