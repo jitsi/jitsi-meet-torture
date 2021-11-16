@@ -225,7 +225,7 @@ public class MuteTest
      * Run MuteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
      */
      @Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
-    public void MuteAfterJoinCanShareAndUnmute()
+    public void muteAfterJoinCanShareAndUnmute()
     {
         muteParticipant1BeforeParticipant2JoinsAndScreenshare("true");
         muteParticipant1BeforeParticipant2JoinsAndScreenshare("false");
@@ -247,12 +247,18 @@ public class MuteTest
 
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = joinSecondParticipant(url2);
-        participant2.waitToJoinMUC();
-        participant2.waitForIceConnected();
-        participant2.waitForSendReceiveData(true, false);
 
-        // Wait for the media to switch over to the p2p connection.
         TestUtils.waitMillis(2000);
+
+        // Wait for the media to switch over to the p2p connection in the p2p test.
+        if (enableP2p.equals("true"))
+        {
+            MeetUtils.waitForP2PIceConnected(participant1.getDriver());
+        } else
+        {
+            participant2.waitForIceConnected();
+        }
+        participant2.waitForSendReceiveData(true, false);
 
         // Check if p1 appears video muted on p2.
         participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
