@@ -727,6 +727,11 @@ public class IFrameAPITest
     @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
     public void testFunctionIsModerationOn()
     {
+        if (!this.isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
