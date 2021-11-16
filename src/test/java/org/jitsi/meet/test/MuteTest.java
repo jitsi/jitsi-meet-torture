@@ -248,13 +248,12 @@ public class MuteTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = joinSecondParticipant(url2);
 
-        TestUtils.waitMillis(2000);
-
         // Wait for the media to switch over to the p2p connection in the p2p test.
         if (enableP2p.equals("true"))
         {
             MeetUtils.waitForP2PIceConnected(participant1.getDriver());
-        } else
+        }
+        else
         {
             participant2.waitForIceConnected();
         }
