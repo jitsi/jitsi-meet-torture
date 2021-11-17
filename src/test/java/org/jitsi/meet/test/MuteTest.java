@@ -251,6 +251,7 @@ public class MuteTest
         if (!participant1.getType().isFirefox() || enableP2p.equals("false"))
         {
             WebParticipant participant2 = joinSecondParticipant(url2);
+            participant2.waitToJoinMUC();
 
             // Wait for the media to switch over to the p2p connection in the p2p test.
             if (enableP2p.equals("true"))
