@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-
 import org.jitsi.meet.test.pageobjects.web.BreakoutRoomsList;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.util.TestUtils;
@@ -27,7 +26,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -234,7 +233,7 @@ public class BreakoutRoomsTest
                             && rooms.get(1).getParticipantsCount() == 1;
                 });
 
-//        // close the first room
+        // close the first room
         BreakoutRoomsList.BreakoutRoom room = roomsList.getRooms().get(0);
         room.closeRoom();
 
@@ -243,11 +242,19 @@ public class BreakoutRoomsTest
                 roomsList.getRooms().size() == 2
                         && roomsList.getRooms().get(0).getParticipantsCount() == 0);
 
-        // the third participant should see two participants in the main room
-        TestUtils.waitForCondition(participant3.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
+        // there should be two participants in the main room, either p2 or p3 got moved to the main room
+        List<WebParticipant> participants = Arrays.asList(participant2, participant3);
+        participants.forEach(p ->
         {
-            BreakoutRoomsList.BreakoutRoom mainRoom = participant3.getBreakoutRoomsList().getRooms().get(0);
-            return mainRoom.getName().trim().equals(MAIN_ROOM_NAME) && mainRoom.getParticipantsCount() == 2;
+            TestUtils.waitForCondition(p.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
+            {
+                BreakoutRoomsList.BreakoutRoom pRoom = p.getBreakoutRoomsList().getRooms().get(0);
+                if (pRoom.getName().trim().equals(MAIN_ROOM_NAME))
+                {
+                    return pRoom.getParticipantsCount() == 2;
+                }
+                return pRoom.getParticipantsCount() == 0;
+            }, 500);
         });
     }
 
