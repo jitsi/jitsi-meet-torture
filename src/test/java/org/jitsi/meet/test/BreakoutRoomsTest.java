@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.BreakoutRoomsList;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.util.TestUtils;
@@ -262,15 +263,17 @@ public class BreakoutRoomsTest
     public void testSendParticipantToRoom()
     {
         hangUpAllParticipants();
-        ensureTwoParticipants();
+        // because the participants rejoin so fast, the meeting is not properly ended,
+        // so the previous breakout rooms would still be there.
+        // To avoid this issue we use a different meeting
+        JitsiMeetUrl url = getJitsiMeetUrl().setRoomName("random-room-name");
+        ensureTwoParticipants(url, url);
 
         ParticipantsPane pane = participant1.getParticipantsPane();
         pane.open();
         BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
 
-        // because the participants rejoin so fast, the meeting is not properly ended,
-        // so the previous breakout rooms are still there. We delete them here and check
-        roomsList.getRooms().forEach(room -> room.removeRoom());
+        // there should be no breakout rooms
         TestUtils.waitForCondition(participant1.getDriver(), 5,
                 (ExpectedCondition<Boolean>) d -> roomsList.getRooms().size() == 0);
 
