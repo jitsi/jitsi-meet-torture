@@ -208,6 +208,7 @@ public class ParticipantsPane
     public void clickContextMenuButton()
     {
         WebDriver driver = participant.getDriver();
+        TestUtils.waitForElementBy(participant.getDriver(), By.id(CONTEXT_MENU), 3);
         WebElement contextMenuButton
                 = driver.findElement(By.id(CONTEXT_MENU));
 
