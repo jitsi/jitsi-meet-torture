@@ -134,7 +134,7 @@ public class DisplayNameTest
         WebParticipant participant2 = getParticipant2();
         String defaultDisplayName =
             (String) participant1.executeScript(
-                    "return config.defaultRemoteDisplayName;");
+                    "return interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;");
 
         // check on first browser
         checkRemoteVideoForName(
