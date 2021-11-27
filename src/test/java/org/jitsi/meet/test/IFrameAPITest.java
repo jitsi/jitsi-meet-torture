@@ -121,7 +121,7 @@ public class IFrameAPITest
         String domain;
         try
         {
-            domain = iFrameUrl.getHost();
+            domain = iFrameUrl.getHostWithPort();
         }
         catch (MalformedURLException e)
         {
