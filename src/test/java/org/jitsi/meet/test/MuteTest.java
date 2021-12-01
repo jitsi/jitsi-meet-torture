@@ -222,9 +222,10 @@ public class MuteTest
     }
 
     /**
-     * Run MuteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
+     * Run muteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
+     * Disabled for now as it fails from time to time.
      */
-     @Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
+    //@Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
     public void muteAfterJoinCanShareAndUnmute()
     {
         muteParticipant1BeforeParticipant2JoinsAndScreenshare("true");
