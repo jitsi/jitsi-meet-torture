@@ -20,7 +20,6 @@ public class SettingsDialog
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me']";
     private final static String MORE_TAB_CONTENT = ".more-tab";
-    private final static String MODERATOR_TAB_CONTENT = ".moderator-tab";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
     private final static String SETTINGS_DIALOG_CONTENT = ".settings-pane";
     private final static String START_AUDIO_MUTED_CHECKBOX
@@ -29,8 +28,6 @@ public class SettingsDialog
         = "[name='start-video-muted']";
     private final static String X_PATH_MORE_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
-    private final static String X_PATH_MODERATOR_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//*[text()='Moderator']";
     private final static String X_PATH_PROFILE_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='Profile']";
 
@@ -94,15 +91,7 @@ public class SettingsDialog
      */
     public boolean isFollowMeDisplayed()
     {
-        try
-        {
-            openModeratorTab();
-        }
-        catch (Exception e)
-        {
-            // if there is no access to the Moderator tab the settings in it won't be displayed
-            return false;
-        }
+        openMoreTab();
 
         WebDriver driver = participant.getDriver();
         List<WebElement> followMeCheckboxes
@@ -121,19 +110,6 @@ public class SettingsDialog
         TestUtils.waitForElementBy(
             participant.getDriver(),
             By.cssSelector(MORE_TAB_CONTENT),
-            5);
-    }
-
-    /**
-     * Selects the Moderator tab to be displayed.
-     */
-    public void openModeratorTab()
-    {
-        openTab(X_PATH_MODERATOR_TAB);
-
-        TestUtils.waitForElementBy(
-            participant.getDriver(),
-            By.cssSelector(MODERATOR_TAB_CONTENT),
             5);
     }
 
@@ -161,7 +137,7 @@ public class SettingsDialog
      */
     public void setFollowMe(boolean enable)
     {
-        openModeratorTab();
+        openMoreTab();
         setCheckbox(FOLLOW_ME_CHECKBOX, enable);
     }
 
@@ -170,7 +146,7 @@ public class SettingsDialog
      */
     public void setStartAudioMuted(boolean enable)
     {
-        openModeratorTab();
+        openMoreTab();
         setCheckbox(START_AUDIO_MUTED_CHECKBOX, enable);
     }
 
@@ -179,7 +155,7 @@ public class SettingsDialog
      */
     public void setStartVideoMuted(boolean enable)
     {
-        openModeratorTab();
+        openMoreTab();
         setCheckbox(START_VIDEO_MUTED_CHECKBOX, enable);
     }
 
