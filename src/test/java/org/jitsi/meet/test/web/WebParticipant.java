@@ -199,7 +199,7 @@ public class WebParticipant extends Participant<WebDriver>
         {
             // let's wait for loading and switch to that iframe so we can continue
             // with regular tests
-            WebDriverWait wait = new WebDriverWait(driver, 10);
+            WebDriverWait wait = new WebDriverWait(driver, 60);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(conferenceUrl.getIframeToNavigateTo())));
         }

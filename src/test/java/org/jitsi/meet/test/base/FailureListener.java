@@ -357,6 +357,7 @@ public class FailureListener
         {
             try
             {
+                TestUtils.print("Saving browser logs for:" + p.getName());
                 saveBrowserLogs(p, fileNamePrefix, "-console-" + p.getName(), ".log");
             }
             catch(Throwable e)

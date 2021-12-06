@@ -167,7 +167,7 @@ public class IFrameAPITest
         if (iFrameUrl.getIframeToNavigateTo() != null)
         {
             // let's wait for switch to that iframe, so we can continue with regular tests
-            WebDriverWait wait = new WebDriverWait(driver, 10);
+            WebDriverWait wait = new WebDriverWait(driver, 60);
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(iFrameUrl.getIframeToNavigateTo())));
         }
