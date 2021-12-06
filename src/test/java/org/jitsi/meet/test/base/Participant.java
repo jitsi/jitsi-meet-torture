@@ -514,6 +514,17 @@ public abstract class Participant<T extends WebDriver>
         catch(Exception e)
         {
             Logger.getGlobal().log(Level.SEVERE, "Failed to saveHtmlSource to:" + fileName, e);
+
+            try
+            {
+                // will try the main page
+                FileUtils.openOutputStream(new File(outputDir, fileName))
+                    .write(driver.getPageSource().replace(">", ">\n").getBytes());
+            }
+            catch(Exception ex)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
