@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+import java.util.logging.*;
 
 /**
  * The participant instance holding the {@link WebDriver}.
@@ -497,23 +498,22 @@ public abstract class Participant<T extends WebDriver>
      */
     public void saveHtmlSource(File outputDir, String fileName)
     {
-        if (getMeetUrl().getIframeToNavigateTo() != null)
+        try
         {
-            // let's wait for switch to that iframe, so we can save the correct page
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-                By.id(getMeetUrl().getIframeToNavigateTo())));
-        }
+            if (getMeetUrl().getIframeToNavigateTo() != null)
+            {
+                // let's wait for switch to that iframe, so we can save the correct page
+                WebDriverWait wait = new WebDriverWait(driver, 10);
+                wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+                    By.id(getMeetUrl().getIframeToNavigateTo())));
+            }
 
-        try(FileOutputStream fOut
-                = FileUtils.openOutputStream(
-                        new File(outputDir, fileName)))
-        {
-            fOut.write(driver.getPageSource().replace(">", ">\n").getBytes());
+            FileUtils.openOutputStream(new File(outputDir, fileName))
+                .write(driver.getPageSource().replace(">", ">\n").getBytes());
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Failed to saveHtmlSource to:" + fileName, e);
         }
     }
 
