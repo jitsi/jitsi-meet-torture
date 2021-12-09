@@ -107,19 +107,19 @@ public class BreakoutRoomsTest
 
         // there should be no breakout rooms initially
         TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRooms().size() == 0);
+                roomsList.getRoomsCount() == 0);
 
         // add one breakout room
         pane.addBreakoutRoom();
 
         // there should be one breakout room with no participants
         TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRooms().size() == 1 && roomsList.getRooms().get(0).getParticipantsCount() == 0);
+                roomsList.getRoomsCount() == 1 && roomsList.getRooms().get(0).getParticipantsCount() == 0);
 
         // second participant should also see one breakout room
         participant2.getParticipantsPane().open();
         TestUtils.waitForCondition(participant2.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                participant2.getBreakoutRoomsList().getRooms().size() == 1);
+                participant2.getBreakoutRoomsList().getRoomsCount() == 1);
     }
 
     @Test(dependsOnMethods = { "testAddBreakoutRoom" })
@@ -129,14 +129,14 @@ public class BreakoutRoomsTest
 
         // there should be one breakout room
         TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRooms().size() == 1);
+                roomsList.getRoomsCount() == 1);
 
         // join the room
         roomsList.getRooms().get(0).joinRoom();
 
         // the participant should see the main room as the only breakout room
         TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRooms().size() == 1
+                roomsList.getRoomsCount() == 1
                         && roomsList.getRooms().get(0).getName().trim().equals(MAIN_ROOM_NAME));
 
         // the second participant should see one participant in the breakout room
@@ -176,11 +176,11 @@ public class BreakoutRoomsTest
 
         // there should be no breakout rooms
         TestUtils.waitForCondition(participant1.getDriver(), 5,
-                (ExpectedCondition<Boolean>) d -> roomsList.getRooms().size() == 0);
+                (ExpectedCondition<Boolean>) d -> roomsList.getRoomsCount() == 0);
 
         // the second participant should also see no breakout rooms
         TestUtils.waitForCondition(participant2.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                participant2.getBreakoutRoomsList().getRooms().size() == 0);
+                participant2.getBreakoutRoomsList().getRoomsCount() == 0);
     }
 
     @Test(dependsOnMethods = { "testRemoveRoom" })
@@ -198,7 +198,7 @@ public class BreakoutRoomsTest
 
         // there should be two breakout rooms
         TestUtils.waitForCondition(participant1.getDriver(), 5,
-                (ExpectedCondition<Boolean>) d -> roomsList.getRooms().size() == 2);
+                (ExpectedCondition<Boolean>) d -> roomsList.getRoomsCount() == 2);
 
         // auto assign participants to rooms
         pane.autoAssignToBreakoutRooms();
@@ -240,7 +240,7 @@ public class BreakoutRoomsTest
 
         // there should be two rooms and first one should be empty
         TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRooms().size() == 2
+                roomsList.getRoomsCount() == 2
                         && roomsList.getRooms().get(0).getParticipantsCount() == 0);
 
         // there should be two participants in the main room, either p2 or p3 got moved to the main room
@@ -275,7 +275,7 @@ public class BreakoutRoomsTest
 
         // there should be no breakout rooms
         TestUtils.waitForCondition(participant1.getDriver(), 5,
-                (ExpectedCondition<Boolean>) d -> roomsList.getRooms().size() == 0);
+                (ExpectedCondition<Boolean>) d -> roomsList.getRoomsCount() == 0);
 
         // add one breakout room
         pane.addBreakoutRoom();

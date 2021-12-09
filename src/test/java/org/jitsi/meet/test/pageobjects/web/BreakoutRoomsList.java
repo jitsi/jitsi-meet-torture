@@ -54,6 +54,21 @@ public class BreakoutRoomsList
         this.participant = participant;
     }
 
+    public int getRoomsCount()
+    {
+        try
+        {
+            TestUtils.waitForDisplayedElementByID(participant.getDriver(), BREAKOUT_ROOMS_LIST_ID, 5);
+        }
+        catch(TimeoutException ex)
+        {
+            // if the list is missing return empty list of rooms
+            Logger.getGlobal().log(Level.WARNING, "No breakout rooms");
+            return 0;
+        }
+        return participant.getDriver().findElements(By.className(BREAKOUT_ROOMS_CLASS)).size();
+    }
+
     public List<BreakoutRoom> getRooms()
     {
         List<BreakoutRoom> rooms = new ArrayList<>();
