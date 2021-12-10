@@ -118,30 +118,50 @@ public class Notifications
     }
 
     /**
-     * Closes a specific notification.
+     * Returns the notification if found or null.
+     * @param testId the testId to search for.
+     * @return the web element found or null.
+     */
+    private WebElement getLobbyNotificationByTestId(String testId)
+    {
+        WebDriver driver = this.participant.getDriver();
+        List<WebElement> lobbyNotifications = driver.findElements(ByTestId.testId(LOBBY_NOTIFICATIONS_TITLE_TEST_ID));
+
+        return lobbyNotifications.stream()
+            .filter(webElement -> webElement.findElements(ByTestId.testId(testId)).size() > 0)
+            .findFirst().orElse(null);
+    }
+
+    /**
+     * Closes a specific lobby notification.
      * @param testId the test id for the notification to close.
      */
-    private void close(String testId)
+    private void closeLobbyNotification(String testId)
     {
         WebDriver driver = this.participant.getDriver();
         TestUtils.waitForElementBy(driver, ByTestId.testId(testId), 3);
 
-        List<WebElement> lobbyNotifications
-            = driver.findElements(ByTestId.testId(LOBBY_NOTIFICATIONS_TITLE_TEST_ID));
-
-        WebElement notification = lobbyNotifications.stream()
-            .filter(webElement -> webElement.findElements(ByTestId.testId(testId)).size() > 0)
-            .findFirst().orElse(null);
+        WebElement notification = getLobbyNotificationByTestId(testId);
 
         if (notification != null)
         {
-            // wait for the element to be available (notification maybe still animating)
-            TestUtils.waitForCondition(driver, 2, d ->
-                !notification.findElements(By.tagName("button")).isEmpty());
+            try
+            {
+                // wait for the element to be available (notification maybe still animating)
+                TestUtils.waitForCondition(driver, 2, d ->
+                    !notification.findElements(By.tagName("button")).isEmpty());
 
-            WebElement closeButton = notification.findElement(By.tagName("button"));
+                WebElement closeButton = notification.findElement(By.tagName("button"));
 
-            new Actions(driver).moveToElement(closeButton).click().perform();
+                new Actions(driver).moveToElement(closeButton).click().perform();
+            }
+            catch(StaleElementReferenceException ex)
+            {
+                // retries closing the notification
+                WebElement updatedNotification = getLobbyNotificationByTestId(testId);
+                WebElement closeButton = updatedNotification.findElement(By.tagName("button"));
+                new Actions(driver).moveToElement(closeButton).click().perform();
+            }
         }
         else
         {
@@ -163,7 +183,7 @@ public class Notifications
      */
     public void closeLobbyEnabled()
     {
-        close(LOBBY_ENABLED_TEST_ID);
+        closeLobbyNotification(LOBBY_ENABLED_TEST_ID);
     }
 
     /**
@@ -180,7 +200,7 @@ public class Notifications
      */
     public void closeLobbyParticipantAccessDenied()
     {
-        close(LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID);
+        closeLobbyNotification(LOBBY_PARTICIPANT_ACCESS_DENIED_TEST_ID);
     }
 
     /**
@@ -197,7 +217,7 @@ public class Notifications
      */
     public void closeLobbyParticipantAccessGranted()
     {
-        close(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
+        closeLobbyNotification(LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID);
     }
 
     /**
