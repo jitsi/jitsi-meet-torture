@@ -19,6 +19,7 @@ public class SettingsDialog
         = "#setDisplayName";
     private final static String EMAIL_FIELD = "#setEmail";
     private final static String FOLLOW_ME_CHECKBOX = "[name='follow-me']";
+    private final static String HIDE_SELF_VIEW_CHECKBOX = "[name='disableSelfView']";
     private final static String MORE_TAB_CONTENT = ".more-tab";
     private final static String MODERATOR_TAB_CONTENT = ".moderator-tab";
     private final static String SETTINGS_DIALOG = ".settings-dialog";
@@ -143,6 +144,15 @@ public class SettingsDialog
     public void openProfileTab()
     {
        openTab(X_PATH_PROFILE_TAB);
+    }
+
+    /**
+     * Sets the option for hiding the self view.
+     */
+    public void setHideSelfView(boolean enable)
+    {
+        openProfileTab();
+        setCheckbox(HIDE_SELF_VIEW_CHECKBOX, enable);
     }
 
     /**

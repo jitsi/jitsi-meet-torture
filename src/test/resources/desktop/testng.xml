@@ -71,6 +71,11 @@
             <class name="org.jitsi.meet.test.DialInAudioTest" />
         </classes>
     </test>
+    <test name="DisableSelfViewTest">
+        <classes>
+            <class name="org.jitsi.meet.test.DisableSelfViewTest" />
+        </classes>
+    </test>
     <test name="DisplayNameTest">
         <classes>
             <class name="org.jitsi.meet.test.DisplayNameTest" />
