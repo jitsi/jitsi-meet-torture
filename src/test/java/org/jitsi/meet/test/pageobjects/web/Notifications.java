@@ -79,6 +79,16 @@ public class Notifications
     private static final String ASK_TO_UNMUTE_NOTIFICATION_ID = "notify.hostAskedUnmute";
 
     /**
+     * The test id of the notification shown to participant when the self view is hidden.
+     */
+    private static final String REENABLE_SELF_VIEW_NOTIFICATION_ID = "notify.selfViewTitle";
+
+    /**
+     * The id of the close button of the notification shown to participant when the self view is hidden.
+     */
+    private static final String REENABLE_SELF_VIEW_CLOSE_NOTIFICATION = "notify.selfViewTitle-dismiss";
+
+    /**
      * The id of the close button of the notification shown to participant when moderator asks to unmute.
      */
     private static final String ASK_TO_UNMUTE_CLOSE_NOTIFICATION = "notify.hostAskedUnmute-dismiss";
@@ -261,6 +271,29 @@ public class Notifications
     public boolean hasAskToUnmuteNotification()
     {
         return hasNotification(ASK_TO_UNMUTE_NOTIFICATION_ID);
+    }
+
+    /**
+     * The notification on participants page when the self view is hidden.
+     * @return the notification on participants page when the self view is hidden.
+     */
+    public boolean hasReenableSelfViewNotification()
+    {
+        return hasNotification(REENABLE_SELF_VIEW_NOTIFICATION_ID);
+    }
+
+    /**
+     * Closes the notification for the self view is hidden.
+     */
+    public void closeReeanbleSelfViewNotification()
+    {
+        WebDriver driver = participant.getDriver();
+        TestUtils.waitForCondition(driver, 2, d ->
+                !d.findElements(ByTestId.testId(REENABLE_SELF_VIEW_CLOSE_NOTIFICATION)).isEmpty());
+
+        WebElement closeButton = driver.findElement(ByTestId.testId(REENABLE_SELF_VIEW_CLOSE_NOTIFICATION));
+
+        new Actions(driver).moveToElement(closeButton).click().perform();
     }
 
     /**
