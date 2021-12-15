@@ -552,7 +552,7 @@ public class IFrameAPITest
         participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
         // only the third is unmuted
-        MeetUIUtils.waitForDominantspeaker(driver1, endpoint3Id);
+        MeetUIUtils.waitForDominantSpeaker(driver1, endpoint3Id);
 
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1, setLocalLargeCommand);
@@ -683,7 +683,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
-        participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
 
         switchToIframeAPI(driver1);
         result = getAPIAudioAndVideoState.apply(driver1);
@@ -709,7 +709,7 @@ public class IFrameAPITest
 
         switchToMeetContent(this.iFrameUrl, driver1);
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
-        participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
     }
 
     /**

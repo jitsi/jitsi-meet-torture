@@ -35,16 +35,4 @@ public interface Filmstrip<T extends Participant>
      * of the "mute" icon; otherwise, it will assert its absence.
      */
     public void assertAudioMuteIcon(T participantToCheck, boolean isDisplayed);
-
-    /**
-     * Asserts that {@code participant} shows or doesn't show the
-     * video mute icon for the conference participant identified by
-     * {@code participantToCheck}.
-     *
-     * @param participantToCheck the {@code Participant} for whom we're
-     * checking the status of video muted icon.
-     * @param isDisplayed if {@code true}, the method will assert the presence
-     * of the "mute" icon; otherwise, it will assert its absence.
-     */
-    public void assertVideoMuteIcon(T participantToCheck, boolean isDisplayed);
 }

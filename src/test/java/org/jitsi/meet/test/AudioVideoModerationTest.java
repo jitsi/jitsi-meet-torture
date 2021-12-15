@@ -310,8 +310,8 @@ public class AudioVideoModerationTest
         // stop video and check
         participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
 
-        participant1.getFilmstrip().assertVideoMuteIcon(participant2, true);
-        participant2.getFilmstrip().assertVideoMuteIcon(participant2, true);
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
 
         participant2.getNotifications().closeRemoteVideoMuteNotification();
 

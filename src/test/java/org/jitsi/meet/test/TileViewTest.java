@@ -196,7 +196,7 @@ public class TileViewTest
         getParticipant1().getToolbar().clickAudioMuteButton();
         getParticipant2().getToolbar().clickAudioMuteButton();
 
-        MeetUIUtils.waitForDominantspeaker(driver3, participant2EndpointId);
+        MeetUIUtils.waitForDominantSpeaker(driver3, participant2EndpointId);
 
         // check video of participant 2 should be received
         MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, true);

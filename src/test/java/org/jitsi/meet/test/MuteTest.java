@@ -266,7 +266,7 @@ public class MuteTest
             participant2.waitForSendReceiveData(true, false);
 
             // Check if p1 appears video muted on p2.
-            participant2.getFilmstrip().assertVideoMuteIcon(participant1, true);
+            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
 
             // Start desktop share.
             participant1.getToolbar().clickDesktopSharingButton();
@@ -277,8 +277,9 @@ public class MuteTest
             // Stop desktop share and unmute video and check for video again.
             participant1.getToolbar().clickDesktopSharingButton();
 
+            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
             participant1.getToolbar().clickVideoMuteButton();
-            participant2.getFilmstrip().assertVideoMuteIcon(participant1, false);
+            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
         }
     }
