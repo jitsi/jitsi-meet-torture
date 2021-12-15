@@ -303,17 +303,38 @@ public class Notifications
     }
 
     /**
+     * Closes a notification by specifying a testId.
+     * @param testId the testId for the notification to close.
+     */
+    private void closeNotificationByTestId(String testId)
+    {
+        try
+        {
+            WebDriver driver = participant.getDriver();
+            TestUtils.waitForCondition(driver, 5, d -> !d.findElements(ByTestId.testId(testId)).isEmpty());
+
+            // let's give time for the animation, or we will miss the button click for closings
+            TestUtils.waitMillis(200);
+
+            WebElement closeButton = driver.findElement(ByTestId.testId(testId));
+            new Actions(driver).moveToElement(closeButton).click().perform();
+
+            TestUtils.waitForCondition(driver, 2, d ->
+                d.findElements(ByTestId.testId(testId)).isEmpty());
+        }
+        catch(TimeoutException ex)
+        {
+            // if notification is not found it is closed
+            TestUtils.print("No notification found for:" + testId + " exception:" + ex.getMessage());
+        }
+    }
+
+    /**
      * Closes the notification for the self view is hidden.
      */
     public void closeReeanbleSelfViewNotification()
     {
-        WebDriver driver = participant.getDriver();
-        TestUtils.waitForCondition(driver, 2, d ->
-                !d.findElements(ByTestId.testId(REENABLE_SELF_VIEW_CLOSE_NOTIFICATION)).isEmpty());
-
-        WebElement closeButton = driver.findElement(ByTestId.testId(REENABLE_SELF_VIEW_CLOSE_NOTIFICATION));
-
-        new Actions(driver).moveToElement(closeButton).click().perform();
+        closeNotificationByTestId(REENABLE_SELF_VIEW_CLOSE_NOTIFICATION);
     }
 
     /**
@@ -321,13 +342,7 @@ public class Notifications
      */
     public void closeAskToUnmuteNotification()
     {
-        WebDriver driver = participant.getDriver();
-        TestUtils.waitForCondition(driver, 2, d ->
-            !d.findElements(ByTestId.testId(ASK_TO_UNMUTE_CLOSE_NOTIFICATION)).isEmpty());
-
-        WebElement closeButton = driver.findElement(ByTestId.testId(ASK_TO_UNMUTE_CLOSE_NOTIFICATION));
-
-        new Actions(driver).moveToElement(closeButton).click().perform();
+        closeNotificationByTestId(ASK_TO_UNMUTE_CLOSE_NOTIFICATION);
     }
 
     /**
@@ -335,26 +350,7 @@ public class Notifications
      */
     public void closeRemoteMuteNotification()
     {
-        try
-        {
-            WebDriver driver = participant.getDriver();
-            TestUtils.waitForCondition(driver, 5, d ->
-                !d.findElements(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION)).isEmpty());
-
-            // let's give time for the animation, or we will miss the button click for closings
-            TestUtils.waitMillis(200);
-
-            WebElement closeButton = driver.findElement(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION));
-            new Actions(driver).moveToElement(closeButton).click().perform();
-
-            TestUtils.waitForCondition(driver, 2, d ->
-                d.findElements(ByTestId.testId(REMOTELY_MUTED_CLOSE_NOTIFICATION)).isEmpty());
-        }
-        catch(TimeoutException ex)
-        {
-            // if notification is not found it is closed
-            TestUtils.print("No remote audio muted notification found:" + ex.getMessage());
-        }
+        closeNotificationByTestId(REMOTELY_MUTED_CLOSE_NOTIFICATION);
     }
 
     /**
@@ -362,25 +358,6 @@ public class Notifications
      */
     public void closeRemoteVideoMuteNotification()
     {
-        try
-        {
-            WebDriver driver = participant.getDriver();
-            TestUtils.waitForCondition(driver, 5, d ->
-                !d.findElements(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION)).isEmpty());
-
-            // let's give time for the animation, or we will miss the button click for closings
-            TestUtils.waitMillis(200);
-
-            WebElement closeButton = driver.findElement(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION));
-
-            new Actions(driver).moveToElement(closeButton).click().perform();
-            TestUtils.waitForCondition(driver, 2, d ->
-                d.findElements(ByTestId.testId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION)).isEmpty());
-        }
-        catch(TimeoutException ex)
-        {
-            // if notification is not found it is closed
-            TestUtils.print("No remote video muted notification found:" + ex.getMessage());
-        }
+        closeNotificationByTestId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION);
     }
 }
