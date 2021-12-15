@@ -147,8 +147,7 @@ public class DialInAudioTest
 
         if (!isDialInEnabled(participant))
         {
-            throw new SkipException(
-                "No dial in configuration detected. Disabling test.");
+            throw new SkipException("No dial in configuration detected. Disabling test.");
         }
 
         try
@@ -167,7 +166,7 @@ public class DialInAudioTest
             print("dial-in.test.no-pin");
         }
 
-        assertTrue(dialInPin.length() > 1);
+        assertTrue(dialInPin.length() > 1, "Dial-in pin should have length >1");
         print("Dial-in pin retrieved:" + dialInPin);
     }
 
