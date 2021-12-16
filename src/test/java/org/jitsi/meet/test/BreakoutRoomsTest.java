@@ -69,6 +69,7 @@ public class BreakoutRoomsTest
     {
         super.setupClass();
 
+//        ensureOneParticipant(getJitsiMeetUrl().appendConfig("config.p2p.enabled=true"));
         ensureOneParticipant();
         participant1 = getParticipant1();
 
@@ -94,6 +95,7 @@ public class BreakoutRoomsTest
             throw new SkipException("Skipping as breakout rooms are not supported.");
         }
 
+//        ensureTwoParticipants(null, getJitsiMeetUrl().appendConfig("config.p2p.enabled=true"));
         ensureTwoParticipants();
         participant2 = getParticipant2();
     }
@@ -191,6 +193,7 @@ public class BreakoutRoomsTest
 
         ParticipantsPane pane = participant1.getParticipantsPane();
         BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+        pane.open();
 
         // create two rooms
         pane.addBreakoutRoom();
@@ -212,6 +215,7 @@ public class BreakoutRoomsTest
                 });
 
         // the second participant should see one participant in the main room
+        participant2.getParticipantsPane().open();
         TestUtils.waitForCondition(participant2.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
                 {
                     BreakoutRoomsList.BreakoutRoom room = participant2.getBreakoutRoomsList().getRooms().get(0);

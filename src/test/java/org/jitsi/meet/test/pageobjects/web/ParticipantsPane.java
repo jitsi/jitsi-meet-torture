@@ -338,7 +338,16 @@ public class ParticipantsPane
     public void open()
     {
         participant.getToolbar().clickParticipantsButton();
-        waitForVisible();
+
+        try
+        {
+            waitForVisible();
+        }
+        catch(TimeoutException e)
+        {
+            participant.getToolbar().clickParticipantsButton();
+            waitForVisible();
+        }
     }
 
     /**
