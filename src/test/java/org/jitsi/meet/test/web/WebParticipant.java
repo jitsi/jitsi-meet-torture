@@ -90,7 +90,8 @@ public class WebParticipant extends Participant<WebDriver>
      * The javascript code which returns {@code true} if breakout rooms are supported.
      */
     private static final String BREAKOUT_ROOMS_SUPPORTED =
-        "return APP.store.getState()['features/base/conference'].conference?.getBreakoutRooms()?.isSupported()";
+        "return APP.store.getState()['features/base/conference'].conference?.getBreakoutRooms" +
+        " && APP.store.getState()['features/base/conference'].conference?.getBreakoutRooms()?.isSupported()";
 
     /**
      * The javascript code which returns {@code true} if the ICE connection

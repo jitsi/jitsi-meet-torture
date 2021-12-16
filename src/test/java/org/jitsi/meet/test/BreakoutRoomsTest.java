@@ -28,6 +28,7 @@ import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.logging.*;
 
 import static org.testng.Assert.*;
 
@@ -80,6 +81,7 @@ public class BreakoutRoomsTest
         catch(TimeoutException e)
         {
             cleanupClass();
+            Logger.getGlobal().info("Skipping as anonymous participants are not moderators.");
             throw new SkipException("Skipping as anonymous participants are not moderators.");
         }
 
@@ -91,6 +93,7 @@ public class BreakoutRoomsTest
         catch(TimeoutException e)
         {
             cleanupClass();
+            Logger.getGlobal().info("Skipping as breakout rooms are not supported.");
             throw new SkipException("Skipping as breakout rooms are not supported.");
         }
 
