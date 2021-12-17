@@ -78,9 +78,15 @@ public class ModeratedRoomsTest
         WebDriver driver = localParticipant.getDriver();
 
         // Open the remote video menu for that participant
+        WebElement thumbnail = driver.findElement(By.xpath("//span[@id='participant_"
+                + remoteParticipant.getEndpointId() + "']"));
+        Actions action1 = new Actions(driver);
+        action1.moveToElement(thumbnail);
+        action1.perform();
+
         WebElement menuElement = driver.findElement(By.xpath(
             "//span[@id='participant_" + remoteParticipant.getEndpointId()
-                + "']//span[contains(@class, 'remotevideomenu')]"));
+                + "']//span[@id='remotevideomenu']"));
 
         Actions action = new Actions(driver);
         action.moveToElement(menuElement);
@@ -90,19 +96,19 @@ public class ModeratedRoomsTest
         {
             // give time for the menu to appear
             TestUtils.waitForDisplayedElementByXPath(driver,
-                "//ul[@class='popupmenu']//a[contains(@class, 'kicklink')]",
+                "//div[@class='popover']//div[contains(@class, 'kicklink')]",
                 2);
             TestUtils.waitForDisplayedElementByXPath(driver,
-                "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
+                "//div[@class='popover']//div[contains(@class, 'mutelink')]",
                 2);
         }
         else
         {
             TestUtils.waitForNotDisplayedElementByXPath(driver,
-                "//ul[@class='popupmenu']//a[contains(@class, 'kicklink')]",
+                "//div[@class='popover']//div[contains(@class, 'kicklink')]",
                 2);
             TestUtils.waitForNotDisplayedElementByXPath(driver,
-                "//ul[@class='popupmenu']//a[contains(@class, 'mutelink')]",
+                "//div[@class='popover']//div[contains(@class, 'mutelink')]",
                 1);
         }
     }
