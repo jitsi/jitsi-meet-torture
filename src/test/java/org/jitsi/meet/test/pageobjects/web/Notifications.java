@@ -317,7 +317,17 @@ public class Notifications
             TestUtils.waitMillis(200);
 
             WebElement closeButton = driver.findElement(ByTestId.testId(testId));
-            new Actions(driver).moveToElement(closeButton).click().perform();
+
+            try
+            {
+                new Actions(driver).moveToElement(closeButton).click().perform();
+            }
+            catch(StaleElementReferenceException ex)
+            {
+                // let's try again
+                closeButton = driver.findElement(ByTestId.testId(testId));
+                new Actions(driver).moveToElement(closeButton).click().perform();
+            }
 
             TestUtils.waitForCondition(driver, 2, d ->
                 d.findElements(ByTestId.testId(testId)).isEmpty());
