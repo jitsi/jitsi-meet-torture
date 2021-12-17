@@ -15,18 +15,16 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.pageobjects.web.SettingsDialog;
-import org.jitsi.meet.test.util.TestUtils;
-import org.jitsi.meet.test.web.WebParticipant;
-import org.jitsi.meet.test.web.WebTestBase;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.testng.annotations.Test;
+import org.jitsi.meet.test.pageobjects.web.*;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
+import org.testng.annotations.*;
 
 /**
- * Tests the Breakout rooms functionality.
+ * Tests disable self view functionality.
  */
 public class DisableSelfViewTest
     extends WebTestBase
