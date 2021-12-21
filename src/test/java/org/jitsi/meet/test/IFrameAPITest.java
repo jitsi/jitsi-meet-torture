@@ -2207,4 +2207,39 @@ public class IFrameAPITest
             assertTrue(getParticipant1().getToolbar().hasButton(value), "Missing button:" + value);
         });
     }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#localsubject
+     *
+     * Test command local subject.
+     */
+    @Test(dependsOnMethods = { "testCustomButtons" })
+    public void testCommandLocalSubject()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver = participant1.getDriver();
+
+        switchToIframeAPI(driver);
+
+        String randomLocalSubject = "My Random Local Subject " + (int) (Math.random() * 1_000_000);
+        TestUtils.executeScript(driver,
+                "window.jitsiAPI.executeCommand('localSubject', '" + randomLocalSubject + "');");
+
+        String conferenceNameXpath = "//div[contains(@class,'subject-info-container')]"
+                + "//div[contains(@class,'subject-text--content')]";
+
+        switchToMeetContent(this.iFrameUrl, driver);
+
+        // waits for element to be available, displayed and with the correct text
+        ExpectedCondition<Boolean> expectedLocalSubject = d ->{
+            List<WebElement> res = driver.findElements(By.xpath(conferenceNameXpath));
+            return res.size() > 0 && res.get(0).isDisplayed() && res.get(0).getText().equals(randomLocalSubject);
+        };
+
+        TestUtils.waitForCondition(driver, 10, expectedLocalSubject);
+    }
 }
