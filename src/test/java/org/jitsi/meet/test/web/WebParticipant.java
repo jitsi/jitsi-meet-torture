@@ -57,7 +57,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.p2p.enabled=false"
             + "&config.p2p.useStunTurn=false"
             + "&config.pcStatsInterval=1500"
-            + "&config.prejoinPageEnabled=false"
+            + "&config.preJoinConfig.enabled=false"
             + (DISABLE_UNIFIED ? "&config.p2p.enableUnifiedOnChrome=false&config.enableUnifiedOnChrome=false" : "")
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
