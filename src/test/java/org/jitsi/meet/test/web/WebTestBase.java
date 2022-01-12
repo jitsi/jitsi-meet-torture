@@ -150,12 +150,17 @@ public class WebTestBase
     {
         ensureOneParticipant(participantOneMeetURL, participantOneOptions);
 
-        Participant participant
+        Participant participant1 = getParticipant1();
+        Participant participant2
             = joinParticipantAndWait(
                 1, participantTwoMeetURL, participantTwoOptions);
 
-        participant.waitForIceConnected();
-        participant.waitForSendReceiveData();
+        participant1.waitForIceConnected();
+        participant1.waitForSendReceiveData();
+
+        participant2.waitForIceConnected();
+        participant2.waitForSendReceiveData();
+
 
         // FIXME missing a comment on why is it needed here (in case someone
         // would want to come up with a proper fix).
