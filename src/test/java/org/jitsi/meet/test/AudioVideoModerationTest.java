@@ -342,7 +342,9 @@ public class AudioVideoModerationTest
         participantsPane.close();
 
         // join with second participant and check
-        ensureTwoParticipants();
+        WebParticipant participant2 = joinSecondParticipant();
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
 
         MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
         MeetUIUtils.toggleVideoAndCheck(participant2, participant1, true);
