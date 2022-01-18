@@ -225,8 +225,7 @@ public abstract class Participant<T extends WebDriver>
         }
         catch (Throwable t)
         {
-            // FIXME: use Logger ?
-            t.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Failed to cleanly close participant:" + getName(), t);
         }
     }
 
