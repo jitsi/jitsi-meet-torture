@@ -32,8 +32,8 @@ public class PreJoinTest
     public void testPreJoinWhenDisplayedNameRequired()
     {
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
-        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
-        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+        meetingUrl.removeFragmentParam("config.prejoinConfig.enabled");
+        meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
         meetingUrl.appendConfig("config.requireDisplayName=true");
 
         joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
@@ -58,8 +58,8 @@ public class PreJoinTest
     public void testPreJoinForRoomWithoutLobby()
     {
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
-        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
-        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+        meetingUrl.removeFragmentParam("config.prejoinConfig");
+        meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
 
         joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
         PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
@@ -77,8 +77,8 @@ public class PreJoinTest
     public void testJoinWithoutAudio()
     {
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
-        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
-        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+        meetingUrl.removeFragmentParam("config.prejoinConfig.enabled");
+        meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
 
         joinFirstParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
         PreJoinScreen preJoinScreen = getParticipant1().getPreJoinScreen();
@@ -123,8 +123,8 @@ public class PreJoinTest
 
         // now the second participant checks pre-join
         JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
-        meetingUrl.removeFragmentParam("config.prejoinPageEnabled");
-        meetingUrl.appendConfig("config.prejoinPageEnabled=true");
+        meetingUrl.removeFragmentParam("config.prejoinConfig.enabled");
+        meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
 
         joinSecondParticipant(meetingUrl);
 
