@@ -81,8 +81,7 @@ public class IFrameAPIFunctionsTest
             "return window.jitsiAPI.getDisplayName('" + endpointId1 + "');");
 
         // returns an array of participants, in this case just us
-        JsonObject participantsInfo
-            = new JsonParser().parse(s).getAsJsonArray().get(0).getAsJsonObject();
+        JsonObject participantsInfo = JsonParser.parseString(s).getAsJsonArray().get(0).getAsJsonObject();
 
         // check displayName from getParticipantsInfo, returned as "John Doe (me)"
         assertTrue(
@@ -111,7 +110,7 @@ public class IFrameAPIFunctionsTest
         settingsDialog.waitForDisplay();
         assertEquals(settingsDialog.getDisplayName(), newName);
 
-        // make sure we are not selecting local video so we mess up the pin tests later
+        // make sure we are not selecting local video, so we mess up the pin tests later
         MeetUIUtils.clickOnLocalVideo(driver);
 
         switchToIframeAPI(driver);
@@ -218,7 +217,7 @@ public class IFrameAPIFunctionsTest
 
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
-        // unpin second so we clear the state for next in line for testing
+        // unpin second, so we clear the state for next in line for testing
         SwitchVideoTest.unpinRemoteVideoAndTest(participant1, endpoint2Id);
     }
 
@@ -376,7 +375,7 @@ public class IFrameAPIFunctionsTest
     @Test(dependsOnMethods = { "testFunctionIsAudioOrVideoMuted" })
     public void testFunctionIsModerationOn()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -479,17 +478,17 @@ public class IFrameAPIFunctionsTest
         Function<WebDriver, Boolean[]> getAPIParticipantForceMutedState = d -> {
             TestUtils.executeScript(d, String.format(
                 "return window.jitsiAPI.isParticipantForceMuted('%s')" +
-                    ".then(r => window.jitsiAPI.testisAudioFroceMuted = r);",
+                    ".then(r => window.jitsiAPI.testisAudioForceMuted = r);",
                 endpointId2));
             TestUtils.executeScript(d, String.format(
                 "return window.jitsiAPI.isParticipantForceMuted('%s', 'video')" +
-                    ".then(r => window.jitsiAPI.testisVideoFroceMuted = r);",
+                    ".then(r => window.jitsiAPI.testisVideoForceMuted = r);",
                 endpointId2));
 
             boolean result1 = TestUtils.executeScriptAndReturnBoolean(d,
-                "return window.jitsiAPI.testisAudioFroceMuted;");
+                "return window.jitsiAPI.testisAudioForceMuted;");
             boolean result2 = TestUtils.executeScriptAndReturnBoolean(d,
-                "return window.jitsiAPI.testisVideoFroceMuted;");
+                "return window.jitsiAPI.testisVideoForceMuted;");
 
             return new Boolean[] { result1, result2 };
         };

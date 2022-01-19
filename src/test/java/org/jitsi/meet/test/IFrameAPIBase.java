@@ -83,11 +83,11 @@ public class IFrameAPIBase
             TestUtils.waitForCondition(getParticipant1().getDriver(), 2,
                 (ExpectedCondition<Boolean>) d -> getParticipant1().isModerator());
 
-            this.isModeratorSupported = true;
+            isModeratorSupported = true;
         }
         catch(TimeoutException e)
         {
-            this.isModeratorSupported = false;
+            isModeratorSupported = false;
         }
     }
 
@@ -185,7 +185,7 @@ public class IFrameAPIBase
         String result = TestUtils.executeScriptAndReturnString(driver,
             "return JSON.stringify(window.jitsiAPI.test." + eventName + ");");
 
-        return result == null ? null : new JsonParser().parse(result).getAsJsonObject();
+        return result == null ? null : JsonParser.parseString(result).getAsJsonObject();
     }
 
     /**

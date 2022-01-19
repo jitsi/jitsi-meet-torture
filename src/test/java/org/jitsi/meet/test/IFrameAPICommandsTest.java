@@ -121,7 +121,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandDisplayName"})
     public void testCommandPassword()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -160,7 +160,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandPassword"})
     public void testCommandToggleLobby()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -274,7 +274,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandStartStopShareVideo"})
     public void testCommandSubject()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -471,9 +471,14 @@ public class IFrameAPICommandsTest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
+
+            if (e == null )
+            {
+                return false;
+            }
+
             long handRaisedTimestamp = e.get("handRaised").getAsLong();
-            return e != null && e.get("id").getAsString().equals(endpointId1)
-                && handRaisedTimestamp > 0;
+            return e.get("id").getAsString().equals(endpointId1) && handRaisedTimestamp > 0;
         });
 
         TestUtils.executeScript(driver1,
@@ -488,9 +493,14 @@ public class IFrameAPICommandsTest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
+
+            if (e == null )
+            {
+                return false;
+            }
+
             long handRaisedTimestamp = e.get("handRaised").getAsLong();
-            return e != null && e.get("id").getAsString().equals(endpointId1)
-                && handRaisedTimestamp == 0;
+            return e.get("id").getAsString().equals(endpointId1) && handRaisedTimestamp == 0;
         });
 
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -507,9 +517,14 @@ public class IFrameAPICommandsTest
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d -> {
             JsonObject e = getEventResult(d, "raiseHandUpdated");
+
+            if (e == null )
+            {
+                return false;
+            }
+
             long handRaisedTimestamp = e.get("handRaised").getAsLong();
-            return e != null && e.get("id").getAsString().equals(endpointId2)
-                && handRaisedTimestamp > 0;
+            return e.get("id").getAsString().equals(endpointId2) && handRaisedTimestamp > 0;
         });
 
         switchToMeetContent(this.iFrameUrl, driver1);
@@ -603,7 +618,7 @@ public class IFrameAPICommandsTest
         String res = TestUtils.executeScriptAndReturnString(driver1,
             "return window.jitsiAPI.test.getContentSharing1;");
         assertNotNull(res);
-        assertEquals(new JsonParser().parse(res).getAsJsonArray().get(0).getAsString(), endpointId1);
+        assertEquals(JsonParser.parseString(res).getAsJsonArray().get(0).getAsString(), endpointId1);
 
         JsonObject sharingData = getEventResult(driver1, "screenSharingStatusChanged");
         assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing mst be on");
@@ -643,7 +658,7 @@ public class IFrameAPICommandsTest
         assertNotNull(res);
 
         List<String> resultIds = new ArrayList<>();
-        new JsonParser().parse(res).getAsJsonArray().forEach(el -> resultIds.add(el.getAsString()));
+        JsonParser.parseString(res).getAsJsonArray().forEach(el -> resultIds.add(el.getAsString()));
 
         assertTrue(resultIds.contains(endpointId2));
         assertTrue(resultIds.contains(endpointId3));
@@ -895,7 +910,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandSetLargeVideoParticipant"})
     public void testCommandMuteEveryone()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -974,7 +989,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandInitiateCancelPrivateChat"})
     public void testCommandKickParticipant()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -1139,7 +1154,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandSendChatMessage"})
     public void testCommandSetFollowMe()
     {
-        if (!this.isModeratorSupported)
+        if (!isModeratorSupported)
         {
             throw new SkipException("Moderation is required for this test.");
         }
@@ -1286,7 +1301,7 @@ public class IFrameAPICommandsTest
      *
      * Test command local subject.
      */
-    @Test(dependsOnMethods = { "testCustomButtons" })
+    @Test(dependsOnMethods = { "testCommandToggleVirtualBackgroundDialog" })
     public void testCommandLocalSubject()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
