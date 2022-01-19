@@ -31,14 +31,6 @@ import org.testng.annotations.*;
 public class StartMutedTest
     extends WebTestBase
 {
-    @Override
-    public void setupClass()
-    {
-        super.setupClass();
-
-        ensureOneParticipant();
-    }
-
     /**
      * Restarts the second participant tab and checks start muted checkboxes.
      * Test if the second participant is muted and participant1 is unmuted.
@@ -46,7 +38,11 @@ public class StartMutedTest
     @Test
     public void checkboxesTest()
     {
-        WebDriver driver1 = getParticipant1().getDriver();
+        ensureOneParticipant();
+
+        // we are seeing some UI crashes when clicking too early on the page
+        // and as it reloads, no logs are available to investigate
+        TestUtils.waitMillis(1000);
 
         WebParticipant participant1 = getParticipant1();
 
@@ -57,8 +53,6 @@ public class StartMutedTest
         settingsDialog.setStartAudioMuted(true);
         settingsDialog.setStartVideoMuted(true);
         settingsDialog.submit();
-
-        ensureOneParticipant();
 
         WebParticipant participant2 = joinSecondParticipant();
         participant2.waitToJoinMUC();
