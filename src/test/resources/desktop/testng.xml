@@ -112,9 +112,19 @@
             <class name="org.jitsi.meet.test.JibriTest" />
         </classes>
     </test>
-    <test name="IFrameAPITest">
+    <test name="IFrameAPIGeneral">
         <classes>
-            <class name="org.jitsi.meet.test.IFrameAPITest" />
+            <class name="org.jitsi.meet.test.IFrameAPIGeneral" />
+        </classes>
+    </test>
+    <test name="IFrameAPICommandsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.IFrameAPICommandsTest" />
+        </classes>
+    </test>
+    <test name="IFrameAPIFunctionsTest">
+        <classes>
+            <class name="org.jitsi.meet.test.IFrameAPIFunctionsTest" />
         </classes>
     </test>
     <test name="KickTest">
