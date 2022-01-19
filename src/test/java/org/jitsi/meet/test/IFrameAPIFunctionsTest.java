@@ -36,6 +36,14 @@ import static org.testng.Assert.*;
 public class IFrameAPIFunctionsTest
     extends IFrameAPIBase
 {
+    @Override
+    public void setupClass()
+    {
+        super.setupClass();
+
+        checkModerationSupported();
+    }
+
     /**
      * Functions testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#getparticipantsinfo

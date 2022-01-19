@@ -16,6 +16,14 @@ import static org.testng.Assert.*;
 public class IFrameAPIGeneral
     extends IFrameAPIBase
 {
+    @Override
+    public void setupClass()
+    {
+        super.setupClass();
+
+        checkModerationSupported();
+    }
+
     /**
      * Opens the iframe and executes SwitchVideoTest and MuteTest.
      *

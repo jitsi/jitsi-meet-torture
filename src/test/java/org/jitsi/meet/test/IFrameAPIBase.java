@@ -70,10 +70,16 @@ public class IFrameAPIBase
 
     protected static boolean isModeratorSupported = false;
 
-    @Override
-    public void setupClass()
+    /**
+     * Loads one/firsst participant and checks for moderator rights.
+     */
+    protected void checkModerationSupported()
     {
-        super.setupClass();
+        // if it is true there is no point of checking.
+        if (isModeratorSupported)
+        {
+            return;
+        }
 
         ensureOneParticipant();
 

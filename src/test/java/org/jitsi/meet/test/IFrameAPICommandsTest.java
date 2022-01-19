@@ -41,6 +41,14 @@ public class IFrameAPICommandsTest
      */
     private static final String APP_JS_PARTICIPANTS_COUNT = "return APP.conference._room.getParticipantCount();";
 
+    @Override
+    public void setupClass()
+    {
+        super.setupClass();
+
+        checkModerationSupported();
+    }
+
     /**
      * Commands testing:
      * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#displayname
