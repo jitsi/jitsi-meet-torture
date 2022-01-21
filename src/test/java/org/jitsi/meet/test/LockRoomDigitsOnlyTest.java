@@ -62,27 +62,13 @@ public class LockRoomDigitsOnlyTest
         assertFalse(securityDialog.isLocked());
 
         // Set a non-numeric password.
-        boolean gotValidationError = false;
-        try
-        {
-            securityDialog.addPassword("AAAAA");
-        }
-        catch (ValidationError e)
-        {
-            gotValidationError = true;
-        }
-        assertTrue(gotValidationError);
-    
-        // Wait for the dialog to settle while it auto close because of the validate error.
+        securityDialog.addPassword("AAAAA");
         TestUtils.waitMillis(1000);
-
-        assertFalse(securityDialog.isOpen());
-    
-        securityDialog.open();
-
         assertFalse(securityDialog.isLocked());
+        securityDialog.close();
 
         // Set a valid numeric password.
+        securityDialog.open();
         securityDialog.addPassword("12345");
         securityDialog.close();
 

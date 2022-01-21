@@ -145,7 +145,7 @@ public class LockRoomTest
         securityDialog.removePassword();
 
         // just in case wait
-        TestUtils.waitMillis(1000);
+        TestUtils.waitMillis(2000);
 
         assertFalse(securityDialog.isLocked());
     }
