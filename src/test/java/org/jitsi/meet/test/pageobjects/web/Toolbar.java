@@ -56,7 +56,7 @@ public class Toolbar
     public final static String SELECT_BACKGROUND = "Select Background";
     public final static String SETTINGS = "Toggle settings";
     public final static String SHARE_AUDIO = "Share audio";
-    public final static String SHARE_VIDEO = "Toggle YouTube video sharing";
+    public final static String SHARE_VIDEO = "Toggle video sharing";
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle speaker statistics";
     public final static String TILE_VIEW_BUTTON = "Toggle tile view";
