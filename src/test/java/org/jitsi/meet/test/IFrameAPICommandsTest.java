@@ -1337,4 +1337,445 @@ public class IFrameAPICommandsTest
 
         TestUtils.waitForCondition(driver, 10, expectedLocalSubject);
     }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#toggleparticipantspane
+     * <p>
+     * Function
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#isparticipantspaneopen
+     * <p>
+     * Test command toggleTileView and isParticipantsPaneOpen.
+     */
+    @Test(dependsOnMethods = {"testCommandLocalSubject"})
+    public void testCommandToggleParticipantsPane()
+    {
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+
+        // first checks that the participants pane is closed
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.isParticipantsPaneOpen()" +
+                        ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen1 = res);");
+        boolean isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isParticipantsPaneOpen1;");
+
+        // checks both the function and the UI
+        assertFalse(isParticipantsPaneOpen);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                participantsPane.isOpen() == false);
+
+        // then executes the command to open it
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('toggleParticipantsPane', true);");
+
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.isParticipantsPaneOpen()" +
+                        ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen2 = res);");
+        isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isParticipantsPaneOpen2;");
+
+        assertTrue(isParticipantsPaneOpen);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                participantsPane.isOpen() == true);
+
+        // executes the command to close it
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('toggleParticipantsPane', false);");
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.isParticipantsPaneOpen()" +
+                        ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen2 = res);");
+        isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
+                "return window.jitsiAPI.test.isParticipantsPaneOpen2;");
+
+        assertFalse(isParticipantsPaneOpen);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                participantsPane.isOpen() == false);
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#addbreakoutroom
+     * Function
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#listbreakoutrooms
+     * <p>
+     * Test command addBreakoutRoom and listBreakoutRooms.
+     */
+    @Test(dependsOnMethods = {"testCommandToggleParticipantsPane"})
+    public void testCommandAddBreakoutRoom()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+        String roomName = "testRoomName";
+
+        // checks that initially no breakout rooms are present
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 0);
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // attempts to add a breakout room
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        // checks the result
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 1);
+
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom', '" + roomName + "');");
+
+        // attempts to add another breakout room, this time with custom name
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 2);
+
+        String roomId1 = roomsList.getRooms().get(0).getId();
+        String roomId2 = roomsList.getRooms().get(1).getId();
+
+        // uses the function to list breakout rooms and retrieve room objects
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.listBreakoutRooms()" +
+                        ".then(res => window.jitsiAPI.test.breakoutRooms1 = JSON.stringify(res));");
+
+        String res = TestUtils.executeScriptAndReturnString(driver1,
+                "return window.jitsiAPI.test.breakoutRooms1;");
+        assertNotNull(res);
+        assertTrue(JsonParser.parseString(res).getAsJsonObject().has(roomId1));
+        assertEquals(JsonParser.parseString(res).getAsJsonObject().get(roomId2).getAsJsonObject()
+                .get("name").getAsString(), roomName);
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#joinbreakoutroom
+     * <p>
+     * Test command joinBreakoutRoom.
+     */
+    @Test(dependsOnMethods = {"testCommandAddBreakoutRoom"})
+    public void testCommandJoinBreakoutRoom()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // adds a breakout room to join later
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                participant1.getBreakoutRoomsList().getRoomsCount() == 1);
+
+        // saves room id to use in command
+        String roomId = roomsList.getRooms().get(0).getId();
+
+        // attempts to join the newly created breakout room
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('joinBreakoutRoom', '" + roomId + "');");
+
+        // listens to conference joined event to check room type flag
+        TestUtils.waitForCondition(driver1, 3, (ExpectedCondition<Boolean>) d -> {
+            JsonObject event = getEventResult(driver1, "videoConferenceJoined");
+
+            return event != null && event.get("breakoutRoom").getAsBoolean();
+        });
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#removebreakoutroom
+     * <p>
+     * Test command removeBreakoutRoom.
+     */
+    @Test(dependsOnMethods = {"testCommandJoinBreakoutRoom"})
+    public void testCommandRemoveBreakoutRoom()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureOneParticipant(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // adds a breakout room to remove later
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 1);
+
+        // saves the room id to use in command
+        String roomId = roomsList.getRooms().get(0).getId();
+
+        // uses the function to list breakout rooms to retrieve room jid
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.listBreakoutRooms()" +
+                        ".then(res => window.jitsiAPI.test.breakoutRooms1 = JSON.stringify(res));");
+
+        String res = TestUtils.executeScriptAndReturnString(driver1,
+                "return window.jitsiAPI.test.breakoutRooms1;");
+        assertNotNull(res);
+        String roomJid = JsonParser.parseString(res).getAsJsonObject().get(roomId).getAsJsonObject()
+                .get("jid").getAsString();
+
+        // uses room jid in command call
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('removeBreakoutRoom', '" + roomJid + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 3, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 0);
+
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#sendparticipanttoroom
+     * <p>
+     * Test command sendParticipantToRoom.
+     */
+    @Test(dependsOnMethods = {"testCommandRemoveBreakoutRoom"})
+    public void testCommandSendParticipantToRoom()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // adds a breakout room to send a participant to it later
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 1);
+
+        // saves the room id to use in command
+        String roomId = roomsList.getRooms().get(0).getId();
+
+        // attempts to send the other participant to the newly created breakout room
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('sendParticipantToRoom', '"
+                        + participant2.getEndpointId() + "', '" + roomId + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+        {
+            List<BreakoutRoomsList.BreakoutRoom> rooms = roomsList.getRooms();
+            return rooms.size() == 1 && rooms.get(0).getParticipantsCount() == 1;
+        });
+
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#autoassigntobreakoutrooms
+     * <p>
+     * Test command autoAssignToBreakoutRooms.
+     */
+    @Test(dependsOnMethods = {"testCommandSendParticipantToRoom"})
+    public void testCommandAutoAssignToBreakoutRooms()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        hangUpAllParticipants();
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // adds two breakout rooms to assign participants to them later
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 2);
+
+        // attempts to auto assign the other participants to the breakout rooms
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('autoAssignToBreakoutRooms');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+        {
+            List<BreakoutRoomsList.BreakoutRoom> rooms = roomsList.getRooms();
+            return rooms.size() == 2
+                    && rooms.get(0).getParticipantsCount() == 1
+                    && rooms.get(1).getParticipantsCount() == 1;
+        });
+
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
+
+    /**
+     * Command testing:
+     * https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe#closebreakoutroom
+     * <p>
+     * Test command closeBreakoutRoom.
+     */
+    @Test(dependsOnMethods = {"testCommandAutoAssignToBreakoutRooms"})
+    public void testCommandCloseBreakoutRoom()
+    {
+        if (!isModeratorSupported)
+        {
+            throw new SkipException("Moderation is required for this test.");
+        }
+
+        this.iFrameUrl = getIFrameUrl(null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
+
+        WebParticipant participant1 = getParticipant1();
+        WebDriver driver1 = participant1.getDriver();
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        switchToIframeAPI(driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isModerator;"));
+
+        // adds a breakout room to close it later
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('addBreakoutRoom');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        participant1.getParticipantsPane().open();
+
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRoomsCount() == 1);
+
+        // auto assigns participants to have them return to the main room later
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('autoAssignToBreakoutRooms');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+        {
+            List<BreakoutRoomsList.BreakoutRoom> rooms = roomsList.getRooms();
+            return rooms.size() == 1 && rooms.get(0).getParticipantsCount() == 1;
+        });
+
+        // saves the room id to use in command
+        String roomId = roomsList.getRooms().get(0).getId();
+
+        // attempts to close the breakout room
+        switchToIframeAPI(driver1);
+        TestUtils.executeScript(driver1,
+                "window.jitsiAPI.executeCommand('closeBreakoutRoom', '" + roomId + "');");
+
+        switchToMeetContent(this.iFrameUrl, driver1);
+        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
+                roomsList.getRooms().get(0).getParticipantsCount() == 0);
+
+        hangUpAllParticipants();
+        roomsList.removeRooms();
+    }
 }
