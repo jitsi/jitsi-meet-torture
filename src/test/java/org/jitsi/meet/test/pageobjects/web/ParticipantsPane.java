@@ -354,7 +354,7 @@ public class ParticipantsPane
      * Checks if the pane is open.
      * @return {@code true} if it's open, {@code false} otherwise
      */
-    private boolean isOpen()
+    public boolean isOpen()
     {
         try
         {

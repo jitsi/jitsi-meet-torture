@@ -93,6 +93,11 @@ public class BreakoutRoomsList
         return rooms;
     }
 
+    public void removeRooms()
+    {
+        getRooms().stream().forEach(r -> r.removeRoom());
+    }
+
     public class BreakoutRoom
     {
         private final static String MORE_LABEL="More";
@@ -105,6 +110,11 @@ public class BreakoutRoomsList
             this.title = title;
             this.id = id;
             this.count = getCount();
+        }
+
+        public String getId()
+        {
+            return id;
         }
 
         public int getParticipantsCount()
