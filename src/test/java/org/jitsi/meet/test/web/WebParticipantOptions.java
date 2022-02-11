@@ -44,6 +44,13 @@ public class WebParticipantOptions
      */
     private static final String PROP_ALLOW_INSECURE_CERTS = "allowInsecureCerts";
 
+    /**
+     * This parameter gets a string 'MAP somedomain.com ip-address'.
+     * These are custom host resolver rules passed to chrome to be able to use an ip address of a particular shard
+     * but still using the domain name.
+     */
+    private static final String PROP_HOST_RESOLVER_RULES = "hostResolverRules";
+
     private static final String PROP_BINARY = "binary";
 
     private static final String PROP_APP_NAME = "applicationName";
@@ -142,6 +149,7 @@ public class WebParticipantOptions
         globalKeys.add(PROP_DISABLE_NOSANBOX);
         globalKeys.add(PROP_ENABLE_HEADLESS);
         globalKeys.add(PROP_ENABLE_HEADLESS_LEGACY);
+        globalKeys.add(PROP_HOST_RESOLVER_RULES);
         globalKeys.add(PROP_REMOTE_ADDRESS_NAME);
         globalKeys.add(PROP_REMOTE_RESOURCE_PARENT_PATH_NAME);
 
@@ -207,6 +215,16 @@ public class WebParticipantOptions
     public boolean allowsInsecureCerts()
     {
         return getBooleanProperty(PROP_ALLOW_INSECURE_CERTS);
+    }
+
+    /**
+     * The getter for {@link #PROP_HOST_RESOLVER_RULES}.
+     *
+     * @return the rules as string.
+     */
+    public String hostResolverRules()
+    {
+        return getProperty(PROP_HOST_RESOLVER_RULES);
     }
 
     /**

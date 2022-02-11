@@ -230,6 +230,12 @@ public class WebParticipantFactory
             // shared video tests, disable no-user-gesture to make it work
             ops.addArguments("autoplay-policy=no-user-gesture-required");
 
+            String resolverRules = options.hostResolverRules();
+            if (resolverRules != null)
+            {
+                ops.addArguments("host-resolver-rules=" + resolverRules);
+            }
+
             ops.addArguments("auto-select-desktop-capture-source=Your Entire screen");
 
             ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
