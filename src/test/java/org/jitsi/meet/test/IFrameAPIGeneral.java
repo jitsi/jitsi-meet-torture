@@ -129,8 +129,14 @@ public class IFrameAPIGeneral
         }
 
         mainButtons.put("invite", Toolbar.INVITE);
-        mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
-        mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
+
+        // these buttons are available only for moderators
+        if (participant1.isModerator())
+        {
+            mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
+            mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
+        }
+
         mainButtons.put("profile", Toolbar.PROFILE);
         mainButtons.put("security", Toolbar.SECURITY);
         mainButtons.put("select-background", Toolbar.SELECT_BACKGROUND);
