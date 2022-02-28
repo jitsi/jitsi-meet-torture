@@ -136,7 +136,7 @@ public class DesktopSharingTest
      *
      * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
      */
-//    @Test(dependsOnMethods = { "testDesktopSharingStop" })
+    @Test(dependsOnMethods = { "testDesktopSharingStop" })
     public void testAudioOnlyAndNonDominantScreenShare()
     {
         hangUpAllParticipants();
@@ -181,7 +181,7 @@ public class DesktopSharingTest
      *
      * We don't use ensureXParticipants methods because of the muting the waitForSendReceiveData will fail.
      */
-//    @Test(dependsOnMethods = { "testAudioOnlyAndNonDominantScreenShare" })
+    @Test(dependsOnMethods = { "testAudioOnlyAndNonDominantScreenShare" })
     public void testAudioOnlyAndDominantScreenShare()
     {
         hangUpAllParticipants();
@@ -229,8 +229,7 @@ public class DesktopSharingTest
     /**
      * Test screensharing with lastN. We add p4 with lastN=2 and verify that it receives the expected streams.
      */
-//    @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
-    @Test(dependsOnMethods = { "testDesktopSharingStop" })
+    @Test(dependsOnMethods = { "testAudioOnlyAndDominantScreenShare" })
     public void testLastNAndScreenshare()
     {
         hangUpAllParticipants();
@@ -287,5 +286,32 @@ public class DesktopSharingTest
             MeetUIUtils.waitForNinjaIcon(driver4, participant2.getEndpointId());
             MeetUIUtils.waitForRemoteVideo(driver4, participant1.getEndpointId(), true);
         }
+    }
+
+    /**
+     * Tests if screenshare is successful when it is started after after the local video is muted.
+     */
+    @Test(dependsOnMethods = { "testLastNAndScreenshare" })
+    public void testMuteAndScreenShare()
+    {
+        hangUpAllParticipants();
+        ensureTwoParticipants();
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        // Mute video on participant1 before starting screenshare.
+        MeetUIUtils.muteVideoAndCheck(participant1, participant2);
+
+        participant1.getToolbar().clickDesktopSharingButton();
+        testDesktopSharingInPresence(participant2, participant1, "desktop");
+        // And the video should be playing
+        TestUtils.waitForBoolean(participant2.getDriver(),
+            "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
+            10);
+
+        // Stop desktop sharing on p1 and enable camera.
+        participant1.getToolbar().clickDesktopSharingButton();
+        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
     }
 }
