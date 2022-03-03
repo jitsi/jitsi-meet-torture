@@ -742,7 +742,7 @@ public class IFrameAPICommandsTest
     public void testCommandHangup()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
-        ensureTwoParticipants(this.iFrameUrl, null);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
