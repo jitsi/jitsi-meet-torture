@@ -589,7 +589,7 @@ public class IFrameAPICommandsTest
      * <p>
      * Test command toggleShareScreen and getContentSharingParticipants.
      */
-    @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
+//    @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleShareScreen()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
@@ -689,7 +689,8 @@ public class IFrameAPICommandsTest
      * <p>
      * Test command toggleTileView.
      */
-    @Test(dependsOnMethods = {"testCommandToggleShareScreen"})
+//    @Test(dependsOnMethods = {"testCommandToggleShareScreen"})
+    @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleTileView()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
@@ -742,7 +743,7 @@ public class IFrameAPICommandsTest
     public void testCommandHangup()
     {
         this.iFrameUrl = getIFrameUrl(null, null);
-        ensureThreeParticipants(this.iFrameUrl, null, null);
+        ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
