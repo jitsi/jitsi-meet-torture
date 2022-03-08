@@ -80,6 +80,10 @@ set_defaults() {
 }
 
 case $1 in
+  "")
+    # no args provided, falling back to environment variables and default values
+    set_defaults
+    ;;
   --*)
     # new arg parsing code that includes default values for the different options.
     for arg in "$@"; do
