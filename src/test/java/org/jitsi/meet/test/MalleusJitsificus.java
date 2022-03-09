@@ -259,6 +259,7 @@ public class MalleusJitsificus
             }
             catch (ExecutionException e)
             {
+                e.printStackTrace();
                 errors.add(e.getCause());
             }
         }
@@ -271,6 +272,7 @@ public class MalleusJitsificus
             }
             catch (ExecutionException e)
             {
+                e.printStackTrace();
                 errors.add(e.getCause());
             }
         }
