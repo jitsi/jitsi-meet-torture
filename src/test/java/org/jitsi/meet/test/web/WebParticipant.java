@@ -207,48 +207,48 @@ public class WebParticipant extends Participant<WebDriver>
 
         MeetUtils.waitForPageToLoad(driver);
 
-        if (!isLoadTest)
-        {
-            // disables animations
-            executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+        // if (!isLoadTest)
+        // {
+        //     // disables animations
+        //     executeScript("try { jQuery.fx.off = true; } catch(e) {}");
 
-            executeScript("APP.UI.dockToolbar(true);");
+        //    // executeScript("APP.UI.dockToolbar(true);");
 
-            // disable keyframe animations (.fadeIn and .fadeOut classes)
-            executeScript("$('<style>.notransition * { "
-                + "animation-duration: 0s !important; "
-                + "-webkit-animation-duration: 0s !important; transition:none; }"
-                + " </style>').appendTo(document.head);");
-            executeScript("$('body').toggleClass('notransition');");
+        //     // disable keyframe animations (.fadeIn and .fadeOut classes)
+        //     executeScript("$('<style>.notransition * { "
+        //         + "animation-duration: 0s !important; "
+        //         + "-webkit-animation-duration: 0s !important; transition:none; }"
+        //         + " </style>').appendTo(document.head);");
+        //     executeScript("$('body').toggleClass('notransition');");
 
-            // disable the blur effect in firefox as it has some performance issues
-            if (this.type.isFirefox())
-            {
-                executeScript(
-                    "try { var blur "
-                        + "= document.querySelector('.video_blurred_container'); "
-                        + "if (blur) { "
-                        + "document.querySelector('.video_blurred_container')"
-                        + ".style.display = 'none' "
-                        + "} } catch(e) {}");
-            }
-        }
+        //     // disable the blur effect in firefox as it has some performance issues
+        //     if (this.type.isFirefox())
+        //     {
+        //         executeScript(
+        //             "try { var blur "
+        //                 + "= document.querySelector('.video_blurred_container'); "
+        //                 + "if (blur) { "
+        //                 + "document.querySelector('.video_blurred_container')"
+        //                 + ".style.display = 'none' "
+        //                 + "} } catch(e) {}");
+        //     }
+        // }
 
-        if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
-        {
-            // Hack-in disabling of callstats (old versions of jitsi-meet don't
-            // handle URL parameters)
-            executeScript("config.callStatsID=false;");
-        }
+        // if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
+        // {
+        //     // Hack-in disabling of callstats (old versions of jitsi-meet don't
+        //     // handle URL parameters)
+        //     executeScript("config.callStatsID=false;");
+        // }
 
-        String version = TestUtils.executeScriptAndReturnString(driver,
-            "return JitsiMeetJS.version;");
-        TestUtils.print(name + " lib-jitsi-meet version: " + version
-            + (driver instanceof RemoteWebDriver ?
-                " sessionID: "
-                    + ((RemoteWebDriver)driver).getSessionId() : ""));
+        // String version = TestUtils.executeScriptAndReturnString(driver,
+        //     "return JitsiMeetJS.version;");
+        // TestUtils.print(name + " lib-jitsi-meet version: " + version
+        //     + (driver instanceof RemoteWebDriver ?
+        //         " sessionID: "
+        //             + ((RemoteWebDriver)driver).getSessionId() : ""));
 
-        executeScript("document.title='" + name + "'");
+        // executeScript("document.title='" + name + "'");
     }
 
     /**
