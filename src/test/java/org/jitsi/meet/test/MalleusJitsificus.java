@@ -163,7 +163,6 @@ public class MalleusJitsificus
                 // XXX I don't remember if/why these are needed.
                 .appendConfig("config.p2p.useStunTurn=true")
                 .appendConfig("config.disable1On1Mode=false")
-                .appendConfig("config.testing.noAutoPlayVideo=true")
                 .appendConfig("config.pcStatsInterval=10000")
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
 
