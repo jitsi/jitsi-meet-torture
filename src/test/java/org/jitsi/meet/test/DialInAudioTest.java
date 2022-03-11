@@ -31,6 +31,7 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.net.*;
 import java.text.*;
+import java.util.logging.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
 import static org.testng.Assert.*;
@@ -139,7 +140,7 @@ public class DialInAudioTest
         }
         catch(Throwable t)
         {
-            t.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Cannot join room", t);
             return;
         }
 
@@ -219,21 +220,28 @@ public class DialInAudioTest
             HttpEntity entity = response.getEntity();
             String value = EntityUtils.toString(entity);
 
-            JsonObject res = new JsonParser().parse(value).getAsJsonObject();
+            JsonObject res = JsonParser.parseString(value).getAsJsonObject();
 
             // do not fail test if log file is not available
             try
             {
-                print("dial-in.test.logUrl:"
-                    + getLogUrl(httpclient, res.get("media_session_access_secure_url").getAsString()));
+                JsonElement mediaSessionUrl = res.get("media_session_access_secure_url");
+                if (mediaSessionUrl != null)
+                {
+                    print("dial-in.test.logUrl:" + getLogUrl(httpclient, mediaSessionUrl.getAsString()));
+                }
             }
             catch(Exception e)
             {
-                e.printStackTrace();
+                Logger.getGlobal().log(Level.SEVERE, "Failed get media session logs", e);
             }
 
+            JsonElement result = res.get("result");
+
+            Assert.assertNotNull(result, "No result found");
+
             Assert.assertEquals(
-                res.get("result").getAsString(),
+                result.getAsString(),
                 "1",
                 "Something is wrong, cannot join dial-in participant!");
         }
@@ -304,7 +312,8 @@ public class DialInAudioTest
         {
             if (e.getMessage().contains("crash"))
             {
-                e.printStackTrace();
+                Logger.getGlobal().log(Level.SEVERE, "Page crashed, will not fail on this one", e);
+
                 // page crashed we don't want to fail on this one
                 userJoined = false;
                 return;
