@@ -1,5 +1,5 @@
 /*
- * Copyright @ 2015 Atlassian Pty Ltd
+ * Copyright @ 2018 8x8 Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -32,7 +32,7 @@ import static org.jitsi.meet.test.util.TestUtils.*;
  *
  * @author Hristo Terezov
  */
-public class JibriTest
+public class JibriStreamTest
     extends WebTestBase
 {
     /**
