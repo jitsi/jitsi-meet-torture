@@ -40,6 +40,7 @@ public class IFrameAPIGeneral
     public void testIFrameAPI()
     {
         JitsiMeetUrl iFrameUrl = getIFrameUrl(null, null);
+        iFrameUrl.appendConfig("config.filmstrip.disableStageFilmstrip=true");
 
         ensureOneParticipant(iFrameUrl);
         WebDriver driver1 = getParticipant1().getDriver();
