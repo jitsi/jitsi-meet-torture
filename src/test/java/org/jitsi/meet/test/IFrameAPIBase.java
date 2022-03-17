@@ -103,6 +103,15 @@ public class IFrameAPIBase
      */
     protected JitsiMeetUrl getIFrameUrl(JsonObject userInfo, String password)
     {
+        return getIFrameUrl(userInfo, password, "");
+    }
+
+    /**
+     * Constructs an JitsiMeetUrl to be used with iframeAPI.
+     * @return url that will load a meeting in an iframe.
+     */
+    protected JitsiMeetUrl getIFrameUrl(JsonObject userInfo, String password, String config)
+    {
         String pagePath = System.getProperty(IFRAME_PAGE_PATH_PNAME);
 
         if (pagePath == null || pagePath.trim().length() == 0)
@@ -123,7 +132,8 @@ public class IFrameAPIBase
         }
 
         JsonObject defaultParams = new JitsiMeetUrl().appendConfig(WebParticipant.DEFAULT_CONFIG, false)
-            .getFragmentParamsAsJson();
+                .appendConfig(config)
+                .getFragmentParamsAsJson();
 
         String roomParams = String.format(IFRAME_ROOM_PARAMS,
             domain,

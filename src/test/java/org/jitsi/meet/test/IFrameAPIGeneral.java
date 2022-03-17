@@ -39,7 +39,7 @@ public class IFrameAPIGeneral
     @Test
     public void testIFrameAPI()
     {
-        JitsiMeetUrl iFrameUrl = getIFrameUrl(null, null);
+        JitsiMeetUrl iFrameUrl = getIFrameUrl(null, null, "config.filmstrip.disableStageFilmstrip=true");
 
         ensureOneParticipant(iFrameUrl);
         WebDriver driver1 = getParticipant1().getDriver();
@@ -53,7 +53,8 @@ public class IFrameAPIGeneral
         addIframeAPIListener(driver1, "participantKickedOut");
         switchToMeetContent(iFrameUrl, driver1);
 
-        ensureThreeParticipants(iFrameUrl, null, null);
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        ensureThreeParticipants(iFrameUrl, url, url);
 
         String endpointId2 = getParticipant2().getEndpointId();
         String endpointId3 = getParticipant3().getEndpointId();

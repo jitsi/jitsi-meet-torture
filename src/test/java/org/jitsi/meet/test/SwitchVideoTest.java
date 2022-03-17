@@ -54,7 +54,8 @@ public class SwitchVideoTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        ensureTwoParticipants(url, url);
     }
 
     /**

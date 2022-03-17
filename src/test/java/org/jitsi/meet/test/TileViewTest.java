@@ -16,6 +16,7 @@
 
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
@@ -50,7 +51,8 @@ public class TileViewTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        ensureTwoParticipants(url, url);
     }
 
     /**
