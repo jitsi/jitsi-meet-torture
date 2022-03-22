@@ -43,13 +43,13 @@ public class Toolbar
     public final static String HELP = "Help";
     public final static String INVITE = "Invite people";
     public final static String INVITE_CSS = "Invite Someone";
+    public final static String LIVE_STREAM = "Live Stream";
     public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
     public final static String MUTE_EVERYONE_VIDEO = "Stop everyone's video";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
     public final static String PARTICIPANTS = "Participants" ;
     public final static String PROFILE = "Edit your profile";
-    public final static String REACTIONS_MENU = "Open / Close reactions menu";
     public final static String RAISE_HAND = "Raise / Lower your hand";
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
@@ -199,6 +199,14 @@ public class Toolbar
     }
 
     /**
+     * Clicks on the live-streaming toolbar button which toggles live-streaming.
+     */
+    public void clickLiveStreamingButton()
+    {
+        clickButtonInOverflowMenu(LIVE_STREAM);
+    }
+
+    /**
      * Clicks on the security toolbar button which opens or closes the security dialog.
      */
     public void clickSecurityButton()
@@ -278,7 +286,7 @@ public class Toolbar
     }
 
     /**
-     * Checks whether or not the recording button is present in the toolbar.
+     * Checks whether the recording button is present in the toolbar.
      *
      * @return True if the recording button is present, false if it is not.
      */
@@ -289,6 +297,22 @@ public class Toolbar
         List<WebElement> elements
             = participant.getDriver().findElements(By.cssSelector(
                 MeetUIUtils.getAccessibilityCSSSelector(RECORD)));
+
+        return !elements.isEmpty();
+    }
+
+    /**
+     * Checks whether the live-streaming button is present in the toolbar.
+     *
+     * @return True if the live-streaming button is present, false if it is not.
+     */
+    public boolean hasLiveStreamButton()
+    {
+        openOverflowMenu();
+
+        List<WebElement> elements
+            = participant.getDriver().findElements(By.cssSelector(
+            MeetUIUtils.getAccessibilityCSSSelector(RECORD)));
 
         return !elements.isEmpty();
     }
