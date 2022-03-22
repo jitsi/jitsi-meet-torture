@@ -112,6 +112,12 @@
             <class name="org.jitsi.meet.test.JibriStreamTest" />
         </classes>
     </test>
+    <test name="JibriStreamResolutionTest">
+        <classes>
+            <!-- JibriStreamResolutionTest needs configuration or it is ignored by default -->
+            <class name="org.jitsi.meet.test.JibriStreamResolutionTest" />
+        </classes>
+    </test>
     <test name="IFrameAPIGeneral">
         <classes>
             <class name="org.jitsi.meet.test.IFrameAPIGeneral" />
