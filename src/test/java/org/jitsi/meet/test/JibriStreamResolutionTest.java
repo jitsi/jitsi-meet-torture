@@ -66,7 +66,7 @@ public class JibriStreamResolutionTest
         super.setupClass();
 
         streamKey = System.getProperty(STREAM_KEY_PROP);
-        if (streamKey == null)
+        if (streamKey == null || streamKey.trim().length() == 0)
         {
             throw new SkipException("no streamKey");
         }
@@ -102,7 +102,7 @@ public class JibriStreamResolutionTest
             = "APP.conference._room.getParticipants().filter(p => p._hidden).map(p => p._id)";
 
         // Waits for jibri to arrive
-        TestUtils.waitForCondition(driver1, 25, (ExpectedCondition<Boolean>) d -> {
+        TestUtils.waitForCondition(driver1, "Jibri did not join", 40, (ExpectedCondition<Boolean>) d -> {
             ArrayList<String> o =  (ArrayList<String>)((JavascriptExecutor) d)
                 .executeScript(String.format("return %s;", filterJibriFromParticipantsJS));
             return o.size() == 1;
@@ -118,7 +118,9 @@ public class JibriStreamResolutionTest
             "if(participant._id === '" + jibriId + "') {window.jibriLastStats = payload;}});");
 
         // 10 seconds is the stats interval, let's wait for at least three
-        TestUtils.waitForCondition(driver1, 30, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(
+            driver1, "Jibri did not send stats or its download is below threshold",
+            30, (ExpectedCondition<Boolean>) d ->
         {
             // get the stored stats from the window object
             Map stats =  (Map)((JavascriptExecutor) d).executeScript("return window.jibriLastStats;");
