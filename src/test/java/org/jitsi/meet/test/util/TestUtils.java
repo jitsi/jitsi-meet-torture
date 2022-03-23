@@ -522,6 +522,29 @@ public class TestUtils
      * Waits until the given condition is fulfilled and fails the currently
      * running test if this doesn't happen within {@code timeoutSeconds} seconds.
      * @param driver the {@code WebDriver}.
+     * @param message the message to print in case of a failure.
+     * @param timeoutSeconds the time to wait for the element in seconds.
+     * @param condition the condition to be met.
+     */
+    public static void waitForCondition(WebDriver driver,
+                                        String message,
+                                        int timeoutSeconds,
+                                        ExpectedCondition<?> condition)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
+
+        if (message != null)
+        {
+            wait.withMessage(message);
+        }
+
+        wait.until(condition);
+    }
+
+    /**
+     * Waits until the given condition is fulfilled and fails the currently
+     * running test if this doesn't happen within {@code timeoutSeconds} seconds.
+     * @param driver the {@code WebDriver}.
      * @param timeoutSeconds the time to wait for the element in seconds.
      * @param condition the condition to be met.
      */
@@ -529,7 +552,7 @@ public class TestUtils
                                         int timeoutSeconds,
                                         ExpectedCondition<?> condition)
     {
-        (new WebDriverWait(driver, timeoutSeconds)).until(condition);
+        waitForCondition(driver, null, timeoutSeconds, condition);
     }
 
     /**
