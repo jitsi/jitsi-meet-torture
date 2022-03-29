@@ -44,9 +44,10 @@ public class DesktopSharingTest
     @Test
     public void testDesktopSharingStart()
     {
-        ensureOneParticipant();
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        ensureOneParticipant(url);
 
-        ensureTwoParticipants();
+        ensureTwoParticipants(url, url);
         toggleDesktopSharing();
         checkExpandingDesktopSharingLargeVideo(true);
         testDesktopSharingInPresence(getParticipant1(), getParticipant2(), "desktop");
