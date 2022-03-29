@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -41,7 +42,8 @@ public class AudioOnlyTest
     {
         super.setupClass();
 
-        ensureTwoParticipants(null, null, new WebParticipantOptions().setSkipDisplayNameSet(true), null);
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        ensureTwoParticipants(url, url, new WebParticipantOptions().setSkipDisplayNameSet(true), null);
     }
 
     /**

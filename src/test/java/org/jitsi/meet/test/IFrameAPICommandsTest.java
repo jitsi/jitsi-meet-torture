@@ -692,7 +692,8 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandToggleShareScreen"})
     public void testCommandToggleTileView()
     {
-        this.iFrameUrl = getIFrameUrl(null, null);
+        hangUpAllParticipants();
+        this.iFrameUrl = getIFrameUrl(null, null, "config.filmstrip.disableStageFilmstrip=true");
         ensureOneParticipant(this.iFrameUrl);
 
         WebParticipant participant1 = getParticipant1();
@@ -728,6 +729,7 @@ public class IFrameAPICommandsTest
         assertFalse(getEventResult(driver1, "tileViewChanged").get("enabled").getAsBoolean());
 
         switchToMeetContent(this.iFrameUrl, driver1);
+        hangUpAllParticipants();
     }
 
     /**
