@@ -301,7 +301,6 @@ public class AudioVideoModerationTest
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
 
         // make sure we close the notifications to avoid covering the mute button
-        participant2.getNotifications().closeAskToUnmuteNotification();
         participant2.getNotifications().closeRemoteMuteNotification();
 
         // we try to unmute and test it that it was still muted
