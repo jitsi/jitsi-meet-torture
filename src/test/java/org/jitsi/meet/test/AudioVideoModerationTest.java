@@ -354,7 +354,6 @@ public class AudioVideoModerationTest
         // mute and check
         participantsPane.muteParticipant(participant2);
         participant2.getNotifications().closeAskToUnmuteNotification();
-        participant2.getNotifications().closeRemoteMuteNotification();
 
         MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
     }
