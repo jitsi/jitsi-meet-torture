@@ -4,9 +4,9 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.*;
+import java.util.logging.*;
 
 import static org.testng.Assert.fail;
 
@@ -98,7 +98,9 @@ public class ParticipantsPane
                 + "']//div[contains(@class, 'indicators')]//*[name()='svg' and @id='videoMuted']";
         if (!isOpen)
         {
+            Logger.getGlobal().log(Level.INFO, "Participants pane is not open, will open it.");
             open();
+            Logger.getGlobal().log(Level.INFO, "Participants pane is now open:" + isOpen());
         }
         try
         {
