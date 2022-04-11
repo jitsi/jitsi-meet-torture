@@ -237,7 +237,7 @@ public class TestUtils
     }
 
     /**
-     * Waits until an element becomes available and return it.
+     * Waits until an element becomes available/displayed and return it.
      * @param driver the {@code WebDriver}.
      * @param by the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
@@ -257,6 +257,10 @@ public class TestUtils
 
                     if (!elements.isEmpty())
                     {
+                        if (!elements.get(0).isDisplayed())
+                        {
+                            return false;
+                        }
                         foundElement[1] = Boolean.TRUE.toString();
                         foundElement[0] = elements.get(0).getText();
                         return true;
