@@ -111,7 +111,6 @@ public class WebParticipant extends Participant<WebDriver>
     private BreakoutRoomsList breakoutRoomsList;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
-    private KnockingParticipantList knockingParticipantList;
     private LargeVideo largeVideo;
     private LobbyScreen lobbyScreen;
     private Notifications notifications;
@@ -629,19 +628,6 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return inviteDialog;
-    }
-
-    /**
-     * @return a representation of the list of knocking participants.
-     */
-    public KnockingParticipantList getKnockingParticipantList()
-    {
-        if (knockingParticipantList == null)
-        {
-            knockingParticipantList = new KnockingParticipantList(this);
-        }
-
-        return knockingParticipantList;
     }
 
     /**

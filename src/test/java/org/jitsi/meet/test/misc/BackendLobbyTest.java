@@ -146,14 +146,9 @@ public class BackendLobbyTest
 
         moderator.waitToJoinMUC();
 
-        KnockingParticipantList knockingParticipants = moderator.getKnockingParticipantList();
-        KnockingParticipantList.Participant knockingParticipant = knockingParticipants.getParticipants().stream()
-            .filter(p -> {
-                System.err.println(p.getName() + " ? " + participant1.getName());
-                return p.getName().equals(participant1.getName());
-            })
-            .findAny().orElse(null);
-        assertNotNull(knockingParticipant, "Moderator does not see participant in knocking participants list.");
+        String name1 = moderator.getNotifications().getKnockingParticipantName();
+        assertEquals(name1, participant1.getName(),
+            "Wrong name for the knocking participant or participant is missing");
 
         assertTrue(lobbyScreen.isLobbyRoomJoined(), "Lobby room not joined");
 
@@ -164,11 +159,9 @@ public class BackendLobbyTest
 
         moderator.waitToJoinMUC();
 
-        knockingParticipants = moderator.getKnockingParticipantList();
-        knockingParticipant = knockingParticipants.getParticipants().stream()
-            .filter(p -> p.getName().equals(participant1.getName()))
-            .findAny().orElse(null);
-        assertNotNull(knockingParticipant, "Moderator does not see participant in knocking participants list.");
+        String name2 = moderator.getNotifications().getKnockingParticipantName();
+        assertEquals(name2, participant1.getName(),
+            "Wrong name for the knocking participant or participant is missing");
 
         joinThirdParticipant(url.copy().setRoomParameters("jwt=" + nonModerator2Token), null);
 
