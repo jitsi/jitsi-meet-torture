@@ -264,14 +264,19 @@ public class SecurityDialog
 
     /**
      * Returns the switch that can be used to detect lobby state or change lobby state.
-     * @return the lobby switch UI element.
+     * @return the lobby switch UI element or null if missing.
      */
     private WebElement getLobbySwitch()
     {
         WebDriver driver = participant.getDriver();
-        WebElement lobbySection = driver.findElement(By.id(LOBBY_SECTION_ID));
+        List<WebElement> lobbySection = driver.findElements(By.id(LOBBY_SECTION_ID));
 
-        return lobbySection.findElement(By.tagName("input"));
+        if (lobbySection.size() == 0)
+        {
+            return null;
+        }
+
+        return lobbySection.get(0).findElement(By.tagName("input"));
     }
 
     /**
