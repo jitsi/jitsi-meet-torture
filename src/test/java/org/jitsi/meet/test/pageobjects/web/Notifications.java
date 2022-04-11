@@ -59,6 +59,22 @@ public class Notifications
     private static final String LOBBY_PARTICIPANT_ACCESS_GRANTED_TEST_ID = "lobby.notificationLobbyAccessGranted";
 
     /**
+     * The test id of the button in the notification to approve access.
+     */
+    private static final String LOBBY_PARTICIPANT_ADMIT_TEST_ID = "lobby.admit";
+
+    /**
+     * The test id of the button in the notification to reject access.
+     */
+    private static final String LOBBY_PARTICIPANT_REJECT_TEST_ID = "lobby.reject";
+
+    /**
+     * The xpath to find the notification for single knocking participant.
+     */
+    private static final String LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH
+        = "//div[@data-testid='notify.participantWantsToJoin']//div[not(contains(@class,'participant'))]/span";
+
+    /**
      * The test id for the notification on participants page when meeting has ended.
      */
     private static final String SESSION_TERMINATED_TEST_ID = "dialog.sessTerminated";
@@ -369,5 +385,56 @@ public class Notifications
     public void closeRemoteVideoMuteNotification()
     {
         closeNotificationByTestId(REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION);
+    }
+
+    /**
+     * Returns the name of the knocking participant (the only one) that is displayed on the notification.
+     * @return the name of the only participant waiting in lobby.
+     */
+    public String getKnockingParticipantName()
+    {
+        TestUtils.waitForDisplayedElementByXPath(
+            participant.getDriver(), LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH, 3);
+
+        return participant.getDriver().findElement(By.xpath(LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH)).getText();
+    }
+
+    /**
+     * Will wait 3 seconds for the knocking participants to disappear and return true or will return false.
+     * @return <tt>true</tt> if the knocking participants list was not displayed.
+     */
+    public boolean waitForHideOfKnockingParticipants()
+    {
+        try
+        {
+            TestUtils.waitForNotDisplayedElementByXPath(
+                participant.getDriver(), LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH, 3);
+
+            return true;
+        }
+        catch(TimeoutException ex)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Rejects the last knocking participant (it is the only one).
+     * @param name - Not used at the moment. If we have a list of notifications for we can use the name to select
+     * the appropriate participant to reject.
+     */
+    public void rejectLobbyParticipant(String name)
+    {
+        participant.getDriver().findElement(ByTestId.testId(LOBBY_PARTICIPANT_REJECT_TEST_ID)).click();
+    }
+
+    /**
+     * Admits the last knocking participant (it is the only one).
+     * @param name - Not used at the moment. If we have a list of notifications for we can use the name to select
+     * the appropriate participant to allow.
+     */
+    public void allowLobbyParticipant(String name)
+    {
+        participant.getDriver().findElement(ByTestId.testId(LOBBY_PARTICIPANT_ADMIT_TEST_ID)).click();
     }
 }

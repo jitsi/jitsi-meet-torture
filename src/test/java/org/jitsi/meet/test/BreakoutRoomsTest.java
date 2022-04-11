@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.logging.*;
 
 import static org.testng.Assert.*;
+import static org.jitsi.meet.test.pageobjects.web.ParticipantsPane.PARTICIPANT_ITEM;
 
 /**
  * Tests the Breakout rooms functionality.
@@ -42,11 +43,6 @@ public class BreakoutRoomsTest
      * The default name of the main room name.
      */
     private final static String MAIN_ROOM_NAME = "Main room";
-
-    /**
-     * The prefix of the participant item id.
-     */
-    private final static String PARTICIPANT_ITEM = "participant-item-";
 
     /**
      * The id of the breakout rooms list element.

@@ -135,9 +135,9 @@ public class LobbyTest
      * @param enterDisplayName whether to enter display name. We need to enter display name only the first time when
      * a participant sees the lobby screen, next time visiting the page display name will be pre-filled
      * from local storage.
-     * @return the participant from the moderator's knocking participant list.
+     * @return the participant name knocking.
      */
-    private KnockingParticipantList.Participant enterLobby(WebParticipant moderator, boolean enterDisplayName)
+    private String enterLobby(WebParticipant moderator, boolean enterDisplayName)
     {
         joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
@@ -190,15 +190,12 @@ public class LobbyTest
         assertTrue(passwordButton.isEnabled(), "Password disabled.");
 
         // check that moderator (participant 1) sees notification about participant in lobby
-        KnockingParticipantList knockingParticipants = moderator.getKnockingParticipantList();
-        KnockingParticipantList.Participant knockingParticipant = knockingParticipants.getParticipants().stream()
-            .filter(p -> p.getName().equals(participant3.getName()))
-            .findAny().orElse(null);
-        assertNotNull(knockingParticipant, "Moderator does not see participant in knocking participants list.");
+        String name = moderator.getNotifications().getKnockingParticipantName();
+        assertEquals(name, participant3.getName(), "Wrong name for the knocking participant or participant is missing");
 
         assertTrue(lobbyScreen.isLobbyRoomJoined(), "Lobby room not joined");
 
-        return knockingParticipant;
+        return name;
     }
 
     /**
@@ -207,18 +204,19 @@ public class LobbyTest
     @Test(dependsOnMethods = {"testEnteringInLobbyAndApprove"})
     public void testEnteringInLobbyAndDeny()
     {
+        WebParticipant participant1 = getParticipant1();
+
         // the first time tests is executed we need to enter display name,
         // for next execution that will be locally stored
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+        String knockingParticipant = enterLobby(participant1, false);
 
         // moderator rejects access
-        knockingParticipant.reject();
+        participant1.getNotifications().rejectLobbyParticipant(knockingParticipant);
 
         // deny notification on 2nd participant
         WebParticipant participant2 = getParticipant2();
         String notificationText = participant2.getNotifications().getLobbyParticipantAccessDenied();
 
-        WebParticipant participant1 = getParticipant1();
         assertTrue(
             notificationText.contains(participant1.getName()),
             "Notification for second participant need to have actor of the deny access operation");
@@ -248,16 +246,16 @@ public class LobbyTest
     @Test(dependsOnMethods = {"testEnableLobby"})
     public void testEnteringInLobbyAndApprove()
     {
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), true);
+        WebParticipant participant1 = getParticipant1();
+        String knockingParticipant = enterLobby(participant1, true);
 
         // moderator allows access
-        knockingParticipant.allow();
+        participant1.getNotifications().allowLobbyParticipant(knockingParticipant);
 
         // granted notification on 2nd participant
         WebParticipant participant2 = getParticipant2();
         String notificationText = participant2.getNotifications().getLobbyParticipantAccessGranted();
 
-        WebParticipant participant1 = getParticipant1();
         assertTrue(
             notificationText.contains(participant1.getName()),
             "Notification for second participant need to have actor of the granted access operation");
@@ -287,12 +285,12 @@ public class LobbyTest
     public void testApproveFromParticipantsPane()
     {
         WebParticipant participant1 = getParticipant1();
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+        String knockingParticipant = enterLobby(getParticipant1(), false);
 
         // moderator allows access
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         participantsPane.open();
-        participantsPane.admitLobbyParticipant(knockingParticipant.getId());
+        participantsPane.admitLobbyParticipant(knockingParticipant);
         participantsPane.close();
 
         WebParticipant participant3 = getParticipant3();
@@ -315,12 +313,12 @@ public class LobbyTest
     public void testRejectFromParticipantsPane()
     {
         WebParticipant participant1 = getParticipant1();
-        KnockingParticipantList.Participant knockingParticipant = enterLobby(getParticipant1(), false);
+        String knockingParticipant = enterLobby(participant1, false);
 
         // moderator rejects access
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
         participantsPane.open();
-        participantsPane.rejectLobbyParticipant(knockingParticipant.getId());
+        participantsPane.rejectLobbyParticipant(knockingParticipant);
         participantsPane.close();
 
         WebParticipant participant3 = getParticipant3();
@@ -347,7 +345,7 @@ public class LobbyTest
         getParticipant3().hangUp();
 
         // check that moderator (participant 1) no longer sees notification about participant in lobby
-        assertTrue(getParticipant1().getKnockingParticipantList().waitForHideOfKnockingParticipants(),
+        assertTrue(getParticipant1().getNotifications().waitForHideOfKnockingParticipants(),
             "Moderator should not see participant in knocking participants list after that participant leaves Lobby.");
     }
 
