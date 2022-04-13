@@ -447,10 +447,13 @@ public class Toolbar
      */
     private void waitForButtonDisplay(String accessibilityLabel)
     {
-        TestUtils.waitForElementBy(
+        WebElement button = TestUtils.waitForElementBy(
             participant.getDriver(),
             By.cssSelector(MeetUIUtils.getAccessibilityCSSSelector(accessibilityLabel)),
             10);
+
+        participant.consolePrint(getClass().getSimpleName(),
+            "Button '" + accessibilityLabel + "' is pressed:" + button.getAttribute("aria-pressed"));
     }
 
     /**

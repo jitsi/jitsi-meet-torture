@@ -344,7 +344,6 @@ public class WebTestBase
      * @param meetUrl a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
      * the config part.
-     * @param options the options to be used when creating the participant.
      * @return the participant which was created.
      */
     public WebParticipant joinSecondParticipant(JitsiMeetUrl meetUrl)
@@ -452,8 +451,6 @@ public class WebTestBase
      */
     public void consolePrint(WebParticipant participant, String log)
     {
-        participant.executeScript(
-            "APP.debugLogs.storeLogs([{ " +
-                "text: new Date().toISOString() + \" [" + getClass().getSimpleName() + "] " + log +"\" }]);");
+        participant.consolePrint(getClass().getSimpleName(), log);
     }
 }
