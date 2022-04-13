@@ -800,4 +800,15 @@ public class WebParticipant extends Participant<WebDriver>
     {
         executeScript("APP.conference.muteAudio(arguments[0])", mute);
     }
+
+    /**
+     * Prints logs in the jitsi-meet app that will be available as test results.
+     * @param from the source that prints (the test class).
+     * @param log the log to print.
+     */
+    public void consolePrint(String from, String log)
+    {
+        this.executeScript(
+            "APP.debugLogs.storeLogs([{ text: new Date().toISOString() + \" [" + from + "] " + log +"\" }]);");
+    }
 }
