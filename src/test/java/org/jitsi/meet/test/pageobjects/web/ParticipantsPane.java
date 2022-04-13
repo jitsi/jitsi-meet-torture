@@ -109,19 +109,19 @@ public class ParticipantsPane
                 + "']//div[contains(@class, 'indicators')]//*[name()='svg' and @id='videoMuted']";
         if (!isOpen)
         {
-            Logger.getGlobal().log(Level.INFO, "Participants pane is not open, will open it.");
+            TestUtils.print("Participants pane is not open, will open it.");
             open();
-            Logger.getGlobal().log(Level.INFO, "Participants pane is now open:" + isOpen());
+            TestUtils.print("Participants pane is now open:" + isOpen());
         }
         try
         {
             if (muted)
             {
-                TestUtils.waitForElementByXPath(participant.getDriver(), iconXpath, 3);
+                TestUtils.waitForElementByXPath(participant.getDriver(), iconXpath, 5);
             }
             else
             {
-                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(participant.getDriver(), iconXpath, 3);
+                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(participant.getDriver(), iconXpath, 5);
             }
         }
         catch (TimeoutException exc)
@@ -130,12 +130,10 @@ public class ParticipantsPane
                     participantToCheck.getName() + (muted ? " should" : " shouldn't")
                             + " be muted at this point, xpath: " + iconXpath);
         }
-        finally
+
+        if (!isOpen)
         {
-            if (!isOpen)
-            {
-                close();
-            }
+            close();
         }
     }
 
