@@ -183,7 +183,9 @@ public class AudioVideoModerationTest
 
         // After p1 re-joins either p2 or p3 is promoted to moderator.
         WebParticipant moderator = participant2.isModerator() ? participant2 : participant3;
+        moderator.getParticipantsPane().assertIsParticipantVideoMuted(moderator, false);
         WebParticipant nonModerator = participant2.isModerator() ? participant3 : participant2;
+        nonModerator.getParticipantsPane().assertIsParticipantVideoMuted(nonModerator, true);
 
         moderator.getParticipantsPane().open();
         moderator.getParticipantsPane().askToUnmute(nonModerator);
