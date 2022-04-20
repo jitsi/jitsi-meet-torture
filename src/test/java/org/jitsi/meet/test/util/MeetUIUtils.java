@@ -1160,7 +1160,7 @@ public class MeetUIUtils
     public static void unmuteVideoAndCheck(WebParticipant participant,
                                            WebParticipant participantCheck)
     {
-        WebDriver driver = participant.getDriver();
+        participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
 
         // Make sure that there is the video mute button
         participant.getToolbar().waitForVideoMuteButtonDisplay();
