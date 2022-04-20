@@ -181,9 +181,9 @@ public class AudioVideoModerationTest
         participant1.hangUp();
         joinFirstParticipant();
 
-        // After p1 re-joins either p2 or p3 is promoted to moderator.
+        // After p1 re-joins either p2 or p3 is promoted to moderator. They should still be muted.
         WebParticipant moderator = participant2.isModerator() ? participant2 : participant3;
-        moderator.getParticipantsPane().assertIsParticipantVideoMuted(moderator, false);
+        moderator.getParticipantsPane().assertIsParticipantVideoMuted(moderator, true);
         WebParticipant nonModerator = participant2.isModerator() ? participant3 : participant2;
         nonModerator.getParticipantsPane().assertIsParticipantVideoMuted(nonModerator, true);
 
