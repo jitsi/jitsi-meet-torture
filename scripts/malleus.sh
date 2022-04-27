@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
+  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--extra-sender-params=EXTRA_SENDER_PARAMS] [--extra-receiver-params=EXTRA_RECEIVER_PARAMS] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
   exit 1
 }
 
@@ -77,6 +77,8 @@ set_defaults() {
     if [ -z "$MALLEUS_USE_STAGE_VIEW" ]; then
       MALLEUS_USE_STAGE_VIEW=false
     fi
+
+    # Null is a fine default for MALLEUS_EXTRA_SENDER_PARAMS and MALLEUS_EXTRA_RECEIVER_PARAMS
 }
 
 case $1 in
@@ -108,6 +110,8 @@ case $1 in
         --switch-speakers) if [ -n "$optvalue" ]; then MALLEUS_SWITCH_SPEAKERS=$optvalue; else MALLEUS_SWITCH_SPEAKERS=true; fi;;
         --use-stage-view) if [ -n "$optvalue" ]; then MALLEUS_USE_STAGE_VIEW=$optvalue; else MALLEUS_USE_STAGE_VIEW=true; fi;;
         --headless) if [ -n "$optvalue" ]; then MALLEUS_USE_HEADLESS=$optvalue; else MALLEUS_USE_HEADLESS=true; fi;;
+        --extra-sender-params) MALLEUS_EXTRA_SENDER_PARAMS=$optvalue;;
+        --extra-receiver-params) MALLEUS_EXTRA_RECEIVER_PARAMS=$optvalue;;
         --max-disrupted-bridges-pct) MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
         --debug) set -x;;
         *)
@@ -182,6 +186,8 @@ mvn \
 -Dorg.jitsi.malleus.switch_speakers=$MALLEUS_SWITCH_SPEAKERS \
 -Dorg.jitsi.malleus.use_stage_view=$MALLEUS_USE_STAGE_VIEW \
 -Dorg.jitsi.malleus.enable.headless=$MALLEUS_USE_HEADLESS \
+-Dorg.jitsi.malleus.extra_sender_params=$EXTRA_SENDER_PARAMS \
+-Dorg.jitsi.malleus.extra_receiver_params=$EXTRA_RECEIVER_PARAMS \
 -Dremote.address=$MALLEUS_HUB_URL \
 -DallowInsecureCerts=$MALLEUS_ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=$MALLEUS_TESTS_TO_RUN \
