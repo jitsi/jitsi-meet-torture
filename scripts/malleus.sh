@@ -90,7 +90,7 @@ case $1 in
     # new arg parsing code that includes default values for the different options.
     for arg in "$@"; do
       optname=`echo $arg | cut -d= -f1`
-      optvalue=`echo $arg | cut -s -d= -f2`
+      optvalue=`echo $arg | cut -s -d= -f2-`
       case $optname in
         --conferences) MALLEUS_CONFERENCES=$optvalue;;
         --allow-insecure-certs) MALLEUS_ALLOW_INSECURE_CERTS=$optvalue;;
@@ -186,8 +186,8 @@ mvn \
 -Dorg.jitsi.malleus.switch_speakers=$MALLEUS_SWITCH_SPEAKERS \
 -Dorg.jitsi.malleus.use_stage_view=$MALLEUS_USE_STAGE_VIEW \
 -Dorg.jitsi.malleus.enable.headless=$MALLEUS_USE_HEADLESS \
--Dorg.jitsi.malleus.extra_sender_params=$EXTRA_SENDER_PARAMS \
--Dorg.jitsi.malleus.extra_receiver_params=$EXTRA_RECEIVER_PARAMS \
+-Dorg.jitsi.malleus.extra_sender_params=$MALLEUS_EXTRA_SENDER_PARAMS \
+-Dorg.jitsi.malleus.extra_receiver_params=$MALLEUS_EXTRA_RECEIVER_PARAMS \
 -Dremote.address=$MALLEUS_HUB_URL \
 -DallowInsecureCerts=$MALLEUS_ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=$MALLEUS_TESTS_TO_RUN \
