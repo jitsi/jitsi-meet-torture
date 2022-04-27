@@ -217,7 +217,6 @@ public class MalleusJitsificus
 
             JitsiMeetUrl urlCopy = url.copy();
 
-            String extraParams;
             if (sender)
             {
                 // N.B. this does the right thing for null or empty values
