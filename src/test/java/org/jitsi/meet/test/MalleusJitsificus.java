@@ -68,6 +68,10 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_stage_view";
     public static final String USE_HEADLESS
         = "org.jitsi.malleus.enable.headless";
+    public static final String EXTRA_SENDER_PARAMS
+        = "org.jitsi.malleus.extra_sender_params";
+    public static final String EXTRA_RECEIVER_PARAMS
+        = "org.jitsi.malleus.extra_receiver_params";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -136,6 +140,9 @@ public class MalleusJitsificus
 
         boolean useStageView = Boolean.parseBoolean(System.getProperty(USE_STAGE_VIEW));
 
+        String extraSenderParams = System.getProperty(EXTRA_SENDER_PARAMS);
+        String extraReceiverParams = System.getProperty(EXTRA_RECEIVER_PARAMS);
+
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
@@ -152,6 +159,8 @@ public class MalleusJitsificus
         print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
         print("stage view=" + useStageView);
+        print("extra sender params=" + extraSenderParams);
+        print("extra receiver params=" + extraReceiverParams);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -178,7 +187,8 @@ public class MalleusJitsificus
             ret[i] = new Object[] {
                 url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders,
                 regions, maxDisruptedBridges,
-                switchSpeakers
+                switchSpeakers,
+                extraSenderParams, extraReceiverParams
             };
         }
 
@@ -189,7 +199,8 @@ public class MalleusJitsificus
     public void testMain(
         JitsiMeetUrl url, int numberOfParticipants,
         long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
-        String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers)
+        String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers,
+        String extraSenderParams, String extraReceiverParams)
         throws Exception
     {
         List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
@@ -201,13 +212,28 @@ public class MalleusJitsificus
         boolean disruptBridges = blipMaxDisruptedPct > 0;
         for (int i = 0; i < numberOfParticipants; i++)
         {
+            boolean sender = i < numSenders;
+            boolean audioSender = i < numAudioSenders;
+
+            JitsiMeetUrl urlCopy = url.copy();
+
+            if (sender)
+            {
+                // N.B. this does the right thing for null or empty values
+                urlCopy.appendConfig(extraSenderParams);
+            }
+            else
+            {
+                urlCopy.appendConfig(extraReceiverParams);
+            }
+
             MalleusTask task = new MalleusTask(
                 i,
-                url.copy(),
+                urlCopy,
                 durationMs,
                 i * joinDelayMs,
-                i >= numSenders /* no video */,
-                switchSpeakers || i >= numAudioSenders /* no audio */,
+                !sender /* no video */,
+                switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 disruptBridges
             );
