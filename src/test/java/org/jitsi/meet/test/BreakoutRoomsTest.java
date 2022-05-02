@@ -161,7 +161,10 @@ public class BreakoutRoomsTest
 
         // the second participant should see no participants in the breakout room
         TestUtils.waitForCondition(participant2.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                participant2.getBreakoutRoomsList().getRooms().get(0).getParticipantsCount() == 0);
+            {
+                List<BreakoutRoomsList.BreakoutRoom> rooms = participant2.getBreakoutRoomsList().getRooms();
+                return rooms.size() == 1 && rooms.get(0).getParticipantsCount() == 0;
+            });
     }
 
     @Test(dependsOnMethods = { "testLeaveRoom" })
