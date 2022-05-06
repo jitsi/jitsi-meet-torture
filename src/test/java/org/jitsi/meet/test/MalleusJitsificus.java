@@ -228,7 +228,11 @@ public class MalleusJitsificus
         boolean disruptBridges = blipMaxDisruptedPct > 0;
         int totalJoinDelayMs = 0;
 
-        for (int i = 0; i < numberOfParticipants; i++)
+        if (sendersPerTab == 0 && receiversPerTab == 0) {
+            return;
+        }
+
+        for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
             boolean audioSender = i < numAudioSenders;
@@ -242,6 +246,9 @@ public class MalleusJitsificus
                 // N.B. this does the right thing for null or empty values
                 urlCopy.appendConfig(extraSenderParams);
                 numClients = sendersPerTab;
+                if (i + numClients > numSenders) {
+                    numClients = numSenders - i;
+                }
             }
             else
             {
@@ -249,12 +256,16 @@ public class MalleusJitsificus
                 numClients = receiversPerTab;
             }
 
+            if (audioSender && i + numClients > numAudioSenders) {
+                numClients = numAudioSenders - i;
+            }
+
             MalleusTask task = new MalleusTask(
                 i,
                 urlCopy,
                 durationMs,
                 joinDelayMs,
-                totalJoinDelayMs,
+                i * joinDelayMs,
                 !sender /* no video */,
                 switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
@@ -263,7 +274,7 @@ public class MalleusJitsificus
             );
             malleusTasks.add(task);
             task.start(pool);
-            totalJoinDelayMs += numClients * joinDelayMs;
+            i += numClients;
         }
 
         List<Future<?>> otherTasks = new ArrayList<>();
