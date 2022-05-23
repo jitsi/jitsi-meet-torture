@@ -107,6 +107,7 @@ public class IFrameAPIGeneral
         TestUtils.print("1111");
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
+        TestUtils.waitMillis(2000);
         TestUtils.print("22222");
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
