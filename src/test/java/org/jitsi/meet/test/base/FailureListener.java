@@ -400,7 +400,7 @@ public class FailureListener
     /**
      * Saves browser console logs.
      */
-    private void saveBrowserLogs(Participant p, String fileNamePrefix, String suffix, String extension)
+    public static void saveBrowserLogs(Participant p, String fileNamePrefix, String suffix, String extension)
         throws Exception
     {
         List logs = p.getBrowserLogs();

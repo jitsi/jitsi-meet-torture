@@ -131,12 +131,25 @@ public class IFrameAPIGeneral
         }
 
         mainButtons.put("invite", Toolbar.INVITE);
-        TestUtils.print("5555");
+        TestUtils.print("5555 isModerator:" + participant1.isModerator());
         // these buttons are available only for moderators
         if (participant1.isModerator())
         {
+            TestUtils.print("5555 it is moderator");
             mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
             mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
+        }
+        else
+        {
+            try
+            {
+                FailureListener.saveBrowserLogs(participant1, "debug", "-console-" + participant1.getName(), ".log");
+            }
+            catch(Exception e)
+            {
+                TestUtils.print("5555 cannot save logs " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         mainButtons.put("profile", Toolbar.PROFILE);
