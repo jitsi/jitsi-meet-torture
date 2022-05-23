@@ -104,12 +104,13 @@ public class IFrameAPIGeneral
     @Test(dependsOnMethods = { "testIFrameAPI" })
     public void testCustomButtons()
     {
+        TestUtils.print("1111");
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
-
+        TestUtils.print("22222");
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();
-
+        TestUtils.print("33333");
         Map<String, String> mainButtons = new HashMap<>();
         mainButtons.put("camera", Toolbar.VIDEO_MUTE);
         mainButtons.put("chat", Toolbar.CHAT);
@@ -123,13 +124,21 @@ public class IFrameAPIGeneral
 
         mainButtons.put("embedmeeting", Toolbar.EMBED_MEETING);
         mainButtons.put("fullscreen", Toolbar.FULLSCREEN);
-
+        TestUtils.print("444444");
         if (MeetUtils.isHelpEnabled(driver1))
         {
             mainButtons.put("help", Toolbar.HELP);
         }
 
         mainButtons.put("invite", Toolbar.INVITE);
+        TestUtils.print("5555");
+        // these buttons are available only for moderators
+        if (participant1.isModerator())
+        {
+            mainButtons.put("mute-everyone", Toolbar.MUTE_EVERYONE_AUDIO);
+            mainButtons.put("mute-video-everyone", Toolbar.MUTE_EVERYONE_VIDEO);
+        }
+
         mainButtons.put("profile", Toolbar.PROFILE);
         mainButtons.put("security", Toolbar.SECURITY);
         mainButtons.put("select-background", Toolbar.SELECT_BACKGROUND);
@@ -139,7 +148,7 @@ public class IFrameAPIGeneral
         mainButtons.put("shortcuts", Toolbar.SHORTCUTS);
         mainButtons.put("stats", Toolbar.STATS);
         mainButtons.put("videoquality", Toolbar.VIDEO_QUALITY);
-
+        TestUtils.print("66666");
         mainButtons.forEach((key, value) -> {
             switchToIframeAPI(driver1);
 
@@ -156,5 +165,6 @@ public class IFrameAPIGeneral
 
             assertTrue(getParticipant1().getToolbar().hasButton(value), "Missing button:" + value);
         });
+        TestUtils.print("7777");
     }
 }
