@@ -220,6 +220,8 @@ public class WebParticipantFactory
             prefs.put("intl.accept_languages", "en-US");
             ops.setExperimentalOption("prefs", prefs);
 
+            ops.addArguments("user-data-dir=/tmp/userdata");
+
             ops.addArguments("allow-insecure-localhost");
             ops.addArguments("use-fake-ui-for-media-stream");
             ops.addArguments("use-fake-device-for-media-stream");
