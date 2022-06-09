@@ -304,8 +304,8 @@ public class WebParticipantFactory
             }
 
             //ops.addArguments("vmodule=\"*media/*=3,*turn*=3\"");
-            ops.addArguments("enable-logging");
-            ops.addArguments("vmodule=*=3");
+            //ops.addArguments("enable-logging");
+            //ops.addArguments("vmodule=*=3");
 
             if (isRemote)
             {
