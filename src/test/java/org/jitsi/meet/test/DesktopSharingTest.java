@@ -44,7 +44,10 @@ public class DesktopSharingTest
     @Test
     public void testDesktopSharingStart()
     {
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        JitsiMeetUrl url = getJitsiMeetUrl()
+            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false");
         ensureOneParticipant(url);
 
         ensureTwoParticipants(url, url);
@@ -189,8 +192,12 @@ public class DesktopSharingTest
 
         JitsiMeetUrl meetUrl1 = getJitsiMeetUrl()
             .appendConfig("config.startWithAudioMuted=true")
-            .appendConfig("config.startWithVideoMuted=true");
+            .appendConfig("config.startWithVideoMuted=true")
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false");
         JitsiMeetUrl meetUrl2 = getJitsiMeetUrl()
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false")
             .appendConfig("config.startWithAudioMuted=true");
 
         ensureOneParticipant(meetUrl1);
@@ -248,7 +255,9 @@ public class DesktopSharingTest
 
         WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
             .appendConfig("config.channelLastN=2")
-            .appendConfig("config.startWithAudioMuted=true"));
+            .appendConfig("config.startWithAudioMuted=true")
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false"));
         WebDriver driver4 = participant4.getDriver();
 
         // We now have p1, p2, p3, p4.
