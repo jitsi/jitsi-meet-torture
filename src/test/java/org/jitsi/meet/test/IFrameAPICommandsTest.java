@@ -592,7 +592,9 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleShareScreen()
     {
-        this.iFrameUrl = getIFrameUrl(null, null);
+        this.iFrameUrl = getIFrameUrl(null, null)
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false");
         ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
