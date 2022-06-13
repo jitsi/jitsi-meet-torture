@@ -241,8 +241,12 @@ public class DesktopSharingTest
     @Test(dependsOnMethods = { "testDesktopSharingStop" })
     public void testLastNAndScreenshare()
     {
+        JitsiMeetUrl url = getJitsiMeetUrl()
+            .appendConfig("config.flags.sourceNameSignaling=false")
+            .appendConfig("config.flags.sendMultipleVideoStreams=false");
+
         hangUpAllParticipants();
-        ensureThreeParticipants();
+        ensureThreeParticipants(url);
 
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();

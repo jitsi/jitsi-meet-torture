@@ -205,6 +205,15 @@ public class WebTestBase
     }
 
     /**
+     * Starts participant1, participant2 and participant3 if they are not started.
+     * @param url The url to be used for all the three participants.
+    */
+    public void ensureThreeParticipants(JitsiMeetUrl url)
+    {
+        ensureThreeParticipants(url, url, url);
+    }
+
+    /**
      * @return the {@code id}-th participant as a {@link WebParticipant}.
      * @param id 1-based index of the participant.
      */
