@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -592,10 +593,14 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleShareScreen()
     {
-        this.iFrameUrl = getIFrameUrl(null, null)
+        this.iFrameUrl = getIFrameUrl(
+            null,
+            null,
+            "config.flags.sourceNameSignaling=false&config.flags.sendMultipleVideoStreams=false");
+        JitsiMeetUrl url = getJitsiMeetUrl()
             .appendConfig("config.flags.sourceNameSignaling=false")
             .appendConfig("config.flags.sendMultipleVideoStreams=false");
-        ensureTwoParticipants(this.iFrameUrl, null);
+        ensureTwoParticipants(this.iFrameUrl, url);
 
         WebParticipant participant1 = getParticipant1();
         String endpointId1 = participant1.getEndpointId();
@@ -640,7 +645,7 @@ public class IFrameAPICommandsTest
 
         DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
 
-        ensureThreeParticipants(this.iFrameUrl, null, null);
+        ensureThreeParticipants(this.iFrameUrl, url, url);
 
         WebParticipant participant3 = getParticipant3();
         String endpointId3 = participant3.getEndpointId();
