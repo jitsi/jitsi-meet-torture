@@ -593,6 +593,7 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleShareScreen()
     {
+        hangUpAllParticipants();
         this.iFrameUrl = getIFrameUrl(
             null,
             null,
