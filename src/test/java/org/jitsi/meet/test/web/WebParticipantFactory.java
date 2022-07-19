@@ -254,6 +254,11 @@ public class WebParticipantFactory
                 ops.addArguments("window-size=1200x600");
             }
 
+            if (options.getDisableDecoding())
+            {
+                ops.addArguments("force-fieldtrials=WebRTC-BlackFrameDecoder/Enabled/");
+            }
+
             // starting version 46 we see crashes of chrome GPU process when
             // running in headless mode
             // which leaves the browser opened and selenium hang forever.
