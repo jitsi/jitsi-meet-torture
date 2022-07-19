@@ -86,7 +86,7 @@ set_defaults() {
       MALLEUS_USE_STAGE_VIEW=false
     fi
 
-    if [ -z "$MALLEUS_ENABLE_DECODING"; then
+    if [ -z "$MALLEUS_ENABLE_DECODING" ]; then
       MALLEUS_ENABLE_DECODING=false
     fi
 
