@@ -280,6 +280,23 @@ public class SecurityDialog
     }
 
     /**
+     * Returns the switch that can be used to detect lobby state or change lobby state.
+     * @return the lobby switch UI element or null if missing.
+     */
+    private WebElement getLobbySwitchInput()
+    {
+        WebDriver driver = participant.getDriver();
+        List<WebElement> lobbySection = driver.findElements(By.id(LOBBY_SECTION_ID));
+
+        if (lobbySection.size() == 0)
+        {
+            return null;
+        }
+
+        return lobbySection.get(0).findElement(By.xpath("//input"));
+    }
+
+    /**
      * Checks if the current conference has lobby enabled based on the security dialog's display state.
      *
      * @return {@code true} if the conference has lobby enabled in the security dialog, {@code false} otherwise.
@@ -288,7 +305,7 @@ public class SecurityDialog
     {
         open();
 
-        WebElement lobbySwitch = getLobbySwitch();
+        WebElement lobbySwitch = getLobbySwitchInput();
 
         return lobbySwitch != null && lobbySwitch.isSelected();
     }
