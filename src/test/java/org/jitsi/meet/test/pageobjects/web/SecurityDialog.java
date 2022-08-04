@@ -79,10 +79,10 @@ public class SecurityDialog
 
         TestUtils.waitForElementBy(
             driver,
-            By.className(ADD_PASSWORD_FIELD),
+            By.id(ADD_PASSWORD_FIELD),
             5);
         WebElement passwordEntry
-            = driver.findElement(By.className(ADD_PASSWORD_FIELD));
+            = driver.findElement(By.id(ADD_PASSWORD_FIELD));
 
         passwordEntry.sendKeys(password);
         passwordEntry.sendKeys(Keys.RETURN);
