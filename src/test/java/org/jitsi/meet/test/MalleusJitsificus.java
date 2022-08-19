@@ -179,7 +179,7 @@ public class MalleusJitsificus
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
         {
-            String roomName = roomNamePrefix + i;
+            String roomName = roomNamePrefix ;
             JitsiMeetUrl url
                 = participants.getJitsiMeetUrl()
                 .setRoomName(roomName)
@@ -389,10 +389,14 @@ public class MalleusJitsificus
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
+            }else{
+                _url.appendConfig("config.startWithVideoMuted=false");
             }
             if (muteAudio)
             {
                 _url.appendConfig("config.startWithAudioMuted=true");
+            }else {
+                 _url.appendConfig("config.startWithAudioMuted=false");
             }
             if (numClients != 1)
             {
@@ -430,7 +434,6 @@ public class MalleusJitsificus
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
-                .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
                 .setHeadless(useHeadless)
                 .setLoadTest(useLoadTest);
 
@@ -451,6 +454,7 @@ public class MalleusJitsificus
             allHungUp.register();
             try
             {
+                _url.appendConfig("userInfo.displayName=\"" + System.getProperty("user.name") + " " + (i + 1) + "\"", true);
                 participant.joinConference(_url);
             }
             catch (Exception e)

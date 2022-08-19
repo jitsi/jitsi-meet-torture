@@ -211,6 +211,6 @@ mvn \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
 -Djitsi-meet.instance.url=$MALLEUS_INSTANCE_URL \
--Djitsi-meet.isRemote=true \
+-Djitsi-meet.isRemote=false \
 -Dchrome.disable.nosanbox=true \
 test
