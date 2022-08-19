@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.base;
 
+import com.bipmeet.test.util.BMUtils;
 import org.apache.commons.io.*;
 import org.jitsi.meet.test.base.stats.*;
 import org.jitsi.meet.test.pageobjects.*;
@@ -160,6 +161,8 @@ public abstract class Participant<T extends WebDriver>
         this.joinedRoomName = meetURL.getRoomName();
         this.meetUrl = meetURL;
         this.hungUp = false;
+
+         BMUtils.clickContinueOnBrowserButton(this);
     }
 
     /**
@@ -207,6 +210,8 @@ public abstract class Participant<T extends WebDriver>
         TestUtils.print("Closing " + name);
 
         cancelKeepAlive();
+
+        hangUp();
 
         driver.quit();
 

@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.base;
 
+import com.bipmeet.test.util.BMUtils;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -79,7 +80,7 @@ public abstract class AbstractBaseTest<P extends Participant>
     /**
      * The current room name used.
      */
-    protected final String currentRoomName;
+    protected String currentRoomName;
 
     /**
      * The participants pool created/used by this test instance.
@@ -177,6 +178,8 @@ public abstract class AbstractBaseTest<P extends Participant>
             "---=== Testing " + className + " ===---");
 
         participants = createParticipantHelper(config);
+
+        currentRoomName = BMUtils.getRoomName(currentRoomName, config);
 
         participants.initialize();
 

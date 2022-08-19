@@ -48,6 +48,8 @@ public class WebParticipant extends Participant<WebDriver>
     public static final String DEFAULT_CONFIG
         = "config.requireDisplayName=false"
             + "&config.debug=true"
+            + "&config.startWithAudioMuted=false"
+            + "&config.startWithVideoMuted=false"
             + "&config.testing.testMode=true"
             + "&config.disableAEC=true"
             + "&config.disableNS=true"
@@ -260,6 +262,10 @@ public class WebParticipant extends Participant<WebDriver>
         {
             try
             {
+                // TODO: remove this after solving hangup button reference for bip-meet
+                String script = "return APP.conference.hangup()";
+                TestUtils.executeScriptAndReturnBoolean(getDriver(), script);
+
                 getToolbar().clickHangUpButton();
             }
             catch(Exception e)
