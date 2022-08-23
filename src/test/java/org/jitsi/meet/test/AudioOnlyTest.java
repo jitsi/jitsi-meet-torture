@@ -89,7 +89,7 @@ public class AudioOnlyTest
 
     /**
      * Disables audio only mode and verifies that both participant1 and
-     * participant2 participant see participant1 as not video muted.
+     * participant2 participant see participant1 as video muted.
      */
     @Test(dependsOnMethods = { "avatarsDisplayForParticipants" })
     public void disableAudioOnlyAndCheck()
@@ -97,7 +97,7 @@ public class AudioOnlyTest
         setAudioOnlyAndCheck(
             getParticipant1(),
             getParticipant2(),
-            false);
+            true);
     }
 
     /**
