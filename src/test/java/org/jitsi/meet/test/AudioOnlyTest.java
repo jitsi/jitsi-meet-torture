@@ -60,23 +60,9 @@ public class AudioOnlyTest
     }
 
     /**
-     * Verifies that participant1 cannot video unmute while in audio only mode.
-     */
-    @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
-    public void videoUnmuteDisabledInAudioOnly()
-    {
-        getParticipant1().getToolbar().clickAudioMuteButton();
-
-        verifyVideoMute(
-            getParticipant1(),
-            getParticipant2(),
-            true);
-    }
-
-    /**
      * Verifies that participant1 sees avatars for itself and other participants.
      */
-    @Test(dependsOnMethods = { "videoUnmuteDisabledInAudioOnly" })
+    @Test(dependsOnMethods = { "enableAudioOnlyAndCheck" })
     public void avatarsDisplayForParticipants()
     {
         WebDriver driver1 = getParticipant1().getDriver();
@@ -88,8 +74,8 @@ public class AudioOnlyTest
     }
 
     /**
-     * Disables audio only mode and verifies that both participant1 and
-     * participant2 participant see participant1 as not video muted.
+     * Disables audio only mode and verifies that both participant1 and participant2 see participant1 as not video
+     * muted.
      */
     @Test(dependsOnMethods = { "avatarsDisplayForParticipants" })
     public void disableAudioOnlyAndCheck()
@@ -98,6 +84,40 @@ public class AudioOnlyTest
             getParticipant1(),
             getParticipant2(),
             false);
+    }
+
+    /**
+     * Mutes video on participant1, toggles audio-only twice and then verifies if both participants see participant1
+     * as video muted.
+     */
+    @Test(dependsOnMethods = { "disableAudioOnlyAndCheck"})
+    public void testAudioOnlyAfterMuted()
+    {
+        // Mute video on participant1.
+        getParticipant1().getToolbar().clickVideoMuteButton();
+
+        verifyVideoMute(getParticipant1(), getParticipant2(), true);
+
+        // Enable audio-only mode.
+        setAudioOnlyAndCheck(getParticipant1(), getParticipant2(), true);
+
+        // Disable audio-only mode.
+        setAudioOnly(getParticipant1(), false);
+
+        // Participant1 should stay muted since it was muted before audio-only was enabled.
+        verifyVideoMute(getParticipant1(), getParticipant2(), true);
+    }
+
+    /**
+     * Unmutes video on participant1 and verifies both participants see participant1 as not video muted.
+     */
+    @Test(dependsOnMethods = { "testAudioOnlyAfterMuted" })
+    public void unmuteAfterAudioOnlyDisabled()
+    {
+        // Unmute video on participant1.
+        getParticipant1().getToolbar().clickVideoMuteButton();
+
+        verifyVideoMute(getParticipant1(), getParticipant2(), false);
     }
 
     /**
