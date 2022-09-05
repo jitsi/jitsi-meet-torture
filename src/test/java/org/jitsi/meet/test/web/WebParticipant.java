@@ -60,6 +60,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.p2p.useStunTurn=false"
             + "&config.pcStatsInterval=1500"
             + "&config.prejoinConfig.enabled=false"
+            +"&config.prejoinPageEnabled=false"
             + (DISABLE_UNIFIED ? "&config.p2p.enableUnifiedOnChrome=false&config.enableUnifiedOnChrome=false" : "")
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
@@ -514,44 +515,71 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * {@inheritDoc}
      */
+    //Input__InputElement-sc-1o6bj35-0 GVpqe
     @Override
     public void setDisplayName(String name)
+{
+    WebDriver driver = getDriver();
+
+    WebElement elem =
+            driver.findElement(By.xpath(
+                    "//span[@id='localVideoContainer']"
+                            + "//span[@id='localDisplayName']"));
+    // hover the element before clicking
+    Actions actions = new Actions(driver);
+    actions.moveToElement(elem);
+    actions.perform();
+
+    elem.click();
+
+    WebElement inputElem =
+            driver.findElement(By.xpath(
+                    "//span[@id='localVideoContainer']"
+                            + "//input[@id='editDisplayName']"));
+    actions = new Actions(driver);
+    actions.moveToElement(inputElem);
+
+    if (name != null && name.length() > 0)
+    {
+        actions.sendKeys(name);
+    }
+    else
+    {
+        actions.sendKeys(Keys.BACK_SPACE);
+    }
+
+    actions.sendKeys(Keys.RETURN);
+    actions.perform();
+
+    // just click somewhere to lose focus, to make sure editing has ended
+    MeetUIUtils.clickOnLocalVideo(driver);
+}
+
+    /*public void setDisplayNameForBipMeet(String name)
     {
         WebDriver driver = getDriver();
 
-        WebElement elem =
-            driver.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//span[@id='localDisplayName']"));
-        // hover the element before clicking
-        Actions actions = new Actions(driver);
-        actions.moveToElement(elem);
-        actions.perform();
-
-        elem.click();
+        driver.switchTo().alert();
 
         WebElement inputElem =
-            driver.findElement(By.xpath(
-                "//span[@id='localVideoContainer']"
-                    + "//input[@id='editDisplayName']"));
-        actions = new Actions(driver);
-        actions.moveToElement(inputElem);
+                driver.findElement(By.xpath("//input[contains(@class, 'Input__InputElement')]"));
+
 
         if (name != null && name.length() > 0)
         {
-            actions.sendKeys(name);
+            inputElem.clear();
+            inputElem.sendKeys(name);
         }
         else
         {
-            actions.sendKeys(Keys.BACK_SPACE);
+            inputElem.sendKeys(Keys.BACK_SPACE);
         }
 
-        actions.sendKeys(Keys.RETURN);
-        actions.perform();
+        inputElem.sendKeys(Keys.RETURN);
 
         // just click somewhere to lose focus, to make sure editing has ended
         MeetUIUtils.clickOnLocalVideo(driver);
-    }
+    }*/
 
     /**
      * {@inheritDoc}
@@ -563,7 +591,7 @@ public class WebParticipant extends Participant<WebDriver>
         // wrong element (e.g. the chat input field). Selecting "body" instead
         // of another element seems to make this condition appear less often.
         WebDriver driver = getDriver();
-        WebElement body = driver.findElement(By.tagName("body"));
+        WebElement body = driver.findElement(By.className("toolbox-content-items"));
         Actions actions = new Actions(driver);
         actions.moveToElement(body);
         actions.sendKeys(body, shortcut.toString());

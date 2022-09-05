@@ -119,6 +119,8 @@ public class Notifications
      */
     private static final String REMOTELY_VIDEO_MUTED_CLOSE_NOTIFICATION = "notify.videoMutedRemotelyTitle-dismiss";
 
+    private static final String BIPMEET_KICK_NOTIFICATION = "modal-dialog-form";
+
     public Notifications(WebParticipant participant)
     {
         this.participant = participant;
@@ -141,6 +143,11 @@ public class Notifications
     private boolean hasNotification(String testId)
     {
         return this.participant.getDriver().findElements(ByTestId.testId(testId)).size() > 0;
+    }
+
+    private boolean bipMeetKickNotification(String id)
+    {
+        return this.participant.getDriver().findElements(By.id(id)).size() > 0;
     }
 
     /**
@@ -272,7 +279,10 @@ public class Notifications
     {
         return hasNotification(KICKED_NOTIFICATION_TEST_ID);
     }
-
+    public boolean bipmeetHasKickedNotification()
+    {
+        return bipMeetKickNotification(BIPMEET_KICK_NOTIFICATION);
+    }
     /**
      * The notification on moderators page when the participant tries to unmute.
      * @return the notification on moderators page when the participant wants to unmute.

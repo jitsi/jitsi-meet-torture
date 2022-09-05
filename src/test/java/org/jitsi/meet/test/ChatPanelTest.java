@@ -53,10 +53,12 @@ public class ChatPanelTest
         WebParticipant participant = getParticipant1();
 
         // The chat panel requires a display name to be set.
-        participant.setDisplayName("bla");
-
         ChatPanel chatPanel = participant.getChatPanel();
         Toolbar toolbar = participant.getToolbar();
+
+        participant.setDisplayName("bla");
+
+        toolbar.clickOverflowButton();
 
 
         chatPanel.assertClosed();

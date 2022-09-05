@@ -62,14 +62,38 @@ public class BreakoutRoomsList
         }
         catch(TimeoutException ex)
         {
-            // if the list is missing return empty list of rooms
-            Logger.getGlobal().log(Level.WARNING, "No breakout rooms");
-            return 0;
-        }
+        // if the list is missing return empty list of rooms
+        Logger.getGlobal().log(Level.WARNING, "No breakout rooms");
+        return 0;
+    }
         return participant.getDriver().findElements(By.className(BREAKOUT_ROOMS_CLASS)).size();
     }
 
     public List<BreakoutRoom> getRooms()
+ {
+    List<BreakoutRoom> rooms = new ArrayList<>();
+
+    try
+    {
+        TestUtils.waitForDisplayedElementByID(participant.getDriver(), BREAKOUT_ROOMS_LIST_ID, 5);
+    }
+    catch(TimeoutException ex)
+    {
+        // if the list is missing return empty list of rooms
+        Logger.getGlobal().log(Level.WARNING, "No breakout rooms list ");
+        return rooms;
+    }
+
+    List<WebElement> listElements = participant.getDriver().findElements(By.className(BREAKOUT_ROOMS_CLASS));
+
+    listElements.forEach(el -> {
+        rooms.add(new BreakoutRoom(el.findElement(By.tagName("span")).getText(), el.getAttribute("data-testid")));
+    });
+
+    return rooms;
+}
+
+    public List<BreakoutRoom> getBipMeetBreakoutRooms()
     {
         List<BreakoutRoom> rooms = new ArrayList<>();
 
@@ -100,7 +124,7 @@ public class BreakoutRoomsList
 
     public class BreakoutRoom
     {
-        private final static String MORE_LABEL="More";
+        private final static String MORE_LABEL="breakoutRooms.actions.more";
         private final String title;
         private final String id;
         private final int count;
@@ -124,13 +148,12 @@ public class BreakoutRoomsList
 
         public String getName()
         {
-            return title.split("\\(")[0];
+            return title.split(":")[0];
         }
 
         private int getCount()
         {
-            String count = this.title.split("\\(")[1];
-            count = count.split("\\)")[0];
+            String count = this.title.split(": ")[1];
             return Integer.parseInt(count);
         }
 
@@ -176,6 +199,7 @@ public class BreakoutRoomsList
                     By.id("remove-room-" + id), 2);
 
             removeButton.click();
+
         }
 
         public void closeRoom()

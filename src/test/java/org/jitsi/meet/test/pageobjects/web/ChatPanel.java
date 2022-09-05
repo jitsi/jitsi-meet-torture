@@ -22,6 +22,7 @@ import org.openqa.selenium.support.ui.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents the chat panel in a particular {@link WebParticipant}.
@@ -64,7 +65,7 @@ public class ChatPanel
         try
         {
             return new WebDriverWait(this.participant.getDriver(), 3)
-                .until(driver -> driver.findElement(By.id("sideToolbarContainer")));
+                .until(driver -> driver.findElement(By.className("slideInExt")));
         }
         catch(Exception e)
         {
@@ -105,6 +106,12 @@ public class ChatPanel
      */
     public void assertClosed()
     {
+
+        //participant.waitForCondition(this::isChatClosed, 3, "Chat panel didnot closed" );
         assertNull(getChat());
+    }
+
+    private boolean isChatClosed() {
+        return getChat() == null;
     }
 }

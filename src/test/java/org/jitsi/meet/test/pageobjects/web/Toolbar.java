@@ -20,6 +20,7 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 
+import java.sql.Driver;
 import java.util.*;
 
 /**
@@ -34,7 +35,7 @@ public class Toolbar
      * within the {@link Toolbar}.
      */
     public final static String AUDIO_MUTE = "Mute / Unmute";
-    public final static String CHAT = "Open / Close chat";
+    public final static String CHAT = "Toggle chat window";
     public final static String DESKTOP = "Start / Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
     public final static String ETHERPAD = "Toggle shared document";
@@ -46,8 +47,8 @@ public class Toolbar
     public final static String LIVE_STREAM = "Live Stream";
     public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
     public final static String MUTE_EVERYONE_VIDEO = "Stop everyone's video";
-    public final static String OVERFLOW = "More actions";
-    public final static String OVERFLOW_MENU = "More actions menu" ;
+    public final static String OVERFLOW = "Toggle more actions menu";
+    public final static String OVERFLOW_MENU = "Toggle more actions menu" ;
     public final static String PARTICIPANTS = "Participants" ;
     public final static String PROFILE = "Edit your profile";
     public final static String RAISE_HAND = "Raise / Lower your hand";
@@ -62,6 +63,7 @@ public class Toolbar
     public final static String TILE_VIEW_BUTTON = "Toggle tile view";
     public final static String VIDEO_MUTE = "Start / Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
+
 
     /**
      * The ID of the toolbar. To be used as a selector when trying to locate
@@ -127,6 +129,15 @@ public class Toolbar
     public void clickChatButton()
     {
         clickButton(CHAT);
+    }
+
+    public void bipmeetLoseFocus(){
+
+        WebDriver driver = participant.getDriver();
+        WebElement inputBox = driver.findElement(By.id("usermsg"));
+        ((JavascriptExecutor)driver).executeScript(
+                "arguments[0].dispatchEvent(new Event('blur'))",
+                inputBox);
     }
 
     /**

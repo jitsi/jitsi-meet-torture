@@ -45,11 +45,13 @@ public class ParticipantsPane
      */
     private final static String ADD_BREAKOUT_ROOM = "Add breakout room";
 
+    private final static String BREAKOUT_SESSIONS = "Breakout Session";
+
     /**
      * Accessibility label to be used as selectors for finding Leave breakout room
      * button within the {@link ParticipantsPane}.
      */
-    private final static String LEAVE_ROOM_LABEL = "Leave breakout room";
+    private final static String LEAVE_ROOM_LABEL = "Leave the Breakout Session";
 
     /**
      * Accessibility label to be used as selectors for finding Auto assign
@@ -167,6 +169,43 @@ public class ParticipantsPane
         clickAddBreakoutRoomButton();
     }
 
+    public void passBreakOutSession(){
+
+        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(BREAKOUT_SESSIONS);
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.cssSelector(cssSelector), 5);
+        clickAddBreakoutRoomSessionsButton();
+
+    }
+
+    public void addBreakoutRoomBipMeet() {
+
+        passBreakOutSession();
+
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.id("0"), 5).sendKeys("BreakOutRoom");
+        TestUtils.click(participant.getDriver(), By.id("modal-dialog-ok-button"));
+
+    }
+
+    public void addBreakOutRoomForAutoAssignBipMeet() {
+
+        passBreakOutSession();
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.id("automatic"), 5).click();
+
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.id("0"), 5).sendKeys("BreakOutRoom1");
+        TestUtils.waitForElementBy(participant.getDriver(),
+                By.id("1"), 5).sendKeys("BreakOutRoom2");
+
+        TestUtils.click(participant.getDriver(), By.id("modal-dialog-ok-button"));
+
+    }
+
+    public void passBipMeetBreakoutRoomRemovePopup(){
+        TestUtils.click(participant.getDriver(), By.id("modal-dialog-ok-button"));
+    }
     /**
      * Trys to click auto assign to breakout rooms button.
      */
@@ -296,6 +335,15 @@ public class ParticipantsPane
         MeetUIUtils.clickOnElement(
                 participant.getDriver(),
                 MeetUIUtils.getAccessibilityCSSSelector(ADD_BREAKOUT_ROOM),
+                true
+        );
+    }
+
+    private void clickAddBreakoutRoomSessionsButton()
+    {
+        MeetUIUtils.clickOnElement(
+                participant.getDriver(),
+                MeetUIUtils.getAccessibilityCSSSelector(BREAKOUT_SESSIONS),
                 true
         );
     }
