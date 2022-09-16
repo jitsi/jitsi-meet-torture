@@ -58,7 +58,6 @@ public class DesktopSharingTest
             .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
-        ensureOneParticipant(url);
         ensureTwoParticipants(url, url);
 
         WebParticipant participant1 = getParticipant1();
