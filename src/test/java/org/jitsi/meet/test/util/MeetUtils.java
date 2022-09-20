@@ -87,7 +87,7 @@ public class MeetUtils
      * The javascript code which returns {@code true} if multi-stream is enabled.
      */
     public static final String MULTI_STREAM_ENABLED_CHECK_SCRIPT =
-        "return Boolean(config.flags?.sourceNameSignaling && config.flags?.sendMultipleVideoStreams)";
+        "return (config.flags?.sourceNameSignaling && config.flags?.sendMultipleVideoStreams) ?? true";
 
     /**
      * Returns the webrtc stats (in JSON format) of the specific participant
