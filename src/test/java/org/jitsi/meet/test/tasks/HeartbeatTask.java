@@ -17,6 +17,7 @@ package org.jitsi.meet.test.tasks;
 
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
+import org.openqa.selenium.*;
 import org.testng.*;
 
 import java.util.*;
@@ -168,6 +169,14 @@ public class HeartbeatTask
         }
         catch (Exception e)
         {
+            // Chrome crashed
+            if (e instanceof WebDriverException && e.getMessage() != null
+                && e.getMessage().startsWith("chrome not reachable"))
+            {
+                // skip this check
+                return;
+            }
+
             e.printStackTrace();
 
             assertAndQuit("Unexpected error occurred.");
