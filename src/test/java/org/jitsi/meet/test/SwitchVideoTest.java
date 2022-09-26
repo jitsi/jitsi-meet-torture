@@ -54,8 +54,7 @@ public class SwitchVideoTest
     {
         super.setupClass();
 
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
-        ensureTwoParticipants(url, url);
+        ensureTwoParticipants();
     }
 
     /**
@@ -114,26 +113,25 @@ public class SwitchVideoTest
      */
     public static void unpinRemoteVideoAndTest(Participant participant, String endpointId)
     {
-        // Remote video with 'videoContainerFocused' is the pinned one
-        String pinnedThumbXpath
-            = "//span[ @id='participant_" + endpointId + "'" +
-              "        and contains(@class,'videoContainerFocused') ]";
+        String thumbXPath
+            = "//span[ @id='participant_" + endpointId + "'" + " ]";
 
         WebElement pinnedThumb
-            = participant.getDriver().findElement(By.xpath(pinnedThumbXpath));
+            = participant.getDriver().findElement(By.xpath(thumbXPath));
 
         assertNotNull(
             pinnedThumb,
             "Pinned remote video not found for " + endpointId);
 
         // click on remote
-        participant.getDriver().findElement(By.xpath(pinnedThumbXpath)).click();
+        participant.getDriver().findElement(By.xpath(thumbXPath)).click();
 
         // Wait for the video to unpin
         try
         {
+            String pinXPath = thumbXPath + "//div[ @id='pin-indicator-" + endpointId + "' ]";
             TestUtils.waitForElementNotPresentByXPath(
-                participant.getDriver(), pinnedThumbXpath, 2);
+                participant.getDriver(), pinXPath, 2);
         }
         catch (TimeoutException exc)
         {

@@ -16,7 +16,6 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
-import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -203,11 +202,9 @@ public class IFrameAPIFunctionsTest
     @Test(dependsOnMethods = { "testFunctionGetVideoQuality" })
     public void testFunctionPinParticipant()
     {
-        hangUpAllParticipants();
-        this.iFrameUrl = getIFrameUrl(null, null, "config.filmstrip.disableStageFilmstrip=true");
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
+        this.iFrameUrl = getIFrameUrl(null, null);
         // the previous test left it in meeting content
-        ensureThreeParticipants(this.iFrameUrl, url, url);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
 
         WebParticipant participant1 = getParticipant1();
         WebDriver driver1 = participant1.getDriver();

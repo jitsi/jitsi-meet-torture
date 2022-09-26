@@ -54,8 +54,7 @@ public class OneOnOneTest
     public void testFilmstripHiddenInOneOnOne()
     {
         JitsiMeetUrl url
-            = getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES)
-                .appendConfig("config.filmstrip.disableStageFilmstrip=true");
+            = getJitsiMeetUrl().appendConfig(ONE_ON_ONE_CONFIG_OVERRIDES);
         ensureTwoParticipants(url, url);
 
         WebParticipant participant1 =  getParticipant1();
