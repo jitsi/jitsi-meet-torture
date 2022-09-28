@@ -17,7 +17,6 @@ package org.jitsi.meet.test;
 
 import java.util.stream.*;
 
-import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -46,9 +45,7 @@ public class FollowMeTest
     {
         super.setupClass();
 
-
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
-        ensureTwoParticipants(url, url);
+        ensureTwoParticipants();
 
         oneTimeSetUp();
     }

@@ -55,7 +55,6 @@ public class DesktopSharingTest
     public void testDesktopSharingStart()
     {
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
         ensureTwoParticipants(url, url);
@@ -135,7 +134,6 @@ public class DesktopSharingTest
     public void testP2pToJvbSwitch()
     {
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
         WebParticipant participant1 = getParticipant1();
@@ -177,7 +175,6 @@ public class DesktopSharingTest
     public void testJvbToP2pSwitchAndBack()
     {
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
         WebParticipant participant1 = getParticipant1();
@@ -246,7 +243,6 @@ public class DesktopSharingTest
     public void testStopScreenshareSwitchBack()
     {
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
         WebParticipant participant1 = getParticipant1();
@@ -307,7 +303,6 @@ public class DesktopSharingTest
         hangUpAllParticipants();
 
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.p2p.enabled=true");
 
         ensureOneParticipant(url);
@@ -553,7 +548,6 @@ public class DesktopSharingTest
     public void testLastNAndScreenshare()
     {
         JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.filmstrip.disableStageFilmstrip=true")
             .appendConfig("config.flags.sourceNameSignaling=false")
             .appendConfig("config.flags.sendMultipleVideoStreams=false");
 

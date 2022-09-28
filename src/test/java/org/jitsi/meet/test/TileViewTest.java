@@ -16,7 +16,6 @@
 
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
@@ -51,8 +50,7 @@ public class TileViewTest
     {
         super.setupClass();
 
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
-        ensureTwoParticipants(url, url);
+        ensureTwoParticipants();
     }
 
     /**
@@ -89,12 +87,6 @@ public class TileViewTest
             getParticipant2().getEndpointId());
 
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
-
-        MeetUIUtils.clickOnRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
-
-        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
     }
 
     /**
@@ -104,6 +96,10 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testPinningExitsTileView" })
     public void testLocalVideoDisplaysAtEnd()
     {
+        enterTileView();
+
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
+
         WebDriver driver = getParticipant1().getDriver();
 
         TestUtils.waitForElementBy(

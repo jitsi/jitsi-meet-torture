@@ -15,7 +15,6 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -127,8 +126,7 @@ public class AvatarTest
             participant2AvatarSrc);
 
         // Start the third participant
-        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.filmstrip.disableStageFilmstrip=true");
-        ensureThreeParticipants(null, null, url);
+        ensureThreeParticipants();
 
         // Temporary wait few seconds so the avatar to be downloaded from libravatar
         // Seems there is some delay when requesting it
