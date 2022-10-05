@@ -209,6 +209,8 @@ public class HeartbeatTask
         {
             waitSignal.await(timeout, timeUnit);
 
+            timer.cancel();
+
             if (waitSignal.getCount() == 0)
                 Assert.fail("A problem with the conf occurred");
         }
