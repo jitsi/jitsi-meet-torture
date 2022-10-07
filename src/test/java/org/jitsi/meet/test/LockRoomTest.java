@@ -238,6 +238,7 @@ public class LockRoomTest
      */
     public static void submitPassword(WebDriver driver, String password)
     {
+        TestUtils.waitMillis(500);
         waitForPasswordDialog(driver);
 
         WebElement passwordInput = driver.findElement(
@@ -246,6 +247,7 @@ public class LockRoomTest
         passwordInput.clear();
         passwordInput.sendKeys(password);
 
+        TestUtils.waitMillis(500);
         ModalDialogHelper.clickOKButton(driver);
     }
 
