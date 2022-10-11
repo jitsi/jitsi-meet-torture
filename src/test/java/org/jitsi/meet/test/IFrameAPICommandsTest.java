@@ -1284,7 +1284,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String virtualBackgroundDialogXpath = "//span[@id='dialog-heading-1']";
+        String virtualBackgroundDialogXpath = "//p[@id='dialog-title']";
         String dialogTitle = "Virtual backgrounds";
 
         TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 2);

@@ -177,6 +177,7 @@ public class IFrameAPIFunctionsTest
 
         switchToMeetContent(this.iFrameUrl, driver);
 
+        TestUtils.waitMillis(500);
         AudioOnlyTest.setAudioOnly(participant1, false);
 
         // now let's test the command
