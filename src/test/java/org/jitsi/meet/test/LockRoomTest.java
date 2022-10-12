@@ -246,7 +246,9 @@ public class LockRoomTest
         passwordInput.clear();
         passwordInput.sendKeys(password);
 
-        ModalDialogHelper.clickOKButton(driver);
+        String okButtonXPath = "//button[@id='modal-dialog-ok-button']";
+        TestUtils.waitForElementByXPath(driver, okButtonXPath, 5);
+        TestUtils.click(driver, By.xpath(okButtonXPath));
     }
 
     /**
