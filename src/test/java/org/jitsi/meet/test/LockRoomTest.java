@@ -99,6 +99,7 @@ public class LockRoomTest
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
 
+        TestUtils.waitMillis(500);
         // wait for password prompt
         waitForPasswordDialog(driver2);
 
@@ -238,14 +239,18 @@ public class LockRoomTest
      */
     public static void submitPassword(WebDriver driver, String password)
     {
+        TestUtils.waitMillis(500);
         waitForPasswordDialog(driver);
 
+        TestUtils.waitMillis(500);
         WebElement passwordInput = driver.findElement(
             By.xpath("//input[@name='lockKey']"));
 
+        TestUtils.waitMillis(500);
         passwordInput.clear();
         passwordInput.sendKeys(password);
 
+        TestUtils.waitMillis(500);
         ModalDialogHelper.clickOKButton(driver);
     }
 
