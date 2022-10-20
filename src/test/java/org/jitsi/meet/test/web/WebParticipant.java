@@ -233,6 +233,13 @@ public class WebParticipant extends Participant<WebDriver>
             }
         }
 
+        if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
+        {
+            // Hack-in disabling of callstats (old versions of jitsi-meet don't
+            // handle URL parameters)
+            executeScript("config.callStatsID=false;");
+        }
+
         String version = TestUtils.executeScriptAndReturnString(driver,
             "return JitsiMeetJS.version;");
         TestUtils.print(name + " lib-jitsi-meet version: " + version
