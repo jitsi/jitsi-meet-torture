@@ -103,6 +103,7 @@ public class LockRoomTest
         waitForPasswordDialog(driver2);
 
         submitPassword(driver2, ROOM_KEY + "1234");
+        TestUtils.waitMillis(500);
 
         // wait for password prompt
         waitForPasswordDialog(driver2);
