@@ -98,7 +98,7 @@ public class LockRoomTest
 
         WebParticipant participant2 = getParticipant2();
         WebDriver driver2 = participant2.getDriver();
-        TestUtils.waitMillis(1000);
+        TestUtils.waitMillis(5000);
 
         // wait for password prompt
         //waitForPasswordDialog(driver2);

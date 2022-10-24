@@ -201,7 +201,7 @@ public class WebParticipantFactory
         }
         else
         {
-            WebDriverManager.chromedriver().setup();
+            WebDriverManager.chromedriver().browserVersion("105").setup();
 
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty(
