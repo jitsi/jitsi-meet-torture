@@ -594,14 +594,9 @@ public class IFrameAPICommandsTest
     public void testCommandToggleShareScreen()
     {
         hangUpAllParticipants();
-        this.iFrameUrl = getIFrameUrl(
-            null,
-            null,
-            "config.flags.sourceNameSignaling=false&config.flags.sendMultipleVideoStreams=false");
-        JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.flags.sourceNameSignaling=false")
-            .appendConfig("config.flags.sendMultipleVideoStreams=false");
-        ensureTwoParticipants(this.iFrameUrl, url);
+        this.iFrameUrl = getIFrameUrl(null, null);
+
+        ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
         String endpointId1 = participant1.getEndpointId();
@@ -619,7 +614,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+        DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
 
         switchToIframeAPI(driver1);
 
@@ -637,24 +632,24 @@ public class IFrameAPICommandsTest
         assertEquals(JsonParser.parseString(res).getAsJsonArray().get(0).getAsString(), endpointId1);
 
         JsonObject sharingData = getEventResult(driver1, "screenSharingStatusChanged");
-        assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing mst be on");
+        assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing must be on");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
+        DesktopSharingTest.checkForScreensharingTile(participant1, participant2, false, 5);
 
-        ensureThreeParticipants(this.iFrameUrl, url, url);
+        ensureThreeParticipants(this.iFrameUrl, null, null);
 
         WebParticipant participant3 = getParticipant3();
         String endpointId3 = participant3.getEndpointId();
 
         participant2.getToolbar().clickDesktopSharingButton();
         participant3.getToolbar().clickDesktopSharingButton();
-        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant2, "desktop");
-        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant3, "desktop");
+        DesktopSharingTest.checkForScreensharingTile(participant2, participant1, true, 5);
+        DesktopSharingTest.checkForScreensharingTile(participant3, participant1, true, 5);
 
         switchToIframeAPI(driver1);
 
