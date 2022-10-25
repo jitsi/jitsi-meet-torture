@@ -39,16 +39,6 @@ public class DesktopSharingTest
         = "//span[@id='localVideoWrapper']";
 
     /**
-     * The xpath for the participant1's screenshare thumbnail.
-     */
-    private String screenshareXpath1;
-
-    /**
-     * The xpath for the participant2's screenshare thumbnail.
-     */
-    private String screenshareXpath2;
-
-    /**
      * Check desktop sharing start.
      */
     @Test
@@ -66,19 +56,11 @@ public class DesktopSharingTest
 
         if (MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
         {
-            screenshareXpath2 = "//span[@id='participant_" + participant2.getEndpointId() + "-v1']";
+            // Check if a remote screenshare tile is created on p1.
+            checkForScreensharingTile(participant2, participant1, true, 5);
 
             // Check if a local screenshare tile is created on p2.
-            TestUtils.waitForDisplayedElementByXPath(
-                participant2.getDriver(),
-                screenshareXpath2,
-                5);
-
-            // Check if a remote screenshare tile is created on p1.
-            TestUtils.waitForDisplayedElementByXPath(
-                participant1.getDriver(),
-                screenshareXpath2,
-                5);
+            checkForScreensharingTile(participant2, participant2, true, 5);
 
             // The video should be playing.
             TestUtils.waitForBoolean(participant1.getDriver(),
@@ -109,16 +91,10 @@ public class DesktopSharingTest
         if (MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
         {
             // Check if the local screenshare thumbnail disappers on p2.
-            TestUtils.waitForNotDisplayedElementByXPath(
-                participant2.getDriver(),
-                screenshareXpath2,
-                5);
+            checkForScreensharingTile(participant2, participant2, false, 5);
 
             // Check if the remote screenshare thumbnail disappears on p1.
-            TestUtils.waitForNotDisplayedElementByXPath(
-                participant1.getDriver(),
-                screenshareXpath2,
-                5);
+            checkForScreensharingTile(participant1, participant2, false, 5);
         }
         else
         {
@@ -149,20 +125,11 @@ public class DesktopSharingTest
         WebParticipant participant3 = getParticipant3();
 
         // Check if a remote screenshare tile is created on all participants.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath2,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath2,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant2, participant1, true, 5);
+        checkForScreensharingTile(participant2, participant2, true, 5);
+        checkForScreensharingTile(participant2, participant3, true, 5);
 
-        // The video should be playing.
+        // The video should be playing on p3.
         TestUtils.waitForBoolean(participant3.getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
@@ -189,14 +156,8 @@ public class DesktopSharingTest
         participant3.hangUp();
 
         // Check if a remote screenshare tile is created on p1 and p2 after switching back to p2p.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath2,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant2, participant1, true, 5);
+        checkForScreensharingTile(participant2, participant2, true, 5);
 
         // The video should be playing.
         TestUtils.waitForBoolean(participant1.getDriver(),
@@ -205,29 +166,15 @@ public class DesktopSharingTest
 
         // Start desktop share on p1.
         participant1.getToolbar().clickDesktopSharingButton();
-        screenshareXpath1 = "//span[@id='participant_" + participant1.getEndpointId() + "-v1']";
 
         // Check if a new tile for p1's screenshare is created on both p1 and p2.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath1,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath1,
-            5);
+        checkForScreensharingTile(participant1, participant1, true, 5);
+        checkForScreensharingTile(participant1, participant2, true, 5);
 
         ensureThreeParticipants(url);
 
-        // Check if a new tile for p1's and p2's screenshare is created on p3.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath1,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant1, participant3, true, 5);
+        checkForScreensharingTile(participant2, participant3, true, 5);
 
         // The large video should be playing on p3.
         TestUtils.waitForBoolean(participant3.getDriver(),
@@ -265,27 +212,14 @@ public class DesktopSharingTest
         participant2.getToolbar().clickDesktopSharingButton();
 
         // Check if p1 and p2 can see each other's shares in p2p.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath1,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant1, participant2, true, 5);
+        checkForScreensharingTile(participant2, participant1, true, 5);
 
         // Add p3 back to the conference and check if p1 and p2's shares are visible on p3.
         ensureThreeParticipants(url);
 
-        // Check if p3 can see p1 and p2's share.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath1,
-            5);
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant1, participant3, true, 5);
+        checkForScreensharingTile(participant2, participant3, true, 5);
 
         // The large video should be playing on p3.
         TestUtils.waitForBoolean(participant3.getDriver(),
@@ -315,12 +249,7 @@ public class DesktopSharingTest
 
         // p1 starts share when alone in the call.
         participant1.getToolbar().clickDesktopSharingButton();
-        screenshareXpath1 = "//span[@id='participant_" + participant1.getEndpointId() + "-v1']";
-
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath1,
-            5);
+        checkForScreensharingTile(participant1, participant1, true, 5);
 
         // p1 starts stops share.
         participant1.getToolbar().clickDesktopSharingButton();
@@ -334,19 +263,13 @@ public class DesktopSharingTest
         participant1.getToolbar().clickDesktopSharingButton();
 
         // Check p2 and p3 are able to see p1's share.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath1,
-            5);
+        checkForScreensharingTile(participant1, participant2, true, 5);
+        checkForScreensharingTile(participant1, participant3, true, 5);
+
         TestUtils.waitForBoolean(participant2.getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
-
-        TestUtils.waitForDisplayedElementByXPath(
-            participant3.getDriver(),
-            screenshareXpath1,
-            5);
-        TestUtils.waitForBoolean(participant2.getDriver(),
+        TestUtils.waitForBoolean(participant3.getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
 
@@ -354,26 +277,41 @@ public class DesktopSharingTest
         participant3.hangUp();
 
         // Make sure p2 see's p1's share after the call switches back to p2p.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant2.getDriver(),
-            screenshareXpath1,
-            5);
+        checkForScreensharingTile(participant1, participant2, true, 5);
         TestUtils.waitForBoolean(participant2.getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
 
         // p2 starts share when in p2p.
         participant2.getToolbar().clickDesktopSharingButton();
-        screenshareXpath2 = "//span[@id='participant_" + participant1.getEndpointId() + "-v1']";
 
         // Makes sure p2's share is visible on p1.
-        TestUtils.waitForDisplayedElementByXPath(
-            participant1.getDriver(),
-            screenshareXpath2,
-            5);
+        checkForScreensharingTile(participant2, participant1, true, 5);
         TestUtils.waitForBoolean(participant1.getDriver(),
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
+    }
+
+   /**
+    * Checks if a new tile for screenshare or removed.
+    *
+    * @param sharingEndpoint the participant sharing their screen.
+    * @param observingEndpoint the participant being tested for remote screenshare.
+    * @param enabled if the screenshare tile needs to be present.
+    * @param timeout the time to wait for the element in seconds.
+    */
+    public static void checkForScreensharingTile(
+        WebParticipant sharingEndpoint,
+        WebParticipant observingEndpoint,
+        Boolean enabled,
+        long timeout) 
+    {
+        String screenshareXpath = "//span[@id='participant_" + sharingEndpoint.getEndpointId() + "-v1']";
+        TestUtils.waitForDisplayedOrNotByXPath(
+            observingEndpoint.getDriver(),
+            screenshareXpath,
+            timeout,
+            enabled);
     }
 
     /**
@@ -498,12 +436,8 @@ public class DesktopSharingTest
 
         JitsiMeetUrl meetUrl1 = getJitsiMeetUrl()
             .appendConfig("config.startWithAudioMuted=true")
-            .appendConfig("config.startWithVideoMuted=true")
-            .appendConfig("config.flags.sourceNameSignaling=false")
-            .appendConfig("config.flags.sendMultipleVideoStreams=false");
+            .appendConfig("config.startWithVideoMuted=true");
         JitsiMeetUrl meetUrl2 = getJitsiMeetUrl()
-            .appendConfig("config.flags.sourceNameSignaling=false")
-            .appendConfig("config.flags.sendMultipleVideoStreams=false")
             .appendConfig("config.startWithAudioMuted=true");
 
         ensureOneParticipant(meetUrl1);
@@ -547,9 +481,7 @@ public class DesktopSharingTest
     @Test(dependsOnMethods = { "testScreenshareToggleBeforeOthersJoin" })
     public void testLastNAndScreenshare()
     {
-        JitsiMeetUrl url = getJitsiMeetUrl()
-            .appendConfig("config.flags.sourceNameSignaling=false")
-            .appendConfig("config.flags.sendMultipleVideoStreams=false");
+        JitsiMeetUrl url = getJitsiMeetUrl();
 
         hangUpAllParticipants();
         ensureThreeParticipants(url);
@@ -565,22 +497,17 @@ public class DesktopSharingTest
 
         WebParticipant participant4 = joinFourthParticipant(getJitsiMeetUrl()
             .appendConfig("config.channelLastN=2")
-            .appendConfig("config.startWithAudioMuted=true")
-            .appendConfig("config.flags.sourceNameSignaling=false")
-            .appendConfig("config.flags.sendMultipleVideoStreams=false"));
+            .appendConfig("config.startWithAudioMuted=true"));
         WebDriver driver4 = participant4.getDriver();
 
         // We now have p1, p2, p3, p4.
         // p3 is screensharing.
         // p1, p3, p4 are audio muted, so p2 should eventually become dominant speaker.
-
-        // Participants should have received signaling that p3 is screensharing.
-        testDesktopSharingInPresence(participant1, participant3, "desktop");
-        testDesktopSharingInPresence(participant2, participant3, "desktop");
-        testDesktopSharingInPresence(participant4, participant3, "desktop");
-
         // Participants should display p3 on-stage because it is screensharing.
-        MeetUIUtils.waitsForLargeVideoSwitch(driver4, participant3.getEndpointId());
+        checkForScreensharingTile(participant3, participant1, true, 5);
+        checkForScreensharingTile(participant3, participant2, true, 5);
+        checkForScreensharingTile(participant3, participant4, true, 5);
+
         // And the video should be playing
         TestUtils.waitForBoolean(driver4,
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
