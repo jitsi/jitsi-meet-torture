@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.JitsiMeetUrl;
 import org.jitsi.meet.test.pageobjects.web.BreakoutRoomsList;
 import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
+import org.jitsi.meet.test.pageobjects.web.BreakoutRoomsList.BreakoutRoom;
 import org.jitsi.meet.test.util.TestUtils;
 import org.jitsi.meet.test.web.WebParticipant;
 import org.jitsi.meet.test.web.WebTestBase;
@@ -134,13 +135,26 @@ public class BreakoutRoomsTest
         roomsList.getRooms().get(0).joinRoom();
 
         // the participant should see the main room as the only breakout room
-        TestUtils.waitForCondition(participant1.getDriver(), 10, (ExpectedCondition<Boolean>) d ->
-                roomsList.getRoomsCount() == 1
-                        && roomsList.getRooms().get(0).getName().trim().equals(MAIN_ROOM_NAME));
+        TestUtils.waitForCondition(participant1.getDriver(), 10, (ExpectedCondition<Boolean>) d -> {
+                int roomsCount = roomsList.getRoomsCount();
+                BreakoutRoom firstRoom = roomsList.getRooms().get(0);
+                Logger.getGlobal().log(Level.INFO, "[BOGDAN][testJoinRoom] inside waitForCondition1 firstRoom:" + firstRoom.getName() + ", participantsCount:" + firstRoom.getParticipantsCount() + ", roomsCount:" + roomsCount);
+
+                return roomsCount == 1
+                        && firstRoom.getName().trim().equals(MAIN_ROOM_NAME);
+        });
 
         // the second participant should see one participant in the breakout room
-        TestUtils.waitForCondition(participant2.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
-                participant2.getBreakoutRoomsList().getRooms().get(0).getParticipantsCount() == 1);
+        TestUtils.waitForCondition(participant2.getDriver(), 10, (ExpectedCondition<Boolean>) d -> {
+                int roomsCount = roomsList.getRoomsCount();
+                List<BreakoutRoom> rooms = participant2.getBreakoutRoomsList().getRooms();
+                BreakoutRoom firstRoom = rooms.get(0);
+
+                int participantsCount = firstRoom.getParticipantsCount();
+                Logger.getGlobal().log(Level.INFO, "[BOGDAN][testJoinRoom] inside waitForCondition2 firstRoom:" + firstRoom.getName() + ", participantsCount:" + firstRoom.getParticipantsCount() + ",roomsCount:" + roomsCount);
+
+                return participantsCount == 1;
+        });
     }
 
     @Test(dependsOnMethods = { "testJoinRoom" })
