@@ -268,8 +268,12 @@ public class BreakoutRoomsTest
         // because the participants rejoin so fast, the meeting is not properly ended,
         // so the previous breakout rooms would still be there.
         // To avoid this issue we use a different meeting
+        Random rand = new Random();
+        int upperbound = 1000;
+        int int_random = rand.nextInt(upperbound);
+
         JitsiMeetUrl url = getJitsiMeetUrl()
-                .setRoomName("random-room-name")
+                .setRoomName("random-room-name" + int_random)
                 .appendConfig("config.startWithAudioMuted=true");
         ensureTwoParticipants(url, url);
 
