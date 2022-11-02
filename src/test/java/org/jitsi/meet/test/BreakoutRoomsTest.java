@@ -134,7 +134,7 @@ public class BreakoutRoomsTest
         roomsList.getRooms().get(0).joinRoom();
 
         // the participant should see the main room as the only breakout room
-        TestUtils.waitForCondition(participant1.getDriver(), 5, (ExpectedCondition<Boolean>) d ->
+        TestUtils.waitForCondition(participant1.getDriver(), 10, (ExpectedCondition<Boolean>) d ->
                 roomsList.getRoomsCount() == 1
                         && roomsList.getRooms().get(0).getName().trim().equals(MAIN_ROOM_NAME));
 
@@ -268,12 +268,8 @@ public class BreakoutRoomsTest
         // because the participants rejoin so fast, the meeting is not properly ended,
         // so the previous breakout rooms would still be there.
         // To avoid this issue we use a different meeting
-        Random rand = new Random();
-        int upperbound = 1000;
-        int int_random = rand.nextInt(upperbound);
-
         JitsiMeetUrl url = getJitsiMeetUrl()
-                .setRoomName("random-room-name" + int_random)
+                .setRoomName("random-room-name")
                 .appendConfig("config.startWithAudioMuted=true");
         ensureTwoParticipants(url, url);
 
