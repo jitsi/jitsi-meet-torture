@@ -60,6 +60,7 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.max_disrupted_bridges_pct";
     public static final String USE_LOAD_TEST_PNAME
         = "org.jitsi.malleus.use_load_test";
+    public static final String USE_LITE_MODE_PNAME = "org.jitsi.malleus.use_lite_mode";
     public static final String JOIN_DELAY_PNAME
         = "org.jitsi.malleus.join_delay";
     public static final String SWITCH_SPEAKERS
@@ -150,6 +151,8 @@ public class MalleusJitsificus
 
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
 
+        boolean useLiteMode = Boolean.parseBoolean(System.getProperty(USE_LITE_MODE_PNAME));
+
         boolean switchSpeakers = Boolean.parseBoolean(System.getProperty(SWITCH_SPEAKERS));
 
         boolean useStageView = Boolean.parseBoolean(System.getProperty(USE_STAGE_VIEW));
@@ -190,6 +193,11 @@ public class MalleusJitsificus
                 .appendConfig("config.pcStatsInterval=10000")
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
 
+            if (useLiteMode)
+            {
+                url.appendConfig("config.flags.runInLiteMode=true");
+            }
+
             if (useStageView)
                 url.appendConfig("config.disableTileView=true");
 
@@ -226,7 +234,6 @@ public class MalleusJitsificus
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(numberOfParticipants + 2);
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
-        int totalJoinDelayMs = 0;
 
         if (sendersPerTab == 0 && receiversPerTab == 0)
         {
