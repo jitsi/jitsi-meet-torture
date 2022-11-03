@@ -193,11 +193,6 @@ public class MalleusJitsificus
                 .appendConfig("config.pcStatsInterval=10000")
                 .appendConfig("config.p2p.enabled=" + (enableP2p ? "true" : "false"));
 
-            if (useLiteMode)
-            {
-                url.appendConfig("config.flags.runInLiteMode=true");
-            }
-
             if (useStageView)
                 url.appendConfig("config.disableTileView=true");
 
@@ -211,7 +206,8 @@ public class MalleusJitsificus
                 regions, maxDisruptedBridges,
                 switchSpeakers,
                 sendersPerTab, receiversPerTab,
-                extraSenderParams, extraReceiverParams
+                extraSenderParams, extraReceiverParams,
+                useLiteMode
             };
         }
 
@@ -224,7 +220,8 @@ public class MalleusJitsificus
         long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
         String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers,
         int sendersPerTab, int receiversPerTab,
-        String extraSenderParams, String extraReceiverParams)
+        String extraSenderParams, String extraReceiverParams,
+        boolean useLiteMode)
         throws Exception
     {
         List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
@@ -263,6 +260,11 @@ public class MalleusJitsificus
             {
                 urlCopy.appendConfig(extraReceiverParams);
                 numClients = receiversPerTab;
+
+                if (useLiteMode)
+                {
+                    urlCopy.appendConfig("config.flags.runInLiteMode=true");
+                }
             }
 
             if (audioSender && i + numClients > numAudioSenders)

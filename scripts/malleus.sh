@@ -166,11 +166,6 @@ if [ "$MALLEUS_SENDERS_PER_TAB" -gt 1 -o "$MALLEUS_RECEIVERS_PER_TAB" -gt 1 ] &&
     exit 1
 fi
 
-if [ "$MALLEUS_SENDERS_PER_TAB" -gt 1 -o "$MALLEUS_SENDERS" -gt 1 ] && [ "$MALLEUS_USE_LITE_MODE" = "true" ]; then
-    echo "When using lite-mode nodes cannot have senders"
-    exit 2
-fi
-
 # This names nodes as being a "malleusSender" or "malleusReceiver" (using the Selenium Grid
 # "applicationName" parameter).  This lets us run multiple browsers on a Selenium Grid endpoint,
 # scaled for the number of browsers the endpoint can handle performing the requested action.
