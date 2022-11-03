@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-tab=MALLEUS_SENDERS_PER_NODE] [--receivers-per-tab=MALLEUS_RECEIVERS_PER_NODE] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--extra-sender-params=EXTRA_SENDER_PARAMS] [--extra-receiver-params=EXTRA_RECEIVER_PARAMS] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
+  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-tab=MALLEUS_SENDERS_PER_NODE] [--receivers-per-tab=MALLEUS_RECEIVERS_PER_NODE] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--use-lite-mode] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--extra-sender-params=EXTRA_SENDER_PARAMS] [--extra-receiver-params=EXTRA_RECEIVER_PARAMS] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
   exit 1
 }
 
@@ -74,6 +74,10 @@ set_defaults() {
       MALLEUS_USE_LOAD_TEST=false
     fi
 
+    if [ -z "$MALLEUS_USE_LITE_MODE" ]; then
+      MALLEUS_USE_LITE_MODE=false
+    fi
+
     if [ -z "$MALLEUS_MAX_DISRUPTED_BRIDGES_PCT" ]; then
       MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=0
     fi
@@ -117,6 +121,7 @@ case $1 in
         --regions) MALLEUS_REGIONS=$optvalue;;
         --use-node-types) if [ -n "$optvalue" ]; then MALLEUS_USE_NODE_TYPES=$optvalue; else MALLEUS_USE_NODE_TYPES=true; fi;;
         --use-load-test) if [ -n "$optvalue" ]; then MALLEUS_USE_LOAD_TEST=$optvalue; else MALLEUS_USE_LOAD_TEST=true; fi;;
+        --use-lite-mode) if [ -n "$optvalue" ]; then MALLEUS_USE_LITE_MODE=$optvalue; else MALLEUS_USE_LITE_MODE=false; fi;;
         --switch-speakers) if [ -n "$optvalue" ]; then MALLEUS_SWITCH_SPEAKERS=$optvalue; else MALLEUS_SWITCH_SPEAKERS=true; fi;;
         --use-stage-view) if [ -n "$optvalue" ]; then MALLEUS_USE_STAGE_VIEW=$optvalue; else MALLEUS_USE_STAGE_VIEW=true; fi;;
         --headless) if [ -n "$optvalue" ]; then MALLEUS_USE_HEADLESS=$optvalue; else MALLEUS_USE_HEADLESS=true; fi;;
@@ -200,6 +205,7 @@ mvn \
 -Dorg.jitsi.malleus.receivers_per_tab=$MALLEUS_RECEIVERS_PER_TAB \
 -Dorg.jitsi.meet.test.util.blip_script=$MALLEUS_BLIP_SCRIPT \
 -Dorg.jitsi.malleus.use_load_test=$MALLEUS_USE_LOAD_TEST \
+-Dorg.jitsi.malleus.use_lite_mode=$MALLEUS_USE_LITE_MODE \
 -Dorg.jitsi.malleus.switch_speakers=$MALLEUS_SWITCH_SPEAKERS \
 -Dorg.jitsi.malleus.use_stage_view=$MALLEUS_USE_STAGE_VIEW \
 -Dorg.jitsi.malleus.enable.headless=$MALLEUS_USE_HEADLESS \
