@@ -68,6 +68,8 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_stage_view";
     public static final String USE_HEADLESS
         = "org.jitsi.malleus.enable.headless";
+    public static final String ENABLE_DECODING
+        = "org.jitsi.malleus.enable_decoding";
     public static final String SENDERS_PER_TAB
         = "org.jitsi.malleus.senders_per_tab";
     public static final String RECEIVERS_PER_TAB
@@ -427,12 +429,14 @@ public class MalleusJitsificus
             boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
             boolean useNodeTypes = Boolean.parseBoolean(System.getProperty(USE_NODE_TYPES_PNAME));
             boolean useHeadless = Boolean.parseBoolean(System.getProperty(USE_HEADLESS));
+            boolean enableDecoding = Boolean.parseBoolean(System.getProperty(ENABLE_DECODING));
 
             WebParticipantOptions ops
                 = new WebParticipantOptions()
                 .setFakeStreamVideoFile(INPUT_VIDEO_FILE)
                 .setHeadless(useHeadless)
-                .setLoadTest(useLoadTest);
+                .setLoadTest(useLoadTest)
+                .setDisableDecoding(!enableDecoding);
 
             if (useNodeTypes)
             {

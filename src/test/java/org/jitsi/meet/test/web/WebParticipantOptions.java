@@ -81,6 +81,8 @@ public class WebParticipantOptions
 
     private static final String PROP_REMOTE = "isRemote";
 
+    private static final String PROP_DISABLE_DECODING = "disableDecoding";
+
     /**
      * The property to evaluate for parent path of the resources used when
      * loading chrome remotely like audio/video files.
@@ -334,6 +336,15 @@ public class WebParticipantOptions
     }
 
     /**
+     * Sets whether to disable decoding in the browser
+     */
+    public WebParticipantOptions setDisableDecoding(boolean value)
+    {
+        setProperty(PROP_DISABLE_DECODING, Boolean.toString(value));
+        return this;
+    }
+
+    /**
      * Sets the name of y4m video file which will be streamed through fake video
      * device by participants. The file location is relative to working folder.
      * For remote drivers a parent folder can be set and the file will be
@@ -424,6 +435,14 @@ public class WebParticipantOptions
     public boolean getLoadTest()
     {
         return Boolean.parseBoolean(getProperty(PROP_LOADTEST));
+    }
+
+    /**
+     * Whether to disable video decoding in the browser
+     */
+    public boolean getDisableDecoding()
+    {
+        return Boolean.parseBoolean(getProperty(PROP_DISABLE_DECODING));
     }
 
     /**
