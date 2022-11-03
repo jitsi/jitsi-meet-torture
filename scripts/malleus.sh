@@ -74,6 +74,10 @@ set_defaults() {
       MALLEUS_USE_LOAD_TEST=false
     fi
 
+    if [ -z "$MALLEUS_USE_LITE_MODE" ]; then
+      MALLEUS_USE_LITE_MODE=false
+    fi
+
     if [ -z "$MALLEUS_MAX_DISRUPTED_BRIDGES_PCT" ]; then
       MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=0
     fi
