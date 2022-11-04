@@ -94,10 +94,17 @@ public class WebParticipantFactory
 
         webOptions.putAll(options);
 
+        // if we want to re-use a driver/window for multiple participants (create multiple tabs)
+        WebDriver driver = options.getDriver();
+        if (driver == null)
+        {
+            driver = startWebDriver(webOptions);
+        }
+
         WebParticipant webParticipant
             = new WebParticipant(
                     webOptions.getName(),
-                    startWebDriver(webOptions),
+                    driver,
                     webOptions.getParticipantType(),
                     webOptions.getLoadTest());
 

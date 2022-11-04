@@ -18,6 +18,7 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -73,6 +74,7 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.senders_per_tab";
     public static final String RECEIVERS_PER_TAB
         = "org.jitsi.malleus.receivers_per_tab";
+    public static final String TABS_PER_NODE = "org.jitsi.malleus.tabs_per_node";
     public static final String EXTRA_SENDER_PARAMS
         = "org.jitsi.malleus.extra_sender_params";
     public static final String EXTRA_RECEIVER_PARAMS
@@ -120,6 +122,10 @@ public class MalleusJitsificus
         int receiversPerTab = receiversPerTabStr == null
             ? 1
             : Integer.parseInt(receiversPerTabStr);
+
+        // cannot be used with switch speakers or disturb bridges
+        String tabsPerNodeStr = System.getProperty(TABS_PER_NODE);
+        int tabsPerNode = tabsPerNodeStr == null ? 1: Integer.parseInt(tabsPerNodeStr);
 
         int durationMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
 
@@ -207,7 +213,8 @@ public class MalleusJitsificus
                 switchSpeakers,
                 sendersPerTab, receiversPerTab,
                 extraSenderParams, extraReceiverParams,
-                useLiteMode
+                useLiteMode,
+                tabsPerNode
             };
         }
 
@@ -221,7 +228,8 @@ public class MalleusJitsificus
         String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers,
         int sendersPerTab, int receiversPerTab,
         String extraSenderParams, String extraReceiverParams,
-        boolean useLiteMode)
+        boolean useLiteMode,
+        int numberOfTabsPerNode)
         throws Exception
     {
         List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
@@ -259,7 +267,7 @@ public class MalleusJitsificus
             else
             {
                 urlCopy.appendConfig(extraReceiverParams);
-                numClients = receiversPerTab;
+                numClients = receiversPerTab*numberOfTabsPerNode;
 
                 if (useLiteMode)
                 {
@@ -287,7 +295,8 @@ public class MalleusJitsificus
                 switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 numClients,
-                disruptBridges
+                disruptBridges,
+                numberOfTabsPerNode
             );
             malleusTasks.add(task);
             task.start(pool);
@@ -377,23 +386,32 @@ public class MalleusJitsificus
         private Future<?> complete;
         private ScheduledFuture<?> checking;
 
-        WebParticipant participant;
+        List<WebParticipant> taskParticipants = new ArrayList<>();
+
         private String bridge;
+
+        private int numberOfTabs;
+        private int numClients;
+
+        private long clientInterval;
 
         private ScheduledExecutorService pool;
 
         public MalleusTask(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs, long totalJoinDelayMs,
             boolean muteVideo, boolean muteAudio, String region, int numClients,
-            boolean enableFailureDetection)
+            boolean enableFailureDetection, int numberOfTabs)
         {
             this.i = i;
             this._url = url;
             this.durationMs = durationMs;
+            this.clientInterval = joinDelayMs;
             this.joinDelayMs = totalJoinDelayMs;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.enableFailureDetection = enableFailureDetection;
+            this.numberOfTabs = numberOfTabs;
+            this.numClients = numClients;
 
             if (muteVideo)
             {
@@ -405,7 +423,6 @@ public class MalleusJitsificus
             }
             if (numClients != 1)
             {
-                _url.appendConfig("numClients=" + numClients);
                 _url.appendConfig("clientInterval=" + joinDelayMs);
             }
 
@@ -456,11 +473,45 @@ public class MalleusJitsificus
                 }
             }
 
-            participant = participants.createParticipant("web.participant" + (i + 1), ops);
-            allHungUp.register();
             try
             {
-                participant.joinConference(_url);
+
+                int clientPerTab = numClients/numberOfTabs;
+                int rem = numClients%numberOfTabs;
+
+                for(int i = 0; i < numberOfTabs; i++)
+                {
+                    int currentClients = clientPerTab;
+                    if (rem > 0)
+                    {
+                        currentClients += rem;
+                        rem = 0;
+                    }
+                    int participantCount = (this.i + 1) + (i * clientPerTab);
+                    WebParticipant participant = participants.createParticipant(
+                        "web.participant" + participantCount, ops);
+                    WebDriver driver = participant.getDriver();
+
+                    // to re-use the same driver/chrome instance
+                    ops.setDriver(driver);
+
+                    JitsiMeetUrl u = _url.copy().appendConfig("numClients=" + currentClients);
+                    participant.joinConference(u);
+
+                    // let's create new tab and switch to it, so we prepare for the next execution
+                    // skips the last one
+                    if (i < numberOfTabs - 1)
+                    {
+                        // wait, give time for thos in the tab to join
+                        TestUtils.waitMillis(currentClients * this.clientInterval);
+                        ((JavascriptExecutor) driver).executeScript("window.open()");
+                        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+                        driver.switchTo().window(tabs.get(i + 1));
+                    }
+                    // the index should be also the tab index
+                    taskParticipants.add(participant);
+                }
+                allHungUp.register();
             }
             catch (Exception e)
             {
@@ -476,8 +527,16 @@ public class MalleusJitsificus
             {
                 if (enableFailureDetection)
                 {
-                    bridge = participant.getBridgeIp();
-                    bridgeSelection.add(bridge);
+                    for(int i =0; i < taskParticipants.size(); i++)
+                    {
+                        WebParticipant participant = taskParticipants.get(i);
+                        WebDriver driver = participant.getDriver();
+                        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+                        driver.switchTo().window(tabs.get(i));
+
+                        bridge = participant.getBridgeIp();
+                        bridgeSelection.add(bridge);
+                    }
                 }
             }
             catch (Exception e)
@@ -507,28 +566,38 @@ public class MalleusJitsificus
                 checking.cancel(true);
             }
 
-            try
+            // we need to start closing from the last one
+            for(int i = taskParticipants.size() - 1; i >= 0; i--)
             {
-                participant.hangUp();
-            }
-            catch (Exception e)
-            {
-                TestUtils.print("Exception hanging up " + participant.getName());
-                e.printStackTrace();
-            }
-            try
-            {
-                /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
-                 * Chrome session can cause another one to close too.  So wait for all sessions
-                 * to hang up before we close any of them.
-                 */
-                allHungUp.arriveAndAwaitAdvance();
-                MalleusJitsificus.this.closeParticipant(participant);
-            }
-            catch (Exception e)
-            {
-                TestUtils.print("Exception closing " + participant.getName());
-                e.printStackTrace();
+                WebParticipant participant = taskParticipants.get(i);
+                WebDriver driver = participant.getDriver();
+                ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+                driver.switchTo().window(tabs.get(i));
+
+                try
+                {
+
+                    participant.hangUp();
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception hanging up " + participant.getName());
+                    e.printStackTrace();
+                }
+                try
+                {
+                    /* There seems to be a Selenium or chrome webdriver bug where closing one parallel
+                     * Chrome session can cause another one to close too.  So wait for all sessions
+                     * to hang up before we close any of them.
+                     */
+                    allHungUp.arriveAndAwaitAdvance();
+                    MalleusJitsificus.this.closeParticipant(participant);
+                }
+                catch (Exception e)
+                {
+                    TestUtils.print("Exception closing " + participant.getName());
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -540,22 +609,30 @@ public class MalleusJitsificus
 
         private void check()
         {
-            try
+            for(int i =0; i < taskParticipants.size(); i++)
             {
-                participant.waitForIceConnected(0 /* no timeout */);
-            }
-            catch (Exception ex)
-            {
-                TestUtils.print("Participant " + i + " is NOT connected.");
-                if (!bridgesToFail.contains(bridge))
+                WebParticipant participant = taskParticipants.get(i);
+                WebDriver driver = participant.getDriver();
+                ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+                driver.switchTo().window(tabs.get(i));
+
+                try
                 {
-                    throw ex;
+                    participant.waitForIceConnected(0 /* no timeout */);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // wait for reconnect
-                    participant.waitForIceConnected(20);
-                    TestUtils.print("Participant " + i + " reconnected.");
+                    TestUtils.print("Participant " + i + " is NOT connected.");
+                    if (!bridgesToFail.contains(bridge))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        // wait for reconnect
+                        participant.waitForIceConnected(20);
+                        TestUtils.print("Participant " + i + " reconnected.");
+                    }
                 }
             }
         }
@@ -567,18 +644,26 @@ public class MalleusJitsificus
 
         private void doMuteAudio(boolean mute)
         {
-            if (mute != muteAudio)
+            for(int i =0; i < taskParticipants.size(); i++)
             {
-                participant.muteAudio(mute);
-                muteAudio = mute;
-                if (mute)
+                WebParticipant participant = taskParticipants.get(i);
+                WebDriver driver = participant.getDriver();
+                ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+                driver.switchTo().window(tabs.get(i));
+
+                if (mute != muteAudio)
                 {
-                    TestUtils.print("Muted participant " + i);
-                }
-                else
-                {
-                    TestUtils.print("Unmuted participant " + i);
-                    spoken = true;
+                    participant.muteAudio(mute);
+                    muteAudio = mute;
+                    if (mute)
+                    {
+                        TestUtils.print("Muted participant " + i);
+                    }
+                    else
+                    {
+                        TestUtils.print("Unmuted participant " + i);
+                        spoken = true;
+                    }
                 }
             }
         }

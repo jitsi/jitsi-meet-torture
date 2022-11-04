@@ -208,7 +208,16 @@ public abstract class Participant<T extends WebDriver>
 
         cancelKeepAlive();
 
-        driver.quit();
+        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+        if (tabs.size() > 1)
+        {
+            driver.close();
+            driver.switchTo().window(tabs.get(tabs.size() - 2));
+        }
+        else
+        {
+            driver.quit();
+        }
 
         // FIXME missing comment on why this is necessary ? (if it really is...)
         TestUtils.waitMillis(500);
