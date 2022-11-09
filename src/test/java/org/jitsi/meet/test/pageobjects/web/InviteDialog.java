@@ -140,6 +140,7 @@ public class InviteDialog
             driver,
             By.className(CONFERENCE_URL),
             5);
+        TestUtils.click(driver, By.id("copy-button-label"));
 
         String fullText
             = driver.findElement(By.className(CONFERENCE_URL)).getText();
