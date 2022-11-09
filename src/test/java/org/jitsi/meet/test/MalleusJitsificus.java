@@ -503,7 +503,7 @@ public class MalleusJitsificus
                     if (i < numberOfTabs - 1)
                     {
                         // wait, give time for thos in the tab to join
-                        TestUtils.waitMillis(currentClients * this.clientInterval);
+//                        TestUtils.waitMillis(currentClients * this.clientInterval);
                         ((JavascriptExecutor) driver).executeScript("window.open()");
                         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
                         driver.switchTo().window(tabs.get(i + 1));
