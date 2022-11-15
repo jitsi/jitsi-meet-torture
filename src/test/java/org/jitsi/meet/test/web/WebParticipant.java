@@ -195,6 +195,17 @@ public class WebParticipant extends Participant<WebDriver>
                 + "will skip it and continue:" + ex.getMessage());
         }
 
+        // let's check is APP global object available if not, we may be missing resources
+        // then check for id='showMore' and click it
+        try
+        {
+            executeScript("window.APP === undefined && document.getElementById('showMore').click();");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
         if (conferenceUrl.getIframeToNavigateTo() != null)
         {
             // let's wait for loading and switch to that iframe so we can continue
