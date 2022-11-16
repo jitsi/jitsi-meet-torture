@@ -58,7 +58,7 @@ public class Toolbar
     public final static String SHARE_AUDIO = "Share audio";
     public final static String SHARE_VIDEO = "Toggle video sharing";
     public final static String SHORTCUTS = "Toggle shortcuts";
-    public final static String STATS = "Toggle speaker statistics";
+    public final static String STATS = "Toggle participants statistics";
     public final static String TILE_VIEW_BUTTON = "Toggle tile view";
     public final static String VIDEO_MUTE = "Start / Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
