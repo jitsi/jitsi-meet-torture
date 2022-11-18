@@ -494,7 +494,7 @@ public class MeetUIUtils
 
         // Extended timeout for 'unmuted' to make tests more resilient to
         // unexpected glitches.
-        int timeout = muted ? 3 : 6;
+        int timeout = muted ? 3 : 20;
 
         // Give it 3 seconds to not get any audio or to receive some
         // depending on "muted" argument
