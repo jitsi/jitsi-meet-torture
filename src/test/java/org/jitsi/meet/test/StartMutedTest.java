@@ -102,6 +102,8 @@ public class StartMutedTest
 
         checkParticipant2ForMute();
 
+        TestUtils.waitMillis(6000);
+
         // Unmute and see if the audio works
         participant2.getToolbar().clickAudioMuteButton();
         consolePrint(participant1,
@@ -136,7 +138,7 @@ public class StartMutedTest
         {
             return;
         }
-        
+
         hangUpAllParticipants();
 
         // Explicitly enable P2P due to a regression with unmute not updating
