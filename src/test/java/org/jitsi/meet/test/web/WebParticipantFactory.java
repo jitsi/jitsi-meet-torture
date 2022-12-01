@@ -233,9 +233,6 @@ public class WebParticipantFactory
         {
             WebDriverManager.chromedriver().setup();
 
-            // HACK
-            WebDriverManager.chromedriver().browserVersion("105").setup();
-
             System.setProperty("webdriver.chrome.verboseLogging", "true");
             System.setProperty(
                     "webdriver.chrome.logfile",
@@ -247,9 +244,6 @@ public class WebParticipantFactory
 
             final ChromeOptions ops = new ChromeOptions();
             ops.setCapability(CapabilityType.APPLICATION_NAME, options.getApplicationName());
-
-            // HACK
-            ops.setBinary("/Users/jlennox/Chrome/105/Google Chrome.app/Contents/MacOS/Google Chrome");
 
             // Force chrome to use English instead of system language.
             Map<String, Object> prefs = new HashMap<String, Object>();
