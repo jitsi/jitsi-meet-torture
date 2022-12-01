@@ -103,7 +103,8 @@ public class WebParticipantFactory
 
         WebDriver driver;
 
-        if (webOptions.getMultitab()) {
+        if (webOptions.getMultitab())
+        {
             RemoteWebDriver baseDriver;
             boolean first;
             if (webOptions.getBaseDriver() != null)
