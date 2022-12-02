@@ -24,6 +24,7 @@ import org.openqa.selenium.remote.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 /** A wrapper around RemoteWebDriver that allows multiple tabs to be running at once in the same browser instance. */
 public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
@@ -31,12 +32,14 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
     FindsByCssSelector, FindsByTagName, FindsByXPath,
     HasInputDevices, HasCapabilities, Interactive, TakesScreenshot
 {
+    private static final Map<WebDriver, AtomicInteger> bases = Collections.synchronizedMap(new IdentityHashMap<>());
 
     final RemoteWebDriver baseDriver;
+    final AtomicInteger counter;
 
     String tabId;
 
-    public TabbedWebDriver(RemoteWebDriver base, boolean first)
+    public TabbedWebDriver(RemoteWebDriver base)
     {
         baseDriver = base;
 
@@ -44,7 +47,14 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
         {
             Set<String> oldTabs = baseDriver.getWindowHandles();
 
-            if (first)
+            AtomicBoolean first = new AtomicBoolean(false);
+            counter = bases.computeIfAbsent(baseDriver, key -> {
+                first.set(true);
+                return new AtomicInteger();
+            });
+            counter.incrementAndGet();
+
+            if (first.get())
             {
                 assert (oldTabs.size() == 1);
                 tabId = oldTabs.iterator().next();
@@ -171,16 +181,22 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
             baseDriver.close();
             tabId = null;
         }
-
     }
 
     @Override
     public void quit()
     {
-        // TODO?
-        if (tabId != null)
+        synchronized (baseDriver)
         {
-            close();
+            if (tabId != null)
+            {
+                close();
+            }
+            if (counter.decrementAndGet() == 0)
+            {
+                bases.remove(baseDriver);
+                baseDriver.quit();
+            }
         }
     }
 

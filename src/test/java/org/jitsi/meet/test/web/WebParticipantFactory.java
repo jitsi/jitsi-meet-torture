@@ -106,19 +106,16 @@ public class WebParticipantFactory
         if (webOptions.getMultitab())
         {
             RemoteWebDriver baseDriver;
-            boolean first;
             if (webOptions.getBaseDriver() != null)
             {
                 /* Throws BadCast if this isn't a RemoteWebDriver. */
                 baseDriver = (RemoteWebDriver)webOptions.getBaseDriver();
-                first = false;
             }
             else
             {
                 baseDriver = startWebDriver(webOptions);
-                first = true;
             }
-            driver = new TabbedWebDriver(baseDriver, first);
+            driver = new TabbedWebDriver(baseDriver);
         }
         else
         {
