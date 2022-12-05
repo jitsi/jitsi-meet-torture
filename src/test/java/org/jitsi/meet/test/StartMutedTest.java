@@ -81,6 +81,9 @@ public class StartMutedTest
                 "config.debugAudioLevels=true&" +
                 "config.startVideoMuted=1"));
 
+        // Let's wait to make sure that p1 is joined and jicofo knows about it as the first participant
+        TestUtils.waitMillis(1500);
+
         WebParticipant participant2 = joinSecondParticipant();
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
@@ -125,10 +128,9 @@ public class StartMutedTest
         ParticipantType participant1Type = participant1.getType();
         ParticipantType participant2Type = participant2.getType();
 
-        /**
-         * Firefox is known to have problems unmuting when starting muted.
-         * Safari does not support video.
-         */
+
+        // Firefox is known to have problems unmuting when starting muted.
+        // Safari does not support video.
         if (participant1Type.isFirefox()
             || participant2Type.isFirefox()
             || participant1Type.isSafari()
