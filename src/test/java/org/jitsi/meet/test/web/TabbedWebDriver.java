@@ -74,7 +74,7 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
 
     public String getSessionId()
     {
-        return baseDriver.getSessionId() + "-" + tabId;
+        return baseDriver.getSessionId() + ":" + tabId;
     }
 
     public RemoteWebDriver getBaseDriver()
