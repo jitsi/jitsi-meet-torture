@@ -256,7 +256,11 @@ public class WebParticipant extends Participant<WebDriver>
         TestUtils.print(name + " lib-jitsi-meet version: " + version
             + (driver instanceof RemoteWebDriver ?
                 " sessionID: "
-                    + ((RemoteWebDriver)driver).getSessionId() : ""));
+                    + ((RemoteWebDriver)driver).getSessionId() :
+                (driver instanceof TabbedWebDriver) ?
+                    " sessionID: "
+                    + ((TabbedWebDriver)driver).getSessionId() :
+            ""));
 
         executeScript("document.title='" + name + "'");
     }

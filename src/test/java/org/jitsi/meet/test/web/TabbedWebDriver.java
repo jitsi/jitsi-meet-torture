@@ -70,8 +70,11 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
                 tabId = newTabs.iterator().next();
             }
         }
+    }
 
-        TestUtils.print("Opened tabbed window with baseDriver " + baseDriver + " and tab ID " + tabId);
+    public String getSessionId()
+    {
+        return baseDriver.getSessionId() + "-" + tabId;
     }
 
     public RemoteWebDriver getBaseDriver()
