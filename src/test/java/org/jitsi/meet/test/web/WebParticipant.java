@@ -261,6 +261,12 @@ public class WebParticipant extends Participant<WebDriver>
                     " sessionID: "
                     + ((TabbedWebDriver)driver).getSessionId() :
             ""));
+        String jid = TestUtils.executeScriptAndReturnString(driver,
+            "return APP.connection.getJid()");
+        if (jid != null)
+        {
+            TestUtils.print(name + " JID: " + jid);
+        }
 
         executeScript("document.title='" + name + "'");
     }
