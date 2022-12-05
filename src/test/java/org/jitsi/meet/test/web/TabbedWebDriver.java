@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.web;
 
 import org.apache.commons.lang.*;
+import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.internal.*;
@@ -69,6 +70,8 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
                 tabId = newTabs.iterator().next();
             }
         }
+
+        TestUtils.print("Opened tabbed window with baseDriver " + baseDriver + " and tab ID " + tabId);
     }
 
     public RemoteWebDriver getBaseDriver()
