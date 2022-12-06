@@ -203,7 +203,7 @@ public class WebParticipant extends Participant<WebDriver>
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            // ignore
         }
 
         if (conferenceUrl.getIframeToNavigateTo() != null)
