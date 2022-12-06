@@ -514,10 +514,4 @@ public class LobbyTest
             5,
             (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
     }
-
-    @Override
-    public boolean skipTestByDefault()
-    {
-        return true;
-    }
 }
