@@ -87,6 +87,9 @@ public class MalleusJitsificus
     public static final String EXTRA_RECEIVER_PARAMS
         = "org.jitsi.malleus.extra_receiver_params";
 
+    // The maximum number of audio senders per browser.  This is a hard-coded Chrome limit, so hard-code it here too.
+    public static final int MAX_AUDIO_SENDERS_PER_BROWSER = 16;
+
     private final Phaser allHungUp = new Phaser();
 
     private CountDownLatch bridgeSelectionCountDownLatch;
@@ -262,11 +265,12 @@ public class MalleusJitsificus
 
         SharedBaseDriver sharedBaseDriver = new SharedBaseDriver();
         int clientsInCurrentBrowser = 0;
+        int audioSenders = 0;
 
         for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
-            boolean audioSender = i < numAudioSenders;
+            boolean audioSender = audioSenders < numAudioSenders && clientsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
 
             JitsiMeetUrl urlCopy = url.copy();
 
@@ -321,6 +325,7 @@ public class MalleusJitsificus
                 durationMs,
                 joinDelayMs,
                 i * joinDelayMs,
+                audioSender, /* Don't do GUM before unmuting */
                 !sender /* no video */,
                 switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
@@ -332,6 +337,7 @@ public class MalleusJitsificus
             task.start(pool);
             i += numClients;
             clientsInCurrentBrowser += numClients;
+            audioSenders += numClients;
         }
 
         List<Future<?>> otherTasks = new ArrayList<>();
@@ -431,6 +437,7 @@ public class MalleusJitsificus
         private final JitsiMeetUrl _url;
         private final long durationMs;
         private final long joinDelayMs;
+        private final boolean audioSender;
         private final boolean muteVideo;
         private boolean muteAudio;
         private final boolean enableFailureDetection;
@@ -451,18 +458,23 @@ public class MalleusJitsificus
 
         public MalleusTask(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs, long totalJoinDelayMs,
-            boolean muteVideo, boolean muteAudio, String region, int numClients,
+            boolean audioSender, boolean muteVideo, boolean muteAudio, String region, int numClients,
             boolean enableFailureDetection, SharedBaseDriver sharedBaseDriver)
         {
             this.i = i;
             this._url = url;
             this.durationMs = durationMs;
             this.joinDelayMs = totalJoinDelayMs;
+            this.audioSender = audioSender;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.enableFailureDetection = enableFailureDetection;
             this.sharedBaseDriver = sharedBaseDriver;
 
+            if (!audioSender)
+            {
+                _url.appendConfig("config.disableInitialGUM=true");
+            }
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
@@ -795,14 +807,14 @@ public class MalleusJitsificus
     private MalleusTask chooseSpeaker(List<MalleusTask> tasks, List<MalleusTask> currentSpeakers, int numAudioSenders)
     {
         List<MalleusTask> pastSpeakers = tasks.stream().
-            limit(numAudioSenders).
+            filter((t) -> t.audioSender).
             filter((t) -> t.running).
             filter((t) -> t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
             collect(Collectors.toList());
 
         List<MalleusTask> nonSpeakers = tasks.stream().
-            limit(numAudioSenders).
+            filter((t) -> t.audioSender).
             filter((t) -> t.running).
             filter((t) -> !t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
