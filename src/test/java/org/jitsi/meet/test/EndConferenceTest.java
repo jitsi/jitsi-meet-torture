@@ -22,6 +22,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Test if we can hangup the call.
  */
@@ -33,7 +35,6 @@ public class EndConferenceTest
     {
         super.setupClass();
 
-        ensureTwoParticipants();
     }
 
     /**
@@ -42,15 +43,16 @@ public class EndConferenceTest
     @Test
     public void hangupCallAndCheck()
     {
-        final WebDriver driver1 = getParticipant1().getDriver();
-        final String url = driver1.getCurrentUrl();
-
-        // hangup and wait for redirect
-        getParticipant1().getToolbar().clickHangUpButton();
-        TestUtils.waitForCondition(
-            driver1,
-            5,
-            (ExpectedCondition<Boolean>) d
-                -> !url.equals(driver1.getCurrentUrl()));
+        assertTrue(false);
+//        final WebDriver driver1 = getParticipant1().getDriver();
+//        final String url = driver1.getCurrentUrl();
+//
+//        // hangup and wait for redirect
+//        getParticipant1().getToolbar().clickHangUpButton();
+//        TestUtils.waitForCondition(
+//            driver1,
+//            5,
+//            (ExpectedCondition<Boolean>) d
+//                -> !url.equals(driver1.getCurrentUrl()));
     }
 }
