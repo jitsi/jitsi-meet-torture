@@ -310,9 +310,9 @@ public class MalleusJitsificus
                 clientsInCurrentBrowser = 0;
             }
 
-            if (audioSender && i + numClients > numAudioSenders)
+            if (audioSender && audioSenders + numClients > numAudioSenders)
             {
-                numClients = numAudioSenders - i;
+                numClients = numAudioSenders - audioSenders;
             }
 
             if (i + numClients > numberOfParticipants)
