@@ -690,6 +690,28 @@ public class TestUtils
 
     /**
      * Executes a specific (piece of) JavaScript script in the browser
+     * controlled by a specific {@code WebDriver} and returns the result of its
+     * execution as a {@code String} value.
+     *
+     * @param driver the {@code WebDriver} which controls the browser in
+     * which the specified {@code script} is to be executed
+     * @param script the script to execute in the browser controlled by
+     * {@code webDriver}
+     * @return the result of the execution of {@code script} in the browser
+     * controlled by {@code webDriver} as a {@code String} value
+     */
+    public static Map<String, Object> executeScriptAndReturnMap(
+        WebDriver driver,
+        String script)
+    {
+        Object o = ((JavascriptExecutor) driver).executeScript(script);
+
+        return (o instanceof Map) ? (Map<String, Object>) o : null;
+    }
+
+
+    /**
+     * Executes a specific (piece of) JavaScript script in the browser
      * controlled by a specific {@code WebDriver}
      *
      * @param driver the {@code WebDriver} which controls the browser in

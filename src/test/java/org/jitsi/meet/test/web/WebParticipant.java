@@ -244,31 +244,22 @@ public class WebParticipant extends Participant<WebDriver>
             }
         }
 
-        if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
-        {
-            // Hack-in disabling of callstats (old versions of jitsi-meet don't
-            // handle URL parameters)
-            executeScript("config.callStatsID=false;");
-        }
+        Map<String, Object> vals = TestUtils.executeScriptAndReturnMap(driver,
+            "return {version: JitsiMeetJS.version, jid: APP.connection.getJid() }");
+        String sessionID = (driver instanceof RemoteWebDriver ?
+            ((RemoteWebDriver)driver).getSessionId().toString() :
+            (driver instanceof TabbedWebDriver) ?
+                ((TabbedWebDriver)driver).getSessionId() : null);
 
-        String version = TestUtils.executeScriptAndReturnString(driver,
-            "return JitsiMeetJS.version;");
-        TestUtils.print(name + " lib-jitsi-meet version: " + version
-            + (driver instanceof RemoteWebDriver ?
-                " sessionID: "
-                    + ((RemoteWebDriver)driver).getSessionId() :
-                (driver instanceof TabbedWebDriver) ?
-                    " sessionID: "
-                    + ((TabbedWebDriver)driver).getSessionId() :
-            ""));
-        String jid = TestUtils.executeScriptAndReturnString(driver,
-            "return APP.connection.getJid()");
-        if (jid != null)
-        {
-            TestUtils.print(name + " JID: " + jid);
-        }
+        TestUtils.print(name + " lib-jitsi-meet version: " + vals.get("version")
+            + (sessionID != null ?
+                " sessionID: " + sessionID : "") +
+            " JID: " + vals.get("jid"));
 
-        executeScript("document.title='" + name + "'");
+        if (!isLoadTest)
+        {
+            executeScript("document.title='" + name + "'");
+        }
     }
 
     /**
