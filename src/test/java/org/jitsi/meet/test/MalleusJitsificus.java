@@ -270,7 +270,8 @@ public class MalleusJitsificus
         for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
-            boolean audioSender = audioSenders < numAudioSenders && clientsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
+            boolean audioSender = audioSenders < numAudioSenders &&
+                clientsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
 
             JitsiMeetUrl urlCopy = url.copy();
 
@@ -337,7 +338,10 @@ public class MalleusJitsificus
             task.start(pool);
             i += numClients;
             clientsInCurrentBrowser += numClients;
-            audioSenders += numClients;
+            if (audioSender)
+            {
+                audioSenders += numClients;
+            }
         }
 
         List<Future<?>> otherTasks = new ArrayList<>();
