@@ -244,17 +244,15 @@ public class WebParticipant extends Participant<WebDriver>
             }
         }
 
-        Map<String, Object> vals = TestUtils.executeScriptAndReturnMap(driver,
-            "return {version: JitsiMeetJS.version, jid: APP.connection.getJid() }");
+        String version = TestUtils.executeScriptAndReturnString(driver, "return JitsiMeetJS.version");
         String sessionID = (driver instanceof RemoteWebDriver ?
             ((RemoteWebDriver)driver).getSessionId().toString() :
             (driver instanceof TabbedWebDriver) ?
                 ((TabbedWebDriver)driver).getSessionId() : null);
 
-        TestUtils.print(name + " lib-jitsi-meet version: " + vals.get("version")
+        TestUtils.print(name + " lib-jitsi-meet version: " + version
             + (sessionID != null ?
-                " sessionID: " + sessionID : "") +
-            " JID: " + vals.get("jid"));
+                " sessionID: " + sessionID : ""));
 
         if (!isLoadTest)
         {
