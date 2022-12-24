@@ -205,6 +205,15 @@ public class WebTestBase
     }
 
     /**
+     * Starts participant1, participant2 and participant3 if they are not started.
+     * @param url The url to be used for all the three participants.
+    */
+    public void ensureThreeParticipants(JitsiMeetUrl url)
+    {
+        ensureThreeParticipants(url, url, url);
+    }
+
+    /**
      * @return the {@code id}-th participant as a {@link WebParticipant}.
      * @param id 1-based index of the participant.
      */
@@ -344,7 +353,6 @@ public class WebTestBase
      * @param meetUrl a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
      * the config part.
-     * @param options the options to be used when creating the participant.
      * @return the participant which was created.
      */
     public WebParticipant joinSecondParticipant(JitsiMeetUrl meetUrl)
@@ -452,8 +460,6 @@ public class WebTestBase
      */
     public void consolePrint(WebParticipant participant, String log)
     {
-        participant.executeScript(
-            "APP.debugLogs.storeLogs([{ " +
-                "text: new Date().toISOString() + \" [" + getClass().getSimpleName() + "] " + log +"\" }]);");
+        participant.consolePrint(getClass().getSimpleName(), log);
     }
 }

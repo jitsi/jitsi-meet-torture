@@ -111,7 +111,6 @@ public class WebParticipant extends Participant<WebDriver>
     private BreakoutRoomsList breakoutRoomsList;
     private DialInNumbersPage dialInNumbersPage;
     private InviteDialog inviteDialog;
-    private KnockingParticipantList knockingParticipantList;
     private LargeVideo largeVideo;
     private LobbyScreen lobbyScreen;
     private Notifications notifications;
@@ -194,6 +193,17 @@ public class WebParticipant extends Participant<WebDriver>
             ex.printStackTrace();
             TestUtils.print("TimeoutException while loading page, "
                 + "will skip it and continue:" + ex.getMessage());
+        }
+
+        // let's check is APP global object available if not, we may be missing resources
+        // then check for id='showMore' and click it
+        try
+        {
+            executeScript("window.APP === undefined && document.getElementById('showMore').click();");
+        }
+        catch(Exception e)
+        {
+            // ignore
         }
 
         if (conferenceUrl.getIframeToNavigateTo() != null)
@@ -634,19 +644,6 @@ public class WebParticipant extends Participant<WebDriver>
     /**
      * @return a representation of the list of knocking participants.
      */
-    public KnockingParticipantList getKnockingParticipantList()
-    {
-        if (knockingParticipantList == null)
-        {
-            knockingParticipantList = new KnockingParticipantList(this);
-        }
-
-        return knockingParticipantList;
-    }
-
-    /**
-     * @return a representation of the list of knocking participants.
-     */
     public BreakoutRoomsList getBreakoutRoomsList()
     {
         if (breakoutRoomsList == null)
@@ -813,5 +810,16 @@ public class WebParticipant extends Participant<WebDriver>
     public void muteAudio(boolean mute)
     {
         executeScript("APP.conference.muteAudio(arguments[0])", mute);
+    }
+
+    /**
+     * Prints logs in the jitsi-meet app that will be available as test results.
+     * @param from the source that prints (the test class).
+     * @param log the log to print.
+     */
+    public void consolePrint(String from, String log)
+    {
+        this.executeScript(
+            "APP.debugLogs.storeLogs([{ text: new Date().toISOString() + \" [" + from + "] " + log +"\" }]);");
     }
 }

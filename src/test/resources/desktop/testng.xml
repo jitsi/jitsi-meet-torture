@@ -106,10 +106,16 @@
             <class name="org.jitsi.meet.test.InviteTest" />
         </classes>
     </test>
-    <test name="JibriTest">
+    <test name="JibriStreamTest">
         <classes>
-            <!-- JibriTest needs configuration or it is ignored by default -->
-            <class name="org.jitsi.meet.test.JibriTest" />
+            <!-- JibriStreamTest needs configuration or it is ignored by default -->
+            <class name="org.jitsi.meet.test.JibriStreamTest" />
+        </classes>
+    </test>
+    <test name="JibriStreamResolutionTest">
+        <classes>
+            <!-- JibriStreamResolutionTest needs configuration or it is ignored by default -->
+            <class name="org.jitsi.meet.test.JibriStreamResolutionTest" />
         </classes>
     </test>
     <test name="IFrameAPIGeneral">

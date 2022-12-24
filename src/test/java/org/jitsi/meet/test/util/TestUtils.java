@@ -237,7 +237,7 @@ public class TestUtils
     }
 
     /**
-     * Waits until an element becomes available and return it.
+     * Waits until an element becomes available/displayed and return it.
      * @param driver the {@code WebDriver}.
      * @param by the xpath to search for the element
      * @param timeout the time to wait for the element in seconds.
@@ -257,6 +257,10 @@ public class TestUtils
 
                     if (!elements.isEmpty())
                     {
+                        if (!elements.get(0).isDisplayed())
+                        {
+                            return false;
+                        }
                         foundElement[1] = Boolean.TRUE.toString();
                         foundElement[0] = elements.get(0).getText();
                         return true;
@@ -522,6 +526,29 @@ public class TestUtils
      * Waits until the given condition is fulfilled and fails the currently
      * running test if this doesn't happen within {@code timeoutSeconds} seconds.
      * @param driver the {@code WebDriver}.
+     * @param message the message to print in case of a failure.
+     * @param timeoutSeconds the time to wait for the element in seconds.
+     * @param condition the condition to be met.
+     */
+    public static void waitForCondition(WebDriver driver,
+                                        String message,
+                                        int timeoutSeconds,
+                                        ExpectedCondition<?> condition)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
+
+        if (message != null)
+        {
+            wait.withMessage(message);
+        }
+
+        wait.until(condition);
+    }
+
+    /**
+     * Waits until the given condition is fulfilled and fails the currently
+     * running test if this doesn't happen within {@code timeoutSeconds} seconds.
+     * @param driver the {@code WebDriver}.
      * @param timeoutSeconds the time to wait for the element in seconds.
      * @param condition the condition to be met.
      */
@@ -529,7 +556,7 @@ public class TestUtils
                                         int timeoutSeconds,
                                         ExpectedCondition<?> condition)
     {
-        (new WebDriverWait(driver, timeoutSeconds)).until(condition);
+        waitForCondition(driver, null, timeoutSeconds, condition);
     }
 
     /**

@@ -60,6 +60,7 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.max_disrupted_bridges_pct";
     public static final String USE_LOAD_TEST_PNAME
         = "org.jitsi.malleus.use_load_test";
+    public static final String USE_LITE_MODE_PNAME = "org.jitsi.malleus.use_lite_mode";
     public static final String JOIN_DELAY_PNAME
         = "org.jitsi.malleus.join_delay";
     public static final String SWITCH_SPEAKERS
@@ -68,6 +69,14 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.use_stage_view";
     public static final String USE_HEADLESS
         = "org.jitsi.malleus.enable.headless";
+    public static final String SENDERS_PER_TAB
+        = "org.jitsi.malleus.senders_per_tab";
+    public static final String RECEIVERS_PER_TAB
+        = "org.jitsi.malleus.receivers_per_tab";
+    public static final String EXTRA_SENDER_PARAMS
+        = "org.jitsi.malleus.extra_sender_params";
+    public static final String EXTRA_RECEIVER_PARAMS
+        = "org.jitsi.malleus.extra_receiver_params";
 
     private final Phaser allHungUp = new Phaser();
 
@@ -102,6 +111,16 @@ public class MalleusJitsificus
                 ? numParticipants
                 : Integer.parseInt(numAudioSendersStr);
 
+        String sendersPerTabStr = System.getProperty(SENDERS_PER_TAB);
+        int sendersPerTab = sendersPerTabStr == null
+            ? 1
+            : Integer.parseInt(sendersPerTabStr);
+
+        String receiversPerTabStr = System.getProperty(RECEIVERS_PER_TAB);
+        int receiversPerTab = receiversPerTabStr == null
+            ? 1
+            : Integer.parseInt(receiversPerTabStr);
+
         int durationMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
 
         int joinDelayMs = Integer.parseInt(System.getProperty(JOIN_DELAY_PNAME));
@@ -132,9 +151,14 @@ public class MalleusJitsificus
 
         boolean useLoadTest = Boolean.parseBoolean(System.getProperty(USE_LOAD_TEST_PNAME));
 
+        boolean useLiteMode = Boolean.parseBoolean(System.getProperty(USE_LITE_MODE_PNAME));
+
         boolean switchSpeakers = Boolean.parseBoolean(System.getProperty(SWITCH_SPEAKERS));
 
         boolean useStageView = Boolean.parseBoolean(System.getProperty(USE_STAGE_VIEW));
+
+        String extraSenderParams = System.getProperty(EXTRA_SENDER_PARAMS);
+        String extraReceiverParams = System.getProperty(EXTRA_RECEIVER_PARAMS);
 
         // Use one thread per conference.
         context.getCurrentXmlTest().getSuite()
@@ -152,6 +176,8 @@ public class MalleusJitsificus
         print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
         print("stage view=" + useStageView);
+        print("extra sender params=" + extraSenderParams);
+        print("extra receiver params=" + extraReceiverParams);
 
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
@@ -177,7 +203,10 @@ public class MalleusJitsificus
             ret[i] = new Object[] {
                 url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders,
                 regions, maxDisruptedBridges,
-                switchSpeakers
+                switchSpeakers,
+                sendersPerTab, receiversPerTab,
+                extraSenderParams, extraReceiverParams,
+                useLiteMode
             };
         }
 
@@ -188,7 +217,10 @@ public class MalleusJitsificus
     public void testMain(
         JitsiMeetUrl url, int numberOfParticipants,
         long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
-        String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers)
+        String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers,
+        int sendersPerTab, int receiversPerTab,
+        String extraSenderParams, String extraReceiverParams,
+        boolean useLiteMode)
         throws Exception
     {
         List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
@@ -198,20 +230,67 @@ public class MalleusJitsificus
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(numberOfParticipants + 2);
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
-        for (int i = 0; i < numberOfParticipants; i++)
+
+        if (sendersPerTab == 0 && receiversPerTab == 0)
         {
+            return;
+        }
+
+        for (int i = 0; i < numberOfParticipants; )
+        {
+            boolean sender = i < numSenders;
+            boolean audioSender = i < numAudioSenders;
+
+            JitsiMeetUrl urlCopy = url.copy();
+
+            int numClients;
+
+            if (sender)
+            {
+                // N.B. this does the right thing for null or empty values
+                urlCopy.appendConfig(extraSenderParams);
+                numClients = sendersPerTab;
+                if (i + numClients > numSenders)
+                {
+                    numClients = numSenders - i;
+                }
+            }
+            else
+            {
+                urlCopy.appendConfig(extraReceiverParams);
+                numClients = receiversPerTab;
+
+                if (useLiteMode)
+                {
+                    urlCopy.appendConfig("config.flags.runInLiteMode=true");
+                }
+            }
+
+            if (audioSender && i + numClients > numAudioSenders)
+            {
+                numClients = numAudioSenders - i;
+            }
+
+            if (i + numClients > numberOfParticipants)
+            {
+                numClients = numberOfParticipants - i;
+            }
+
             MalleusTask task = new MalleusTask(
                 i,
-                url.copy(),
+                urlCopy,
                 durationMs,
+                joinDelayMs,
                 i * joinDelayMs,
-                i >= numSenders /* no video */,
-                switchSpeakers || i >= numAudioSenders /* no audio */,
+                !sender /* no video */,
+                switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
+                numClients,
                 disruptBridges
             );
             malleusTasks.add(task);
             task.start(pool);
+            i += numClients;
         }
 
         List<Future<?>> otherTasks = new ArrayList<>();
@@ -305,14 +384,14 @@ public class MalleusJitsificus
         private ScheduledExecutorService pool;
 
         public MalleusTask(
-            int i, JitsiMeetUrl url, long durationMs, long joinDelayMs,
-            boolean muteVideo, boolean muteAudio, String region,
+            int i, JitsiMeetUrl url, long durationMs, long joinDelayMs, long totalJoinDelayMs,
+            boolean muteVideo, boolean muteAudio, String region, int numClients,
             boolean enableFailureDetection)
         {
             this.i = i;
             this._url = url;
             this.durationMs = durationMs;
-            this.joinDelayMs = joinDelayMs;
+            this.joinDelayMs = totalJoinDelayMs;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.enableFailureDetection = enableFailureDetection;
@@ -324,6 +403,11 @@ public class MalleusJitsificus
             if (muteAudio)
             {
                 _url.appendConfig("config.startWithAudioMuted=true");
+            }
+            if (numClients != 1)
+            {
+                _url.appendConfig("numClients=" + numClients);
+                _url.appendConfig("clientInterval=" + joinDelayMs);
             }
 
             if (region != null)

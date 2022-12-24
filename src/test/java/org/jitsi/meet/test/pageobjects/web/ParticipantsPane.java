@@ -4,9 +4,9 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.*;
+import java.util.logging.*;
 
 import static org.testng.Assert.fail;
 
@@ -58,6 +58,17 @@ public class ParticipantsPane
     private final static String AUTO_ASSIGN_LABEL = "Auto assign to breakout rooms";
 
     /**
+     * The prefix of the participant item id.
+     */
+    public final static String PARTICIPANT_ITEM = "participant-item-";
+
+    /**
+     * The xpath to list all participants waiting in lobby.
+     */
+    private final static String LOBBY_PARTICIPANT_ITEMS_XPATH
+        = "//div[@id='lobby-list']//div[starts-with(@id, '" + PARTICIPANT_ITEM +"')]";
+
+    /**
      * The participant.
      */
     private final WebParticipant participant;
@@ -98,17 +109,19 @@ public class ParticipantsPane
                 + "']//div[contains(@class, 'indicators')]//*[name()='svg' and @id='videoMuted']";
         if (!isOpen)
         {
+            TestUtils.print("Participants pane is not open, will open it.");
             open();
+            TestUtils.print("Participants pane is now open:" + isOpen());
         }
         try
         {
             if (muted)
             {
-                TestUtils.waitForElementByXPath(participant.getDriver(), iconXpath, 3);
+                TestUtils.waitForElementByXPath(participant.getDriver(), iconXpath, 5);
             }
             else
             {
-                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(participant.getDriver(), iconXpath, 3);
+                TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(participant.getDriver(), iconXpath, 5);
             }
         }
         catch (TimeoutException exc)
@@ -117,12 +130,10 @@ public class ParticipantsPane
                     participantToCheck.getName() + (muted ? " should" : " shouldn't")
                             + " be muted at this point, xpath: " + iconXpath);
         }
-        finally
+
+        if (!isOpen)
         {
-            if (!isOpen)
-            {
-                close();
-            }
+            close();
         }
     }
 
@@ -224,11 +235,25 @@ public class ParticipantsPane
     }
 
     /**
-     * Tries to click on the reject button and fails if it cannot be clicked.
-     * @param participantIdToAdmit - the id of the participant for this {@link ParticipantsPane} to admit.
+     * Find the participant by name.
+     * @param name - The name to check.
+     * @return the WebElement of the participant if any.
      */
-    public void admitLobbyParticipant(String participantIdToAdmit)
+    private WebElement findLobbyParticipantByName(String name)
     {
+        return participant.getDriver().findElements(By.xpath(LOBBY_PARTICIPANT_ITEMS_XPATH))
+            .stream().filter(e -> e.getText().contains(name)).findFirst().orElse(null);
+    }
+
+    /**
+     * Tries to click on the reject button and fails if it cannot be clicked.
+     * @param participantNameToAdmit - the name of the participant for this {@link ParticipantsPane} to admit.
+     */
+    public void admitLobbyParticipant(String participantNameToAdmit)
+    {
+        String participantIdToAdmit = findLobbyParticipantByName(participantNameToAdmit)
+            .getAttribute("id").substring(PARTICIPANT_ITEM.length());
+
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("admit-" + participantIdToAdmit);
         TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
 
@@ -237,10 +262,13 @@ public class ParticipantsPane
 
     /**
      * Tries to click on the reject button and fails if it cannot be clicked.
-     * @param participantIdToReject - the id of the participant for this {@link ParticipantsPane} to reject.
+     * @param participantNameToReject - the name of the participant for this {@link ParticipantsPane} to reject.
      */
-    public void rejectLobbyParticipant(String participantIdToReject)
+    public void rejectLobbyParticipant(String participantNameToReject)
     {
+        String participantIdToReject = findLobbyParticipantByName(participantNameToReject)
+            .getAttribute("id").substring(PARTICIPANT_ITEM.length());
+
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("reject-" + participantIdToReject);
         TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
 

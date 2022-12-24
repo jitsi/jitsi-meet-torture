@@ -179,48 +179,23 @@ public class AudioVideoModerationTest
         participant3.getToolbar().clickRaiseHandButton();
 
         participant1.hangUp();
-
         joinFirstParticipant();
 
-        if (participant2.isModerator())
-        {
-            participant2.getParticipantsPane().open();
+        // After p1 re-joins either p2 or p3 is promoted to moderator. They should still be muted.
+        WebParticipant moderator = participant2.isModerator() ? participant2 : participant3;
+        moderator.getParticipantsPane().assertIsParticipantVideoMuted(moderator, true);
+        WebParticipant nonModerator = participant2.isModerator() ? participant3 : participant2;
+        nonModerator.getParticipantsPane().assertIsParticipantVideoMuted(nonModerator, true);
 
-            participant2.getParticipantsPane().askToUnmute(participant3);
-
-            participant3.getNotifications().getAskToUnmuteNotification();
-
-            MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false);
-            MeetUIUtils.unmuteVideoAndCheck(participant3, participant1);
-
-            participant2.getParticipantsPane().clickContextMenuButton();
-
-            participant2.getAVModerationMenu().clickStopAudioModeration();
-
-            participant2.getAVModerationMenu().clickStopVideoModeration();
-
-            participant2.getParticipantsPane().close();
-        }
-
-        if (participant3.isModerator())
-        {
-            participant3.getParticipantsPane().open();
-
-            participant3.getParticipantsPane().askToUnmute(participant2);
-
-            participant2.getNotifications().getAskToUnmuteNotification();
-
-            MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false);
-            MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-
-            participant3.getParticipantsPane().clickContextMenuButton();
-
-            participant3.getAVModerationMenu().clickStopAudioModeration();
-
-            participant3.getAVModerationMenu().clickStopVideoModeration();
-
-            participant3.getParticipantsPane().close();
-        }
+        moderator.getParticipantsPane().open();
+        moderator.getParticipantsPane().askToUnmute(nonModerator);
+        nonModerator.getNotifications().getAskToUnmuteNotification();
+        MeetUIUtils.toggleAudioAndCheck(nonModerator, participant1, false);
+        MeetUIUtils.unmuteVideoAndCheck(nonModerator, participant1);
+        moderator.getParticipantsPane().clickContextMenuButton();
+        moderator.getAVModerationMenu().clickStopAudioModeration();
+        moderator.getAVModerationMenu().clickStopVideoModeration();
+        moderator.getParticipantsPane().close();
     }
 
     /**
@@ -301,7 +276,6 @@ public class AudioVideoModerationTest
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
 
         // make sure we close the notifications to avoid covering the mute button
-        participant2.getNotifications().closeAskToUnmuteNotification();
         participant2.getNotifications().closeRemoteMuteNotification();
 
         // we try to unmute and test it that it was still muted
@@ -355,7 +329,6 @@ public class AudioVideoModerationTest
         // mute and check
         participantsPane.muteParticipant(participant2);
         participant2.getNotifications().closeAskToUnmuteNotification();
-        participant2.getNotifications().closeRemoteMuteNotification();
 
         MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
     }

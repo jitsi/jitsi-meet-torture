@@ -89,7 +89,7 @@ public class ActiveSpeakerTest
     {
         List<WebElement> dominantSpeakerIndicators =
             driver.findElements(By.xpath(
-                "//span[contains(@class,'dominant-speaker')]"
+                "//span[not(contains(@class, 'tile-view'))]//span[contains(@class,'dominant-speaker')]"
             ));
 
         int speakers = 0;

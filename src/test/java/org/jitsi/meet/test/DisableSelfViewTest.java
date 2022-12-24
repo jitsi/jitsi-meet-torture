@@ -65,19 +65,20 @@ public class DisableSelfViewTest
     {
         checkSelfViewHidden(false);
 
+        WebDriver driver1 = participant1.getDriver();
+
         // open local video menu
-        WebElement localTile = participant1.getDriver().findElement(By.xpath(LOCAL_TILE_XPATH));
-        Actions hoverOnLocalTile = new Actions(participant1.getDriver());
+        WebElement localTile = driver1.findElement(By.xpath(LOCAL_TILE_XPATH));
+        Actions hoverOnLocalTile = new Actions(driver1);
         hoverOnLocalTile.moveToElement(localTile);
         hoverOnLocalTile.perform();
-        WebElement menuButton = TestUtils.waitForElementBy(participant1.getDriver(),
-                By.xpath(LOCAL_VIDEO_MENU_BUTTON_XPATH), 5);
-        menuButton.click();
+
+        TestUtils.waitForDisplayedElementByXPath(driver1, LOCAL_VIDEO_MENU_BUTTON_XPATH, 5);
+        driver1.findElement(By.xpath(LOCAL_VIDEO_MENU_BUTTON_XPATH)).click();
 
         // click Hide self view button
-        WebElement hideSelfView = TestUtils.waitForElementBy(participant1.getDriver(),
-                By.xpath(HIDE_SELF_VIEW_BUTTON_XPATH), 5);
-        hideSelfView.click();
+        TestUtils.waitForDisplayedElementByXPath(driver1, HIDE_SELF_VIEW_BUTTON_XPATH, 5);
+        driver1.findElement(By.xpath(HIDE_SELF_VIEW_BUTTON_XPATH)).click();
 
         checkSelfViewHidden(true, true);
 

@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -592,7 +593,9 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandToggleRaiseHand"})
     public void testCommandToggleShareScreen()
     {
+        hangUpAllParticipants();
         this.iFrameUrl = getIFrameUrl(null, null);
+
         ensureTwoParticipants(this.iFrameUrl, null);
 
         WebParticipant participant1 = getParticipant1();
@@ -611,7 +614,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+        DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
 
         switchToIframeAPI(driver1);
 
@@ -629,14 +632,14 @@ public class IFrameAPICommandsTest
         assertEquals(JsonParser.parseString(res).getAsJsonArray().get(0).getAsString(), endpointId1);
 
         JsonObject sharingData = getEventResult(driver1, "screenSharingStatusChanged");
-        assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing mst be on");
+        assertTrue(sharingData.get("on").getAsBoolean(), "Screen sharing must be on");
 
         TestUtils.executeScript(driver1,
             "window.jitsiAPI.executeCommand('toggleShareScreen');");
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "camera");
+        DesktopSharingTest.checkForScreensharingTile(participant1, participant2, false, 5);
 
         ensureThreeParticipants(this.iFrameUrl, null, null);
 
@@ -645,8 +648,8 @@ public class IFrameAPICommandsTest
 
         participant2.getToolbar().clickDesktopSharingButton();
         participant3.getToolbar().clickDesktopSharingButton();
-        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant2, "desktop");
-        DesktopSharingTest.testDesktopSharingInPresence(participant1, participant3, "desktop");
+        DesktopSharingTest.checkForScreensharingTile(participant2, participant1, true, 5);
+        DesktopSharingTest.checkForScreensharingTile(participant3, participant1, true, 5);
 
         switchToIframeAPI(driver1);
 
@@ -1276,7 +1279,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String virtualBackgroundDialogXpath = "//span[@id='dialog-heading-1']";
+        String virtualBackgroundDialogXpath = "//p[@id='dialog-title']";
         String dialogTitle = "Virtual backgrounds";
 
         TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 2);

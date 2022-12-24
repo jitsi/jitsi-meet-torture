@@ -87,12 +87,6 @@ public class TileViewTest
             getParticipant2().getEndpointId());
 
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
-
-        MeetUIUtils.clickOnRemoteVideo(
-            getParticipant1().getDriver(),
-            getParticipant2().getEndpointId());
-
-        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
     }
 
     /**
@@ -102,6 +96,10 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testPinningExitsTileView" })
     public void testLocalVideoDisplaysAtEnd()
     {
+        enterTileView();
+
+        MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
+
         WebDriver driver = getParticipant1().getDriver();
 
         TestUtils.waitForElementBy(

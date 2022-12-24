@@ -64,7 +64,18 @@ public class StartMutedTest
         // seems like a bit of sound goes through in random cases. Let's wait
         // here a bit, before checking the audio levels.
         TestUtils.waitMillis(500);
-        checkParticipant2ForMute();
+
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+
+        MeetUIUtils.waitForAudioMuted(
+                participant1.getDriver(),
+                participant2.getDriver(),
+                "participant2",
+                true);
+
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
     }
 
     /**
@@ -76,23 +87,26 @@ public class StartMutedTest
     {
         hangUpAllParticipants();
 
-        ensureOneParticipant(getJitsiMeetUrl().appendConfig(
-            "config.startAudioMuted=1&" +
-                "config.debugAudioLevels=true&" +
-                "config.startVideoMuted=1"));
+        ensureOneParticipant(getJitsiMeetUrl()
+                        .appendConfig("config.startAudioMuted=2")
+                        .appendConfig("config.debugAudioLevels=true")
+                        .appendConfig("config.startVideoMuted=2"));
 
         WebParticipant participant2 = joinSecondParticipant();
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
         participant2.waitForSendReceiveData(false, true);
 
-        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant3 = joinThirdParticipant();
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData(false, true);
 
-        final WebDriver driver2 = participant2.getDriver();
+        WebParticipant participant1 = getParticipant1();
+        participant1.waitForIceConnected();
+
         consolePrint(participant1,
             "Start configOptionsTest, second participant: " + participant2.getEndpointId());
-
-        participant1.waitForIceConnected();
 
         // On the PR testing machine it seems that some audio is leaking before
         // we mute. The audio is muted when 'session-initiate' is received, but
@@ -100,16 +114,34 @@ public class StartMutedTest
         // here a bit, before checking the audio levels.
         TestUtils.waitMillis(500);
 
-        checkParticipant2ForMute();
+        // Participant 3 should be muted, 1 and 2 unmuted.
+        participant3.getFilmstrip().assertAudioMuteIcon(participant3, true);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant3, true);
+
+        MeetUIUtils.waitForAudioMuted(
+                participant1.getDriver(),
+                participant3.getDriver(),
+                "participant3",
+                true);
+        MeetUIUtils.waitForAudioMuted(
+                participant2.getDriver(),
+                participant3.getDriver(),
+                "participant3",
+                true);
+
+        participant3.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant2, false);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
 
         // Unmute and see if the audio works
-        participant2.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioMuteButton();
         consolePrint(participant1,
-            "configOptionsTest, unmuted second participant");
+            "configOptionsTest, unmuted third participant");
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
-            driver2,
-            "participant2",
+            participant3.getDriver(),
+            "participant3",
             false /* unmuted */);
     }
 
@@ -125,10 +157,9 @@ public class StartMutedTest
         ParticipantType participant1Type = participant1.getType();
         ParticipantType participant2Type = participant2.getType();
 
-        /**
-         * Firefox is known to have problems unmuting when starting muted.
-         * Safari does not support video.
-         */
+
+        // Firefox is known to have problems unmuting when starting muted.
+        // Safari does not support video.
         if (participant1Type.isFirefox()
             || participant2Type.isFirefox()
             || participant1Type.isSafari()
@@ -210,28 +241,5 @@ public class StartMutedTest
             participant1.getDriver(),
             "participant1",
             false);
-    }
-
-    /**
-     * Tests if the second participant is muted and the first participant is
-     * unmuted.
-     */
-    private void checkParticipant2ForMute()
-    {
-        WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = getParticipant2();
-
-        getParticipant2().getFilmstrip()
-            .assertAudioMuteIcon(getParticipant2(), true);
-        getParticipant2().getParticipantsPane().assertIsParticipantVideoMuted(getParticipant2(), true);
-
-        MeetUIUtils.waitForAudioMuted(
-            participant1.getDriver(),
-            participant2.getDriver(),
-            "participant2",
-            true);
-
-        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
-        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
     }
 }
