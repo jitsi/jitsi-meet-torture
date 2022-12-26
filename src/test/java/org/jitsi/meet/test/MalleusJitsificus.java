@@ -36,7 +36,7 @@ public class MalleusJitsificus
      * The video file to use as input for the first participant (the sender).
      */
     private static final String INPUT_VIDEO_FILE
-        = "resources/FourPeople_1280x720_30.y4m";
+        = "resources/FourPeople_1280x720_60.y4m";
 
     public static final String CONFERENCES_PNAME
         = "org.jitsi.malleus.conferences";
