@@ -720,11 +720,13 @@ public class MalleusJitsificus
                         mTask.participant.muteOneAudio(mute, num);
                         if (mute)
                         {
-                            TestUtils.print("Muted participant " + (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
+                            TestUtils.print("Muted participant " +
+                                (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
                         }
                         else
                         {
-                            TestUtils.print("Unmuted participant " + (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
+                            TestUtils.print("Unmuted participant " +
+                                (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
                             spoken = true;
                         }
 
