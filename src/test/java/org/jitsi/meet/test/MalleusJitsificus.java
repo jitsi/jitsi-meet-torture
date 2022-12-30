@@ -273,13 +273,14 @@ public class MalleusJitsificus
 
         SharedBaseDriver sharedBaseDriver = new SharedBaseDriver();
         int clientsInCurrentBrowser = 0;
+        int audioTabsInCurrentBrowser = 0;
         int audioSenders = 0;
 
         for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
             boolean audioSender = audioSenders < numAudioSenders &&
-                clientsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
+                audioTabsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
 
             JitsiMeetUrl urlCopy = url.copy();
 
@@ -316,6 +317,7 @@ public class MalleusJitsificus
             {
                 sharedBaseDriver = new SharedBaseDriver();
                 clientsInCurrentBrowser = 0;
+                audioTabsInCurrentBrowser = 0;
             }
 
             if (audioSender && audioSenders + numClients > numAudioSenders)
@@ -349,6 +351,7 @@ public class MalleusJitsificus
             if (audioSender)
             {
                 audioSenders += numClients;
+                audioTabsInCurrentBrowser += 1;
                 if (switchSpeakers)
                 {
                     if (numClients == 1)
@@ -717,11 +720,11 @@ public class MalleusJitsificus
                         mTask.participant.muteOneAudio(mute, num);
                         if (mute)
                         {
-                            TestUtils.print("Muted participant " + mTask.i + num + " (" + mTask.i + "+" + num + ")");
+                            TestUtils.print("Muted participant " + (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
                         }
                         else
                         {
-                            TestUtils.print("Unmuted participant " + mTask.i + num + " (" + mTask.i + "+" + num + ")");
+                            TestUtils.print("Unmuted participant " + (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
                             spoken = true;
                         }
 
