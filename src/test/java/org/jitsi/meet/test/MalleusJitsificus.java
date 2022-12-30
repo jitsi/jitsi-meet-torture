@@ -389,7 +389,7 @@ public class MalleusJitsificus
             otherTasks.add(pool.submit(() -> {
                     try
                     {
-                        switchSpeakers(speakerTasks, durationMs + joinDelayMs * numberOfParticipants, numAudioSenders);
+                        switchSpeakers(speakerTasks, durationMs + joinDelayMs * numberOfParticipants);
                     }
                     catch (Exception e)
                     {
@@ -717,11 +717,11 @@ public class MalleusJitsificus
                         mTask.participant.muteOneAudio(mute, num);
                         if (mute)
                         {
-                            TestUtils.print("Muted participant " + mTask.i + "/" + num);
+                            TestUtils.print("Muted participant " + mTask.i + num + " (" + mTask.i + "+" + num + ")");
                         }
                         else
                         {
-                            TestUtils.print("Unmuted participant "  + mTask.i + "/" + num);
+                            TestUtils.print("Unmuted participant " + mTask.i + num + " (" + mTask.i + "+" + num + ")");
                             spoken = true;
                         }
 
@@ -771,7 +771,7 @@ public class MalleusJitsificus
      *  This is modeled on ITU-T P.59, but choosing among N speakers rather than just 2.
      *  (At most 2 at a time.)
      */
-    private void switchSpeakers(List<SpeakerTask> malleusTasks, long durationInMs, int numAudioSenders)
+    private void switchSpeakers(List<SpeakerTask> speakerTasks, long durationInMs)
         throws InterruptedException
     {
         List<SpeakerTask> currentSpeakers = new ArrayList<>();
@@ -784,7 +784,7 @@ public class MalleusJitsificus
             case 0:
             {
                 /* No speakers - add a speaker. */
-                SpeakerTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
+                SpeakerTask newSpeaker = chooseSpeaker(speakerTasks, currentSpeakers);
                 if (newSpeaker != null)
                 {
                     newSpeaker.muteAudio(false);
@@ -804,7 +804,7 @@ public class MalleusJitsificus
                 }
                 else
                 {
-                    SpeakerTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
+                    SpeakerTask newSpeaker = chooseSpeaker(speakerTasks, currentSpeakers);
                     if (newSpeaker != null)
                     {
                         newSpeaker.muteAudio(false);
@@ -863,9 +863,7 @@ public class MalleusJitsificus
      * and some other conference member with probability (1 / (N + 1)), unless everyone
      * is a past speaker.
      */
-    private SpeakerTask chooseSpeaker(List<SpeakerTask> tasks,
-        List<SpeakerTask> currentSpeakers,
-        int numAudioSenders)
+    private SpeakerTask chooseSpeaker(List<SpeakerTask> tasks, List<SpeakerTask> currentSpeakers)
     {
         List<SpeakerTask> pastSpeakers = tasks.stream().
             filter((t) -> t.mTask.running).
