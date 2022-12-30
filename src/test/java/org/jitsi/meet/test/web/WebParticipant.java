@@ -812,6 +812,14 @@ public class WebParticipant extends Participant<WebDriver>
     }
 
     /**
+     *  Mute or unmute a single client's audio in a multi-client load test participant, through the API.
+     */
+    public void muteOneAudio(boolean mute, int num)
+    {
+        executeScript("APP.conference.muteAudio(arguments[0], arguments[1])", mute, num);
+    }
+
+    /**
      * Prints logs in the jitsi-meet app that will be available as test results.
      * @param from the source that prints (the test class).
      * @param log the log to print.
