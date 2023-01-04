@@ -244,21 +244,20 @@ public class WebParticipant extends Participant<WebDriver>
             }
         }
 
-        if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
-        {
-            // Hack-in disabling of callstats (old versions of jitsi-meet don't
-            // handle URL parameters)
-            executeScript("config.callStatsID=false;");
-        }
+        String version = TestUtils.executeScriptAndReturnString(driver, "return JitsiMeetJS.version");
+        String sessionID = (driver instanceof RemoteWebDriver ?
+            ((RemoteWebDriver)driver).getSessionId().toString() :
+            (driver instanceof TabbedWebDriver) ?
+                ((TabbedWebDriver)driver).getSessionId() : null);
 
-        String version = TestUtils.executeScriptAndReturnString(driver,
-            "return JitsiMeetJS.version;");
         TestUtils.print(name + " lib-jitsi-meet version: " + version
-            + (driver instanceof RemoteWebDriver ?
-                " sessionID: "
-                    + ((RemoteWebDriver)driver).getSessionId() : ""));
+            + (sessionID != null ?
+                " sessionID: " + sessionID : ""));
 
-        executeScript("document.title='" + name + "'");
+        if (!isLoadTest)
+        {
+            executeScript("document.title='" + name + "'");
+        }
     }
 
     /**
@@ -810,6 +809,14 @@ public class WebParticipant extends Participant<WebDriver>
     public void muteAudio(boolean mute)
     {
         executeScript("APP.conference.muteAudio(arguments[0])", mute);
+    }
+
+    /**
+     *  Mute or unmute a single client's audio in a multi-client load test participant, through the API.
+     */
+    public void muteOneAudio(boolean mute, int num)
+    {
+        executeScript("APP.conference.muteAudio(arguments[0], arguments[1])", mute, num);
     }
 
     /**

@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then
 fi
 
 usage() {
-  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-tab=MALLEUS_SENDERS_PER_NODE] [--receivers-per-tab=MALLEUS_RECEIVERS_PER_NODE] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--use-lite-mode] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--extra-sender-params=EXTRA_SENDER_PARAMS] [--extra-receiver-params=EXTRA_RECEIVER_PARAMS] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
+  echo "Usage: $0 [--conferences=MALLEUS_CONFERENCES] [--participants=MALLEUS_PARTICIPANTS] [--senders=MALLEUS_SENDERS] [--audio-senders=MALLEUS_AUDIO_SENDERS] [--senders-per-tab=MALLEUS_SENDERS_PER_NODE] [--receivers-per-tab=MALLEUS_RECEIVERS_PER_NODE] [--sender-tabs-per-browser=MALLEUS_SENDER_TABS_PER_BROWSER] [--receiver-tabs-per-browser=MALLEUS_RECEIVER_TABS_PER_BROWSER] [--senders-per-node=MALLEUS_SENDERS_PER_NODE] [--receivers-per-node=MALLEUS_RECEIVERS_PER_NODE] [--duration=MALLEUS_DURATION (s)] [--join-delay=MALLEUS_JOIN_DELAY (ms)] [--room-name-prefix=MALLEUS_ROOM_NAME_PREFIX] [--hub-url=MALLEUS_HUB_URL] [--instance-url=MALLEUS_INSTANCE_URL] [--regions=MALLEUS_REGIONS] [--use-node-types] [--use-load-test] [--use-lite-mode] [--max-disrupted-bridges-pct=MALLEUS_MAX_DISRUPTED_BRIDGES_PCT] [--extra-sender-params=EXTRA_SENDER_PARAMS] [--extra-receiver-params=EXTRA_RECEIVER_PARAMS] [--debug] [--switch-speakers] [--use-stage-view] [--headless]" >&2
   exit 1
 }
 
@@ -28,6 +28,14 @@ set_defaults() {
 
     if [ -z "$MALLEUS_AUDIO_SENDERS" ]; then
       MALLEUS_AUDIO_SENDERS=$MALLEUS_PARTICIPANTS
+    fi
+
+    if [ -z "$MALLEUS_SENDER_TABS_PER_BROWSER" ]; then
+      MALLEUS_SENDER_TABS_PER_BROWSER=1
+    fi
+
+    if [ -z "$MALLEUS_RECEIVER_TABS_PER_BROWSER" ]; then
+      MALLEUS_RECEIVER_TABS_PER_BROWSER=1
     fi
 
     if [ -z "$MALLEUS_SENDERS_PER_TAB" ]; then
@@ -109,6 +117,8 @@ case $1 in
         --participants) MALLEUS_PARTICIPANTS=$optvalue;;
         --senders) MALLEUS_SENDERS=$optvalue;;
         --audio-senders) MALLEUS_AUDIO_SENDERS=$optvalue;;
+        --sender-tabs-per-browser) MALLEUS_SENDER_TABS_PER_BROWSER=$optvalue;;
+        --receiver-tabs-per-browser) MALLEUS_RECEIVER_TABS_PER_BROWSER=$optvalue;;
         --senders-per-tab) MALLEUS_SENDERS_PER_TAB=$optvalue;;
         --receivers-per-tab) MALLEUS_RECEIVERS_PER_TAB=$optvalue;;
         --senders-per-node) MALLEUS_SENDERS_PER_NODE=$optvalue; MALLEUS_USE_NODE_TYPES=true;;
@@ -201,6 +211,8 @@ mvn \
 -Dorg.jitsi.malleus.room_name_prefix=$MALLEUS_ROOM_NAME_PREFIX \
 -Dorg.jitsi.malleus.regions=$MALLEUS_REGIONS \
 -Dorg.jitsi.malleus.use_node_types=$MALLEUS_USE_NODE_TYPES \
+-Dorg.jitsi.malleus.sender_tabs_per_browser=$MALLEUS_SENDER_TABS_PER_BROWSER \
+-Dorg.jitsi.malleus.receiver_tabs_per_browser=$MALLEUS_RECEIVER_TABS_PER_BROWSER \
 -Dorg.jitsi.malleus.senders_per_tab=$MALLEUS_SENDERS_PER_TAB \
 -Dorg.jitsi.malleus.receivers_per_tab=$MALLEUS_RECEIVERS_PER_TAB \
 -Dorg.jitsi.meet.test.util.blip_script=$MALLEUS_BLIP_SCRIPT \

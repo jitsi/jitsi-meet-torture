@@ -18,11 +18,13 @@ package org.jitsi.meet.test;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 /**
@@ -73,10 +75,20 @@ public class MalleusJitsificus
         = "org.jitsi.malleus.senders_per_tab";
     public static final String RECEIVERS_PER_TAB
         = "org.jitsi.malleus.receivers_per_tab";
+
+    public static final String SENDER_TABS_PER_BROWSER
+        = "org.jitsi.malleus.sender_tabs_per_browser";
+
+    public static final String RECEIVER_TABS_PER_BROWSER
+        = "org.jitsi.malleus.receiver_tabs_per_browser";
+
     public static final String EXTRA_SENDER_PARAMS
         = "org.jitsi.malleus.extra_sender_params";
     public static final String EXTRA_RECEIVER_PARAMS
         = "org.jitsi.malleus.extra_receiver_params";
+
+    // The maximum number of audio senders per browser.  This is a hard-coded Chrome limit, so hard-code it here too.
+    public static final int MAX_AUDIO_SENDERS_PER_BROWSER = 16;
 
     private final Phaser allHungUp = new Phaser();
 
@@ -110,6 +122,16 @@ public class MalleusJitsificus
         int numAudioSenders = numAudioSendersStr == null
                 ? numParticipants
                 : Integer.parseInt(numAudioSendersStr);
+
+        String senderTabsPerBrowserStr = System.getProperty(SENDER_TABS_PER_BROWSER);
+        int senderTabsPerBrowser = senderTabsPerBrowserStr == null
+            ? 1
+            : Integer.parseInt(senderTabsPerBrowserStr);
+
+        String receiverTabsPerBrowserStr = System.getProperty(RECEIVER_TABS_PER_BROWSER);
+        int receiverTabsPerBrowser = receiverTabsPerBrowserStr == null
+            ? 1
+            : Integer.parseInt(receiverTabsPerBrowserStr);
 
         String sendersPerTabStr = System.getProperty(SENDERS_PER_TAB);
         int sendersPerTab = sendersPerTabStr == null
@@ -164,6 +186,13 @@ public class MalleusJitsificus
         context.getCurrentXmlTest().getSuite()
             .setDataProviderThreadCount(numConferences);
 
+        if (!useLoadTest && (sendersPerTab > 1 || receiversPerTab > 1))
+        {
+            print("WARNING: multiple clients per tab only supported in load-test mode");
+            sendersPerTab = 1;
+            receiversPerTab = 1;
+        }
+
         print("will run with:");
         print("conferences="+ numConferences);
         print("participants=" + numParticipants);
@@ -176,6 +205,8 @@ public class MalleusJitsificus
         print("max_disrupted_bridges_pct=" + maxDisruptedBridges);
         print("regions=" + (regions == null ? "null" : Arrays.toString(regions)));
         print("stage view=" + useStageView);
+        print("tabs per browser=" + senderTabsPerBrowser + " send / " + receiverTabsPerBrowser + " recv");
+        print("participants per tab=" + sendersPerTab + " send / " + receiversPerTab + " recv");
         print("extra sender params=" + extraSenderParams);
         print("extra receiver params=" + extraReceiverParams);
 
@@ -205,6 +236,7 @@ public class MalleusJitsificus
                 url, numParticipants, durationMs, joinDelayMs, numSenders, numAudioSenders,
                 regions, maxDisruptedBridges,
                 switchSpeakers,
+                senderTabsPerBrowser, receiverTabsPerBrowser,
                 sendersPerTab, receiversPerTab,
                 extraSenderParams, extraReceiverParams,
                 useLiteMode
@@ -219,12 +251,14 @@ public class MalleusJitsificus
         JitsiMeetUrl url, int numberOfParticipants,
         long durationMs, long joinDelayMs, int numSenders, int numAudioSenders,
         String[] regions, float blipMaxDisruptedPct, boolean switchSpeakers,
+        int senderTabsPerBrowser, int receiverTabsPerBrowser,
         int sendersPerTab, int receiversPerTab,
         String extraSenderParams, String extraReceiverParams,
         boolean useLiteMode)
         throws Exception
     {
         List<MalleusTask> malleusTasks = new ArrayList<>(numberOfParticipants);
+        List<SpeakerTask> speakerTasks = new ArrayList<>( switchSpeakers ? numAudioSenders : 0);
 
         bridgeSelectionCountDownLatch = new CountDownLatch(numberOfParticipants);
 
@@ -232,19 +266,27 @@ public class MalleusJitsificus
 
         boolean disruptBridges = blipMaxDisruptedPct > 0;
 
-        if (sendersPerTab == 0 && receiversPerTab == 0)
+        if ((sendersPerTab == 0 && receiversPerTab == 0) || (senderTabsPerBrowser == 0 && receiverTabsPerBrowser == 0))
         {
             return;
         }
 
+        SharedBaseDriver sharedBaseDriver = new SharedBaseDriver();
+        int clientsInCurrentBrowser = 0;
+        int audioTabsInCurrentBrowser = 0;
+        int audioSenders = 0;
+
         for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
-            boolean audioSender = i < numAudioSenders;
+            boolean audioSender = audioSenders < numAudioSenders &&
+                audioTabsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
 
             JitsiMeetUrl urlCopy = url.copy();
 
             int numClients;
+            int clientsPerBrowser;
+            boolean multitab;
 
             if (sender)
             {
@@ -255,6 +297,8 @@ public class MalleusJitsificus
                 {
                     numClients = numSenders - i;
                 }
+                clientsPerBrowser = senderTabsPerBrowser * sendersPerTab;
+                multitab = (senderTabsPerBrowser > 1);
             }
             else
             {
@@ -265,11 +309,20 @@ public class MalleusJitsificus
                 {
                     urlCopy.appendConfig("config.flags.runInLiteMode=true");
                 }
+                clientsPerBrowser = receiverTabsPerBrowser * receiversPerTab;
+                multitab = (receiverTabsPerBrowser > 1);
             }
 
-            if (audioSender && i + numClients > numAudioSenders)
+            if (clientsInCurrentBrowser >= clientsPerBrowser || i == numSenders)
             {
-                numClients = numAudioSenders - i;
+                sharedBaseDriver = new SharedBaseDriver();
+                clientsInCurrentBrowser = 0;
+                audioTabsInCurrentBrowser = 0;
+            }
+
+            if (audioSender && audioSenders + numClients > numAudioSenders)
+            {
+                numClients = numAudioSenders - audioSenders;
             }
 
             if (i + numClients > numberOfParticipants)
@@ -283,15 +336,37 @@ public class MalleusJitsificus
                 durationMs,
                 joinDelayMs,
                 i * joinDelayMs,
+                audioSender, /* Don't do GUM before unmuting */
                 !sender /* no video */,
                 switchSpeakers || !audioSender /* no audio */,
                 regions == null ? null : regions[i % regions.length],
                 numClients,
-                disruptBridges
+                disruptBridges,
+                multitab ? sharedBaseDriver : null
             );
             malleusTasks.add(task);
             task.start(pool);
             i += numClients;
+            clientsInCurrentBrowser += numClients;
+            if (audioSender)
+            {
+                audioSenders += numClients;
+                audioTabsInCurrentBrowser += 1;
+                if (switchSpeakers)
+                {
+                    if (numClients == 1)
+                    {
+                        speakerTasks.add(new SpeakerTask(task, null));
+                    }
+                    else
+                    {
+                        for (int j = 0; j < numClients; j++)
+                        {
+                            speakerTasks.add(new SpeakerTask(task, j));
+                        }
+                    }
+                }
+            }
         }
 
         List<Future<?>> otherTasks = new ArrayList<>();
@@ -317,7 +392,7 @@ public class MalleusJitsificus
             otherTasks.add(pool.submit(() -> {
                     try
                     {
-                        switchSpeakers(malleusTasks, durationMs + joinDelayMs * numberOfParticipants, numAudioSenders);
+                        switchSpeakers(speakerTasks, durationMs + joinDelayMs * numberOfParticipants);
                     }
                     catch (Exception e)
                     {
@@ -360,18 +435,43 @@ public class MalleusJitsificus
         }
     }
 
+    /** Object that holds the shared base driver that can be used by tabbed drivers. */
+    private static class SharedBaseDriver
+    {
+        private Object lock = new Object();
+        private WebDriver baseDriver = null;
+
+        public void createOrGetDriver(Supplier<WebDriver> create, Consumer<WebDriver> use)
+        {
+            WebDriver driver = baseDriver;
+            if (driver == null)
+            {
+                synchronized (lock)
+                {
+                    driver = baseDriver;
+                    if (driver == null)
+                    {
+                        baseDriver = create.get();
+                        return;
+                    }
+                }
+            }
+            use.accept(driver);
+        }
+    }
+
     private class MalleusTask
     {
         private final int i;
         private final JitsiMeetUrl _url;
         private final long durationMs;
         private final long joinDelayMs;
+        private final boolean audioSender;
         private final boolean muteVideo;
         private boolean muteAudio;
         private final boolean enableFailureDetection;
 
         public boolean running;
-        public boolean spoken;
 
         private Future<?> started;
         private Future<?> complete;
@@ -382,19 +482,27 @@ public class MalleusJitsificus
 
         private ScheduledExecutorService pool;
 
+        private final SharedBaseDriver sharedBaseDriver;
+
         public MalleusTask(
             int i, JitsiMeetUrl url, long durationMs, long joinDelayMs, long totalJoinDelayMs,
-            boolean muteVideo, boolean muteAudio, String region, int numClients,
-            boolean enableFailureDetection)
+            boolean audioSender, boolean muteVideo, boolean muteAudio, String region, int numClients,
+            boolean enableFailureDetection, SharedBaseDriver sharedBaseDriver)
         {
             this.i = i;
             this._url = url;
             this.durationMs = durationMs;
             this.joinDelayMs = totalJoinDelayMs;
+            this.audioSender = audioSender;
             this.muteVideo = muteVideo;
             this.muteAudio = muteAudio;
             this.enableFailureDetection = enableFailureDetection;
+            this.sharedBaseDriver = sharedBaseDriver;
 
+            if (!audioSender)
+            {
+                _url.appendConfig("config.disableInitialGUM=true");
+            }
             if (muteVideo)
             {
                 _url.appendConfig("config.startWithVideoMuted=true");
@@ -456,7 +564,28 @@ public class MalleusJitsificus
                 }
             }
 
-            participant = participants.createParticipant("web.participant" + (i + 1), ops);
+            String configPrefix = "web.participant" + (i + 1);
+
+            if (sharedBaseDriver != null)
+            {
+                ops.setMultitab(true);
+                sharedBaseDriver.createOrGetDriver(
+                    () -> {
+                        participant = participants.createParticipant(configPrefix, ops);
+                        return ((TabbedWebDriver) participant.getDriver()).getBaseDriver();
+                    },
+                    (baseDriver) ->
+                    {
+                        ops.setBaseDriver(baseDriver);
+                        participant = participants.createParticipant(configPrefix, ops);
+                    }
+                );
+            }
+            else
+            {
+                participant = participants.createParticipant(configPrefix, ops);
+            }
+
             allHungUp.register();
             try
             {
@@ -559,30 +688,66 @@ public class MalleusJitsificus
                 }
             }
         }
+    }
 
-        public void muteAudio(boolean mute)
+        private static class SpeakerTask
         {
-            pool.execute(() -> doMuteAudio(mute));
-        }
+            public MalleusTask mTask;
+            public final Integer num;
+            private boolean muteAudio;
+            private boolean spoken = false;
 
-        private void doMuteAudio(boolean mute)
-        {
-            if (mute != muteAudio)
+            SpeakerTask(MalleusTask m, Integer n)
             {
-                participant.muteAudio(mute);
-                muteAudio = mute;
-                if (mute)
+                mTask = m;
+                num = n;
+                muteAudio = m.muteAudio;
+            }
+
+            public void muteAudio(boolean mute)
+            {
+                mTask.pool.execute(() -> doMuteAudio(mute));
+            }
+
+            private void doMuteAudio(boolean mute)
+            {
+                if (mute != muteAudio)
                 {
-                    TestUtils.print("Muted participant " + i);
-                }
-                else
-                {
-                    TestUtils.print("Unmuted participant " + i);
-                    spoken = true;
+                    muteAudio = mute;
+
+                    if (num != null)
+                    {
+                        mTask.participant.muteOneAudio(mute, num);
+                        if (mute)
+                        {
+                            TestUtils.print("Muted participant " +
+                                (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
+                        }
+                        else
+                        {
+                            TestUtils.print("Unmuted participant " +
+                                (mTask.i + num) + " (" + mTask.i + "+" + num + ")");
+                            spoken = true;
+                        }
+
+                    }
+                    else
+                    {
+                        mTask.participant.muteAudio(mute);
+                        if (mute)
+                        {
+                            TestUtils.print("Muted participant " + mTask.i);
+                        }
+                        else
+                        {
+                            TestUtils.print("Unmuted participant " + mTask.i);
+                            spoken = true;
+                        }
+                    }
                 }
             }
         }
-    }
+
 
     private void disruptBridges(float blipMaxDisruptedPct, long durationInSeconds)
         throws Exception
@@ -611,10 +776,10 @@ public class MalleusJitsificus
      *  This is modeled on ITU-T P.59, but choosing among N speakers rather than just 2.
      *  (At most 2 at a time.)
      */
-    private void switchSpeakers(List<MalleusTask> malleusTasks, long durationInMs, int numAudioSenders)
+    private void switchSpeakers(List<SpeakerTask> speakerTasks, long durationInMs)
         throws InterruptedException
     {
-        List<MalleusTask> currentSpeakers = new ArrayList<>();
+        List<SpeakerTask> currentSpeakers = new ArrayList<>();
         long remainingTime = durationInMs;
 
         while (remainingTime > 0)
@@ -624,7 +789,7 @@ public class MalleusJitsificus
             case 0:
             {
                 /* No speakers - add a speaker. */
-                MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
+                SpeakerTask newSpeaker = chooseSpeaker(speakerTasks, currentSpeakers);
                 if (newSpeaker != null)
                 {
                     newSpeaker.muteAudio(false);
@@ -638,13 +803,13 @@ public class MalleusJitsificus
                 /* One speaker - either add or remove a speaker. */
                 if (ThreadLocalRandom.current().nextDouble() < P_SILENCE)
                 {
-                    MalleusTask removedSpeaker = currentSpeakers.get(0);
+                    SpeakerTask removedSpeaker = currentSpeakers.get(0);
                     removedSpeaker.muteAudio(true);
                     currentSpeakers.remove(removedSpeaker);
                 }
                 else
                 {
-                    MalleusTask newSpeaker = chooseSpeaker(malleusTasks, currentSpeakers, numAudioSenders);
+                    SpeakerTask newSpeaker = chooseSpeaker(speakerTasks, currentSpeakers);
                     if (newSpeaker != null)
                     {
                         newSpeaker.muteAudio(false);
@@ -658,7 +823,7 @@ public class MalleusJitsificus
             {
                 /* More than one speaker - remove a speaker. */
                 int idx = ThreadLocalRandom.current().nextInt(currentSpeakers.size());
-                MalleusTask removedSpeaker = currentSpeakers.get(idx);
+                SpeakerTask removedSpeaker = currentSpeakers.get(idx);
                 removedSpeaker.muteAudio(true);
                 currentSpeakers.remove(removedSpeaker);
                 break;
@@ -703,18 +868,16 @@ public class MalleusJitsificus
      * and some other conference member with probability (1 / (N + 1)), unless everyone
      * is a past speaker.
      */
-    private MalleusTask chooseSpeaker(List<MalleusTask> tasks, List<MalleusTask> currentSpeakers, int numAudioSenders)
+    private SpeakerTask chooseSpeaker(List<SpeakerTask> tasks, List<SpeakerTask> currentSpeakers)
     {
-        List<MalleusTask> pastSpeakers = tasks.stream().
-            limit(numAudioSenders).
-            filter((t) -> t.running).
+        List<SpeakerTask> pastSpeakers = tasks.stream().
+            filter((t) -> t.mTask.running).
             filter((t) -> t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
             collect(Collectors.toList());
 
-        List<MalleusTask> nonSpeakers = tasks.stream().
-            limit(numAudioSenders).
-            filter((t) -> t.running).
+        List<SpeakerTask> nonSpeakers = tasks.stream().
+            filter((t) -> t.mTask.running).
             filter((t) -> !t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
             collect(Collectors.toList());
