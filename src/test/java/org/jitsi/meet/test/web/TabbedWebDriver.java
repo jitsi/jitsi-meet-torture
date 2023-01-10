@@ -15,8 +15,7 @@
  */
 package org.jitsi.meet.test.web;
 
-import org.apache.commons.lang.*;
-import org.jitsi.meet.test.util.*;
+import org.apache.commons.lang3.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.internal.*;
