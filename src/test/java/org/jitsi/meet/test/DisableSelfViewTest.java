@@ -106,7 +106,7 @@ public class DisableSelfViewTest
     {
         checkSelfViewHidden(true);
         participant2.hangUp();
-        checkSelfViewHidden(false);
+        checkSelfViewHidden(true);
     }
 
     /**
