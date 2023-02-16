@@ -212,6 +212,8 @@ public class LockRoomTest
 
         submitPassword(driver2, ROOM_KEY + "1234");
 
+        TestUtils.waitMillis(500);
+
         // wait for password prompt
         waitForPasswordDialog(driver2);
 
@@ -245,6 +247,8 @@ public class LockRoomTest
 
         passwordInput.clear();
         passwordInput.sendKeys(password);
+
+        TestUtils.waitMillis(500);
 
         ModalDialogHelper.clickOKButton(driver);
     }
