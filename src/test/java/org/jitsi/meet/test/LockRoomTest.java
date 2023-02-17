@@ -242,6 +242,9 @@ public class LockRoomTest
     {
         waitForPasswordDialog(driver);
 
+        // give time for the dialog to fully load
+        TestUtils.waitMillis(1000);
+
         WebElement passwordInput = driver.findElement(
             By.xpath("//input[@name='lockKey']"));
 
