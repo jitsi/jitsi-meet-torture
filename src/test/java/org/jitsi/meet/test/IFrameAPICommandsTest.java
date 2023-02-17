@@ -1107,12 +1107,14 @@ public class IFrameAPICommandsTest
         participant2.getToolbar().clickChatButton();
         participant3.getToolbar().clickChatButton();
 
-        assertTrue(driver2.findElement(By.xpath("//div[contains(@class,'chatmessage')]"
-                + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
-            .getText().contains(msg1));
-        assertTrue(driver3.findElement(By.xpath(
-                "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
-            .getText().contains(msg1));
+        String msgXpath = "//div[contains(@class,'chatmessage')]"
+            + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]";
+
+        TestUtils.waitForDisplayedElementByXPath(driver2, msgXpath, 3);
+        assertTrue(driver2.findElement(By.xpath(msgXpath)).getText().contains(msg1));
+
+        TestUtils.waitForDisplayedElementByXPath(driver3, msgXpath, 3);
+        assertTrue(driver3.findElement(By.xpath(msgXpath)).getText().contains(msg1));
 
         switchToIframeAPI(driver1);
 
