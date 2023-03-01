@@ -454,7 +454,7 @@ public class ParticipantsPane
      */
     public void close()
     {
-        participant.getToolbar().clickParticipantsButton();
+        participant.getToolbar().clickCloseParticipantsButton();
         waitForHidden();
     }
 

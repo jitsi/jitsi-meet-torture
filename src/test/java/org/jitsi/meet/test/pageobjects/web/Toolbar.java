@@ -48,7 +48,8 @@ public class Toolbar
     public final static String MUTE_EVERYONE_VIDEO = "Stop everyone's video";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
-    public final static String PARTICIPANTS = "Participants" ;
+    public final static String PARTICIPANTS = "Open participants pane" ;
+    public final static String CLOSE_PARTICIPANTS_PANE = "Close participants pane" ;
     public final static String PROFILE = "Edit your profile";
     public final static String RAISE_HAND = "Raise / Lower your hand";
     public final static String RECORD = "Toggle recording";
@@ -60,7 +61,8 @@ public class Toolbar
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle participants statistics";
     public final static String TILE_VIEW_BUTTON = "Toggle tile view";
-    public final static String VIDEO_MUTE = "Start / Stop camera";
+    public final static String VIDEO_UNMUTE = "Start camera";
+    public final static String VIDEO_MUTE = "Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
@@ -155,11 +157,19 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the info toolbar button which opens or closes the info dialog.
+     * Clicks on the toolbar button which opens the participants pane.
      */
     public void clickParticipantsButton()
     {
         clickButton(PARTICIPANTS);
+    }
+
+    /**
+     * Clicks on the toolbar button which closes the participants pane.
+     */
+    public void clickCloseParticipantsButton()
+    {
+        clickButton(CLOSE_PARTICIPANTS_PANE);
     }
 
     /**
@@ -246,6 +256,14 @@ public class Toolbar
     public void clickVideoMuteButton()
     {
         clickButton(VIDEO_MUTE);
+    }
+
+    /**
+     * Clicks on the video unmute toolbar button which toggles video mute.
+     */
+    public void clickVideoUnMuteButton()
+    {
+        clickButton(VIDEO_UNMUTE);
     }
 
     /**
@@ -361,6 +379,15 @@ public class Toolbar
     public void waitForVideoMuteButtonDisplay()
     {
         waitForButtonDisplay(VIDEO_MUTE);
+    }
+
+    /**
+     * Waits up to 10 seconds for the video mute button in the toolbar to be
+     * visible.
+     */
+    public void waitForVideUnMuteButtonDisplay()
+    {
+        waitForButtonDisplay(VIDEO_UNMUTE);
     }
 
     /**
