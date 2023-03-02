@@ -185,7 +185,7 @@ public class MuteTest
     {
         TestUtils.waitMillis(1000);
 
-        getParticipant2().getToolbar().clickAudioMuteButton();
+        getParticipant2().getToolbar().clickAudioUnmuteButton();
 
         TestUtils.waitMillis(1000);
 
@@ -275,10 +275,10 @@ public class MuteTest
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
 
             // Stop desktop share and unmute video and check for video again.
-            participant1.getToolbar().clickDesktopSharingButton();
+            participant1.getToolbar().clickStopDesktopSharingButton();
 
             participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
-            participant1.getToolbar().clickVideoMuteButton();
+            participant1.getToolbar().clickVideoUnmuteButton();
             participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
         }
@@ -304,7 +304,14 @@ public class MuteTest
         WebParticipant observer,
         boolean muted)
     {
-        testee.getToolbar().clickAudioMuteButton();
+        if (muted)
+        {
+            testee.getToolbar().clickAudioMuteButton();
+        }
+        else
+        {
+            testee.getToolbar().clickAudioUnmuteButton();
+        }
 
         observer.getFilmstrip()
             .assertAudioMuteIcon(testee, muted);

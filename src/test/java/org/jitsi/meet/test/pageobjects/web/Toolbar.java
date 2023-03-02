@@ -37,7 +37,8 @@ public class Toolbar
     public final static String AUDIO_UNMUTE = "Unmute";
     public final static String CHAT = "Open chat";
     public final static String CLOSE_CHAT = "Close chat";
-    public final static String DESKTOP = "Start / Stop sharing your screen";
+    public final static String DESKTOP = "Start sharing your screen";
+    public final static String STOP_DESKTOP = "Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
     public final static String ETHERPAD = "Toggle shared document";
     public final static String FULLSCREEN = "Toggle full screen";
@@ -125,6 +126,27 @@ public class Toolbar
         else
         {
             clickButton(DESKTOP);
+        }
+    }
+
+    /**
+     * Clicks on the "stop desktop sharing" toolbar button. Fails if the button
+     * doesn't exist or if the toggled state is not changed after the click.
+     */
+    public void clickStopDesktopSharingButton()
+    {
+        // Firefox require user gesture for getDisplayMedia()
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1580944
+        // we us js to click buttons as we have seen some stale elements exceptions due to react updates
+        if (this.participant.getType().isFirefox())
+        {
+            WebElement button = participant.getDriver().findElement(By.cssSelector(
+                MeetUIUtils.getAccessibilityCSSSelector(STOP_DESKTOP)));
+            new Actions(this.participant.getDriver()).moveToElement(button).click().perform();
+        }
+        else
+        {
+            clickButton(STOP_DESKTOP);
         }
     }
 
