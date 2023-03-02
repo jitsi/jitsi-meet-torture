@@ -33,7 +33,8 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    public final static String AUDIO_MUTE = "Mute / Unmute";
+    public final static String AUDIO_MUTE = "Mute";
+    public final static String AUDIO_UNMUTE = "Unmute";
     public final static String CHAT = "Open / Close chat";
     public final static String DESKTOP = "Start / Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
@@ -87,12 +88,17 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the microphone mute toolbar button, which toggles audio mute.
+     * Clicks on the microphone toolbar button, which toggles audio mute.
      */
     public void clickAudioMuteButton()
     {
         clickButton(AUDIO_MUTE);
     }
+
+    /**
+     * Clicks on the microphone toolbar button, which toggles audio unmute.
+     */
+    public void clickAudioUnmuteButton() { clickButton(AUDIO_UNMUTE); }
 
     /**
      * Clicks on the raise/lower hand button that enables participants will to speak.
