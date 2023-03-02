@@ -1163,10 +1163,10 @@ public class MeetUIUtils
         participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
 
         // Make sure that there is the video mute button
-        participant.getToolbar().waitForVideoMuteButtonDisplay();
+        participant.getToolbar().waitForVideUnmuteButtonDisplay();
 
         // Mute participant's video
-        participant.getToolbar().clickVideoMuteButton();
+        participant.getToolbar().clickVideoUnmuteButton();
 
         // Check if local video muted icon disappeared
         participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, false);

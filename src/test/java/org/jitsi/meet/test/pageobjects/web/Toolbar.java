@@ -267,7 +267,7 @@ public class Toolbar
     /**
      * Clicks on the video unmute toolbar button which toggles video mute.
      */
-    public void clickVideoUnMuteButton()
+    public void clickVideoUnmuteButton()
     {
         clickButton(VIDEO_UNMUTE);
     }
@@ -391,7 +391,7 @@ public class Toolbar
      * Waits up to 10 seconds for the video mute button in the toolbar to be
      * visible.
      */
-    public void waitForVideUnMuteButtonDisplay()
+    public void waitForVideUnmuteButtonDisplay()
     {
         waitForButtonDisplay(VIDEO_UNMUTE);
     }
