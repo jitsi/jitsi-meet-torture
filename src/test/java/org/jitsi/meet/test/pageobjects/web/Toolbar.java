@@ -35,7 +35,8 @@ public class Toolbar
      */
     public final static String AUDIO_MUTE = "Mute";
     public final static String AUDIO_UNMUTE = "Unmute";
-    public final static String CHAT = "Open / Close chat";
+    public final static String CHAT = "Open chat";
+    public final static String CLOSE_CHAT = "Close chat";
     public final static String DESKTOP = "Start / Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
     public final static String ETHERPAD = "Toggle shared document";
@@ -45,8 +46,6 @@ public class Toolbar
     public final static String INVITE = "Invite people";
     public final static String INVITE_CSS = "Invite Someone";
     public final static String LIVE_STREAM = "Live Stream";
-    public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
-    public final static String MUTE_EVERYONE_VIDEO = "Stop everyone's video";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
     public final static String PARTICIPANTS = "Open participants pane" ;
@@ -130,11 +129,19 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the "chat" toolbar button which opens or closes the chat panel.
+     * Clicks on the "chat" toolbar button which opens the chat panel.
      */
-    public void clickChatButton()
+    public void clickOpenChatButton()
     {
         clickButton(CHAT);
+    }
+
+    /**
+     * Clicks on the "chat" toolbar button which closes the chat panel.
+     */
+    public void clickCloseChatButton()
+    {
+        clickButton(CLOSE_CHAT);
     }
 
     /**

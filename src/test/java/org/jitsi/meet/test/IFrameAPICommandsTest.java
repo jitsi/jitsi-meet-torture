@@ -1104,8 +1104,8 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickChatButton();
-        participant3.getToolbar().clickChatButton();
+        participant2.getToolbar().clickOpenChatButton();
+        participant3.getToolbar().clickOpenChatButton();
 
         String msgXpath = "//div[contains(@class,'chatmessage')]"
             + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]";
