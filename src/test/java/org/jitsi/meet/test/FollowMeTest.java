@@ -168,7 +168,7 @@ public class FollowMeTest
         // later than when the 3rd part. joins, so we need to wait for that.
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), true);
 
-        getParticipant1().getToolbar().clickTileViewButton();
+        getParticipant1().getToolbar().clickExitTileViewButton();
 
         getAllParticipants().forEach(participant ->
             MeetUIUtils.waitForTileViewDisplay(participant, false));

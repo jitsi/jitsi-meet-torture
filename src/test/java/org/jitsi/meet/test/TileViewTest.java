@@ -120,7 +120,7 @@ public class TileViewTest
     @Test(dependsOnMethods = { "testLocalVideoDisplaysAtEnd" })
     public void testCanExitTileView()
     {
-        getParticipant1().getToolbar().clickTileViewButton();
+        getParticipant1().getToolbar().clickExitTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(getParticipant1(), false);
     }
 
@@ -191,8 +191,11 @@ public class TileViewTest
         // no video for participant 2
         MeetUIUtils.waitForRemoteVideo(driver3, participant2EndpointId, false);
 
+        // mute audio for participant 1
         getParticipant1().getToolbar().clickAudioMuteButton();
-        getParticipant2().getToolbar().clickAudioMuteButton();
+
+        // unmute audio for participant 2
+        getParticipant2().getToolbar().clickAudioUnmuteButton();
 
         MeetUIUtils.waitForDominantSpeaker(driver3, participant2EndpointId);
 

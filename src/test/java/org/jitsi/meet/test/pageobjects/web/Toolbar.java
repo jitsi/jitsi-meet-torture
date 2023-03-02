@@ -61,7 +61,8 @@ public class Toolbar
     public final static String SHARE_VIDEO = "Toggle video sharing";
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle participants statistics";
-    public final static String TILE_VIEW_BUTTON = "Toggle tile view";
+    public final static String TILE_VIEW_BUTTON = "Enter tile view";
+    public final static String EXIT_TILE_VIEW_BUTTON = "Exit tile view";
     public final static String VIDEO_UNMUTE = "Start camera";
     public final static String VIDEO_MUTE = "Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
@@ -278,12 +279,14 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the tile view button which enables or disables tile layout.
+     * Clicks on the tile view button which enables tile layout.
      */
-    public void clickTileViewButton()
-    {
-        clickButton(TILE_VIEW_BUTTON);
-    }
+    public void clickTileViewButton() { clickButton(TILE_VIEW_BUTTON);}
+
+    /**
+     * Clicks on the tile view button which disabled tile layout.
+     */
+    public void clickExitTileViewButton() { clickButton(EXIT_TILE_VIEW_BUTTON);}
 
     /**
      * Clicks on the video mute toolbar button which toggles video mute.
