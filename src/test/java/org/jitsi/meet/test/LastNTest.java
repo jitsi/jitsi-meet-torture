@@ -73,7 +73,7 @@ public class LastNTest
 
         // Mute audio on p4 and unmute p3.
         participant4.getToolbar().clickAudioMuteButton();
-        participant3.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioUnmuteButton();
 
         // Check if p1 starts receiving video from p3 and p4 shows up as ninja.
         MeetUIUtils.waitForNinjaIcon(driver1, participant4EndpointId);
@@ -84,14 +84,14 @@ public class LastNTest
         MeetUIUtils.waitForRemoteVideo(driver1, participant4EndpointId, true);
 
         // Unmute p3's video and others should switch to receiving p3's video.
-        participant3.getToolbar().clickVideoMuteButton();
+        participant3.getToolbar().clickVideoUnmuteButton();
         MeetUIUtils.waitForRemoteVideo(driver1, participant3EndpointId, true);
         MeetUIUtils.waitForNinjaIcon(driver1, participant4EndpointId);
 
         // Mute p3's audio and unmute p2's audio. Other endpoints should continue to receive video from p3
         // even though p2 is the dominant speaker.
         participant3.getToolbar().clickAudioMuteButton();
-        participant2.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioUnmuteButton();
         MeetUIUtils.waitForRemoteVideo(driver1, participant3EndpointId, true);
     }
 }
