@@ -92,10 +92,7 @@ public class Toolbar
     /**
      * Clicks on the microphone toolbar button, which toggles audio mute.
      */
-    public void clickAudioMuteButton()
-    {
-        clickButton(AUDIO_MUTE);
-    }
+    public void clickAudioMuteButton() { clickButton(AUDIO_MUTE); }
 
     /**
      * Clicks on the microphone toolbar button, which toggles audio unmute.
@@ -196,10 +193,7 @@ public class Toolbar
     /**
      * Clicks on the toolbar button which opens the participants pane.
      */
-    public void clickParticipantsButton()
-    {
-        clickButton(PARTICIPANTS);
-    }
+    public void clickParticipantsButton() { clickButton(PARTICIPANTS); }
 
     /**
      * Clicks on the toolbar button which closes the participants pane.
@@ -265,37 +259,28 @@ public class Toolbar
      * Clicks on the settings toolbar button which opens or closes the settings
      * panel.
      */
-    public void clickSettingsButton()
-    {
-        clickButtonInOverflowMenu(SETTINGS);
-    }
+    public void clickSettingsButton() { clickButtonInOverflowMenu(SETTINGS); }
 
     /**
      * Clicks on the shared video toolbar button which starts sharing a
      * YouTube video.
      */
-    public void clickSharedVideoButton()
-    {
-        clickButtonInOverflowMenu(SHARE_VIDEO);
-    }
+    public void clickSharedVideoButton() { clickButtonInOverflowMenu(SHARE_VIDEO); }
 
     /**
      * Clicks on the shared video toolbar button which stops YouTube video.
      */
-    public void clickStopSharedVideoButton()
-    {
-        clickButtonInOverflowMenu(STOP_SHARE_VIDEO);
-    }
+    public void clickStopSharedVideoButton() { clickButtonInOverflowMenu(STOP_SHARE_VIDEO); }
 
     /**
      * Clicks on the tile view button which enables tile layout.
      */
-    public void clickTileViewButton() { clickButton(TILE_VIEW_BUTTON);}
+    public void clickTileViewButton() { clickButton(TILE_VIEW_BUTTON); }
 
     /**
      * Clicks on the tile view button which disabled tile layout.
      */
-    public void clickExitTileViewButton() { clickButton(EXIT_TILE_VIEW_BUTTON);}
+    public void clickExitTileViewButton() { clickButton(EXIT_TILE_VIEW_BUTTON); }
 
     /**
      * Clicks on the video mute toolbar button which toggles video mute.
