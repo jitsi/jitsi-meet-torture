@@ -159,7 +159,7 @@ public class StartMutedTest
         participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
 
         // Unmute and see if the audio works
-        participant3.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioUnmuteButton();
         consolePrint(participant1,
             "configOptionsTest, unmuted third participant");
         MeetUIUtils.waitForAudioMuted(
@@ -191,7 +191,7 @@ public class StartMutedTest
         {
             return;
         }
-        
+
         hangUpAllParticipants();
 
         // Explicitly enable P2P due to a regression with unmute not updating
@@ -252,7 +252,7 @@ public class StartMutedTest
             "participant1",
             true);
 
-        participant1.getToolbar().clickAudioMuteButton();
+        participant1.getToolbar().clickAudioUnmuteButton();
 
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
