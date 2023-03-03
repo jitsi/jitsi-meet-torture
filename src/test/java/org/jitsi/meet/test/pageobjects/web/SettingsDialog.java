@@ -151,7 +151,7 @@ public class SettingsDialog
      */
     public void setHideSelfView(boolean enable)
     {
-        openMoreTab();
+        openProfileTab();
         setCheckbox(HIDE_SELF_VIEW_CHECKBOX, enable);
     }
 
