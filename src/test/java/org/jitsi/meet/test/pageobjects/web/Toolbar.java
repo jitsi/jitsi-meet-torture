@@ -52,7 +52,8 @@ public class Toolbar
     public final static String PARTICIPANTS = "Open participants pane" ;
     public final static String CLOSE_PARTICIPANTS_PANE = "Close participants pane" ;
     public final static String PROFILE = "Edit your profile";
-    public final static String RAISE_HAND = "Raise / Lower your hand";
+    public final static String RAISE_HAND = "Raise your hand";
+    public final static String LOWER_HAND = "Lower your hand";
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
     public final static String SELECT_BACKGROUND = "Select Background";
@@ -106,11 +107,19 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the raise/lower hand button that enables participants will to speak.
+     * Clicks on the raise hand button that enables participants will to speak.
      */
     public String clickRaiseHandButton()
     {
         return clickButton(RAISE_HAND);
+    }
+
+    /**
+     * Clicks on the lower hand button that enables participants will to speak.
+     */
+    public String clickLowerHandButton()
+    {
+        return clickButton(LOWER_HAND);
     }
 
     /**
@@ -441,7 +450,7 @@ public class Toolbar
      * Waits up to 10 seconds for the video mute button in the toolbar to be
      * visible.
      */
-    public void waitForVideUnmuteButtonDisplay()
+    public void waitForVideoUnmuteButtonDisplay()
     {
         waitForButtonDisplay(VIDEO_UNMUTE);
     }
@@ -453,6 +462,15 @@ public class Toolbar
     public void waitForAudioMuteButtonDisplay()
     {
         waitForButtonDisplay(AUDIO_MUTE);
+    }
+
+    /**
+     * Waits up to 10 seconds for the audio unmute button in the toolbar to be
+     * visible.
+     */
+    public void waitForAudioUnmuteButtonDisplay()
+    {
+        waitForButtonDisplay(AUDIO_UNMUTE);
     }
 
     /**

@@ -127,7 +127,7 @@ public class AudioVideoModerationTest
 
         participantsPane.close();
 
-        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
+        // we don't have a UI change when moderation is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
         MeetUIUtils.toggleVideoAndCheck(participant3, participant1, false);

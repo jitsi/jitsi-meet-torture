@@ -1162,10 +1162,10 @@ public class MeetUIUtils
     {
         participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
 
-        // Make sure that there is the video mute button
-        participant.getToolbar().waitForVideUnmuteButtonDisplay();
+        // Make sure that there is the video unmute button
+        participant.getToolbar().waitForVideoUnmuteButtonDisplay();
 
-        // Mute participant's video
+        // Unmute participant's video
         participant.getToolbar().clickVideoUnmuteButton();
 
         // Check if local video muted icon disappeared
@@ -1192,13 +1192,22 @@ public class MeetUIUtils
                                            WebParticipant participantCheck,
                                            Boolean isMuted)
     {
-        WebDriver driver = participant.getDriver();
+        if (isMuted)
+        {
+            // Make sure that there is the video mute button
+            participant.getToolbar().waitForVideoMuteButtonDisplay();
 
-        // Make sure that there is the audio mute button
-        participant.getToolbar().waitForVideoMuteButtonDisplay();
+            // Mute participant's video
+            participant.getToolbar().clickVideoMuteButton();
+        }
+        else
+        {
+            // Make sure that there is the video unmute button
+            participant.getToolbar().waitForVideoUnmuteButtonDisplay();
 
-        // Toggle participant's video
-        participant.getToolbar().clickVideoMuteButton();
+            // Unmute participant's video
+            participant.getToolbar().clickVideoUnmuteButton();
+        }
 
         // Check local video muted icon state
         participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, isMuted);
@@ -1226,11 +1235,22 @@ public class MeetUIUtils
     {
         WebDriver driver = participant.getDriver();
 
-        // Make sure that there is the audio mute button
-        participant.getToolbar().waitForAudioMuteButtonDisplay();
+        if (isMuted)
+        {
+            // Make sure that there is the audio mute button
+            participant.getToolbar().waitForAudioMuteButtonDisplay();
 
-        // Toggle participant's audio
-        participant.getToolbar().clickAudioMuteButton();
+            // Mute participant's audio
+            participant.getToolbar().clickAudioMuteButton();
+        }
+        else
+        {
+            // Make sure that there is the audio unmute button
+            participant.getToolbar().waitForAudioUnmuteButtonDisplay();
+
+            // Mute participant's audio
+            participant.getToolbar().clickAudioUnmuteButton();
+        }
 
         // Check local audio muted icon state
         assertMuteIconIsDisplayed(
