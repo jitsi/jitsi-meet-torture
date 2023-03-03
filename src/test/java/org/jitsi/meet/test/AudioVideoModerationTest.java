@@ -395,6 +395,7 @@ public class AudioVideoModerationTest
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
 
+        participantsPane.allowVideo(participant);
         participantsPane.askToUnmute(participant);
 
         participant.getNotifications().getAskToUnmuteNotification();

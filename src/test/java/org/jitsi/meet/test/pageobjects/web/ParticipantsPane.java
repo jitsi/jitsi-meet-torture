@@ -157,6 +157,25 @@ public class ParticipantsPane
     }
 
     /**
+     * Trys to click allow video button after moderator reloads.
+     *
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void allowVideo(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+
+        WebElement meetingParticipantListItem = TestUtils.waitForElementBy(
+            participant.getDriver(), By.id("participant-item-" + remoteParticipantEndpointId), 5);
+
+        Actions hoverOnMeetingParticipantListItem = new Actions(participant.getDriver());
+        hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
+        hoverOnMeetingParticipantListItem.perform();
+
+        clickAllowCameraButtonById(participantToUnmute);
+    }
+
+    /**
      * Trys to click add breakout room button.
      */
     public void addBreakoutRoom()
@@ -196,10 +215,41 @@ public class ParticipantsPane
     public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
-        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-" + remoteParticipantEndpointId);
-        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-audio-" + remoteParticipantEndpointId);
+        try {
+            TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+        } catch (TimeoutException e) {
+            String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
+            WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+            Actions clickContextMenu = new Actions(participant.getDriver());
+            clickContextMenu.moveToElement(meetingParticipantMoreOptions);
+            clickContextMenu.perform();
+            meetingParticipantMoreOptions.click();
+            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+        }
+    }
 
-        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    /**
+     * Try to click on the allow camera button and fails if it cannot be clicked.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickAllowCameraButtonById(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-video-" + remoteParticipantEndpointId);
+        try {
+            TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+        } catch (TimeoutException e) {
+            String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
+            WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+            Actions clickContextMenu = new Actions(participant.getDriver());
+            clickContextMenu.moveToElement(meetingParticipantMoreOptions);
+            clickContextMenu.perform();
+            meetingParticipantMoreOptions.click();
+            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+        }
     }
 
     /**
@@ -228,7 +278,7 @@ public class ParticipantsPane
     public void clickMuteButtonById(WebParticipant participantToMute)
     {
         String remoteParticipantEndpointId = participantToMute.getEndpointId();
-        String cssSelector = MeetUIUtils.getTestIdCSSSelector("mute-" + remoteParticipantEndpointId);
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("mute-audio-" + remoteParticipantEndpointId);
         TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
 
         MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
