@@ -199,7 +199,10 @@ public class Toolbar
     /**
      * Clicks on the toolbar button which opens the participants pane.
      */
-    public void clickParticipantsButton() { clickButton(PARTICIPANTS); }
+    public void clickParticipantsButton()
+    {
+        clickButton(PARTICIPANTS);
+    }
 
     /**
      * Clicks on the toolbar button which closes the participants pane.
@@ -290,12 +293,18 @@ public class Toolbar
     /**
      * Clicks on the tile view button which enables tile layout.
      */
-    public void clickTileViewButton() { clickButton(TILE_VIEW_BUTTON); }
+    public void clickTileViewButton()
+    {
+        clickButton(TILE_VIEW_BUTTON);
+    }
 
     /**
      * Clicks on the tile view button which disabled tile layout.
      */
-    public void clickExitTileViewButton() { clickButton(EXIT_TILE_VIEW_BUTTON); }
+    public void clickExitTileViewButton()
+    {
+        clickButton(EXIT_TILE_VIEW_BUTTON);
+    }
 
     /**
      * Clicks on the video mute toolbar button which toggles video mute.
