@@ -58,7 +58,8 @@ public class Toolbar
     public final static String SELECT_BACKGROUND = "Select Background";
     public final static String SETTINGS = "Toggle settings";
     public final static String SHARE_AUDIO = "Share audio";
-    public final static String SHARE_VIDEO = "Toggle video sharing";
+    public final static String SHARE_VIDEO = "Share video";
+    public final static String STOP_SHARE_VIDEO = "Stop video";
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle participants statistics";
     public final static String TILE_VIEW_BUTTON = "Enter tile view";
@@ -270,12 +271,20 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the shared video toolbar button which toggles sharing of a
+     * Clicks on the shared video toolbar button which starts sharing a
      * YouTube video.
      */
     public void clickSharedVideoButton()
     {
         clickButtonInOverflowMenu(SHARE_VIDEO);
+    }
+
+    /**
+     * Clicks on the shared video toolbar button which stops YouTube video.
+     */
+    public void clickStopSharedVideoButton()
+    {
+        clickButtonInOverflowMenu(STOP_SHARE_VIDEO);
     }
 
     /**
