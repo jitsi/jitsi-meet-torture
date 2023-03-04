@@ -222,8 +222,6 @@ public class IFrameAPIFunctionsTest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         // we must not be in tile view
-        participant1.getToolbar().clickExitTileViewButton();
-
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
 
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);

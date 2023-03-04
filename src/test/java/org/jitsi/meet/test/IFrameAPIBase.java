@@ -259,7 +259,7 @@ public class IFrameAPIBase
         // we must not be in tile view
         // FIXME: Currently there is a bug in jitsi-meet and using setLargeVideoParticipant
         // does not switch automatically to stage view, when in grid view
-        getParticipant1().getToolbar().clickExitTileViewButton();
+        getParticipant1().getToolbar().clickTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
 
         // selects second
