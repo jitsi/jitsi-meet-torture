@@ -117,7 +117,7 @@ public class IFrameAPIGeneral
 
         mainButtons.put("raisehand", Toolbar.RAISE_HAND);
         mainButtons.put("participants-pane", Toolbar.PARTICIPANTS);
-        mainButtons.put("tileview", Toolbar.TILE_VIEW);
+        mainButtons.put("tileview", Toolbar.TILE_VIEW_BUTTON);
         mainButtons.put("hangup", Toolbar.HANGUP);
 
         mainButtons.put("embedmeeting", Toolbar.EMBED_MEETING);

@@ -41,7 +41,7 @@ public class Toolbar
     public final static String STOP_DESKTOP = "Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
     public final static String ETHERPAD = "Toggle shared document";
-    public final static String FULLSCREEN = "Enter full screen";
+    public final static String FULLSCREEN = "View full screen";
     public final static String EXIT_FULLSCREEN = "Exit full screen";
     public final static String HANGUP = "Leave the meeting";
     public final static String HELP = "Help";
@@ -64,7 +64,6 @@ public class Toolbar
     public final static String STOP_SHARE_VIDEO = "Stop video";
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle participants statistics";
-    public final static String TILE_VIEW = "Toggle tile view";
     public final static String TILE_VIEW_BUTTON = "Enter tile view";
     public final static String EXIT_TILE_VIEW_BUTTON = "Exit tile view";
     public final static String VIDEO_UNMUTE = "Start camera";
