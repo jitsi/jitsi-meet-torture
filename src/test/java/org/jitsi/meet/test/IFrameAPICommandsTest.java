@@ -514,7 +514,8 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String raiseHandSelector = participant2.getToolbar().clickLowerHandButton();
+        String raiseHandSelector = participant2.getToolbar().clickRaiseHandButton();
+        String lowerHandSelector = participant2.getToolbar().clickLowerHandButton();
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
             d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("true"));
@@ -543,7 +544,7 @@ public class IFrameAPICommandsTest
         try
         {
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
         }
         catch(TimeoutException te)
         {
@@ -554,7 +555,7 @@ public class IFrameAPICommandsTest
             participant2.getToolbar().clickRaiseHandButton();
 
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
         }
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
