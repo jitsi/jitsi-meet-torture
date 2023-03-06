@@ -34,6 +34,21 @@ public class Notifications
     private final WebParticipant participant;
 
     /**
+     * The test id for the notification when a participant joins.
+     */
+    private static final String JOIN_ONE_TEST_ID = "notify.connectedOneMember";
+
+    /**
+     * The test id for the notification when two participant join.
+     */
+    private static final String JOIN_TWO_TEST_ID = "notify.connectedTwoMembers";
+
+    /**
+     * The test id for the notification when multiple participant join.
+     */
+    private static final String JOIN_MULTIPLE_TEST_ID = "notify.connectedThreePlusMembers";
+
+    /**
      * The test id for the notification on participants page which access was denied.
      */
     private static final String LOBBY_ACCESS_DENIED_TEST_ID = "lobby.joinRejectedMessage";
@@ -436,5 +451,29 @@ public class Notifications
     public void allowLobbyParticipant(String name)
     {
         participant.getDriver().findElement(ByTestId.testId(LOBBY_PARTICIPANT_ADMIT_TEST_ID)).click();
+    }
+
+    /**
+     * Dismiss any join notification found.
+     */
+    public void dismissAnyJoinNotification()
+    {
+        // checks for any dismiss button and click it
+        for (String id : new String[]{
+            JOIN_ONE_TEST_ID + "-dismiss",
+            JOIN_TWO_TEST_ID + "-dismiss",
+            JOIN_MULTIPLE_TEST_ID + "-dismiss"
+        })
+        {
+            try
+            {
+                participant.getDriver().findElement(ByTestId.testId(id)).click();
+            }
+            catch(Exception e)
+            {
+                // we ignore any error of not found notification dismiss buttons as we check all
+            }
+        }
+
     }
 }

@@ -250,6 +250,8 @@ public class AudioVideoModerationTest
         // ask participant2 to unmute
         participantsPane.open();
 
+        participant1.getNotifications().dismissAnyJoinNotification();
+
         participantsPane.askToUnmute(participant2, true);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
