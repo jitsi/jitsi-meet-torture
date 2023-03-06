@@ -271,17 +271,20 @@ public class IFrameAPIBase
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
         // leave muted second and first and third is unmuted
-        participant3.getToolbar().clickAudioUnmuteButton();
         participant1.getToolbar().clickAudioUnmuteButton();
-        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant3.getToolbar().clickAudioUnmuteButton();
+
         participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
-        participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant3, true);
+
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
-        participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant3, true);
+
         participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
-        participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant3, true);
 
         // only the third is unmuted
         MeetUIUtils.waitForDominantSpeaker(driver1, endpoint3Id);
@@ -312,10 +315,11 @@ public class IFrameAPIBase
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        // let's unmute everyone as it was initially
-        participant2.getToolbar().clickAudioUnmuteButton();
-        participant1.getToolbar().clickAudioUnmuteButton();
-        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        // let's mute everyone as it was initially
+        participant1.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioMuteButton();
+
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
     }
 }
