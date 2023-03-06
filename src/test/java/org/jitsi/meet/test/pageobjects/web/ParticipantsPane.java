@@ -142,7 +142,7 @@ public class ParticipantsPane
      *
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void askToUnmute(WebParticipant participantToUnmute)
+    public void askToUnmute(WebParticipant participantToUnmute, boolean fromContextMenu)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
 
@@ -153,7 +153,13 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
-        clickAskToUnmuteButtonById(participantToUnmute);
+
+        if (fromContextMenu) {
+            clickAskToUnmuteContextMenuById(participantToUnmute);
+        }
+        else {
+            clickAskToUnmuteQuickActionButtonById(participantToUnmute);
+        }
     }
 
     /**
@@ -161,7 +167,7 @@ public class ParticipantsPane
      *
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void allowVideo(WebParticipant participantToUnmute)
+    public void allowVideo(WebParticipant participantToUnmute, boolean fromContextMenu)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
 
@@ -172,7 +178,12 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
-        clickAllowCameraButtonById(participantToUnmute);
+        if (fromContextMenu) {
+            clickAllowVideoContextMenuById(participantToUnmute);
+        }
+        else {
+            clickAllowVideoQuickActionButtonById(participantToUnmute);
+        }
     }
 
     /**
@@ -209,47 +220,60 @@ public class ParticipantsPane
     }
 
     /**
-     * Try to click on the ask to unmute button and fails if it cannot be clicked.
+     * Try to click on the ask to unmute quick action button and fails if it cannot be clicked.
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void clickAskToUnmuteButtonById(WebParticipant participantToUnmute)
+    public void clickAskToUnmuteQuickActionButtonById(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-audio-" + remoteParticipantEndpointId);
-        try {
-            TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
-            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
-        } catch (TimeoutException e) {
-            String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
-            WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
-            Actions clickContextMenu = new Actions(participant.getDriver());
-            clickContextMenu.moveToElement(meetingParticipantMoreOptions);
-            clickContextMenu.perform();
-            meetingParticipantMoreOptions.click();
-            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
-        }
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
     }
 
     /**
-     * Try to click on the allow camera button and fails if it cannot be clicked.
+     * Try to click on the ask to unmute button from participant context menu and fails if it cannot be clicked.
      * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
      */
-    public void clickAllowCameraButtonById(WebParticipant participantToUnmute)
+    public void clickAskToUnmuteContextMenuById(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-audio-" + remoteParticipantEndpointId);
+        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
+        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+        Actions clickContextMenu = new Actions(participant.getDriver());
+        clickContextMenu.moveToElement(meetingParticipantMoreOptions);
+        clickContextMenu.perform();
+        meetingParticipantMoreOptions.click();
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+
+    /**
+     * Try to click on the allow video  quick action button and fails if it cannot be clicked.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickAllowVideoQuickActionButtonById(WebParticipant participantToUnmute)
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-video-" + remoteParticipantEndpointId);
-        try {
-            TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
-            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
-        } catch (TimeoutException e) {
-            String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
-            WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
-            Actions clickContextMenu = new Actions(participant.getDriver());
-            clickContextMenu.moveToElement(meetingParticipantMoreOptions);
-            clickContextMenu.perform();
-            meetingParticipantMoreOptions.click();
-            MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
-        }
+        TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(cssSelector), 2);
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
+    }
+    /**
+     * Try to click on the allow video button from participant context menu and fails if it cannot be clicked.
+     * @param participantToUnmute the participant for this {@link ParticipantsPane} to unmute.
+     */
+    public void clickAllowVideoContextMenuById(WebParticipant participantToUnmute)
+    {
+        String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
+        String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-video-" + remoteParticipantEndpointId);
+        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
+        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+        Actions clickContextMenu = new Actions(participant.getDriver());
+        clickContextMenu.moveToElement(meetingParticipantMoreOptions);
+        clickContextMenu.perform();
+        meetingParticipantMoreOptions.click();
+        MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
     }
 
     /**
