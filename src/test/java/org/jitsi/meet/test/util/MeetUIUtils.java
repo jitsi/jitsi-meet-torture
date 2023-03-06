@@ -1195,18 +1195,18 @@ public class MeetUIUtils
         if (isMuted)
         {
             // Make sure that there is the video mute button
-            participant.getToolbar().waitForVideoMuteButtonDisplay();
+            participant.getToolbar().waitForVideoUnmuteButtonDisplay();
 
             // Mute participant's video
-            participant.getToolbar().clickVideoMuteButton();
+            participant.getToolbar().clickVideoUnmuteButton();
         }
         else
         {
             // Make sure that there is the video unmute button
-            participant.getToolbar().waitForVideoUnmuteButtonDisplay();
+            participant.getToolbar().waitForAudioMuteButtonDisplay();
 
             // Unmute participant's video
-            participant.getToolbar().clickVideoUnmuteButton();
+            participant.getToolbar().clickVideoMuteButton();
         }
 
         // Check local video muted icon state
@@ -1238,18 +1238,18 @@ public class MeetUIUtils
         if (isMuted)
         {
             // Make sure that there is the audio mute button
-            participant.getToolbar().waitForAudioMuteButtonDisplay();
-
-            // Mute participant's audio
-            participant.getToolbar().clickAudioMuteButton();
-        }
-        else
-        {
-            // Make sure that there is the audio unmute button
             participant.getToolbar().waitForAudioUnmuteButtonDisplay();
 
             // Mute participant's audio
             participant.getToolbar().clickAudioUnmuteButton();
+        }
+        else
+        {
+            // Make sure that there is the audio unmute button
+            participant.getToolbar().waitForAudioMuteButtonDisplay();
+
+            // Mute participant's audio
+            participant.getToolbar().clickAudioMuteButton();
         }
 
         // Check local audio muted icon state
