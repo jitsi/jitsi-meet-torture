@@ -272,6 +272,8 @@ public class IFrameAPIBase
 
         // leave muted second and first and third is unmuted
         participant1.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioMuteButton();
+
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
@@ -280,7 +282,6 @@ public class IFrameAPIBase
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
-        participant3.getToolbar().clickAudioMuteButton();
         participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
@@ -316,8 +317,9 @@ public class IFrameAPIBase
 
         // let's unmute everyone as it was initially
         participant2.getToolbar().clickAudioUnmuteButton();
-        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant1.getToolbar().clickAudioUnmuteButton();
+
+        participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
     }
 }
