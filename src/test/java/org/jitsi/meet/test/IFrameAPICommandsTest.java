@@ -552,7 +552,7 @@ public class IFrameAPICommandsTest
 
             // We sometimes see that the second click (to lower the hand) is not propagated for some reason
             // So let's do a retry waiting for the UI to set that the button is not toggled anymore
-            participant2.getToolbar().clickLowerHandButton();
+            participant2.getToolbar().clickRaiseHandButton();
 
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
                 d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
