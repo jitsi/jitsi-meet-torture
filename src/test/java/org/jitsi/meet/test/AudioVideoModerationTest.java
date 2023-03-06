@@ -188,7 +188,8 @@ public class AudioVideoModerationTest
         nonModerator.getParticipantsPane().assertIsParticipantVideoMuted(nonModerator, true);
 
         moderator.getParticipantsPane().open();
-        moderator.getParticipantsPane().askToUnmute(nonModerator);
+        moderator.getParticipantsPane().allowVideo(nonModerator, false);
+        moderator.getParticipantsPane().askToUnmute(nonModerator, false);
         nonModerator.getNotifications().getAskToUnmuteNotification();
         MeetUIUtils.toggleAudioAndCheck(nonModerator, participant1, false);
         MeetUIUtils.unmuteVideoAndCheck(nonModerator, participant1);
@@ -249,7 +250,7 @@ public class AudioVideoModerationTest
         // ask participant2 to unmute
         participantsPane.open();
 
-        participantsPane.askToUnmute(participant2);
+        participantsPane.askToUnmute(participant2, true);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
                 participant2.getNotifications().hasAskToUnmuteNotification());
@@ -395,7 +396,8 @@ public class AudioVideoModerationTest
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
 
-        participantsPane.askToUnmute(participant);
+        participantsPane.allowVideo(participant, false);
+        participantsPane.askToUnmute(participant, false);
 
         participant.getNotifications().getAskToUnmuteNotification();
     }
