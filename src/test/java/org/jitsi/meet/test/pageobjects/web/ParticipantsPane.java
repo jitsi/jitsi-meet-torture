@@ -154,10 +154,12 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.perform();
 
 
-        if (fromContextMenu) {
+        if (fromContextMenu) 
+        {
             clickAskToUnmuteContextMenuById(participantToUnmute);
         }
-        else {
+        else 
+        {
             clickAskToUnmuteQuickActionButtonById(participantToUnmute);
         }
     }
@@ -178,10 +180,12 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
-        if (fromContextMenu) {
+        if (fromContextMenu) 
+        {
             clickAllowVideoContextMenuById(participantToUnmute);
         }
-        else {
+        else 
+        {
             clickAllowVideoQuickActionButtonById(participantToUnmute);
         }
     }
@@ -239,8 +243,12 @@ public class ParticipantsPane
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-audio-" + remoteParticipantEndpointId);
-        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
-        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector(
+            "participant-more-options-" + remoteParticipantEndpointId);
+        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(moreButtonSelector),
+            2);
         Actions clickContextMenu = new Actions(participant.getDriver());
         clickContextMenu.moveToElement(meetingParticipantMoreOptions);
         clickContextMenu.perform();
@@ -267,8 +275,12 @@ public class ParticipantsPane
     {
         String remoteParticipantEndpointId = participantToUnmute.getEndpointId();
         String cssSelector = MeetUIUtils.getTestIdCSSSelector("unmute-video-" + remoteParticipantEndpointId);
-        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector("participant-more-options-" + remoteParticipantEndpointId);
-        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(participant.getDriver(), By.cssSelector(moreButtonSelector), 2);
+        String moreButtonSelector = MeetUIUtils.getTestIdCSSSelector(
+            "participant-more-options-" + remoteParticipantEndpointId);
+        WebElement meetingParticipantMoreOptions = TestUtils.waitForElementBy(
+            participant.getDriver(),
+            By.cssSelector(moreButtonSelector),
+            2);
         Actions clickContextMenu = new Actions(participant.getDriver());
         clickContextMenu.moveToElement(meetingParticipantMoreOptions);
         clickContextMenu.perform();
