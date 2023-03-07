@@ -270,20 +270,25 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
-        // leave muted second and first and third is unmuted
-        participant1.getToolbar().clickAudioMuteButton();
-        participant3.getToolbar().clickAudioMuteButton();
+        participant1.getNotifications().dismissAnyJoinNotification();
+        participant2.getNotifications().dismissAnyJoinNotification();
+        participant3.getNotifications().dismissAnyJoinNotification();
 
-        participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
-        participant1.getFilmstrip().assertAudioMuteIcon(participant1, false);
+        // Leave muted second and first. Third is unmuted
+        // (the first one is unmuted already)
+        participant1.getToolbar().clickAudioMuteButton();
+        participant3.getToolbar().clickAudioUnmuteButton();
+
+        participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
-        participant2.getFilmstrip().assertAudioMuteIcon(participant3, true);
+        participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
-        participant3.getFilmstrip().assertAudioMuteIcon(participant1, false);
-        participant3.getFilmstrip().assertAudioMuteIcon(participant2, false);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
 
         // only the third is unmuted
