@@ -138,7 +138,7 @@ public class FailureListener
         // in order to easily spot them in the html report
         for (ITestResult r : iTestContext.getFailedConfigurations().getAllResults())
         {
-            iTestContext.getFailedTests().addResult(r, r.getMethod());
+            iTestContext.getFailedTests().addResult(r);
         }
     }
 
