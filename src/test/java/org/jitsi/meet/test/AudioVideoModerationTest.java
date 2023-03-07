@@ -141,6 +141,9 @@ public class AudioVideoModerationTest
     {
         unmuteByModerator(participant1, participant3, true, true);
 
+        // we don't have a UI change when moderation is enabled/disabled, so let's just give it a second
+        TestUtils.waitMillis(1000);
+
         // moderation is stopped at this point, make sure participants 1 & 2 are also unmuted,
         // participant3 was unmuted by unmuteByModerator
         MeetUIUtils.unmuteAudioAndCheck(participant2, participant1);
@@ -361,8 +364,8 @@ public class AudioVideoModerationTest
 
         askParticipantToUnmute(moderator, participant);
 
-        MeetUIUtils.unmuteAudioAndCheck(participant, participant1);
-        MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
+        MeetUIUtils.unmuteAudioAndCheck(participant, moderator);
+        MeetUIUtils.unmuteVideoAndCheck(participant, moderator);
 
         if (stopModeration)
         {
