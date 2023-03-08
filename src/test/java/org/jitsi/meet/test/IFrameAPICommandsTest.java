@@ -1047,6 +1047,8 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandKickParticipant"})
     public void testCommandOverwriteConfig()
     {
+        hangUpAllParticipants();
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
