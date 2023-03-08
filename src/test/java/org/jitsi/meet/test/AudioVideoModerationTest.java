@@ -282,7 +282,7 @@ public class AudioVideoModerationTest
         participant2.getNotifications().closeRemoteMuteNotification();
 
         // we try to unmute and test it that it was still muted
-        MeetUIUtils.muteAudioAndCheck(participant2, participant1);
+        MeetUIUtils.unmuteAudioAndCheck(participant2, participant1);
 
         // stop video and check
         participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
@@ -292,7 +292,7 @@ public class AudioVideoModerationTest
 
         participant2.getNotifications().closeRemoteVideoMuteNotification();
 
-        MeetUIUtils.muteVideoAndCheck(participant2, participant1);
+        MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
     }
 
     /**
