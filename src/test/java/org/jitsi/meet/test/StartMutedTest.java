@@ -38,7 +38,9 @@ public class StartMutedTest
     @Test
     public void checkboxesTest()
     {
-        ensureOneParticipant();
+        JitsiMeetUrl url = getJitsiMeetUrl().appendConfig("config.p2p.enabled=true");
+
+        ensureOneParticipant(url);
 
         // we are seeing some UI crashes when clicking too early on the page
         // and as it reloads, no logs are available to investigate
@@ -54,7 +56,7 @@ public class StartMutedTest
         settingsDialog.setStartVideoMuted(true);
         settingsDialog.submit();
 
-        WebParticipant participant2 = joinSecondParticipant();
+        WebParticipant participant2 = joinSecondParticipant(url);
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
         participant2.waitForSendReceiveData(false, true);
@@ -76,6 +78,28 @@ public class StartMutedTest
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
+
+        // Enable video on p2 and check if p2 appears unmuted on p1.
+        participant2.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickVideoMuteButton();
+
+        participant2.getFilmstrip().assertAudioMuteIcon(participant2, false);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+
+        MeetUIUtils.waitForAudioMuted(
+                participant1.getDriver(),
+                participant2.getDriver(),
+                "participant2",
+                false);
+
+        // Add a third participant and check p3 is able to receive audio and video from p2.
+        WebParticipant participant3 = joinThirdParticipant(url, null);
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData(false, true);
+
+        participant3.getFilmstrip().assertAudioMuteIcon(participant2, false);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
     }
 
     /**
