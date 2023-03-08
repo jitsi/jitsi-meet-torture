@@ -1281,21 +1281,9 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String virtualBackgroundDialogXpath = "//p[@id='dialog-title']";
-        String dialogTitle = "Virtual backgrounds";
+        String virtualBackgroundDialogXpath = "//div[@id='virtual-background-dialog']";
 
         TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 2);
-
-        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d -> {
-            try
-            {
-                return driver1.findElement(By.xpath(virtualBackgroundDialogXpath)).getText().equals(dialogTitle);
-            }
-            catch(StaleElementReferenceException e)
-            {
-                return false;
-            }
-        });
 
         switchToIframeAPI(driver1);
 
