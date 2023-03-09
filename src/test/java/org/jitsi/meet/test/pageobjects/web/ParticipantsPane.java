@@ -249,9 +249,6 @@ public class ParticipantsPane
             participant.getDriver(),
             By.cssSelector(moreButtonSelector),
             2);
-        Actions clickContextMenu = new Actions(participant.getDriver());
-        clickContextMenu.moveToElement(meetingParticipantMoreOptions);
-        clickContextMenu.perform();
         meetingParticipantMoreOptions.click();
         MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
     }
@@ -281,9 +278,6 @@ public class ParticipantsPane
             participant.getDriver(),
             By.cssSelector(moreButtonSelector),
             2);
-        Actions clickContextMenu = new Actions(participant.getDriver());
-        clickContextMenu.moveToElement(meetingParticipantMoreOptions);
-        clickContextMenu.perform();
         meetingParticipantMoreOptions.click();
         MeetUIUtils.clickOnElement(participant.getDriver(), cssSelector, true);
     }
