@@ -1191,13 +1191,13 @@ public class MeetUIUtils
     {
         WebDriver driver = participant.getDriver();
 
-        // Make sure that there is the audio mute button
+        // Make sure that there is the audio unmute button
         participant.getToolbar().waitForAudioUnmuteButtonDisplay();
 
-        // Mute participant's audio
+        // Unmute participant's audio
         participant.getToolbar().clickAudioUnmuteButton();
 
-        // Check local audio muted icon state
+        // Check local audio has no muted icon
         assertMuteIconIsDisplayed(
                 driver, driver, false, participant.getName());
 
@@ -1228,7 +1228,7 @@ public class MeetUIUtils
         // Make sure that there is the audio mute button
         participant.getToolbar().waitForAudioMuteButtonDisplay();
 
-        // Unmute participant's audio
+        // Mute participant's audio
         participant.getToolbar().clickAudioMuteButton();
 
         // Check local audio muted icon state
