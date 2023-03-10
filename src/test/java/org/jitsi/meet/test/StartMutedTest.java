@@ -80,8 +80,8 @@ public class StartMutedTest
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
 
         // Enable video on p2 and check if p2 appears unmuted on p1.
-        participant2.getToolbar().clickAudioMuteButton();
-        participant2.getToolbar().clickVideoMuteButton();
+        participant2.getToolbar().clickAudioUnmuteButton();
+        participant2.getToolbar().clickVideoUnmuteButton();
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, false);
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
