@@ -440,7 +440,7 @@ public class Notifications
      */
     public void rejectLobbyParticipant(String name)
     {
-        participant.getDriver().findElement(ByTestId.testId(LOBBY_PARTICIPANT_REJECT_TEST_ID)).click();
+        TestUtils.click(participant.getDriver(), ByTestId.testId(LOBBY_PARTICIPANT_REJECT_TEST_ID));
     }
 
     /**
@@ -450,7 +450,7 @@ public class Notifications
      */
     public void allowLobbyParticipant(String name)
     {
-        participant.getDriver().findElement(ByTestId.testId(LOBBY_PARTICIPANT_ADMIT_TEST_ID)).click();
+        TestUtils.click(participant.getDriver(), ByTestId.testId(LOBBY_PARTICIPANT_ADMIT_TEST_ID));
     }
 
     /**
