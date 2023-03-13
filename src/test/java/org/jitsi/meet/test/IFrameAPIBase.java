@@ -25,6 +25,7 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 
 import java.net.*;
+import java.util.logging.*;
 
 /**
  * Test that loads a page using the iframe API to load a meeting.
@@ -116,7 +117,8 @@ public class IFrameAPIBase
 
         if (pagePath == null || pagePath.trim().length() == 0)
         {
-            throw new SkipException("missing configuration");
+            Logger.getGlobal().warning("Skipping because " + IFRAME_PAGE_PATH_PNAME + " is not set.");
+            throw new SkipException(IFRAME_PAGE_PATH_PNAME + " is not set.");
         }
 
         // uses a custom join, so we can load the page with iframe api
