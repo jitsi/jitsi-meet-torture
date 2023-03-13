@@ -121,8 +121,7 @@ public class InviteTest extends WebTestBase
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(1));
 
-        DialInNumbersPage dialInNumbersPage
-            = participant.getDialInNumbersPage();
+        DialInNumbersPage dialInNumbersPage = participant.getDialInNumbersPage();
         dialInNumbersPage.waitForLoad();
 
         String conferenceIDMessage = dialInNumbersPage.getConferenceIdMessage();

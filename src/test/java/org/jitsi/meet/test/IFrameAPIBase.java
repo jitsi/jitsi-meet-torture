@@ -259,7 +259,7 @@ public class IFrameAPIBase
         // we must not be in tile view
         // FIXME: Currently there is a bug in jitsi-meet and using setLargeVideoParticipant
         // does not switch automatically to stage view, when in grid view
-        getParticipant1().getToolbar().clickTileViewButton();
+        getParticipant1().getToolbar().clickExitTileViewButton();
         MeetUIUtils.waitForTileViewDisplay(participant1, false);
 
         // selects second
@@ -270,15 +270,23 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
-        // leave muted second and first and third is unmuted
-        participant3.getToolbar().clickAudioMuteButton();
+        participant1.getNotifications().dismissAnyJoinNotification();
+        participant2.getNotifications().dismissAnyJoinNotification();
+        participant3.getNotifications().dismissAnyJoinNotification();
+
+        // Leave muted second and first. Third is unmuted
+        // (the first one is unmuted already)
         participant1.getToolbar().clickAudioMuteButton();
-        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant3.getToolbar().clickAudioUnmuteButton();
+
         participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
+
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
+
         participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
@@ -313,8 +321,9 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
 
         // let's unmute everyone as it was initially
-        participant2.getToolbar().clickAudioMuteButton();
-        participant1.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioUnmuteButton();
+        participant1.getToolbar().clickAudioUnmuteButton();
+
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
     }

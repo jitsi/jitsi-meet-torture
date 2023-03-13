@@ -77,7 +77,7 @@ public class DisableSelfViewTest
         driver1.findElement(By.xpath(LOCAL_VIDEO_MENU_BUTTON_XPATH)).click();
 
         // click Hide self view button
-        TestUtils.waitForDisplayedElementByXPath(driver1, HIDE_SELF_VIEW_BUTTON_XPATH, 5);
+        TestUtils.waitForDisplayedElementByXPath(driver1, HIDE_SELF_VIEW_BUTTON_XPATH, 10);
         driver1.findElement(By.xpath(HIDE_SELF_VIEW_BUTTON_XPATH)).click();
 
         checkSelfViewHidden(true, true);

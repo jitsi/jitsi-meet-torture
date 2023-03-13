@@ -352,7 +352,7 @@ public class SharedVideoTest
             driver2.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
 
-        getParticipant1().getToolbar().clickSharedVideoButton();
+        getParticipant1().getToolbar().clickStopSharedVideoButton();
 
         try
         {

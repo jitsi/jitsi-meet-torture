@@ -514,10 +514,11 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String raiseHandSelector = participant2.getToolbar().clickRaiseHandButton();
+        participant2.getToolbar().clickRaiseHandButton();
+        String lowerHandSelector = MeetUIUtils.getAccessibilityCSSSelector(Toolbar.LOWER_HAND);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-            d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("true"));
+            d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             participant1.getNotifications().hasRaisedHandNotification());
@@ -538,12 +539,12 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickRaiseHandButton();
+        participant2.getToolbar().clickLowerHandButton();
 
         try
         {
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
         }
         catch(TimeoutException te)
         {
@@ -554,7 +555,7 @@ public class IFrameAPICommandsTest
             participant2.getToolbar().clickRaiseHandButton();
 
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
+                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
         }
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
@@ -1046,6 +1047,8 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandKickParticipant"})
     public void testCommandOverwriteConfig()
     {
+        hangUpAllParticipants();
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
@@ -1104,8 +1107,8 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickChatButton();
-        participant3.getToolbar().clickChatButton();
+        participant2.getToolbar().clickOpenChatButton();
+        participant3.getToolbar().clickOpenChatButton();
 
         String msgXpath = "//div[contains(@class,'chatmessage')]"
             + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]";

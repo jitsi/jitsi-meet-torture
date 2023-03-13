@@ -86,7 +86,7 @@ public class DesktopSharingTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        participant2.getToolbar().clickDesktopSharingButton();
+        participant2.getToolbar().clickStopDesktopSharingButton();
 
         if (MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
         {
@@ -202,8 +202,8 @@ public class DesktopSharingTest
         }
 
         // Stop share on both p1 and p2.
-        participant1.getToolbar().clickDesktopSharingButton();
-        participant2.getToolbar().clickDesktopSharingButton();
+        participant1.getToolbar().clickStopDesktopSharingButton();
+        participant2.getToolbar().clickStopDesktopSharingButton();
 
         participant3.hangUp();
 
@@ -251,8 +251,8 @@ public class DesktopSharingTest
         participant1.getToolbar().clickDesktopSharingButton();
         checkForScreensharingTile(participant1, participant1, true, 5);
 
-        // p1 starts stops share.
-        participant1.getToolbar().clickDesktopSharingButton();
+        // p1 stops share.
+        participant1.getToolbar().clickStopDesktopSharingButton();
 
         // Call switches to jvb.
         ensureThreeParticipants(url);
@@ -304,7 +304,7 @@ public class DesktopSharingTest
         WebParticipant sharingEndpoint,
         WebParticipant observingEndpoint,
         Boolean enabled,
-        long timeout) 
+        long timeout)
     {
         String screenshareXpath = "//span[@id='participant_" + sharingEndpoint.getEndpointId() + "-v1']";
         TestUtils.waitForDisplayedOrNotByXPath(
@@ -341,6 +341,7 @@ public class DesktopSharingTest
     private void toggleDesktopSharing()
     {
         getParticipant2().getToolbar().clickDesktopSharingButton();
+        getParticipant2().getToolbar().clickStopDesktopSharingButton();
     }
 
     /**
@@ -504,9 +505,9 @@ public class DesktopSharingTest
         // p3 is screensharing.
         // p1, p3, p4 are audio muted, so p2 should eventually become dominant speaker.
         // Participants should display p3 on-stage because it is screensharing.
-        checkForScreensharingTile(participant3, participant1, true, 5);
-        checkForScreensharingTile(participant3, participant2, true, 5);
-        checkForScreensharingTile(participant3, participant4, true, 5);
+        checkForScreensharingTile(participant3, participant1, true, 10);
+        checkForScreensharingTile(participant3, participant2, true, 10);
+        checkForScreensharingTile(participant3, participant4, true, 10);
 
         // And the video should be playing
         TestUtils.waitForBoolean(driver4,
@@ -527,7 +528,7 @@ public class DesktopSharingTest
         if (!participant1.getType().isFirefox())
         {
             // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
-            participant1.getToolbar().clickAudioMuteButton();
+            participant1.getToolbar().clickAudioUnmuteButton();
             participant2.getToolbar().clickAudioMuteButton();
 
             // Participant4 should eventually see video for [p3, p1] and p2 as a ninja.

@@ -90,7 +90,8 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartAudioModeration();
 
-        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, true);
+        // Here we want to try unmuting and check that we are still muted.
+        tryToAudioUnmuteAndCheck(participant3, participant1);
 
         participantsPane.clickContextMenuButton();
 
@@ -98,10 +99,10 @@ public class AudioVideoModerationTest
 
         participantsPane.close();
 
-        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
+        // we don't have a UI change when moderation is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.toggleAudioAndCheck(participant3, participant1, false);
+        MeetUIUtils.unmuteAudioAndCheck(participant3, participant1);
     }
 
     /**
@@ -119,7 +120,9 @@ public class AudioVideoModerationTest
 
         avModerationMenu.clickStartVideoModeration();
 
-        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, true);
+        // Here we want to try video unmuting and check that we are still muted.
+        // Make sure that there is the video unmute button
+        tryToVideoUnmuteAndCheck(participant3, participant1);
 
         participantsPane.clickContextMenuButton();
 
@@ -127,10 +130,10 @@ public class AudioVideoModerationTest
 
         participantsPane.close();
 
-        // we don't have a UI change when modertion is enabled/disabled, so let's just give it a second
+        // we don't have a UI change when moderation is enabled/disabled, so let's just give it a second
         TestUtils.waitMillis(1000);
 
-        MeetUIUtils.toggleVideoAndCheck(participant3, participant1, false);
+        MeetUIUtils.unmuteVideoAndCheck(participant3, participant1);
     }
 
     /**
@@ -146,9 +149,9 @@ public class AudioVideoModerationTest
 
         // moderation is stopped at this point, make sure participants 1 & 2 are also unmuted,
         // participant3 was unmuted by unmuteByModerator
-        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, false);
+        MeetUIUtils.unmuteAudioAndCheck(participant2, participant1);
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-        MeetUIUtils.toggleAudioAndCheck(participant1, participant2, false);
+        MeetUIUtils.unmuteAudioAndCheck(participant1, participant2);
         MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
     }
 
@@ -191,7 +194,7 @@ public class AudioVideoModerationTest
         moderator.getParticipantsPane().allowVideo(nonModerator, false);
         moderator.getParticipantsPane().askToUnmute(nonModerator, false);
         nonModerator.getNotifications().getAskToUnmuteNotification();
-        MeetUIUtils.toggleAudioAndCheck(nonModerator, participant1, false);
+        MeetUIUtils.unmuteAudioAndCheck(nonModerator, participant1);
         MeetUIUtils.unmuteVideoAndCheck(nonModerator, participant1);
         moderator.getParticipantsPane().clickContextMenuButton();
         moderator.getAVModerationMenu().clickStopAudioModeration();
@@ -282,7 +285,7 @@ public class AudioVideoModerationTest
         participant2.getNotifications().closeRemoteMuteNotification();
 
         // we try to unmute and test it that it was still muted
-        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
+        tryToAudioUnmuteAndCheck(participant2, participant1);
 
         // stop video and check
         participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
@@ -292,7 +295,9 @@ public class AudioVideoModerationTest
 
         participant2.getNotifications().closeRemoteVideoMuteNotification();
 
-        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, true);
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+
+        tryToVideoUnmuteAndCheck(participant2, participant1);
     }
 
     /**
@@ -323,8 +328,8 @@ public class AudioVideoModerationTest
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
 
-        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
-        MeetUIUtils.toggleVideoAndCheck(participant2, participant1, true);
+        tryToAudioUnmuteAndCheck(participant2, participant1);
+        tryToVideoUnmuteAndCheck(participant2, participant1);
 
         // asked to unmute and check
         unmuteByModerator(participant1, participant2, false, false);
@@ -333,7 +338,7 @@ public class AudioVideoModerationTest
         participantsPane.muteParticipant(participant2);
         participant2.getNotifications().closeAskToUnmuteNotification();
 
-        MeetUIUtils.toggleAudioAndCheck(participant2, participant1, true);
+        tryToAudioUnmuteAndCheck(participant2, participant1);
     }
 
     /**
@@ -364,8 +369,8 @@ public class AudioVideoModerationTest
 
         askParticipantToUnmute(moderator, participant);
 
-        MeetUIUtils.toggleAudioAndCheck(participant, participant1, false);
-        MeetUIUtils.unmuteVideoAndCheck(participant, participant1);
+        MeetUIUtils.unmuteAudioAndCheck(participant, moderator);
+        MeetUIUtils.unmuteVideoAndCheck(participant, moderator);
 
         if (stopModeration)
         {
@@ -402,5 +407,45 @@ public class AudioVideoModerationTest
         participantsPane.askToUnmute(participant, false);
 
         participant.getNotifications().getAskToUnmuteNotification();
+    }
+
+    /**
+     * In case of moderation, tries to audio unmute but stays muted.
+     * Checks locally and remotely that this is still the case.
+     */
+    private static void tryToAudioUnmuteAndCheck(WebParticipant participant, WebParticipant remoteToCheck)
+    {
+        // Make sure that there is the audio unmute button
+        participant.getToolbar().waitForAudioUnmuteButtonDisplay();
+
+        // Unmute participant's audio
+        participant.getToolbar().clickAudioUnmuteButton();
+
+        // Check local audio muted icon state
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            participant.getDriver(), participant.getDriver(), true, participant.getName());
+
+        MeetUIUtils.assertMuteIconIsDisplayed(
+            remoteToCheck.getDriver(),
+            participant.getDriver(),
+            true,
+            "");
+    }
+
+    /**
+     * In case of moderation, tries to video unmute but stays muted.
+     * Checks locally and remotely that this is still the case.
+     */
+    private static void tryToVideoUnmuteAndCheck(WebParticipant participant, WebParticipant remoteToCheck)
+    {
+        participant.getToolbar().waitForVideoUnmuteButtonDisplay();
+
+        // Unmute participant's video
+        participant.getToolbar().clickVideoUnmuteButton();
+
+        // Check local video muted icon state
+        participant.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
+
+        remoteToCheck.getParticipantsPane().assertIsParticipantVideoMuted(participant, true);
     }
 }

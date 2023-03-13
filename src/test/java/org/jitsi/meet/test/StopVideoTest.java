@@ -73,7 +73,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = {"stopVideoOnParticipant1AndCheck"})
     public void startVideoOnParticipant1AndCheck()
     {
-        getParticipant1().getToolbar().clickVideoMuteButton();
+        getParticipant1().getToolbar().clickVideoUnmuteButton();
 
         // make sure we check at the remote videos on the second participant
         // side, otherwise if local is muted will fail
@@ -161,7 +161,7 @@ public class StopVideoTest
     @Test(dependsOnMethods = { "stopVideoOnParticipantAndCheck" })
     public void startVideoOnParticipantAndCheck()
     {
-        getParticipant2().getToolbar().clickVideoMuteButton();
+        getParticipant2().getToolbar().clickVideoUnmuteButton();
 
         getParticipant1().getParticipantsPane()
                 .assertIsParticipantVideoMuted(getParticipant1(), false);

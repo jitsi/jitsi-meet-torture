@@ -89,14 +89,6 @@ public class InviteDialog
     }
 
     /**
-     * Clicks the "participants" toolbar button to gain access to invite
-     */
-    private void clickToolbarButton()
-    {
-        participant.getToolbar().clickParticipantsButton();
-    }
-
-    /**
      * Clicks the "info" toolbar button to close the invite dialog, if the info
      * dialog is open.
      */
@@ -110,7 +102,7 @@ public class InviteDialog
         // click with the mouse over the button, as it is a modal dialog it will close
         Actions actions = new Actions(participant.getDriver());
         actions.moveToElement(participant.getToolbar().getInviteButton()).click().perform();
-        clickToolbarButton();
+        participant.getToolbar().clickCloseParticipantsButton();
     }
 
     /**
@@ -195,7 +187,7 @@ public class InviteDialog
             return;
         }
 
-        clickToolbarButton();
+        participant.getToolbar().clickParticipantsButton();
         participant.getToolbar().waitForVisible();
         clickInviteButton();
     }
