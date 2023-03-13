@@ -190,9 +190,9 @@ public class Notifications
             {
                 // wait for the element to be available (notification maybe still animating)
                 TestUtils.waitForCondition(driver, 2, d ->
-                    !notification.findElements(By.tagName("button")).isEmpty());
+                    !notification.findElements(By.id("close-notification")).isEmpty());
 
-                WebElement closeButton = notification.findElement(By.tagName("button"));
+                WebElement closeButton = notification.findElement(By.id("close-notification"));
 
                 new Actions(driver).moveToElement(closeButton).click().perform();
             }
