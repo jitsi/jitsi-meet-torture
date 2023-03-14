@@ -87,7 +87,7 @@ public class Notifications
      * The xpath to find the notification for single knocking participant.
      */
     private static final String LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH
-        = "//div[@data-testid='notify.participantWantsToJoin']//div[not(contains(@class,'participant'))]/span";
+        = "//div[@data-testid='notify.participantWantsToJoin']/div/div/span";
 
     /**
      * The test id for the notification on participants page when meeting has ended.
