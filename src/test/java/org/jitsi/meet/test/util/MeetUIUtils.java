@@ -44,7 +44,7 @@ public class MeetUIUtils
      * The string template for finding thumbnail by id using xpath.
      * ID can be `localVideoContainer` or "participant_" + participantEndpointId.
      */
-    private static String AVATAR_XPATH_TMPL = "//span[@id='%s']//div[contains(@class,'jitsi-icon')]";
+    private static String AVATAR_XPATH_TMPL = "//span[@id='%s']//div[contains(@class,'avatar')]";
 
     /**
      * Check if on the large video there is "grey" avatar displayed and if not
