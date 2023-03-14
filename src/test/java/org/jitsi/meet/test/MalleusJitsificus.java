@@ -460,7 +460,8 @@ public class MalleusJitsificus
                 }
                 oldCount = count;
                 count++;
-                if (count >= maxTabs) {
+                if (count >= maxTabs)
+                {
                     baseDriver = null;
                     count = 0;
                 }
@@ -589,7 +590,8 @@ public class MalleusJitsificus
                         participant = participants.createParticipant(configPrefix, ops);
                     }
                 );
-                if (numTabs >= MAX_AUDIO_SENDERS_PER_BROWSER) {
+                if (numTabs >= MAX_AUDIO_SENDERS_PER_BROWSER)
+                {
                     /* Chrome can't support more than MAX_AUDIO_SENDER_PER_BROWSER audio sender tabs per browser,
                      * so retroactively apply !audioSender and muteAudio to this participant.
                      */
