@@ -101,6 +101,10 @@ public class MalleusJitsificus
     // The participant threads check if the IP of their bridge is in this set.
     private Set<String> bridgesToFail;
 
+    // The shared base drivers for senders and receivers respectively
+    private SharedBaseDriver senderBaseDriver;
+    private SharedBaseDriver receiverBaseDriver;
+
     @DataProvider(name = "dp", parallel = true)
     public Object[][] createData(ITestContext context)
     {
@@ -210,6 +214,9 @@ public class MalleusJitsificus
         print("extra sender params=" + extraSenderParams);
         print("extra receiver params=" + extraReceiverParams);
 
+        senderBaseDriver = new SharedBaseDriver(senderTabsPerBrowser);
+        receiverBaseDriver = new SharedBaseDriver(receiverTabsPerBrowser);
+
         Object[][] ret = new Object[numConferences][4];
         for (int i = 0; i < numConferences; i++)
         {
@@ -271,21 +278,17 @@ public class MalleusJitsificus
             return;
         }
 
-        SharedBaseDriver sharedBaseDriver = new SharedBaseDriver();
-        int clientsInCurrentBrowser = 0;
-        int audioTabsInCurrentBrowser = 0;
+        SharedBaseDriver sharedBaseDriver;
         int audioSenders = 0;
 
         for (int i = 0; i < numberOfParticipants; )
         {
             boolean sender = i < numSenders;
-            boolean audioSender = audioSenders < numAudioSenders &&
-                audioTabsInCurrentBrowser < MAX_AUDIO_SENDERS_PER_BROWSER;
+            boolean audioSender = audioSenders < numAudioSenders;
 
             JitsiMeetUrl urlCopy = url.copy();
 
             int numClients;
-            int clientsPerBrowser;
             boolean multitab;
 
             if (sender)
@@ -297,8 +300,8 @@ public class MalleusJitsificus
                 {
                     numClients = numSenders - i;
                 }
-                clientsPerBrowser = senderTabsPerBrowser * sendersPerTab;
                 multitab = (senderTabsPerBrowser > 1);
+                sharedBaseDriver = senderBaseDriver;
             }
             else
             {
@@ -309,15 +312,8 @@ public class MalleusJitsificus
                 {
                     urlCopy.appendConfig("config.flags.runInLiteMode=true");
                 }
-                clientsPerBrowser = receiverTabsPerBrowser * receiversPerTab;
                 multitab = (receiverTabsPerBrowser > 1);
-            }
-
-            if (clientsInCurrentBrowser >= clientsPerBrowser || i == numSenders)
-            {
-                sharedBaseDriver = new SharedBaseDriver();
-                clientsInCurrentBrowser = 0;
-                audioTabsInCurrentBrowser = 0;
+                sharedBaseDriver = receiverBaseDriver;
             }
 
             if (audioSender && audioSenders + numClients > numAudioSenders)
@@ -347,11 +343,9 @@ public class MalleusJitsificus
             malleusTasks.add(task);
             task.start(pool);
             i += numClients;
-            clientsInCurrentBrowser += numClients;
             if (audioSender)
             {
                 audioSenders += numClients;
-                audioTabsInCurrentBrowser += 1;
                 if (switchSpeakers)
                 {
                     if (numClients == 1)
@@ -438,25 +432,40 @@ public class MalleusJitsificus
     /** Object that holds the shared base driver that can be used by tabbed drivers. */
     private static class SharedBaseDriver
     {
-        private Object lock = new Object();
+        private final Object lock = new Object();
         private WebDriver baseDriver = null;
 
-        public void createOrGetDriver(Supplier<WebDriver> create, Consumer<WebDriver> use)
+        private final int maxTabs;
+
+        private int count = 0;
+
+        public SharedBaseDriver(int maxTabs)
         {
-            WebDriver driver = baseDriver;
-            if (driver == null)
+            this.maxTabs = maxTabs;
+        }
+
+        public int createOrGetDriver(Supplier<WebDriver> create, Consumer<WebDriver> use)
+        {
+            int oldCount;
+            synchronized (lock)
             {
-                synchronized (lock)
+                WebDriver driver = baseDriver;
+                if (driver == null)
                 {
-                    driver = baseDriver;
-                    if (driver == null)
-                    {
-                        baseDriver = create.get();
-                        return;
-                    }
+                    baseDriver = create.get();
+                }
+                else
+                {
+                    use.accept(driver);
+                }
+                oldCount = count;
+                count++;
+                if (count >= maxTabs) {
+                    baseDriver = null;
+                    count = 0;
                 }
             }
-            use.accept(driver);
+            return oldCount;
         }
     }
 
@@ -466,7 +475,7 @@ public class MalleusJitsificus
         private final JitsiMeetUrl _url;
         private final long durationMs;
         private final long joinDelayMs;
-        private final boolean audioSender;
+        private boolean audioSender;
         private final boolean muteVideo;
         private boolean muteAudio;
         private final boolean enableFailureDetection;
@@ -569,7 +578,7 @@ public class MalleusJitsificus
             if (sharedBaseDriver != null)
             {
                 ops.setMultitab(true);
-                sharedBaseDriver.createOrGetDriver(
+                int numTabs = sharedBaseDriver.createOrGetDriver(
                     () -> {
                         participant = participants.createParticipant(configPrefix, ops);
                         return ((TabbedWebDriver) participant.getDriver()).getBaseDriver();
@@ -580,6 +589,21 @@ public class MalleusJitsificus
                         participant = participants.createParticipant(configPrefix, ops);
                     }
                 );
+                if (numTabs >= MAX_AUDIO_SENDERS_PER_BROWSER) {
+                    /* Chrome can't support more than MAX_AUDIO_SENDER_PER_BROWSER audio sender tabs per browser,
+                     * so retroactively apply !audioSender and muteAudio to this participant.
+                     */
+                     if (audioSender)
+                     {
+                         audioSender = false;
+                         _url.appendConfig("config.disableInitialGUM=true");
+                     }
+                    if (!muteAudio)
+                    {
+                        muteAudio = true;
+                        _url.appendConfig("config.startWithAudioMuted=true");
+                    }
+                }
             }
             else
             {
@@ -880,6 +904,7 @@ public class MalleusJitsificus
             filter((t) -> t.mTask.running).
             filter((t) -> !t.spoken).
             filter((t) -> !currentSpeakers.contains(t)).
+            filter((t) -> t.mTask.audioSender).
             collect(Collectors.toList());
 
         if (pastSpeakers.isEmpty() && nonSpeakers.isEmpty())
