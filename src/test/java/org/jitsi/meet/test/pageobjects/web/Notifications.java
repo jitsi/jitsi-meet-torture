@@ -87,7 +87,7 @@ public class Notifications
      * The xpath to find the notification for single knocking participant.
      */
     private static final String LOBBY_KNOCKING_PARTICIPANT_NOTIFICATION_XPATH
-        = "//div[@data-testid='notify.participantWantsToJoin']//div[not(contains(@class,'participant'))]/span";
+        = "//div[@data-testid='notify.participantWantsToJoin']/div/div/span";
 
     /**
      * The test id for the notification on participants page when meeting has ended.
@@ -190,9 +190,9 @@ public class Notifications
             {
                 // wait for the element to be available (notification maybe still animating)
                 TestUtils.waitForCondition(driver, 2, d ->
-                    !notification.findElements(By.tagName("button")).isEmpty());
+                    !notification.findElements(By.id("close-notification")).isEmpty());
 
-                WebElement closeButton = notification.findElement(By.tagName("button"));
+                WebElement closeButton = notification.findElement(By.id("close-notification"));
 
                 new Actions(driver).moveToElement(closeButton).click().perform();
             }
