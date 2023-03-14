@@ -514,7 +514,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickRaiseHandButton();
+        String raiseHandSelector = participant2.getToolbar().clickRaiseHandButton();
         String lowerHandSelector = MeetUIUtils.getAccessibilityCSSSelector(Toolbar.LOWER_HAND);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
@@ -544,7 +544,7 @@ public class IFrameAPICommandsTest
         try
         {
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
+                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
         }
         catch(TimeoutException te)
         {
@@ -552,10 +552,10 @@ public class IFrameAPICommandsTest
 
             // We sometimes see that the second click (to lower the hand) is not propagated for some reason
             // So let's do a retry waiting for the UI to set that the button is not toggled anymore
-            participant2.getToolbar().clickRaiseHandButton();
+            participant2.getToolbar().clickLowerHandButton();
 
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-                d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
+                d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
         }
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
