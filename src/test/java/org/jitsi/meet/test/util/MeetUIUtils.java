@@ -1036,7 +1036,8 @@ public class MeetUIUtils
                 WebElement videoElement
                     = driver.findElement(By.xpath("//span[@id='participant_" + endpointId + "']"));
 
-                if (videoElement == null) {
+                if (videoElement == null)
+                {
                     return false;
                 }
                 boolean currentDisplay = videoElement.getAttribute("class").contains("display-video");
