@@ -68,7 +68,7 @@ public class AudioOnlyTest
         TestUtils.waitForDisplayedElementByXPath(
             driver1, LARGE_AVATAR_XPATH, 2);
 
-        MeetUIUtils.assertLocalThumbnailShowsAvatar(driver1);
+        MeetUIUtils.assertLocalThumbnailShowsDefaultAvatar(driver1);
     }
 
     /**

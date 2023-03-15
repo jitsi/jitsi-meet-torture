@@ -34,14 +34,6 @@ public class AvatarTest
     public static String EMAIL = "support@jitsi.org";
     public static String HASH = "38f014e4b7dde0f64f8157d26a8c812e";
 
-    /**
-     * We store participant2's avatar src when running
-     * test changeAvatarAndCheck, and in avatarWhenVideoMuted we restart
-     * participant2 and the value should be the same.
-     * Avatars should not change after a reload.
-     */
-    private static String participant2AvatarSrc = null;
-
     @Override
     public void setupClass()
     {
@@ -116,14 +108,12 @@ public class AvatarTest
 
         MeetUIUtils.muteVideoAndCheck(getParticipant2(), getParticipant1());
         getParticipant1().getParticipantsPane().assertIsParticipantVideoMuted(getParticipant2(), true);
-        // we check whether avatar of participant2 is same on both sides
-        // and we check whether it had changed after reloading the page
-        assertEquals(
-            getLocalThumbnailSrc(driver2),
-            participant2AvatarSrc);
-        assertEquals(
-            getThumbnailSrc(driver1, participant2EndpointId),
-            participant2AvatarSrc);
+
+        // we check whether the default avatar of participant2 is displayed on both sides
+        TestUtils.waitForElementByXPath(
+                driver1, MeetUIUtils.getDefaultAvatarXpathForParticipant(getParticipant2().getEndpointId()), 20);
+        TestUtils.waitForElementByXPath(
+                driver2, MeetUIUtils.getDefaultAvatarXpathForLocal(), 20);
 
         // Start the third participant
         ensureThreeParticipants();
@@ -134,17 +124,16 @@ public class AvatarTest
 
         WebDriver driver3 = getParticipant3().getDriver();
 
-        String participant2Src = getLocalThumbnailSrc(driver2);
-
         // Pin local video and verify avatars are displayed
         MeetUIUtils.clickOnLocalVideo(driver3);
 
         MeetUIUtils.assertAvatarDisplayed(driver3, participant1EndpointId);
-        MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId);
+        MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId, true);
 
-        assertEquals(
-            getThumbnailSrc(driver3, participant2EndpointId),
-            participant2Src);
+        TestUtils.waitForElementByXPath(
+                driver3, MeetUIUtils.getDefaultAvatarXpathForParticipant(getParticipant2().getEndpointId()), 20);
+        TestUtils.waitForElementByXPath(
+                driver2, MeetUIUtils.getDefaultAvatarXpathForLocal(), 20);
         assertEquals(
             getThumbnailSrc(driver3, participant1EndpointId),
             participant1ThumbSrc);
@@ -155,7 +144,7 @@ public class AvatarTest
         // display name instead of an avatar, local video displayed
         MeetUIUtils.waitsForLargeVideoSwitch(driver3, participant1EndpointId);
         MeetUIUtils.assertDisplayNameVisible(driver3, participant1EndpointId);
-        MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId);
+        MeetUIUtils.assertAvatarDisplayed(driver3, participant2EndpointId, true);
         MeetUIUtils.assertLocalThumbnailShowsVideo(driver3);
 
         // Click on participant2's video
@@ -229,7 +218,7 @@ public class AvatarTest
 
         final String participant1EndpointId = participant1.getEndpointId();
 
-        String participant1AvatarXPath = MeetUIUtils.getAvatarXpathForParticipant(participant1EndpointId);
+        String participant1AvatarXPath = MeetUIUtils.getDefaultAvatarXpathForParticipant(participant1EndpointId);
 
         // Wait for the avatar element to be created
         TestUtils.waitForElementByXPath(
@@ -292,13 +281,11 @@ public class AvatarTest
                 return currentSrc.contains(HASH);
             });
 
-        // we check whether avatar of participant2 is same on both sides
-        // and we stored to check it after reload
-        participant2AvatarSrc = getLocalThumbnailSrc(driver2);
-        String participant2EndpointId = participant2.getEndpointId();
-        assertEquals(
-            getThumbnailSrc(driver1, participant2EndpointId),
-            participant2AvatarSrc);
+        // we check whether the default avatar of participant2 is displayed on both sides
+        TestUtils.waitForElementByXPath(
+                driver1, MeetUIUtils.getDefaultAvatarXpathForParticipant(participant2.getEndpointId()), 20);
+        TestUtils.waitForElementByXPath(
+                driver2, MeetUIUtils.getDefaultAvatarXpathForLocal(), 20);
 
         // the problem on FF where we can send keys to the input field,
         // and the m from the text can mute the call, check whether we are muted

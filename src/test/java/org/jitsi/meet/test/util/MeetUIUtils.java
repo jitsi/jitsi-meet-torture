@@ -47,6 +47,13 @@ public class MeetUIUtils
     private static String AVATAR_XPATH_TMPL = "//span[@id='%s']//img[contains(@class,'userAvatar')]";
 
     /**
+     * The string template for finding thumbnail default avatar by id using xpath.
+     * ID can be `localVideoContainer` or "participant_" + participantEndpointId.
+     */
+    private static String DEFAULT_AVATAR_XPATH_TMPL
+        = "//span[@id='%s']//div[contains(@class,'userAvatar') and contains(@class, 'defaultAvatar')]";
+
+    /**
      * Check if on the large video there is "grey" avatar displayed and if not
      * fails the current test. The check consists of 3 steps:
      * 1. check if the "user is having networking issues" message is displayed
@@ -572,9 +579,27 @@ public class MeetUIUtils
     public static void assertAvatarDisplayed(
             WebDriver driver, String endpointId)
     {
+        assertAvatarDisplayed(driver, endpointId, false);
+    }
+
+    /**
+     * Makes sure that a user's avatar is displayed, and that the user's video
+     * is not displayed. Allows for the these conditions to not hold
+     * immediately, but within a time interval of 5 seconds.
+     * @param driver instance of <tt>WebDriver</tt> on which we'll perform
+     * the verification.
+     * @param endpointId the resource part of MUC JID which identifies user's
+     * video thumbnail.
+     */
+    public static void assertAvatarDisplayed(
+            WebDriver driver, String endpointId, boolean defaultAvatar)
+    {
+        String xpath = defaultAvatar
+            ? MeetUIUtils.getDefaultAvatarXpathForParticipant(endpointId)
+            : MeetUIUtils.getAvatarXpathForParticipant(endpointId);
         // Avatar image
         TestUtils.waitForDisplayedElementByXPath(
-            driver, MeetUIUtils.getAvatarXpathForParticipant(endpointId),
+                driver, xpath,
             5);
 
         // User's video if available should be hidden, the element is missing
@@ -710,6 +735,22 @@ public class MeetUIUtils
             5);
         TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
             driver, "//span[@id='localVideoWrapper']//video", 5);
+    }
+
+    /**
+     * Makes sure that the default avatar is displayed in the local thumbnail and that
+     * the video is not displayed.
+     * @param driver the instance of <tt>WebDriver</tt> on which we'll
+     * perform the verification.
+     */
+    public static void assertLocalThumbnailShowsDefaultAvatar(WebDriver driver)
+    {
+        TestUtils.waitForDisplayedElementByXPath(
+                driver,
+                MeetUIUtils.getDefaultAvatarXpathForLocal(),
+                5);
+        TestUtils.waitForElementNotPresentOrNotDisplayedByXPath(
+                driver, "//span[@id='localVideoWrapper']//video", 5);
     }
 
     /**
@@ -1281,11 +1322,30 @@ public class MeetUIUtils
     }
 
     /**
+     * The xpath for the default participant avatar.
+     * @param endpointId the endpoint Id.
+     * @return the xpath.
+     */
+    public static String getDefaultAvatarXpathForParticipant(String endpointId)
+    {
+        return String.format(DEFAULT_AVATAR_XPATH_TMPL, "participant_" + endpointId);
+    }
+
+    /**
      * The xpath for the local participant avatar.
      * @return the xpath.
      */
     public static String getAvatarXpathForLocal()
     {
         return String.format(AVATAR_XPATH_TMPL, "localVideoContainer");
+    }
+
+    /**
+     * The xpath for the local participant avatar.
+     * @return the xpath.
+     */
+    public static String getDefaultAvatarXpathForLocal()
+    {
+        return String.format(DEFAULT_AVATAR_XPATH_TMPL, "localVideoContainer");
     }
 }
