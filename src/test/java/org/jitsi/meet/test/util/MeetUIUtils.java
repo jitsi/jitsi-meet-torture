@@ -1026,6 +1026,23 @@ public class MeetUIUtils
         TestUtils.waitForBoolean(driver,
             "return " + (received ? "" : "!" ) +"JitsiMeetJS.app.testing.isRemoteVideoReceived('" + endpointId + "');",
             10);
+
+        // Wait for the remote video to be rendered
+        TestUtils.waitForCondition(
+            driver,
+            10,
+            (ExpectedCondition<Boolean>) d -> 
+            {
+                WebElement videoElement
+                    = driver.findElement(By.xpath("//span[@id='participant_" + endpointId + "']"));
+
+                if (videoElement == null) {
+                    return false;
+                }
+                boolean currentDisplay = videoElement.getAttribute("class").contains("display-video");
+
+                return currentDisplay == received;
+            });
     }
 
     /**
