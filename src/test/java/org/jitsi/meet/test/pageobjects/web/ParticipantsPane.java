@@ -249,6 +249,9 @@ public class ParticipantsPane
             participant.getDriver(),
             By.cssSelector(moreButtonSelector),
             2);
+        // a debug for an error MoveTargetOutOfBoundsException: move target out of bounds
+        TestUtils.print("More options element for " + remoteParticipantEndpointId
+            + "is at:" + meetingParticipantMoreOptions.getLocation());
         Actions clickContextMenu = new Actions(participant.getDriver());
         clickContextMenu.moveToElement(meetingParticipantMoreOptions);
         clickContextMenu.perform();

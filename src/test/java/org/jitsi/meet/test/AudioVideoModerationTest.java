@@ -255,6 +255,11 @@ public class AudioVideoModerationTest
 
         participant1.getNotifications().dismissAnyJoinNotification();
 
+        // wait for the participant pane to fully open
+        // we are seeing MoveTargetOutOfBoundsException for some hidden elements
+        // when trying to hover over them
+        TestUtils.waitMillis(500);
+
         participantsPane.askToUnmute(participant2, true);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
