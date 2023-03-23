@@ -271,7 +271,8 @@ public class MuteTest
             // Start desktop share.
             participant1.getToolbar().clickDesktopSharingButton();
 
-            DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+            // Check if a remote screenshare tile is created on p2.
+            DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
 
             // Stop desktop share and unmute video and check for video again.

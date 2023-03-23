@@ -84,12 +84,6 @@ public class MeetUtils
         "return config.deploymentUrls && config.deploymentUrls.userDocumentationURL !== undefined;";
 
     /**
-     * The javascript code which returns {@code true} if multi-stream is enabled.
-     */
-    public static final String MULTI_STREAM_ENABLED_CHECK_SCRIPT =
-        "return (config.flags?.sourceNameSignaling && config.flags?.sendMultipleVideoStreams) ?? true";
-
-    /**
      * Returns the webrtc stats (in JSON format) of the specific participant
      * of the specified peer connection.
      *
@@ -433,16 +427,6 @@ public class MeetUtils
     public static boolean isHelpEnabled(WebDriver driver)
     {
         return TestUtils.executeScriptAndReturnBoolean(driver, HELP_ENABLED_CHECK_SCRIPT);
-    }
-
-    /**
-     * Checks whether multi-stream is enabled.
-     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
-     * @return returns {@code true} if multi-stream is enabled.
-     */
-    public static boolean isMultiStreamEnabled(WebDriver driver)
-    {
-        return TestUtils.executeScriptAndReturnBoolean(driver, MULTI_STREAM_ENABLED_CHECK_SCRIPT);
     }
 
     /**
