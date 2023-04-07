@@ -42,7 +42,8 @@ public class DisableSelfViewTest
     /**
      * The local video menu hide self view button xpath.
      */
-    private final static String HIDE_SELF_VIEW_BUTTON_XPATH = "//div[@class='popover']//div[@id='hideselfviewButton']";
+    private final static String HIDE_SELF_VIEW_BUTTON_XPATH
+        = "//div[contains(@class, 'popover')]//div[@id='hideselfviewButton']";
 
     /**
      * The participants.
