@@ -85,7 +85,7 @@ public class WebRemoteParticipant
         // give time for the menu to appear
         TestUtils.waitForDisplayedElementByXPath(
             driver,
-            "//div[@class='popover']//div[contains(@class, '"
+            "//div[contains(@class, 'popover')]//div[contains(@class, '"
                 + linkClassname + "')]",
             5);
 

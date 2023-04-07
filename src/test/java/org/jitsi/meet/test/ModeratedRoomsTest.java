@@ -96,19 +96,19 @@ public class ModeratedRoomsTest
         {
             // give time for the menu to appear
             TestUtils.waitForDisplayedElementByXPath(driver,
-                "//div[@class='popover']//div[contains(@class, 'kicklink')]",
+                "//div[contains(@class, 'popover')]//div[contains(@class, 'kicklink')]",
                 2);
             TestUtils.waitForDisplayedElementByXPath(driver,
-                "//div[@class='popover']//div[contains(@class, 'mutelink')]",
+                "//div[contains(@class, 'popover')]//div[contains(@class, 'mutelink')]",
                 2);
         }
         else
         {
             TestUtils.waitForNotDisplayedElementByXPath(driver,
-                "//div[@class='popover']//div[contains(@class, 'kicklink')]",
+                "//div[contains(@class, 'popover')]//div[contains(@class, 'kicklink')]",
                 2);
             TestUtils.waitForNotDisplayedElementByXPath(driver,
-                "//div[@class='popover']//div[contains(@class, 'mutelink')]",
+                "//div[contains(@class, 'popover')]//div[contains(@class, 'mutelink')]",
                 1);
         }
     }
