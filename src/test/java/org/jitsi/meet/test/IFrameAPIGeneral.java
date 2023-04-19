@@ -21,6 +21,8 @@ public class IFrameAPIGeneral
     {
         super.setupClass();
 
+        checkIframeDisabled();
+
         checkModerationSupported();
     }
 

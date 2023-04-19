@@ -16,7 +16,6 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -46,6 +45,8 @@ public class IFrameAPICommandsTest
     public void setupClass()
     {
         super.setupClass();
+
+        checkIframeDisabled();
 
         checkModerationSupported();
     }
