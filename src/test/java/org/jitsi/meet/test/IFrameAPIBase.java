@@ -99,6 +99,21 @@ public class IFrameAPIBase
     }
 
     /**
+     * Checks whether iframe API is disabled.
+     */
+    protected void checkIframeDisabled()
+    {
+        ensureOneParticipant();
+
+        if (MeetUtils.iFrameAPIDisabled(getParticipant1().getDriver()))
+        {
+            cleanupClass();
+            throw new SkipException(
+                "IFrameAPI is disabled. Disabling test.");
+        }
+    }
+
+    /**
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
      * @return url that will load a meeting in an iframe.
      */

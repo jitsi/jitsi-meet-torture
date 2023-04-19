@@ -66,6 +66,12 @@ public class MeetUtils
             "&& config.hosts && config.hosts.muc)";
 
     /**
+     * The javascript code which returns {@code true} if iframe is disabled.
+     */
+    public static final String IFRAME_API_DISABLED_CHECK_SCRIPT =
+        "return config.disableIframeAPI == true;";
+
+    /**
      * The javascript code which returns {@code true} if etherpad is enabled.
      */
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
@@ -417,6 +423,17 @@ public class MeetUtils
     {
         return TestUtils.executeScriptAndReturnBoolean(
             driver, ETHERPAD_ENABLED_CHECK_SCRIPT);
+    }
+
+    /**
+     * Checks whether iframe API is disabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if iframeAPI is disabled.
+     */
+    public static boolean iFrameAPIDisabled(WebDriver driver)
+    {
+        return TestUtils.executeScriptAndReturnBoolean(
+            driver, IFRAME_API_DISABLED_CHECK_SCRIPT);
     }
 
     /**
