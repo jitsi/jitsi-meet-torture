@@ -131,7 +131,7 @@ case $1 in
         --regions) MALLEUS_REGIONS=$optvalue;;
         --use-node-types) if [ -n "$optvalue" ]; then MALLEUS_USE_NODE_TYPES=$optvalue; else MALLEUS_USE_NODE_TYPES=true; fi;;
         --use-load-test) if [ -n "$optvalue" ]; then MALLEUS_USE_LOAD_TEST=$optvalue; else MALLEUS_USE_LOAD_TEST=true; fi;;
-        --use-lite-mode) if [ -n "$optvalue" ]; then MALLEUS_USE_LITE_MODE=$optvalue; else MALLEUS_USE_LITE_MODE=false; fi;;
+        --use-lite-mode) if [ -n "$optvalue" ]; then MALLEUS_USE_LITE_MODE=$optvalue; else MALLEUS_USE_LITE_MODE=true; fi;;
         --switch-speakers) if [ -n "$optvalue" ]; then MALLEUS_SWITCH_SPEAKERS=$optvalue; else MALLEUS_SWITCH_SPEAKERS=true; fi;;
         --use-stage-view) if [ -n "$optvalue" ]; then MALLEUS_USE_STAGE_VIEW=$optvalue; else MALLEUS_USE_STAGE_VIEW=true; fi;;
         --headless) if [ -n "$optvalue" ]; then MALLEUS_USE_HEADLESS=$optvalue; else MALLEUS_USE_HEADLESS=true; fi;;
