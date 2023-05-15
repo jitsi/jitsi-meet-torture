@@ -44,6 +44,12 @@ public class StartMutedTest
 
         WebParticipant participant1 = getParticipant1();
 
+        // Disable this test on Firefox becasue of a browser bug where media stops intermittently.
+        if (participant1.getType().isFirefox())
+        {
+            return;
+        }
+
         participant1.getToolbar().clickSettingsButton();
 
         SettingsDialog settingsDialog = participant1.getSettingsDialog();
