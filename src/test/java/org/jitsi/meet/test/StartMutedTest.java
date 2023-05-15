@@ -42,11 +42,13 @@ public class StartMutedTest
 
         ensureOneParticipant(url);
 
-        // we are seeing some UI crashes when clicking too early on the page
-        // and as it reloads, no logs are available to investigate
-        TestUtils.waitMillis(1000);
-
         WebParticipant participant1 = getParticipant1();
+
+        // Disable this test on Firefox becasue of a browser bug where media stops intermittently.
+        if (participant1.getType().isFirefox())
+        {
+            return;
+        }
 
         participant1.getToolbar().clickSettingsButton();
 
@@ -60,12 +62,6 @@ public class StartMutedTest
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
         participant2.waitForSendReceiveData(false, true);
-
-        // On the PR testing machine it seems that some audio is leaking before
-        // we mute. The audio is muted when 'session-initiate' is received, but
-        // seems like a bit of sound goes through in random cases. Let's wait
-        // here a bit, before checking the audio levels.
-        TestUtils.waitMillis(500);
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
