@@ -19,6 +19,7 @@ classes
 target
 *.log
 target/
+doc/grid/resources/
 
 # PSNR test sequences and output files
 resources/psnr/output/
