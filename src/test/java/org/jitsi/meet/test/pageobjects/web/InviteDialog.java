@@ -89,8 +89,7 @@ public class InviteDialog
     }
 
     /**
-     * Clicks the "info" toolbar button to close the invite dialog, if the info
-     * dialog is open.
+     * Clicks the info dialog close button, if it is open.
      */
     public void close()
     {
@@ -99,10 +98,7 @@ public class InviteDialog
             return;
         }
 
-        // click with the mouse over the button, as it is a modal dialog it will close
-        Actions actions = new Actions(participant.getDriver());
-        actions.moveToElement(participant.getToolbar().getInviteButton()).click().perform();
-        participant.getToolbar().clickCloseParticipantsButton();
+        ModalDialogHelper.clickCloseButton(participant.getDriver());
     }
 
     /**
