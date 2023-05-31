@@ -182,8 +182,12 @@ public class InviteDialog
             return;
         }
 
-        participant.getToolbar().clickParticipantsButton();
-        participant.getToolbar().waitForVisible();
+        if (!participant.getParticipantsPane().isOpen())
+        {
+            participant.getToolbar().clickParticipantsButton();
+            participant.getToolbar().waitForVisible();
+        }
+
         clickInviteButton();
     }
 
