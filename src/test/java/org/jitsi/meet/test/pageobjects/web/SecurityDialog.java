@@ -276,7 +276,7 @@ public class SecurityDialog
             return null;
         }
 
-        return lobbySection.get(0).findElement(By.xpath("//label[contains(@class, 'toggle-container')]"));
+        return lobbySection.get(0).findElement(By.xpath("//span[contains(@class, 'toggle-container')]"));
     }
 
     /**
