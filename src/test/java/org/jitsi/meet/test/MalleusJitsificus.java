@@ -278,6 +278,21 @@ public class MalleusJitsificus
             return;
         }
 
+        if (numSenders > 0 && (sendersPerTab == 0 || senderTabsPerBrowser == 0))
+        {
+            print("Cannot have " + numSenders + " senders with " + sendersPerTab + " senders per tab or " +
+                senderTabsPerBrowser + " sender tabs per browser");
+            return;
+        }
+
+        int numReceivers = numberOfParticipants - numSenders;
+        if (numReceivers > 0 && (receiversPerTab == 0 || receiverTabsPerBrowser == 0))
+        {
+            print("Cannot have " + numReceivers + " receivers with " + receiversPerTab + " receivers per tab or " +
+                receiverTabsPerBrowser + " receivers tabs per browser");
+            return;
+        }
+
         SharedBaseDriver sharedBaseDriver;
         int audioSenders = 0;
 
