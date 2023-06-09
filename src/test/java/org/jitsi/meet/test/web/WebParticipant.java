@@ -116,6 +116,7 @@ public class WebParticipant extends Participant<WebDriver>
     private WebFilmstrip filmstrip;
 
     private final boolean isLoadTest;
+    private final boolean saveLogs;
 
     /**
      * Constructs a Participant.
@@ -123,12 +124,15 @@ public class WebParticipant extends Participant<WebDriver>
      * @param name    the name.
      * @param driver  its driver instance.
      * @param type    the type (type of browser).
+     * @param isLoadTest is this a load test participant.
+     * @param saveLogs is save logs on hangup enabled.
      */
     public WebParticipant(
-            String name, WebDriver driver, ParticipantType type, boolean isLoadTest)
+            String name, WebDriver driver, ParticipantType type, boolean isLoadTest, boolean saveLogs)
     {
         super(name, driver, type, DEFAULT_CONFIG);
         this.isLoadTest = isLoadTest;
+        this.saveLogs = saveLogs;
     }
 
     public String getBridgeIp()
@@ -260,6 +264,11 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
+        if (this.saveLogs)
+        {
+            FailureListener.saveBrowserLogs("on-hangup", this);
+        }
+
         if (!isLoadTest)
         {
             try
