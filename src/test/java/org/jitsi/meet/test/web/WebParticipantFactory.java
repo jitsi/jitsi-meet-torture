@@ -127,7 +127,8 @@ public class WebParticipantFactory
                     webOptions.getName(),
                     driver,
                     webOptions.getParticipantType(),
-                    webOptions.getLoadTest());
+                    webOptions.getLoadTest(),
+                    webOptions.getSaveLogs());
 
         return webParticipant;
     }
