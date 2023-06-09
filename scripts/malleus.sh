@@ -98,6 +98,10 @@ set_defaults() {
       MALLEUS_USE_STAGE_VIEW=false
     fi
 
+    if [ -z "$MALLEUS_SET_SAVELOGS" ]; then
+      MALLEUS_SET_SAVELOGS=false
+    fi
+
     # Null is a fine default for MALLEUS_EXTRA_SENDER_PARAMS and MALLEUS_EXTRA_RECEIVER_PARAMS
 }
 
@@ -135,7 +139,7 @@ case $1 in
         --switch-speakers) if [ -n "$optvalue" ]; then MALLEUS_SWITCH_SPEAKERS=$optvalue; else MALLEUS_SWITCH_SPEAKERS=true; fi;;
         --use-stage-view) if [ -n "$optvalue" ]; then MALLEUS_USE_STAGE_VIEW=$optvalue; else MALLEUS_USE_STAGE_VIEW=true; fi;;
         --headless) if [ -n "$optvalue" ]; then MALLEUS_USE_HEADLESS=$optvalue; else MALLEUS_USE_HEADLESS=true; fi;;
-        --save-logs) if [ -n "$optvalue" ]; then MALLEUS_SET_SAVELOGS=$optvalue; else MALLEUS_SET_SAVELOGS=false; fi;;
+        --save-logs) if [ -n "$optvalue" ]; then MALLEUS_SET_SAVELOGS=$optvalue; else MALLEUS_SET_SAVELOGS=true; fi;;
         --extra-sender-params) MALLEUS_EXTRA_SENDER_PARAMS=$optvalue;;
         --extra-receiver-params) MALLEUS_EXTRA_RECEIVER_PARAMS=$optvalue;;
         --max-disrupted-bridges-pct) MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
