@@ -177,17 +177,6 @@ public class StartMutedTest
         ParticipantType participant1Type = participant1.getType();
         ParticipantType participant2Type = participant2.getType();
 
-
-        // Firefox is known to have problems unmuting when starting muted.
-        // Safari does not support video.
-        if (participant1Type.isFirefox()
-            || participant2Type.isFirefox()
-            || participant1Type.isSafari()
-            || participant2Type.isSafari())
-        {
-            return;
-        }
-
         hangUpAllParticipants();
 
         // Explicitly enable P2P due to a regression with unmute not updating

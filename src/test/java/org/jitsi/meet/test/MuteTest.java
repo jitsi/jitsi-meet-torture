@@ -249,7 +249,7 @@ public class MuteTest
         WebParticipant participant1 = getParticipant1();
 
         // Skip the test in p2p mode for Firefox since p2p is disabled in code for Firefox.
-        if (!participant1.getType().isFirefox() || enableP2p.equals("false"))
+        if (enableP2p.equals("false"))
         {
             WebParticipant participant2 = joinSecondParticipant(url2);
             participant2.waitToJoinMUC();
