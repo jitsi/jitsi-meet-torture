@@ -223,9 +223,8 @@ public class MuteTest
 
     /**
      * Run muteAfterJoinCanShareAndUnmute in both p2p and jvb mode.
-     * Disabled for now as it fails from time to time.
      */
-    //@Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
+    @Test(dependsOnMethods = {"muteParticipant1BeforeParticipant2Joins"})
     public void muteAfterJoinCanShareAndUnmute()
     {
         muteParticipant1BeforeParticipant2JoinsAndScreenshare("true");
@@ -247,42 +246,37 @@ public class MuteTest
         getParticipant1().getToolbar().clickVideoMuteButton();
 
         WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = joinSecondParticipant(url2);
+        participant2.waitToJoinMUC();
 
-        // Skip the test in p2p mode for Firefox since p2p is disabled in code for Firefox.
-        if (enableP2p.equals("false"))
+        // Wait for the media to switch over to the p2p connection in the p2p test.
+        if (enableP2p.equals("true"))
         {
-            WebParticipant participant2 = joinSecondParticipant(url2);
-            participant2.waitToJoinMUC();
-
-            // Wait for the media to switch over to the p2p connection in the p2p test.
-            if (enableP2p.equals("true"))
-            {
-                MeetUtils.waitForP2PIceConnected(participant2.getDriver());
-            }
-            else
-            {
-                participant2.waitForIceConnected();
-            }
-            participant2.waitForSendReceiveData(true, false);
-
-            // Check if p1 appears video muted on p2.
-            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
-
-            // Start desktop share.
-            participant1.getToolbar().clickDesktopSharingButton();
-
-            // Check if a remote screenshare tile is created on p2.
-            DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
-            MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
-
-            // Stop desktop share and unmute video and check for video again.
-            participant1.getToolbar().clickStopDesktopSharingButton();
-
-            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
-            participant1.getToolbar().clickVideoUnmuteButton();
-            participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
-            MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
+            MeetUtils.waitForP2PIceConnected(participant2.getDriver());
         }
+        else
+        {
+            participant2.waitForIceConnected();
+        }
+        participant2.waitForSendReceiveData(true, false);
+
+        // Check if p1 appears video muted on p2.
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
+
+        // Start desktop share.
+        participant1.getToolbar().clickDesktopSharingButton();
+
+        // Check if a remote screenshare tile is created on p2.
+        DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
+        MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
+
+        // Stop desktop share and unmute video and check for video again.
+        participant1.getToolbar().clickStopDesktopSharingButton();
+
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
+        participant1.getToolbar().clickVideoUnmuteButton();
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
+        MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
     }
 
     /**
