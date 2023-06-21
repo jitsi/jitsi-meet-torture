@@ -99,7 +99,7 @@ public class SingleModeratorTest
 
         // moderator + another authenticated user from different tenant
         ensureTwoParticipants(
-            url.copy().setRoomParameters("jwt" moderatorToken),
+            url.copy().setRoomParameters("jwt", moderatorToken),
             url.copy().setRoomParameters("jwt", nonModerator2Token));
 
         assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");
