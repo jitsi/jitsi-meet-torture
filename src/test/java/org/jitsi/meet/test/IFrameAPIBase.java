@@ -55,16 +55,6 @@ public class IFrameAPIBase
     private static final String IFRAME_ROOM_NAME = "iframeAPITest.html";
 
     /**
-     * An url for a page that loads the iframe API.
-     */
-    private static final String IFRAME_ROOM_PARAMS
-        = "domain=%s&room=%s"
-        // here goes the default settings, used in Participant join function
-        + "&config=%s&interfaceConfig=%s"
-        + "&userInfo=%s"
-        + "&password=%s";
-
-    /**
      * The url to be reused between tests.
      */
     protected JitsiMeetUrl iFrameUrl;
@@ -152,18 +142,16 @@ public class IFrameAPIBase
                 .appendConfig(config)
                 .getFragmentParamsAsJson();
 
-        String roomParams = String.format(IFRAME_ROOM_PARAMS,
-            domain,
-            currentRoomName,
-            defaultParams.get("config").toString(),
-            defaultParams.get("interfaceConfig").toString(),
-            userInfo != null ? userInfo : "",
-            password != null ? password : "");
+        iFrameUrl.addRoomParameter("domain", domain);
+        iFrameUrl.addRoomParameter("room", currentRoomName);
+        iFrameUrl.addRoomParameter("config", defaultParams.get("config").toString());
+        iFrameUrl.addRoomParameter("interfaceConfig", defaultParams.get("interfaceConfig").toString());
+        iFrameUrl.addRoomParameter("userInfo", userInfo != null ? userInfo.toString() : "");
+        iFrameUrl.addRoomParameter("password", password != null ? password : "");
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);
         iFrameUrl.setRoomName(IFRAME_ROOM_NAME);
-        iFrameUrl.setRoomParameters(roomParams);
         iFrameUrl.setIframeToNavigateTo("jitsiConferenceFrame0");
 
         return iFrameUrl;
