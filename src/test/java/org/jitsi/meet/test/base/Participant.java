@@ -121,15 +121,6 @@ public abstract class Participant<T extends WebDriver>
 
     /**
      * Joins a conference.
-     * @param roomName the room name to join.
-     */
-    public void joinConference(String roomName)
-    {
-        this.joinConference(new JitsiMeetUrl().setRoomName(roomName));
-    }
-
-    /**
-     * Joins a conference.
      *
      * @param meetURL a {@link JitsiMeetUrl} which represents the full
      * conference URL which includes server, conference parameters and
