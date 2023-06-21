@@ -51,6 +51,7 @@ public class SinglePortTest
 
         // Just make sure everyone is ready
         participant1.waitForSendReceiveData();
+        participant2.waitForSendReceiveData();
 
         String port1Str = getRemotePort(participant1);
         String port2Str = getRemotePort(participant2);
