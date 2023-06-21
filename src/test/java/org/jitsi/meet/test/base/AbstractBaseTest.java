@@ -242,7 +242,8 @@ public abstract class AbstractBaseTest<P extends Participant>
         String token = System.getProperty(TOKEN_PNAME);
 
         JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
-        if (token.length() > 0) {
+        if (token.length() > 0)
+        {
             u.setRoomParameters("jwt=" + token);
         }
 
