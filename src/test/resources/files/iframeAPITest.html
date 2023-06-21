@@ -17,6 +17,7 @@
 
     var domain = params.get("domain");
     var options = {
+        jwt: params.get("jwt"),
         roomName: params.get("room"),
         configOverwrite: config,
         interfaceConfigOverwrite: interfaceConfig,
