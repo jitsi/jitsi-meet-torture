@@ -142,12 +142,12 @@ public class IFrameAPIBase
                 .appendConfig(config)
                 .getFragmentParamsAsJson();
 
-        iFrameUrl.setRoomParameters("domain", domain);
-        iFrameUrl.setRoomParameters("room", currentRoomName);
-        iFrameUrl.setRoomParameters("config", defaultParams.get("config").toString());
-        iFrameUrl.setRoomParameters("interfaceConfig", defaultParams.get("interfaceConfig").toString());
-        iFrameUrl.setRoomParameters("userInfo", userInfo != null ? userInfo.toString() : "");
-        iFrameUrl.setRoomParameters("password", password != null ? password : "");
+        iFrameUrl.addRoomParameter("domain", domain);
+        iFrameUrl.addRoomParameter("room", currentRoomName);
+        iFrameUrl.addRoomParameter("config", defaultParams.get("config").toString());
+        iFrameUrl.addRoomParameter("interfaceConfig", defaultParams.get("interfaceConfig").toString());
+        iFrameUrl.addRoomParameter("userInfo", userInfo != null ? userInfo.toString() : "");
+        iFrameUrl.addRoomParameter("password", password != null ? password : "");
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);

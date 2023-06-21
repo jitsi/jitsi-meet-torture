@@ -47,7 +47,7 @@ public class JitsiMeetUrl
      * "login=true". Note that the "?" sign is not stored in the field, but
      * added when the URL string is being constructed. At the same time any
      * sub parameters should be joined with the "&" sign when passed to
-     * {@link #setRoomParameters(String, String)}. For convenience
+     * {@link #addRoomParameter(String, String)}. For convenience
      */
     private Map<String, String> queryParams = new HashMap<>();
 
@@ -357,7 +357,7 @@ public class JitsiMeetUrl
      * @param paramValue the value to assign to the query parameter key
      * @return a reference to this object.
      */
-    public JitsiMeetUrl setRoomParameters(String paramKey, String paramValue)
+    public JitsiMeetUrl addRoomParameter(String paramKey, String paramValue)
     {
         this.queryParams.put(paramKey, paramValue);
 

@@ -245,7 +245,7 @@ public abstract class AbstractBaseTest<P extends Participant>
         JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
         if (StringUtils.isNotBlank(token))
         {
-            u.setRoomParameters("jwt", token);
+            u.addRoomParameter("jwt", token);
         }
 
         return u;
