@@ -21,6 +21,7 @@ import org.testng.annotations.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
+import org.apache.commons.lang3.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
 
@@ -242,7 +243,7 @@ public abstract class AbstractBaseTest<P extends Participant>
         String token = System.getProperty(TOKEN_PNAME);
 
         JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
-        if (token != null)
+        if (StringUtils.isNotBlank(token))
         {
             u.setRoomParameters("jwt", token);
         }
