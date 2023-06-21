@@ -138,9 +138,10 @@ public class IFrameAPIBase
             throw new RuntimeException(e);
         }
 
-        JsonObject defaultParams = new JitsiMeetUrl().appendConfig(WebParticipant.DEFAULT_CONFIG, false)
-                .appendConfig(config)
-                .getFragmentParamsAsJson();
+        JsonObject defaultParams = getJitsiMeetUrl()
+            .appendConfig(WebParticipant.DEFAULT_CONFIG, false)
+            .appendConfig(config)
+            .getFragmentParamsAsJson();
 
         iFrameUrl.addRoomParameter("domain", domain);
         iFrameUrl.addRoomParameter("room", currentRoomName);
