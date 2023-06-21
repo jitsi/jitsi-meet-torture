@@ -51,7 +51,7 @@ public class WelcomePageTest
      */
     private void testJoinConference(MobileParticipant participant)
     {
-        participant.joinConference(currentRoomName);
+        participant.joinConference(getJitsiMeetUrl());
 
         participant.takeScreenshot("joinedConference");
 
