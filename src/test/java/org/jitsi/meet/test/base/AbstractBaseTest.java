@@ -93,6 +93,12 @@ public abstract class AbstractBaseTest<P extends Participant>
     private Boolean skipped;
 
     /**
+     * The name of the property which controls the default jwt token
+     * used in tests
+     */
+    public static final String TOKEN_PNAME = "org.jitsi.token";
+    
+    /**
      * Default.
      */
     protected AbstractBaseTest()
@@ -233,7 +239,14 @@ public abstract class AbstractBaseTest<P extends Participant>
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+        String token = System.getProperty(TOKEN_PNAME);
+
+        JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+        if (token.length() > 0) {
+            u.setRoomParameters("jwt=" + token);
+        }
+
+        return u;
     }
 
     /**
