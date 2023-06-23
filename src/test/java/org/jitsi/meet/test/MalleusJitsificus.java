@@ -151,7 +151,8 @@ public class MalleusJitsificus
 
         int durationMs = 1000 * Integer.parseInt(System.getProperty(DURATION_PNAME));
 
-        int joinDelayMs = Integer.parseInt(System.getProperty(JOIN_DELAY_PNAME));
+        //int joinDelayMs = Integer.parseInt(System.getProperty(JOIN_DELAY_PNAME));
+        int joinDelayMs = 0;
 
         String[] regions = null;
         String regionsStr = System.getProperty(REGIONS_PNAME);
