@@ -115,6 +115,11 @@ public class SecurityDialog
         participant.getToolbar().clickSecurityButton();
     }
 
+    private void clickCloseButton()
+    {
+        ModalDialogHelper.clickCloseButton(participant.getDriver());
+    }
+
     /**
      * Clicks the "info" toolbar button to close the security dialog, if the info
      * dialog is open.
@@ -126,7 +131,7 @@ public class SecurityDialog
             return;
         }
 
-        clickToolbarButton();
+        clickCloseButton();
 
         // waits till it is closed
         new WebDriverWait(participant.getDriver(), 6).until(
