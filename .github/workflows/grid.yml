@@ -16,6 +16,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
+    needs: [date]
     steps:
       -
         name: Checkout
