@@ -28,8 +28,8 @@ jobs:
           fileName: "FourPeople_1280x720_30.y4m"
           tag: "example-video-source"
       -
-        name: Create resources directory
-        run: mkdir -p doc/grid/resources
+        name: Copy in resources directory
+        run: cp -r resources doc/grid
       - 
         name: Copy video resources
         run: cp FourPeople_1280x720_30.y4m doc/grid/resources
