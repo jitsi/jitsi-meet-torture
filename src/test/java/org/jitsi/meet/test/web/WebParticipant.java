@@ -104,6 +104,7 @@ public class WebParticipant extends Participant<WebDriver>
     private AVModerationMenu avModerationMenu;
     private BreakoutRoomsList breakoutRoomsList;
     private DialInNumbersPage dialInNumbersPage;
+    private Dialogs dialogs;
     private InviteDialog inviteDialog;
     private LargeVideo largeVideo;
     private LobbyScreen lobbyScreen;
@@ -680,6 +681,20 @@ public class WebParticipant extends Participant<WebDriver>
         }
 
         return lobbyScreen;
+    }
+
+
+    /**
+     * @return a representation of the dialogs.
+     */
+    public Dialogs getDialogs()
+    {
+        if (dialogs == null)
+        {
+            dialogs = new Dialogs(this);
+        }
+
+        return dialogs;
     }
 
     /**
