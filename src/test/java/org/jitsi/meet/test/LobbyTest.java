@@ -362,7 +362,6 @@ public class LobbyTest
 
         WebParticipant participant3 = getParticipant3();
 
-        // check that the participant sees the end meeting dialog
         assertTrue(
             participant3.getNotifications().hasMeetingEndedNotification(),
             "The third participant should see a warning that meeting has ended.");
