@@ -364,8 +364,8 @@ public class LobbyTest
 
         // check that the participant sees the end meeting dialog
         assertTrue(
-            getParticipant3().getDialogs().isLeaveReasonDialogOpen(),
-            "The second participant should see a dialog that states that the meeting has ended.");
+            participant3.getNotifications().hasMeetingEndedNotification(),
+            "The third participant should see a warning that meeting has ended.");
 
         assertFalse(participant3.getLobbyScreen().isLobbyRoomJoined(), "Lobby room not left");
 
