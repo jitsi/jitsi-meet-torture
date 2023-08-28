@@ -1029,14 +1029,10 @@ public class IFrameAPICommandsTest
 
         participant1.waitForParticipants(0);
 
-        // check that the kicked participant sees the notification
+        // check that the kicked participant sees the kick reason dialog
         assertTrue(
-            getParticipant2().getNotifications().hasKickedNotification(),
-            "The second participant should see a warning that was kicked.");
-
-//        switchToIframeAPI(driver1);
-//         FIXME getEventResult(driver1, "participantKickedOut")
-//        switchToMeetContent(this.iFrameUrl, driver1);
+            getParticipant2().getDialogs().isLeaveReasonDialogOpen(),
+            "The second participant should see a dialog that states he was kicked.");
     }
 
     /**
