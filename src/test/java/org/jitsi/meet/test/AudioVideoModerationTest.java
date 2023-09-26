@@ -93,14 +93,14 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         // Here we want to try unmuting and check that we are still muted.
         tryToAudioUnmuteAndCheck(participant3, participant1);
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStopAudioModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         participantsPane.close();
 
@@ -127,7 +127,7 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartVideoModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         // Here we want to try video unmuting and check that we are still muted.
         // Make sure that there is the video unmute button
@@ -135,7 +135,7 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStopVideoModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         participantsPane.close();
 
@@ -186,7 +186,7 @@ public class AudioVideoModerationTest
         participant1.getParticipantsPane().clickContextMenuButton();
         participant1.getAVModerationMenu().clickStartAudioModeration();
         participant1.getAVModerationMenu().clickStartVideoModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         participant2.getToolbar().clickRaiseHandButton();
 
@@ -214,7 +214,7 @@ public class AudioVideoModerationTest
         moderator.getParticipantsPane().clickContextMenuButton();
         moderator.getAVModerationMenu().clickStopAudioModeration();
         moderator.getAVModerationMenu().clickStopVideoModeration();
-        moderatorActions.moveToElement(moderatorBody).moveByOffset(10,10).perform();
+        moderatorActions.moveToElement(moderatorBody).moveByOffset(10, 10).perform();
         moderator.getParticipantsPane().close();
     }
 
@@ -240,7 +240,7 @@ public class AudioVideoModerationTest
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
         avModerationMenu.clickStartVideoModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         participantsPane.close();
 
@@ -347,7 +347,7 @@ public class AudioVideoModerationTest
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
         avModerationMenu.clickStartVideoModeration();
-        actions.moveToElement(body).moveByOffset(10,10).perform();
+        actions.moveToElement(body).moveByOffset(10, 10).perform();
 
         participantsPane.close();
 
@@ -393,7 +393,7 @@ public class AudioVideoModerationTest
             participantsPane.clickContextMenuButton();
             avModerationMenu.clickStartAudioModeration();
             avModerationMenu.clickStartVideoModeration();
-            actions.moveToElement(body).moveByOffset(10,10).perform();
+            actions.moveToElement(body).moveByOffset(10, 10).perform();
         }
 
         raiseHandToSpeak(participant);
@@ -408,7 +408,7 @@ public class AudioVideoModerationTest
             participantsPane.clickContextMenuButton();
             avModerationMenu.clickStopAudioModeration();
             avModerationMenu.clickStopVideoModeration();
-            actions.moveToElement(body).moveByOffset(10,10).perform();
+            actions.moveToElement(body).moveByOffset(10, 10).perform();
 
             participantsPane.close();
         }
