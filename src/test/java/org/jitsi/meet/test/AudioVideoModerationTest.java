@@ -83,6 +83,7 @@ public class AudioVideoModerationTest
     public void testCheckAudioModerationEnableDisable()
     {
         WebDriver driver = participant1.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
@@ -92,14 +93,14 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         // Here we want to try unmuting and check that we are still muted.
         tryToAudioUnmuteAndCheck(participant3, participant1);
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStopAudioModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         participantsPane.close();
 
@@ -116,6 +117,7 @@ public class AudioVideoModerationTest
     public void testCheckVideoModerationEnableDisable()
     {
         WebDriver driver = participant1.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
@@ -125,7 +127,7 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartVideoModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         // Here we want to try video unmuting and check that we are still muted.
         // Make sure that there is the video unmute button
@@ -133,7 +135,7 @@ public class AudioVideoModerationTest
 
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStopVideoModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         participantsPane.close();
 
@@ -169,6 +171,7 @@ public class AudioVideoModerationTest
     public void testHangUpAndChangeModerator()
     {
         WebDriver driver = participant1.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         participant2.hangUp();
@@ -183,7 +186,7 @@ public class AudioVideoModerationTest
         participant1.getParticipantsPane().clickContextMenuButton();
         participant1.getAVModerationMenu().clickStartAudioModeration();
         participant1.getAVModerationMenu().clickStartVideoModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         participant2.getToolbar().clickRaiseHandButton();
 
@@ -199,6 +202,7 @@ public class AudioVideoModerationTest
         nonModerator.getParticipantsPane().assertIsParticipantVideoMuted(nonModerator, true);
 
         WebDriver moderatorDriver = moderator.getDriver();
+        WebElement moderatorBody = moderatorDriver.findElement(By.tagName("body"));
         Actions moderatorActions = new Actions(moderatorDriver);
 
         moderator.getParticipantsPane().open();
@@ -210,7 +214,7 @@ public class AudioVideoModerationTest
         moderator.getParticipantsPane().clickContextMenuButton();
         moderator.getAVModerationMenu().clickStopAudioModeration();
         moderator.getAVModerationMenu().clickStopVideoModeration();
-        moderatorActions.sendKeys(Keys.ESCAPE).perform();
+        moderatorActions.moveToElement(moderatorBody).moveByOffset(10,10).perform();
         moderator.getParticipantsPane().close();
     }
 
@@ -225,6 +229,7 @@ public class AudioVideoModerationTest
         ensureThreeParticipants();
 
         WebDriver driver = participant1.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         ParticipantsPane participantsPane = participant1.getParticipantsPane();
@@ -235,7 +240,7 @@ public class AudioVideoModerationTest
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
         avModerationMenu.clickStartVideoModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         participantsPane.close();
 
@@ -330,6 +335,7 @@ public class AudioVideoModerationTest
         ensureOneParticipant();
 
         WebDriver driver = participant1.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         //enable moderation
@@ -341,7 +347,7 @@ public class AudioVideoModerationTest
         participantsPane.clickContextMenuButton();
         avModerationMenu.clickStartAudioModeration();
         avModerationMenu.clickStartVideoModeration();
-        actions.sendKeys(Keys.ESCAPE).perform();
+        actions.moveToElement(body).moveByOffset(10,10).perform();
 
         participantsPane.close();
 
@@ -377,6 +383,7 @@ public class AudioVideoModerationTest
         AVModerationMenu avModerationMenu = moderator.getAVModerationMenu();
 
         WebDriver driver = moderator.getDriver();
+        WebElement body = driver.findElement(By.tagName("body"));
         Actions actions = new Actions(driver);
 
         participantsPane.open();
@@ -386,7 +393,7 @@ public class AudioVideoModerationTest
             participantsPane.clickContextMenuButton();
             avModerationMenu.clickStartAudioModeration();
             avModerationMenu.clickStartVideoModeration();
-            actions.sendKeys(Keys.ESCAPE).perform();
+            actions.moveToElement(body).moveByOffset(10,10).perform();
         }
 
         raiseHandToSpeak(participant);
@@ -401,7 +408,7 @@ public class AudioVideoModerationTest
             participantsPane.clickContextMenuButton();
             avModerationMenu.clickStopAudioModeration();
             avModerationMenu.clickStopVideoModeration();
-            actions.sendKeys(Keys.ESCAPE).perform();
+            actions.moveToElement(body).moveByOffset(10,10).perform();
 
             participantsPane.close();
         }
