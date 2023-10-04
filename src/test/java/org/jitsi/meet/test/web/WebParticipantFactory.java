@@ -199,6 +199,8 @@ public class WebParticipantFactory
                     ffOptions.setCapability(CapabilityType.VERSION, version);
                 }
 
+                ffOptions.setCapability(CapabilityType.PLATFORM_NAME, "linux");
+
                 return new RemoteWebDriver(options.getRemoteDriverAddress(), ffOptions);
             }
 
