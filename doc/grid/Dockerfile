@@ -7,8 +7,8 @@ USER root
 RUN mkdir -p /usr/share/jitsi-meet-torture
 COPY resources /usr/share/jitsi-meet-torture/resources
 
-USER 1200
-
 # setting custom version when using beta
 ARG VERSION
 RUN if [ "${VERSION}" = "beta" ] ; then sed -i "s/\${SE_NODE_BROWSER_VERSION}/beta/g" /opt/bin/generate_config;  fi
+
+USER 1200
