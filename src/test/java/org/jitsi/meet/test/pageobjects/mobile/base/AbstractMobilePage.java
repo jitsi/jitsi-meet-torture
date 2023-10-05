@@ -47,7 +47,7 @@ public class AbstractMobilePage
 
     /**
      * Initializes any member fields annotated with <tt>@AndroidFindBy</tt> or
-     * <tt>@iOSFindBy</tt>.
+     * <tt>@iOSXCUITFindBy</tt>.
      */
     private void initFields()
     {

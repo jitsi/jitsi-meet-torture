@@ -20,6 +20,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
 import java.util.*;
 
 import static org.testng.Assert.fail;
@@ -264,7 +265,7 @@ public class MeetUtils
             "catch (e) { console.warn(e); } " +
             "return state;";
 
-        Wait<WebDriver> wait = new WebDriverWait(driver, 10);
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try
         {
             wait.until(driverInstance -> {

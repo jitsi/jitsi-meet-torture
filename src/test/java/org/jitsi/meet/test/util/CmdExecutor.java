@@ -17,7 +17,6 @@ package org.jitsi.meet.test.util;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Utility class for running command through the {@link ProcessBuilder}.

@@ -23,6 +23,7 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.time.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -162,7 +163,7 @@ public class ActiveSpeakerTest
         // perspective
         try
         {
-            new WebDriverWait(driver2, 10).until(
+            new WebDriverWait(driver2, Duration.ofSeconds(10)).until(
                 (ExpectedCondition<Boolean>) d -> speakerEndpoint.equals(
                     MeetUIUtils.getLargeVideoResource(d)));
         }

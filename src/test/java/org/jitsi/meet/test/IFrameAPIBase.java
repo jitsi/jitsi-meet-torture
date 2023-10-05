@@ -25,6 +25,7 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 
 import java.net.*;
+import java.time.*;
 import java.util.logging.*;
 
 /**
@@ -177,7 +178,7 @@ public class IFrameAPIBase
         if (iFrameUrl.getIframeToNavigateTo() != null)
         {
             // let's wait for switch to that iframe, so we can continue with regular tests
-            WebDriverWait wait = new WebDriverWait(driver, 60);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(iFrameUrl.getIframeToNavigateTo())));
         }

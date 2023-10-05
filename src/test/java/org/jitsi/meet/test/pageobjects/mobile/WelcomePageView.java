@@ -15,11 +15,11 @@
  */
 package org.jitsi.meet.test.pageobjects.mobile;
 
-import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
+import org.openqa.selenium.*;
 
 /**
  * Page object for the mobile welcome page.
@@ -30,15 +30,15 @@ public class WelcomePageView extends AbstractMobilePage
      * Conference room name input locator.
      */
     @AndroidFindBy(accessibility = "Enter room name")
-    @iOSFindBy(accessibility = "Enter room name")
-    private MobileElement roomNameInput;
+    @iOSXCUITFindBy(accessibility = "Enter room name")
+    private WebElement roomNameInput;
 
     /**
      * Join conference room button.
      */
     @AndroidFindBy(accessibility = "Tap to join")
-    @iOSFindBy(accessibility = "Tap to join")
-    private MobileElement joinRoomButton;
+    @iOSXCUITFindBy(accessibility = "Tap to join")
+    private WebElement joinRoomButton;
 
     /**
      * Creates new <tt>WelcomePageView</tt>.
@@ -55,7 +55,7 @@ public class WelcomePageView extends AbstractMobilePage
      *
      * @return <tt>MobileElement</tt> proxy object.
      */
-    public MobileElement getRoomNameInput()
+    public WebElement getRoomNameInput()
     {
         return roomNameInput;
     }
@@ -65,7 +65,7 @@ public class WelcomePageView extends AbstractMobilePage
      *
      * @return <tt>MobileElement</tt> proxy object.
      */
-    public MobileElement getJoinRoomButton()
+    public WebElement getJoinRoomButton()
     {
         return joinRoomButton;
     }

@@ -21,6 +21,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import static org.junit.Assert.*;
 
+import java.time.*;
 import java.util.*;
 
 /**
@@ -63,7 +64,7 @@ public class ChatPanel
     {
         try
         {
-            return new WebDriverWait(this.participant.getDriver(), 3)
+            return new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(3))
                 .until(driver -> driver.findElement(By.id("sideToolbarContainer")));
         }
         catch(Exception e)

@@ -196,7 +196,7 @@ public class WebParticipantFactory
             {
                 if (version != null && version.length() > 0)
                 {
-                    ffOptions.setCapability(CapabilityType.VERSION, version);
+                    ffOptions.setBrowserVersion(version);
                 }
 
                 return new RemoteWebDriver(options.getRemoteDriverAddress(), ffOptions);
@@ -242,7 +242,7 @@ public class WebParticipantFactory
             logPrefs.enable(LogType.BROWSER, Level.ALL);
 
             final ChromeOptions ops = new ChromeOptions();
-            ops.setCapability(CapabilityType.APPLICATION_NAME, options.getApplicationName());
+            ops.setCapability("nodename:applicationName", options.getApplicationName());
 
             // Force chrome to use English instead of system language.
             Map<String, Object> prefs = new HashMap<String, Object>();
@@ -267,7 +267,7 @@ public class WebParticipantFactory
 
             ops.addArguments("auto-select-desktop-capture-source=Your Entire screen");
 
-            ops.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+            ops.setCapability("goog:loggingPrefs", logPrefs);
             ops.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, options.allowsInsecureCerts());
 
             if (options.isChromeSandboxDisabled())
@@ -340,11 +340,11 @@ public class WebParticipantFactory
             {
                 if (version != null && version.length() > 0)
                 {
-                    ops.setCapability(CapabilityType.VERSION, version);
+                    ops.setCapability(CapabilityType.BROWSER_VERSION, version);
+                    ops.setBrowserVersion(version);
                 }
 
-                return new RemoteWebDriver(
-                        options.getRemoteDriverAddress(), ops);
+                return new RemoteWebDriver(options.getRemoteDriverAddress(), ops);
             }
 
             try

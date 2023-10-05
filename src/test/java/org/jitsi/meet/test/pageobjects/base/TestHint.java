@@ -37,7 +37,7 @@ public class TestHint
     /**
      * The mobile participant's driver.
      */
-    private final AppiumDriver<MobileElement> driver;
+    private final AppiumDriver driver;
 
     /**
      * The test hint's id (key).
@@ -51,7 +51,7 @@ public class TestHint
      * @param id - The test hint's id (key) which identifies a hint in the app's
      * scope.
      */
-    public TestHint(AppiumDriver<MobileElement> driver, String id)
+    public TestHint(AppiumDriver driver, String id)
     {
         this.driver = driver;
         this.id = id;
@@ -67,18 +67,18 @@ public class TestHint
     }
 
     /**
-     * Finds the underlying {@link MobileElement} for this {@link TestHint}
+     * Finds the underlying {@link WebElement} for this {@link TestHint}
      * instance.
      *
-     * @return {@link MobileElement}
-     * @throws NoSuchElementException if {@link MobileElement} could not be
+     * @return {@link WebElement}
+     * @throws NoSuchElementException if {@link WebElement} could not be
      * found on the current screen.
      */
-    private MobileElement getElement()
+    private WebElement getElement()
     {
         return useAccessibilityForId()
-            ? driver.findElementByAccessibilityId(id)
-            : driver.findElementById(id);
+            ? driver.findElement(AppiumBy.accessibilityId(id))
+            : driver.findElement(By.ById.name(id));
     }
 
     /**
@@ -107,7 +107,8 @@ public class TestHint
      */
     private boolean useAccessibilityForId()
     {
-        Platform driversPlatform = driver.getCapabilities().getPlatform();
+        Platform driversPlatform
+                = Platform.fromString((String)driver.getCapabilities().getCapability("platformName"));
 
         // FIXME This looks like a bug, but I don't want to deal with this right
         // now.

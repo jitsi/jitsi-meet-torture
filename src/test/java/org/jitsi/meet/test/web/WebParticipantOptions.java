@@ -16,7 +16,6 @@
 package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
-import org.openqa.selenium.*;
 
 import java.net.*;
 import java.util.*;

@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test.pageobjects.web;
 
+import java.time.*;
 import java.util.*;
 
 import org.jitsi.meet.test.util.*;
@@ -73,7 +74,8 @@ public class SecurityDialog
 
         WebElement addPasswordLink = driver.findElement(By.className(ADD_PASSWORD_LINK));
 
-        new WebDriverWait(driver, 5).until(ExpectedConditions.elementToBeClickable(addPasswordLink));
+        new WebDriverWait(driver,
+                Duration.ofSeconds(5)).until(ExpectedConditions.elementToBeClickable(addPasswordLink));
 
         new Actions(driver).click(addPasswordLink).perform();
 
@@ -94,13 +96,13 @@ public class SecurityDialog
         // So let's give it some time to act on any of the above
         TestUtils.waitMillis(1000);
 
-        if (driver.findElements(By.className(ADD_PASSWORD_FIELD)).size() > 0)
+        if (!driver.findElements(By.className(ADD_PASSWORD_FIELD)).isEmpty())
         {
             // validation had failed on password field as it is still on the page
             validationMessage = passwordEntry.getAttribute("validationMessage");
         }
 
-        if (validationMessage != null && validationMessage.length() > 0)
+        if (validationMessage != null && !validationMessage.isEmpty())
         {
             passwordEntry.sendKeys(Keys.ESCAPE);
             throw new ValidationError(validationMessage);
@@ -134,7 +136,7 @@ public class SecurityDialog
         clickCloseButton();
 
         // waits till it is closed
-        new WebDriverWait(participant.getDriver(), 6).until(
+        new WebDriverWait(participant.getDriver(), Duration.ofSeconds(6)).until(
             (ExpectedCondition<Boolean>) d -> !isOpen());
     }
 
@@ -214,7 +216,7 @@ public class SecurityDialog
         this.clickToolbarButton();
 
         // waits till its open
-        new WebDriverWait(participant.getDriver(), 3).until(
+        new WebDriverWait(participant.getDriver(), Duration.ofSeconds(3)).until(
             (ExpectedCondition<Boolean>) d -> isOpen());
 
         // give time the dialog to settle before operating on it, we see failures where click button handlers are
@@ -237,7 +239,7 @@ public class SecurityDialog
 
         WebDriver driver = participant.getDriver();
 
-        new WebDriverWait(driver, 5).until(
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(
             ExpectedConditions.elementToBeClickable(By.className(REMOVE_PASSWORD)));
 
         WebElement removePasswordElement
@@ -264,7 +266,7 @@ public class SecurityDialog
         open();
 
         WebDriver driver = participant.getDriver();
-        return driver.findElements(By.className(className)).size() != 0;
+        return !driver.findElements(By.className(className)).isEmpty();
     }
 
     /**
@@ -276,7 +278,7 @@ public class SecurityDialog
         WebDriver driver = participant.getDriver();
         List<WebElement> lobbySection = driver.findElements(By.id(LOBBY_SECTION_ID));
 
-        if (lobbySection.size() == 0)
+        if (lobbySection.isEmpty())
         {
             return null;
         }
@@ -293,7 +295,7 @@ public class SecurityDialog
         WebDriver driver = participant.getDriver();
         List<WebElement> lobbySection = driver.findElements(By.id(LOBBY_SECTION_ID));
 
-        if (lobbySection.size() == 0)
+        if (lobbySection.isEmpty())
         {
             return null;
         }

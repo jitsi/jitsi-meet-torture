@@ -23,6 +23,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.testng.annotations.*;
 
+import java.time.*;
+
 import static org.testng.Assert.*;
 
 public class PreJoinTest
@@ -86,7 +88,7 @@ public class PreJoinTest
         preJoinScreen.waitForLoading();
         preJoinScreen.getJoinOptions().click();
 
-        WebDriverWait wait = new WebDriverWait(getParticipant1().getDriver(), 5);
+        WebDriverWait wait = new WebDriverWait(getParticipant1().getDriver(), Duration.ofSeconds(5));
         WebElement joinWithoutAudioBtn = wait.until(
             ExpectedConditions.elementToBeClickable(
                 preJoinScreen.getJoinWithoutAudioButton()));

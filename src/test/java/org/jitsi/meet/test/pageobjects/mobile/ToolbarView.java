@@ -19,6 +19,7 @@ import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
+import org.openqa.selenium.*;
 
 /**
  * Page object for the mobile toolbar area.
@@ -35,8 +36,8 @@ public class ToolbarView extends AbstractMobilePage
      * A locator for the hangup button.
      */
     @AndroidFindBy(accessibility = HANGUP_BTN_ACCESS_ID)
-    @iOSFindBy(accessibility = HANGUP_BTN_ACCESS_ID)
-    private MobileElement hangup;
+    @iOSXCUITFindBy(accessibility = HANGUP_BTN_ACCESS_ID)
+    private WebElement hangup;
 
     /**
      * Creates new <tt>ToolbarView</tt>.
@@ -59,7 +60,7 @@ public class ToolbarView extends AbstractMobilePage
     public boolean isOpen()
     {
         return !participant.getDriver()
-                .findElementsByAccessibilityId(HANGUP_BTN_ACCESS_ID)
+                .findElements(AppiumBy.accessibilityId(HANGUP_BTN_ACCESS_ID))
                 .isEmpty();
     }
 
@@ -68,7 +69,7 @@ public class ToolbarView extends AbstractMobilePage
      *
      * @return <tt>MobileElement</tt> proxy object.
      */
-    public MobileElement getHangupButton()
+    public WebElement getHangupButton()
     {
         return hangup;
     }

@@ -18,7 +18,6 @@ package org.jitsi.meet.test.mobile.base;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.mobile.*;
 
-import java.util.*;
 
 /**
  * Base class of mobile test cases.

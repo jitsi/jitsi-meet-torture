@@ -23,6 +23,8 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+import java.time.*;
+
 import static org.testng.Assert.*;
 
 /**
@@ -96,17 +98,17 @@ public class EtherpadTest
             // give time for the internal frame to load and attach to the page.
             TestUtils.waitMillis(2000);
 
-            WebDriverWait wait = new WebDriverWait(driver1, 30);
+            WebDriverWait wait = new WebDriverWait(driver1, Duration.ofSeconds(30));
             wait.until(
                 ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                     By.id("etherpadIFrame")));
 
-            wait = new WebDriverWait(driver1, 30);
+            wait = new WebDriverWait(driver1, Duration.ofSeconds(30));
             wait.until(
                 ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                     By.name("ace_outer")));
 
-            wait = new WebDriverWait(driver1, 30);
+            wait = new WebDriverWait(driver1, Duration.ofSeconds(30));
             wait.until(
                 ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                     By.name("ace_inner")));

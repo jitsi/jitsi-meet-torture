@@ -77,10 +77,10 @@ public class MobileParticipantFactory
         URL appiumUrl = targetOptions.getAppiumServerUrl();
         DesiredCapabilities capabilities = targetOptions.createCapabilities();
 
-        AppiumDriver<MobileElement> driver
+        AppiumDriver driver
             = type.isAndroid()
-                ? new AndroidDriver<>(appiumUrl, capabilities)
-                : new IOSDriver<>(appiumUrl, capabilities);
+                ? new AndroidDriver(appiumUrl, capabilities)
+                : new IOSDriver(appiumUrl, capabilities);
 
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 

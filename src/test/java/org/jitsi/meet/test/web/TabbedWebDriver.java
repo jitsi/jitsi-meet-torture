@@ -17,10 +17,12 @@ package org.jitsi.meet.test.web;
 
 import org.apache.commons.lang3.*;
 import org.openqa.selenium.*;
+import org.openqa.selenium.federatedcredentialmanagement.*;
 import org.openqa.selenium.interactions.*;
-import org.openqa.selenium.internal.*;
 import org.openqa.selenium.logging.*;
+import org.openqa.selenium.print.*;
 import org.openqa.selenium.remote.*;
+import org.openqa.selenium.virtualauthenticator.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -28,9 +30,7 @@ import java.util.concurrent.atomic.*;
 
 /** A wrapper around RemoteWebDriver that allows multiple tabs to be running at once in the same browser instance. */
 public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
-    FindsById, FindsByClassName, FindsByLinkText, FindsByName,
-    FindsByCssSelector, FindsByTagName, FindsByXPath,
-    HasInputDevices, HasCapabilities, Interactive, TakesScreenshot
+    HasCapabilities, HasFederatedCredentialManagement, HasVirtualAuthenticator, Interactive, PrintsPage, TakesScreenshot
 {
     private static final Map<WebDriver, AtomicInteger> bases = Collections.synchronizedMap(new IdentityHashMap<>());
 
@@ -241,20 +241,6 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
     }
 
     @Override
-    public Keyboard getKeyboard()
-    {
-        // TODO: if we need it, need to add locking inside the returned object.
-        throw new NotImplementedException("Not implemented");
-    }
-
-    @Override
-    public Mouse getMouse()
-    {
-        // TODO: if we need it, need to add locking inside the returned object.
-        throw new NotImplementedException("Not implemented");
-    }
-
-    @Override
     public void perform(Collection<Sequence> actions)
     {
         synchronized (baseDriver)
@@ -275,163 +261,40 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
     }
 
     @Override
-    public WebElement findElementByClassName(String using)
+    public Pdf print(PrintOptions printOptions)
+        throws WebDriverException
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByClassName(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public List<WebElement> findElementsByClassName(String using)
+    public void setDelayEnabled(boolean enabled)
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByClassName(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public WebElement findElementByCssSelector(String using)
+    public void resetCooldown()
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByCssSelector(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public List<WebElement> findElementsByCssSelector(String using)
+    public FederatedCredentialManagementDialog getFederatedCredentialManagementDialog()
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByCssSelector(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public WebElement findElementById(String using)
+    public VirtualAuthenticator addVirtualAuthenticator(VirtualAuthenticatorOptions options)
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementById(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public List<WebElement> findElementsById(String using)
+    public void removeVirtualAuthenticator(VirtualAuthenticator authenticator)
     {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsById(using);
-        }
-    }
-
-    @Override
-    public WebElement findElementByLinkText(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByLinkText(using);
-        }
-    }
-
-    @Override
-    public List<WebElement> findElementsByLinkText(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByLinkText(using);
-        }
-    }
-
-    @Override
-    public WebElement findElementByPartialLinkText(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByPartialLinkText(using);
-        }
-    }
-
-    @Override
-    public List<WebElement> findElementsByPartialLinkText(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByPartialLinkText(using);
-        }
-    }
-
-    @Override
-    public WebElement findElementByName(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByName(using);
-        }
-    }
-
-    @Override
-    public List<WebElement> findElementsByName(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByName(using);
-        }
-    }
-
-    @Override
-    public WebElement findElementByTagName(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByTagName(using);
-        }
-    }
-
-    @Override
-    public List<WebElement> findElementsByTagName(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByTagName(using);
-        }
-    }
-
-    @Override
-    public WebElement findElementByXPath(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementByXPath(using);
-        }
-    }
-
-    @Override
-    public List<WebElement> findElementsByXPath(String using)
-    {
-        synchronized (baseDriver)
-        {
-            baseDriver.switchTo().window(tabId);
-            return baseDriver.findElementsByXPath(using);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     protected class TabbedWebDriverOptions
@@ -512,13 +375,6 @@ public class TabbedWebDriver implements WebDriver, JavascriptExecutor,
                 baseDriver.switchTo().window(tabId);
                 return new TabbedWebTimeouts(baseOptions.timeouts());
             }
-        }
-
-        @Override
-        public ImeHandler ime()
-        {
-            // TODO: if we need it, need to add locking inside the returned object.
-            throw new NotImplementedException("Not implemented");
         }
 
         @Override

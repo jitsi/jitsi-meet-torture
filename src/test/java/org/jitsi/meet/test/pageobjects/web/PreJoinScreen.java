@@ -20,6 +20,8 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
+
 /**
  * The pre join screen representation.
  */
@@ -65,7 +67,7 @@ public class PreJoinScreen
      */
     public void waitForLoading()
     {
-        new WebDriverWait(this.participant.getDriver(), 3).until(
+        new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(3)).until(
             (ExpectedCondition<Boolean>) d -> d.findElements(ByTestId.testId(PREJOIN_SCREEN_TEST_ID)).size() > 0);
     }
 

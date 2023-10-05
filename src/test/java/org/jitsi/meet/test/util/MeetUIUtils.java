@@ -15,13 +15,13 @@
  */
 package org.jitsi.meet.test.util;
 
-import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -955,7 +955,7 @@ public class MeetUIUtils
         WebDriver driver,
         final String expectedVideoSrc)
     {
-        new WebDriverWait(driver, 3)
+        new WebDriverWait(driver, Duration.ofSeconds(3))
             .withMessage(
                     "Failed to switch the large video at: "
                         + MeetUtils.getResourceJid(driver)
