@@ -390,7 +390,7 @@ public class BandwidthEstimationTest
         tcScript = System.getProperty(TC_SCRIPT_PROP_NAME);
         if (tcScript == null)
         {
-            if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
+            if ("linux".equalsIgnoreCase(System.getProperty("os.name")) || "Mac OS X".equalsIgnoreCase(System.getProperty("os.name")))
             {
                 tcScript = DEFAULT_TC_SCRIPT;
             }
@@ -408,7 +408,7 @@ public class BandwidthEstimationTest
         benchmarkScript = System.getProperty(BENCHMARK_SCRIPT_PROP_NAME);
         if (benchmarkScript == null)
         {
-            if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
+            if ("linux".equalsIgnoreCase(System.getProperty("os.name"))|| "Mac OS X".equalsIgnoreCase(System.getProperty("os.name")))
             {
                 benchmarkScript = DEFAULT_BENCHMARK_SCRIPT;
             }
@@ -426,7 +426,7 @@ public class BandwidthEstimationTest
         chromeWrapper = System.getProperty(CHROME_WRAPPER_PROP_NAME);
         if (chromeWrapper == null)
         {
-            if ("linux".equalsIgnoreCase(System.getProperty("os.name")))
+            if ("linux".equalsIgnoreCase(System.getProperty("os.name")) || "Mac OS X".equalsIgnoreCase(System.getProperty("os.name")))
             {
                 chromeWrapper = DEFAULT_CHROME_WRAPPER;
             }
