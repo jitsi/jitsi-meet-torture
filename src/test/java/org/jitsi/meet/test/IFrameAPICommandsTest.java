@@ -16,7 +16,6 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
-import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -46,6 +45,8 @@ public class IFrameAPICommandsTest
     public void setupClass()
     {
         super.setupClass();
+
+        checkIframeDisabled();
 
         checkModerationSupported();
     }
@@ -515,9 +516,10 @@ public class IFrameAPICommandsTest
         switchToMeetContent(this.iFrameUrl, driver1);
 
         String raiseHandSelector = participant2.getToolbar().clickRaiseHandButton();
+        String lowerHandSelector = MeetUIUtils.getAccessibilityCSSSelector(Toolbar.LOWER_HAND);
 
         TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
-            d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("true"));
+            d.findElement(By.cssSelector(lowerHandSelector)).getAttribute("aria-pressed").equals("true"));
 
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
             participant1.getNotifications().hasRaisedHandNotification());
@@ -538,7 +540,7 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickRaiseHandButton();
+        participant2.getToolbar().clickLowerHandButton();
 
         try
         {
@@ -551,7 +553,7 @@ public class IFrameAPICommandsTest
 
             // We sometimes see that the second click (to lower the hand) is not propagated for some reason
             // So let's do a retry waiting for the UI to set that the button is not toggled anymore
-            participant2.getToolbar().clickRaiseHandButton();
+            participant2.getToolbar().clickLowerHandButton();
 
             TestUtils.waitForCondition(driver2, 5, (ExpectedCondition<Boolean>) d ->
                 d.findElement(By.cssSelector(raiseHandSelector)).getAttribute("aria-pressed").equals("false"));
@@ -1027,14 +1029,10 @@ public class IFrameAPICommandsTest
 
         participant1.waitForParticipants(0);
 
-        // check that the kicked participant sees the notification
+        // check that the kicked participant sees the kick reason dialog
         assertTrue(
-            getParticipant2().getNotifications().hasKickedNotification(),
-            "The second participant should see a warning that was kicked.");
-
-//        switchToIframeAPI(driver1);
-//         FIXME getEventResult(driver1, "participantKickedOut")
-//        switchToMeetContent(this.iFrameUrl, driver1);
+            getParticipant2().getDialogs().isLeaveReasonDialogOpen(),
+            "The second participant should see a dialog that states he was kicked.");
     }
 
     /**
@@ -1046,6 +1044,8 @@ public class IFrameAPICommandsTest
     @Test(dependsOnMethods = {"testCommandKickParticipant"})
     public void testCommandOverwriteConfig()
     {
+        hangUpAllParticipants();
+
         this.iFrameUrl = getIFrameUrl(null, null);
         ensureOneParticipant(this.iFrameUrl);
 
@@ -1104,15 +1104,17 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        participant2.getToolbar().clickChatButton();
-        participant3.getToolbar().clickChatButton();
+        participant2.getToolbar().clickOpenChatButton();
+        participant3.getToolbar().clickOpenChatButton();
 
-        assertTrue(driver2.findElement(By.xpath("//div[contains(@class,'chatmessage')]"
-                + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
-            .getText().contains(msg1));
-        assertTrue(driver3.findElement(By.xpath(
-                "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]"))
-            .getText().contains(msg1));
+        String msgXpath = "//div[contains(@class,'chatmessage')]"
+            + "//div[contains(@class,'messagecontent')]/div[contains(@class,'usermessage')]";
+
+        TestUtils.waitForDisplayedElementByXPath(driver2, msgXpath, 3);
+        assertTrue(driver2.findElement(By.xpath(msgXpath)).getText().contains(msg1));
+
+        TestUtils.waitForDisplayedElementByXPath(driver3, msgXpath, 3);
+        assertTrue(driver3.findElement(By.xpath(msgXpath)).getText().contains(msg1));
 
         switchToIframeAPI(driver1);
 
@@ -1279,21 +1281,9 @@ public class IFrameAPICommandsTest
 
         switchToMeetContent(this.iFrameUrl, driver1);
 
-        String virtualBackgroundDialogXpath = "//p[@id='dialog-title']";
-        String dialogTitle = "Virtual backgrounds";
+        String virtualBackgroundDialogXpath = "//div[@id='virtual-background-dialog']";
 
         TestUtils.waitForElementBy(driver1, By.xpath(virtualBackgroundDialogXpath), 2);
-
-        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d -> {
-            try
-            {
-                return driver1.findElement(By.xpath(virtualBackgroundDialogXpath)).getText().equals(dialogTitle);
-            }
-            catch(StaleElementReferenceException e)
-            {
-                return false;
-            }
-        });
 
         switchToIframeAPI(driver1);
 

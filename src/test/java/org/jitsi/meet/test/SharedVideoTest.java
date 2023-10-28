@@ -352,7 +352,7 @@ public class SharedVideoTest
             driver2.findElement(By.id("sharedVideoPlayer")).isDisplayed(),
             "Video not displayed:");
 
-        getParticipant1().getToolbar().clickSharedVideoButton();
+        getParticipant1().getToolbar().clickStopSharedVideoButton();
 
         try
         {
@@ -440,13 +440,6 @@ public class SharedVideoTest
 
         ensureOneParticipant();
         WebParticipant participant1 = getParticipant1();
-
-        participant1.getToolbar().waitForSharedVideoButtonDisplay();
-
-        // just wait a little after button is displayed
-        // sometimes the button is reported as
-        // Element is not clickable at point (566, -10)
-        TestUtils.waitMillis(1000);
 
         startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, false);
         checkPlayerLoadedAndInState(participant1, "playing");

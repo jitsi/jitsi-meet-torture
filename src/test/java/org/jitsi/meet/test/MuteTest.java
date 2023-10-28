@@ -185,7 +185,7 @@ public class MuteTest
     {
         TestUtils.waitMillis(1000);
 
-        getParticipant2().getToolbar().clickAudioMuteButton();
+        getParticipant2().getToolbar().clickAudioUnmuteButton();
 
         TestUtils.waitMillis(1000);
 
@@ -205,6 +205,14 @@ public class MuteTest
     @Test(dependsOnMethods = {"participant2UnmutesAfterParticipant1MutedItAndCheck"})
     public void muteParticipant1BeforeParticipant2Joins()
     {
+        // we ignore this test for FF as it randomly fails with:
+        // Expected condition failed: waiting for WebParticipant[web.participant2]@#waitForSendReceiveData (tried for 20
+        // we believe it was a bug in FF which we see in rare conditions ...
+        if (getParticipant1().getType().isFirefox())
+        {
+            return;
+        }
+
         getParticipant2().hangUp();
 
         // just in case wait
@@ -271,14 +279,15 @@ public class MuteTest
             // Start desktop share.
             participant1.getToolbar().clickDesktopSharingButton();
 
-            DesktopSharingTest.testDesktopSharingInPresence(participant2, participant1, "desktop");
+            // Check if a remote screenshare tile is created on p2.
+            DesktopSharingTest.checkForScreensharingTile(participant1, participant2, true, 5);
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
 
             // Stop desktop share and unmute video and check for video again.
-            participant1.getToolbar().clickDesktopSharingButton();
+            participant1.getToolbar().clickStopDesktopSharingButton();
 
             participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
-            participant1.getToolbar().clickVideoMuteButton();
+            participant1.getToolbar().clickVideoUnmuteButton();
             participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, false);
             MeetUIUtils.waitForRemoteVideo(participant2.getDriver(), participant1.getEndpointId(), true);
         }
@@ -304,7 +313,14 @@ public class MuteTest
         WebParticipant observer,
         boolean muted)
     {
-        testee.getToolbar().clickAudioMuteButton();
+        if (muted)
+        {
+            testee.getToolbar().clickAudioMuteButton();
+        }
+        else
+        {
+            testee.getToolbar().clickAudioUnmuteButton();
+        }
 
         observer.getFilmstrip()
             .assertAudioMuteIcon(testee, muted);

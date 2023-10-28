@@ -1,0 +1,96 @@
+name: grid
+
+on:
+  workflow_dispatch:
+
+jobs:
+  date:
+    runs-on: ubuntu-latest
+    outputs:
+      date: daily-${{ steps.date.outputs.date }}
+    steps:
+      - 
+        name: Get current date
+        id: date
+        run: echo "date=$(date +%F)">> $GITHUB_OUTPUT
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [date]
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Get video resources
+        uses: robinraju/release-downloader@v1.8
+        with:
+          fileName: "FourPeople_1280x720_30.y4m"
+          tag: "example-video-source"
+      -
+        name: Copy in resources directory
+        run: cp -r resources doc/grid
+      - 
+        name: Copy video resources
+        run: cp FourPeople_1280x720_30.y4m doc/grid/resources
+
+    #   -
+    #     name: Set up QEMU
+    #     uses: docker/setup-qemu-action@v2
+    #   -
+    #     name: Set up Docker Buildx
+    #     uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push chrome stable
+        uses: docker/build-push-action@v4
+        with:
+          context: ./doc/grid
+          push: true
+          build-args: |
+            BROWSER=chrome
+            VERSION=latest
+          tags: |
+            jitsi/selenium-standalone-chrome:latest
+            jitsi/selenium-standalone-chrome:${{ needs.date.outputs.date }}
+      -
+        name: Build and push firefox stable
+        uses: docker/build-push-action@v4
+        with:
+          context: ./doc/grid
+          push: true
+          build-args: |
+            BROWSER=firefox
+            VERSION=latest
+          tags: |
+            jitsi/selenium-standalone-firefox:latest
+            jitsi/selenium-standalone-firefox:${{ needs.date.outputs.date }}
+      -
+        name: Build and push chrome beta
+        uses: docker/build-push-action@v4
+        with:
+          context: ./doc/grid
+          push: true
+          build-args: |
+            BROWSER=chrome
+            VERSION=beta
+          tags: |
+            jitsi/selenium-standalone-chrome:beta
+            jitsi/selenium-standalone-chrome:beta-${{ needs.date.outputs.date }}
+      -
+        name: Build and push firefox beta
+        uses: docker/build-push-action@v4
+        with:
+          context: ./doc/grid
+          push: true
+          build-args: |
+            BROWSER=firefox
+            VERSION=beta
+          tags: |
+            jitsi/selenium-standalone-firefox:beta
+            jitsi/selenium-standalone-firefox:beta-${{ needs.date.outputs.date }}

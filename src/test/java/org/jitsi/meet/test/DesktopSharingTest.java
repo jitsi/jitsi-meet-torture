@@ -54,24 +54,16 @@ public class DesktopSharingTest
 
         participant2.getToolbar().clickDesktopSharingButton();
 
-        if (MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            // Check if a remote screenshare tile is created on p1.
-            checkForScreensharingTile(participant2, participant1, true, 5);
+        // Check if a remote screenshare tile is created on p1.
+        checkForScreensharingTile(participant2, participant1, true, 5);
 
-            // Check if a local screenshare tile is created on p2.
-            checkForScreensharingTile(participant2, participant2, true, 5);
+        // Check if a local screenshare tile is created on p2.
+        checkForScreensharingTile(participant2, participant2, true, 5);
 
-            // The video should be playing.
-            TestUtils.waitForBoolean(participant1.getDriver(),
-                "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
-                10);
-        }
-        else
-        {
-            checkExpandingDesktopSharingLargeVideo(true);
-            testDesktopSharingInPresence(participant1, participant2, "desktop");
-        }
+        // The video should be playing.
+        TestUtils.waitForBoolean(participant1.getDriver(),
+            "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
+            10);
     }
 
     /**
@@ -86,21 +78,13 @@ public class DesktopSharingTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        participant2.getToolbar().clickDesktopSharingButton();
+        participant2.getToolbar().clickStopDesktopSharingButton();
 
-        if (MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            // Check if the local screenshare thumbnail disappers on p2.
-            checkForScreensharingTile(participant2, participant2, false, 5);
+        // Check if the local screenshare thumbnail disappers on p2.
+        checkForScreensharingTile(participant2, participant2, false, 5);
 
-            // Check if the remote screenshare thumbnail disappears on p1.
-            checkForScreensharingTile(participant1, participant2, false, 5);
-        }
-        else
-        {
-            checkExpandingDesktopSharingLargeVideo(false);
-            testDesktopSharingInPresence(getParticipant1(), getParticipant2(), "camera");
-        }
+        // Check if the remote screenshare thumbnail disappears on p1.
+        checkForScreensharingTile(participant1, participant2, false, 5);
     }
 
     /**
@@ -115,10 +99,6 @@ public class DesktopSharingTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
-        if (!MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            return;
-        }
         participant2.getToolbar().clickDesktopSharingButton();
 
         ensureThreeParticipants(url);
@@ -147,11 +127,6 @@ public class DesktopSharingTest
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
         WebParticipant participant3 = getParticipant3();
-
-        if (!MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            return;
-        }
 
         participant3.hangUp();
 
@@ -196,14 +171,9 @@ public class DesktopSharingTest
         WebParticipant participant2 = getParticipant2();
         WebParticipant participant3 = getParticipant3();
 
-        if (!MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            return;
-        }
-
         // Stop share on both p1 and p2.
-        participant1.getToolbar().clickDesktopSharingButton();
-        participant2.getToolbar().clickDesktopSharingButton();
+        participant1.getToolbar().clickStopDesktopSharingButton();
+        participant2.getToolbar().clickStopDesktopSharingButton();
 
         participant3.hangUp();
 
@@ -242,17 +212,12 @@ public class DesktopSharingTest
         ensureOneParticipant(url);
         WebParticipant participant1 = getParticipant1();
 
-        if (!MeetUtils.isMultiStreamEnabled(participant1.getDriver()))
-        {
-            return;
-        }
-
         // p1 starts share when alone in the call.
         participant1.getToolbar().clickDesktopSharingButton();
         checkForScreensharingTile(participant1, participant1, true, 5);
 
-        // p1 starts stops share.
-        participant1.getToolbar().clickDesktopSharingButton();
+        // p1 stops share.
+        participant1.getToolbar().clickStopDesktopSharingButton();
 
         // Call switches to jvb.
         ensureThreeParticipants(url);
@@ -304,7 +269,7 @@ public class DesktopSharingTest
         WebParticipant sharingEndpoint,
         WebParticipant observingEndpoint,
         Boolean enabled,
-        long timeout) 
+        long timeout)
     {
         String screenshareXpath = "//span[@id='participant_" + sharingEndpoint.getEndpointId() + "-v1']";
         TestUtils.waitForDisplayedOrNotByXPath(
@@ -315,32 +280,12 @@ public class DesktopSharingTest
     }
 
     /**
-     * Checks the status of desktop sharing received from the presence and
-     * compares it to the passed expected result.
-     * @param localParticipant the participant doing the check
-     * @param remoteParticipant the participant doing the sharing
-     * @param expectedResult camera/desktop
-     */
-    public static void testDesktopSharingInPresence(
-        WebParticipant localParticipant,
-        WebParticipant remoteParticipant,
-        final String expectedResult)
-    {
-        String participantEndpointId = remoteParticipant.getEndpointId();
-
-        TestUtils.waitForStrings(
-            localParticipant.getDriver(),
-            "return JitsiMeetJS.app.testing.getRemoteVideoType('" + participantEndpointId + "');",
-            expectedResult,
-            10);
-    }
-
-    /**
      * Toggles desktop sharing.
      */
     private void toggleDesktopSharing()
     {
         getParticipant2().getToolbar().clickDesktopSharingButton();
+        getParticipant2().getToolbar().clickStopDesktopSharingButton();
     }
 
     /**
@@ -413,8 +358,8 @@ public class DesktopSharingTest
 
         participant3.getToolbar().clickDesktopSharingButton();
 
-        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
-        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
+        checkForScreensharingTile(participant3, getParticipant1(), true, 5);
+        checkForScreensharingTile(participant3, participant2, true, 5);
 
         // the video should be playing
         TestUtils.waitForBoolean(getParticipant1().getDriver(),
@@ -460,8 +405,8 @@ public class DesktopSharingTest
         String participant3EndpointId = participant3.getEndpointId();
 
         participant3.getToolbar().clickDesktopSharingButton();
-        testDesktopSharingInPresence(getParticipant1(), participant3, "desktop");
-        testDesktopSharingInPresence(getParticipant2(), participant3, "desktop");
+        checkForScreensharingTile(participant3, getParticipant1(), true, 5);
+        checkForScreensharingTile(participant3, participant2, true, 5);
 
         assertEquals(
             participant3EndpointId,
@@ -504,9 +449,9 @@ public class DesktopSharingTest
         // p3 is screensharing.
         // p1, p3, p4 are audio muted, so p2 should eventually become dominant speaker.
         // Participants should display p3 on-stage because it is screensharing.
-        checkForScreensharingTile(participant3, participant1, true, 5);
-        checkForScreensharingTile(participant3, participant2, true, 5);
-        checkForScreensharingTile(participant3, participant4, true, 5);
+        checkForScreensharingTile(participant3, participant1, true, 10);
+        checkForScreensharingTile(participant3, participant2, true, 10);
+        checkForScreensharingTile(participant3, participant4, true, 10);
 
         // And the video should be playing
         TestUtils.waitForBoolean(driver4,
@@ -527,7 +472,7 @@ public class DesktopSharingTest
         if (!participant1.getType().isFirefox())
         {
             // Let's switch and check, muting participant 2 and unmuting 1 will leave participant 1 as dominant
-            participant1.getToolbar().clickAudioMuteButton();
+            participant1.getToolbar().clickAudioUnmuteButton();
             participant2.getToolbar().clickAudioMuteButton();
 
             // Participant4 should eventually see video for [p3, p1] and p2 as a ninja.

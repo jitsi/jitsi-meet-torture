@@ -66,6 +66,12 @@ public class MeetUtils
             "&& config.hosts && config.hosts.muc)";
 
     /**
+     * The javascript code which returns {@code true} if iframe is disabled.
+     */
+    public static final String IFRAME_API_DISABLED_CHECK_SCRIPT =
+        "return config.disableIframeAPI == true;";
+
+    /**
      * The javascript code which returns {@code true} if etherpad is enabled.
      */
     public static final String ETHERPAD_ENABLED_CHECK_SCRIPT =
@@ -82,12 +88,6 @@ public class MeetUtils
      */
     public static final String HELP_ENABLED_CHECK_SCRIPT =
         "return config.deploymentUrls && config.deploymentUrls.userDocumentationURL !== undefined;";
-
-    /**
-     * The javascript code which returns {@code true} if multi-stream is enabled.
-     */
-    public static final String MULTI_STREAM_ENABLED_CHECK_SCRIPT =
-        "return (config.flags?.sourceNameSignaling && config.flags?.sendMultipleVideoStreams) ?? true";
 
     /**
      * Returns the webrtc stats (in JSON format) of the specific participant
@@ -426,6 +426,17 @@ public class MeetUtils
     }
 
     /**
+     * Checks whether iframe API is disabled.
+     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
+     * @return returns {@code true} if iframeAPI is disabled.
+     */
+    public static boolean iFrameAPIDisabled(WebDriver driver)
+    {
+        return TestUtils.executeScriptAndReturnBoolean(
+            driver, IFRAME_API_DISABLED_CHECK_SCRIPT);
+    }
+
+    /**
      * Checks whether help is enabled.
      * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
      * @return returns {@code true} if help is enabled.
@@ -433,16 +444,6 @@ public class MeetUtils
     public static boolean isHelpEnabled(WebDriver driver)
     {
         return TestUtils.executeScriptAndReturnBoolean(driver, HELP_ENABLED_CHECK_SCRIPT);
-    }
-
-    /**
-     * Checks whether multi-stream is enabled.
-     * @param driver the <tt>WebDriver</tt> running Jitsi-Meet.
-     * @return returns {@code true} if multi-stream is enabled.
-     */
-    public static boolean isMultiStreamEnabled(WebDriver driver)
-    {
-        return TestUtils.executeScriptAndReturnBoolean(driver, MULTI_STREAM_ENABLED_CHECK_SCRIPT);
     }
 
     /**

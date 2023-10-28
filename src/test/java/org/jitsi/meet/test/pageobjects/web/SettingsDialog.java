@@ -29,7 +29,7 @@ public class SettingsDialog
     private final static String START_VIDEO_MUTED_CHECKBOX
         = "[name='start-video-muted']";
     private final static String X_PATH_MORE_TAB
-        =  "//div[contains(@class, 'settings-dialog')]//*[text()='More']";
+        =  "//div[contains(@class, 'settings-dialog')]//*[text()='General']";
     private final static String X_PATH_MODERATOR_TAB
         =  "//div[contains(@class, 'settings-dialog')]//*[text()='Moderator']";
     private final static String X_PATH_PROFILE_TAB

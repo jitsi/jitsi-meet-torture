@@ -43,6 +43,16 @@ public class JitsiMeetUrl
 
     /**
      * In the example URL:
+     * "https://server.com/room1?login=true#config.debug=true" it's
+     * "login=true". Note that the "?" sign is not stored in the field, but
+     * added when the URL string is being constructed. At the same time any
+     * sub parameters should be joined with the "&" sign when passed to
+     * {@link #addRoomParameter(String, String)}. For convenience
+     */
+    private Map<String, String> queryParams = new HashMap<>();
+
+    /**
+     * In the example URL:
      * "https://server.com/room1?login=true#config.debug=true" it's "room1".
      */
     private String roomName;
@@ -52,15 +62,6 @@ public class JitsiMeetUrl
      * "https://server.com/tenant1/room1?login=true#config.debug=true" it's "tenant1".
      */
     private String tenantName;
-
-    /**
-     * In the example URL:
-     * "https://server.com/room1?login=true#config.debug=true"
-     * it's "login=true". Note that "?" sign is added automatically when the URL
-     * string is being constructed, but at the same time any sub parameters
-     * should be joined with the "&" sign.
-     */
-    private String roomParameters;
 
     /**
      * In the example URL:
@@ -289,9 +290,28 @@ public class JitsiMeetUrl
     /**
      * @return obtains {@link #roomParameters} part of the conference URL.
      */
-    public String getRoomParameters()
+    private String getRoomParameters()
     {
-        return roomParameters;
+        StringBuilder paramBuilder = new StringBuilder();
+        boolean firstValue = true;
+
+        for (Map.Entry<String, String> entry : queryParams.entrySet())
+        {
+            if (firstValue)
+            {
+                firstValue = false;
+            }
+            else
+            {
+                paramBuilder.append("&");
+            }
+
+            paramBuilder.append(entry.getKey());
+            paramBuilder.append("=");
+            paramBuilder.append(entry.getValue());
+        }
+
+        return paramBuilder.toString();
     }
 
     /**
@@ -333,14 +353,14 @@ public class JitsiMeetUrl
     /**
      * Sets the {@link #roomParameters} part of the conference URL.
      *
-     * @param roomParameters the conference room parameters without "?" sign at
-     * the beginning, but with "&" between each of the params which are part of
-     * a single string passed here as an argument.
+     * @param paramKey the query parameter key name
+     * @param paramValue the value to assign to the query parameter key
      * @return a reference to this object.
      */
-    public JitsiMeetUrl setRoomParameters(String roomParameters)
+    public JitsiMeetUrl addRoomParameter(String paramKey, String paramValue)
     {
-        this.roomParameters = roomParameters;
+        this.queryParams.put(paramKey, paramValue);
+
         return this;
     }
 
@@ -380,6 +400,7 @@ public class JitsiMeetUrl
 
         url += "/" + roomName;
 
+        String roomParameters = this.getRoomParameters();
         if (StringUtils.isNotBlank(roomParameters))
         {
             url += "?" + roomParameters;

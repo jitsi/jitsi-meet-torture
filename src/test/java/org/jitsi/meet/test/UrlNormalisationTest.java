@@ -35,7 +35,7 @@ public class UrlNormalisationTest
     {
         super.setupClass();
 
-        JitsiMeetUrl jitsiMeetUrl = participants.getJitsiMeetUrl();
+        JitsiMeetUrl jitsiMeetUrl = getJitsiMeetUrl();
 
         jitsiMeetUrl.setRoomName(currentRoomName + "@example.com");
         jitsiMeetUrl.setTenantName("tenant@example.com");

@@ -1,0 +1,24 @@
+[docker]
+# Configs have a mapping between the Docker image to use and the capabilities that need to be matched to
+# start a container with the given image.
+configs = [
+    "jitsi/standalone-firefox:latest", '{"browserName": "firefox", "platformName": "linux"}',
+    "jitsi/standalone-chrome:latest", '{"browserName": "chrome", "platformName": "linux"}',
+    "jitsi/standalone-firefox:beta", '{"browserName": "firefox", "platformName": "linux", "browserVersion": "beta"}',
+    "jitsi/standalone-chrome:beta", '{"browserName": "chrome", "platformName": "linux", "browserVersion": "beta" }'
+]
+
+# URL for connecting to the docker daemon
+# host.docker.internal works for macOS and Windows.
+# Linux could use --net=host in the `docker run` instruction or 172.17.0.1 in the URI below.
+# To have Docker listening through tcp on macOS, install socat and run the following command
+# socat -4 TCP-LISTEN:2375,fork UNIX-CONNECT:/var/run/docker.sock
+url = "http://127.0.0.1:2375"
+# Docker image used for video recording
+#video-image = "selenium/video:ffmpeg-4.3.1-20230508"
+
+# Uncomment the following section if you are running the node on a separate VM
+# Fill out the placeholders with appropriate values
+#[server]
+#host = <ip-from-node-machine>
+#port = <port-from-node-machine>

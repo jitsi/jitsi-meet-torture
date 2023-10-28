@@ -21,6 +21,7 @@ import org.apache.http.client.config.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.*;
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -31,6 +32,7 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.net.*;
 import java.text.*;
+import java.util.*;
 import java.util.logging.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
@@ -57,8 +59,20 @@ public class DialInAudioTest
      * The url can contain {0}, to pass the conference pin.
      * For example: {"pin":"{0}"}, needs to be: %7B%22pin%22%3A%22{0}%22%7D
      */
-    protected static final String DIAL_IN_PARTICIPANT_REST_URL
-        = "dialIn.rest.url";
+    protected static final String DIAL_IN_PARTICIPANT_REST_URL = "dialIn.rest.url";
+
+    /**
+     * A property to set custom room name prefix to be used in combination with the count of room names.
+     * room1, room2 ... roomN.
+     */
+    protected static final String DIAL_IN_ROOM_NAME_PREFIX = "dialIn.room.name.prefix";
+
+    /**
+     * The count of random rooms.
+     */
+    protected static final String DIAL_IN_ROOM_NAME_COUNT = "dialIn.room.name.count";
+
+    private static Random random = new Random();
 
     private String dialInPin = null;
 
@@ -131,10 +145,22 @@ public class DialInAudioTest
             "REST Url missing. Pass it using " +
                 "-D" + DIAL_IN_PARTICIPANT_REST_URL + "=");
 
+        String roomNamePrefix = System.getProperty(DIAL_IN_ROOM_NAME_PREFIX);
+        Integer roomNameCount = Integer.getInteger(DIAL_IN_ROOM_NAME_COUNT);
+
         try
         {
             // join in a room
-            ensureOneParticipant();
+            JitsiMeetUrl theUrl = getJitsiMeetUrl();
+
+            if (roomNamePrefix != null && roomNameCount != null)
+            {
+                int max = roomNameCount;
+                int min = 1;
+                theUrl.setRoomName(roomNamePrefix + (random.nextInt(max - min + 1) + min));
+            }
+
+            ensureOneParticipant(theUrl);
 
             userJoined = true;
         }

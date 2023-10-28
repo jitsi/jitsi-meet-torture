@@ -62,7 +62,7 @@ public class ChatPanelTest
         chatPanel.assertClosed();
 
         // The chat panel should be open after clicking the button
-        toolbar.clickChatButton();
+        toolbar.clickOpenChatButton();
         chatPanel.assertOpen();
 
         // The chat panel should be closed after pressing the shortcut
@@ -74,7 +74,7 @@ public class ChatPanelTest
         chatPanel.assertOpen();
 
         // The chat panel should be closed after clicking the button
-        toolbar.clickChatButton();
+        toolbar.clickCloseChatButton();
         chatPanel.assertClosed();
     }
 }

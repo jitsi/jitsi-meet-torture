@@ -21,6 +21,7 @@ import org.testng.annotations.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
+import org.apache.commons.lang3.*;
 
 import static org.jitsi.meet.test.util.TestUtils.*;
 
@@ -93,12 +94,18 @@ public abstract class AbstractBaseTest<P extends Participant>
     private Boolean skipped;
 
     /**
+     * The name of the property which controls the default jwt token
+     * used in tests
+     */
+    public static final String TOKEN_PNAME = "org.jitsi.token";
+    
+    /**
      * Default.
      */
     protected AbstractBaseTest()
     {
         currentRoomName
-            = "torture" + String.valueOf((int)(Math.random()*1000000));
+            = "jitsimeettorture" + String.valueOf((int)(Math.random()*1000000000));
         participants = null;
     }
 
@@ -233,7 +240,15 @@ public abstract class AbstractBaseTest<P extends Participant>
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+        String token = System.getProperty(TOKEN_PNAME);
+
+        JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
+        if (StringUtils.isNotBlank(token))
+        {
+            u.addRoomParameter("jwt", token);
+        }
+
+        return u;
     }
 
     /**

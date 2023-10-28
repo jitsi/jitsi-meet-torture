@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.web;
 
 import org.jitsi.meet.test.base.*;
+import org.openqa.selenium.*;
 
 import java.net.*;
 import java.util.*;
@@ -137,6 +138,16 @@ public class WebParticipantOptions
     private static final String PROP_LOADTEST = "isLoadTest";
 
     /**
+     * Whether to save the Participant logs on hangup.
+     */
+    private static final String PROP_SAVE_LOGS = "saveLogs";
+
+    /**
+     * Whether to create this participant as one of multiple tabs in a single browser.
+     */
+    private static final String PROP_MULTITAB = "multiTab";
+
+    /**
      * Get web specific global property names. See
      * {@link ParticipantFactory#moveSystemGlobalProperties()} for more info.
      *
@@ -173,6 +184,8 @@ public class WebParticipantOptions
         defaults.setProperty(PROP_SKIP_DISPLAYNAME, Boolean.FALSE.toString());
         defaults.setProperty(PROP_ALLOW_INSECURE_CERTS, Boolean.FALSE.toString());
         defaults.setProperty(PROP_LOADTEST, Boolean.FALSE.toString());
+        defaults.setProperty(PROP_SAVE_LOGS, Boolean.FALSE.toString());
+        defaults.setProperty(PROP_MULTITAB, Boolean.FALSE.toString());
 
         return defaults;
     }
@@ -325,11 +338,29 @@ public class WebParticipantOptions
     }
 
     /**
-     * Sets whether this participant is using the load test interface
+     * Sets whether this participant is using the load test interface.
      */
     public WebParticipantOptions setLoadTest(boolean value)
     {
         setProperty(PROP_LOADTEST, Boolean.toString(value));
+        return this;
+    }
+
+    /**
+     * Sets whether to save logs for this participant on hangup.
+     */
+    public WebParticipantOptions setSaveLogs(boolean value)
+    {
+        setProperty(PROP_SAVE_LOGS, Boolean.toString(value));
+        return this;
+    }
+
+    /**
+     * Sets whether this participant is using multi-tab.  See also {@link ParticipantOptions#setBaseDriver}.
+     */
+    public WebParticipantOptions setMultitab(boolean value)
+    {
+        setProperty(PROP_MULTITAB, Boolean.toString(value));
         return this;
     }
 
@@ -424,6 +455,24 @@ public class WebParticipantOptions
     public boolean getLoadTest()
     {
         return Boolean.parseBoolean(getProperty(PROP_LOADTEST));
+    }
+
+    /**
+     * Whether saving logs is enabled.
+     * @return Whether saving logs is enabled.
+     */
+    public boolean getSaveLogs()
+    {
+        return Boolean.parseBoolean(getProperty(PROP_SAVE_LOGS));
+    }
+
+    /**
+     * Whether this is using multitab
+     * @return Whether this is using multitab
+     */
+    public boolean getMultitab()
+    {
+        return Boolean.parseBoolean(getProperty(PROP_MULTITAB));
     }
 
     /**

@@ -147,7 +147,7 @@ public class ActiveSpeakerTest
         // just a debug print to go in logs
         consolePrint(activeSpeaker, "Unmuting in testActiveSpeaker");
         // Unmute
-        activeSpeaker.getToolbar().clickAudioMuteButton();
+        activeSpeaker.getToolbar().clickAudioUnmuteButton();
 
         // just a debug print to go in logs
         consolePrint(participant2,

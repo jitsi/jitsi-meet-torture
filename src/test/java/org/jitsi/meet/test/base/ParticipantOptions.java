@@ -16,6 +16,7 @@
 package org.jitsi.meet.test.base;
 
 import org.apache.commons.lang3.*;
+import org.openqa.selenium.*;
 
 import java.util.*;
 
@@ -55,6 +56,12 @@ public class ParticipantOptions
      * a value for a key does not exist in {@link #backend}.
      */
     private final Properties defaults;
+
+    /**
+     * If we want to re-use an existing driver when creating a participants we can use this field to pass it through.
+     * The case when creating multiple tabs in a browser window.
+     */
+    private WebDriver baseDriver = null;
 
     /**
      * Loads values from the configuration into the participant options backend.
@@ -103,6 +110,8 @@ public class ParticipantOptions
         {
             setProperty(key, srcBackend.getProperty(key));
         }
+
+        setBaseDriver(toAdd.getBaseDriver());
     }
 
     /**
@@ -203,5 +212,15 @@ public class ParticipantOptions
         {
             this.backend.remove(key);
         }
+    }
+
+    public WebDriver getBaseDriver()
+    {
+        return baseDriver;
+    }
+
+    public void setBaseDriver(WebDriver baseDriver)
+    {
+        this.baseDriver = baseDriver;
     }
 }

@@ -25,6 +25,7 @@ import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 
 import java.net.*;
+import java.util.logging.*;
 
 /**
  * Test that loads a page using the iframe API to load a meeting.
@@ -52,16 +53,6 @@ public class IFrameAPIBase
     public static final String IFRAME_PAGE_PATH_PNAME = "org.jitsi.iframe.page_path";
 
     private static final String IFRAME_ROOM_NAME = "iframeAPITest.html";
-
-    /**
-     * An url for a page that loads the iframe API.
-     */
-    private static final String IFRAME_ROOM_PARAMS
-        = "domain=%s&room=%s"
-        // here goes the default settings, used in Participant join function
-        + "&config=%s&interfaceConfig=%s"
-        + "&userInfo=%s"
-        + "&password=%s";
 
     /**
      * The url to be reused between tests.
@@ -98,6 +89,21 @@ public class IFrameAPIBase
     }
 
     /**
+     * Checks whether iframe API is disabled.
+     */
+    protected void checkIframeDisabled()
+    {
+        ensureOneParticipant();
+
+        if (MeetUtils.iFrameAPIDisabled(getParticipant1().getDriver()))
+        {
+            cleanupClass();
+            throw new SkipException(
+                "IFrameAPI is disabled. Disabling test.");
+        }
+    }
+
+    /**
      * Constructs an JitsiMeetUrl to be used with iframeAPI.
      * @return url that will load a meeting in an iframe.
      */
@@ -116,7 +122,8 @@ public class IFrameAPIBase
 
         if (pagePath == null || pagePath.trim().length() == 0)
         {
-            throw new SkipException("missing configuration");
+            Logger.getGlobal().warning("Skipping because " + IFRAME_PAGE_PATH_PNAME + " is not set.");
+            throw new SkipException(IFRAME_PAGE_PATH_PNAME + " is not set.");
         }
 
         // uses a custom join, so we can load the page with iframe api
@@ -131,22 +138,21 @@ public class IFrameAPIBase
             throw new RuntimeException(e);
         }
 
-        JsonObject defaultParams = new JitsiMeetUrl().appendConfig(WebParticipant.DEFAULT_CONFIG, false)
-                .appendConfig(config)
-                .getFragmentParamsAsJson();
+        JsonObject defaultParams = getJitsiMeetUrl()
+            .appendConfig(WebParticipant.DEFAULT_CONFIG, false)
+            .appendConfig(config)
+            .getFragmentParamsAsJson();
 
-        String roomParams = String.format(IFRAME_ROOM_PARAMS,
-            domain,
-            currentRoomName,
-            defaultParams.get("config").toString(),
-            defaultParams.get("interfaceConfig").toString(),
-            userInfo != null ? userInfo : "",
-            password != null ? password : "");
+        iFrameUrl.addRoomParameter("domain", domain);
+        iFrameUrl.addRoomParameter("room", currentRoomName);
+        iFrameUrl.addRoomParameter("config", defaultParams.get("config").toString());
+        iFrameUrl.addRoomParameter("interfaceConfig", defaultParams.get("interfaceConfig").toString());
+        iFrameUrl.addRoomParameter("userInfo", userInfo != null ? userInfo.toString() : "");
+        iFrameUrl.addRoomParameter("password", password != null ? password : "");
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);
         iFrameUrl.setRoomName(IFRAME_ROOM_NAME);
-        iFrameUrl.setRoomParameters(roomParams);
         iFrameUrl.setIframeToNavigateTo("jitsiConferenceFrame0");
 
         return iFrameUrl;
@@ -256,12 +262,6 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint3Id);
 
-        // we must not be in tile view
-        // FIXME: Currently there is a bug in jitsi-meet and using setLargeVideoParticipant
-        // does not switch automatically to stage view, when in grid view
-        getParticipant1().getToolbar().clickTileViewButton();
-        MeetUIUtils.waitForTileViewDisplay(participant1, false);
-
         // selects second
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1, String.format(setLargeCommand, endpoint2Id));
@@ -270,15 +270,23 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
         MeetUIUtils.waitForLargeVideoSwitchToEndpoint(driver1, endpoint2Id);
 
-        // leave muted second and first and third is unmuted
-        participant3.getToolbar().clickAudioMuteButton();
+        participant1.getNotifications().dismissAnyJoinNotification();
+        participant2.getNotifications().dismissAnyJoinNotification();
+        participant3.getNotifications().dismissAnyJoinNotification();
+
+        // Leave muted second and first. Third is unmuted
+        // (the first one is unmuted already)
         participant1.getToolbar().clickAudioMuteButton();
-        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
+        participant3.getToolbar().clickAudioUnmuteButton();
+
         participant1.getFilmstrip().assertAudioMuteIcon(participant1, true);
+        participant1.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant1.getFilmstrip().assertAudioMuteIcon(participant3, false);
+
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant2.getFilmstrip().assertAudioMuteIcon(participant3, false);
+
         participant3.getFilmstrip().assertAudioMuteIcon(participant1, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant2, true);
         participant3.getFilmstrip().assertAudioMuteIcon(participant3, false);
@@ -313,8 +321,9 @@ public class IFrameAPIBase
         switchToMeetContent(this.iFrameUrl, driver1);
 
         // let's unmute everyone as it was initially
-        participant2.getToolbar().clickAudioMuteButton();
-        participant1.getToolbar().clickAudioMuteButton();
+        participant2.getToolbar().clickAudioUnmuteButton();
+        participant1.getToolbar().clickAudioUnmuteButton();
+
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
     }

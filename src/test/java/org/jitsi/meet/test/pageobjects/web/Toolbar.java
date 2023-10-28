@@ -33,34 +33,41 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    public final static String AUDIO_MUTE = "Mute / Unmute";
-    public final static String CHAT = "Open / Close chat";
-    public final static String DESKTOP = "Start / Stop sharing your screen";
+    public final static String AUDIO_MUTE = "Mute";
+    public final static String AUDIO_UNMUTE = "Unmute";
+    public final static String CHAT = "Open chat";
+    public final static String CLOSE_CHAT = "Close chat";
+    public final static String DESKTOP = "Start sharing your screen";
+    public final static String STOP_DESKTOP = "Stop sharing your screen";
     public final static String EMBED_MEETING = "Embed meeting";
     public final static String ETHERPAD = "Toggle shared document";
-    public final static String FULLSCREEN = "Toggle full screen";
+    public final static String FULLSCREEN = "View full screen";
+    public final static String EXIT_FULLSCREEN = "Exit full screen";
     public final static String HANGUP = "Leave the meeting";
     public final static String HELP = "Help";
     public final static String INVITE = "Invite people";
     public final static String INVITE_CSS = "Invite Someone";
     public final static String LIVE_STREAM = "Live Stream";
-    public final static String MUTE_EVERYONE_AUDIO = "Mute everyone";
-    public final static String MUTE_EVERYONE_VIDEO = "Stop everyone's video";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
-    public final static String PARTICIPANTS = "Participants" ;
+    public final static String PARTICIPANTS = "Open participants pane" ;
+    public final static String CLOSE_PARTICIPANTS_PANE = "Close participants pane" ;
     public final static String PROFILE = "Edit your profile";
-    public final static String RAISE_HAND = "Raise / Lower your hand";
+    public final static String RAISE_HAND = "Raise your hand";
+    public final static String LOWER_HAND = "Lower your hand";
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
     public final static String SELECT_BACKGROUND = "Select Background";
     public final static String SETTINGS = "Toggle settings";
     public final static String SHARE_AUDIO = "Share audio";
-    public final static String SHARE_VIDEO = "Toggle video sharing";
+    public final static String SHARE_VIDEO = "Share video";
+    public final static String STOP_SHARE_VIDEO = "Stop video";
     public final static String SHORTCUTS = "Toggle shortcuts";
     public final static String STATS = "Toggle participants statistics";
-    public final static String TILE_VIEW_BUTTON = "Toggle tile view";
-    public final static String VIDEO_MUTE = "Start / Stop camera";
+    public final static String TILE_VIEW_BUTTON = "Enter tile view";
+    public final static String EXIT_TILE_VIEW_BUTTON = "Exit tile view";
+    public final static String VIDEO_UNMUTE = "Start camera";
+    public final static String VIDEO_MUTE = "Stop camera";
     public final static String VIDEO_QUALITY = "Manage video quality";
 
     /**
@@ -85,7 +92,7 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the microphone mute toolbar button, which toggles audio mute.
+     * Clicks on the microphone toolbar button, which toggles audio mute.
      */
     public void clickAudioMuteButton()
     {
@@ -93,11 +100,27 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the raise/lower hand button that enables participants will to speak.
+     * Clicks on the microphone toolbar button, which toggles audio unmute.
+     */
+    public void clickAudioUnmuteButton()
+    {
+        clickButton(AUDIO_UNMUTE);
+    }
+
+    /**
+     * Clicks on the raise hand button that enables participants will to speak.
      */
     public String clickRaiseHandButton()
     {
         return clickButton(RAISE_HAND);
+    }
+
+    /**
+     * Clicks on the lower hand button that enables participants will to speak.
+     */
+    public String clickLowerHandButton()
+    {
+        return clickButton(LOWER_HAND);
     }
 
     /**
@@ -122,11 +145,40 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the "chat" toolbar button which opens or closes the chat panel.
+     * Clicks on the "stop desktop sharing" toolbar button. Fails if the button
+     * doesn't exist or if the toggled state is not changed after the click.
      */
-    public void clickChatButton()
+    public void clickStopDesktopSharingButton()
+    {
+        // Firefox require user gesture for getDisplayMedia()
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1580944
+        // we us js to click buttons as we have seen some stale elements exceptions due to react updates
+        if (this.participant.getType().isFirefox())
+        {
+            WebElement button = participant.getDriver().findElement(By.cssSelector(
+                MeetUIUtils.getAccessibilityCSSSelector(STOP_DESKTOP)));
+            new Actions(this.participant.getDriver()).moveToElement(button).click().perform();
+        }
+        else
+        {
+            clickButton(STOP_DESKTOP);
+        }
+    }
+
+    /**
+     * Clicks on the "chat" toolbar button which opens the chat panel.
+     */
+    public void clickOpenChatButton()
     {
         clickButton(CHAT);
+    }
+
+    /**
+     * Clicks on the "chat" toolbar button which closes the chat panel.
+     */
+    public void clickCloseChatButton()
+    {
+        clickButton(CLOSE_CHAT);
     }
 
     /**
@@ -155,11 +207,19 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the info toolbar button which opens or closes the info dialog.
+     * Clicks on the toolbar button which opens the participants pane.
      */
     public void clickParticipantsButton()
     {
         clickButton(PARTICIPANTS);
+    }
+
+    /**
+     * Clicks on the toolbar button which closes the participants pane.
+     */
+    public void clickCloseParticipantsButton()
+    {
+        clickButton(CLOSE_PARTICIPANTS_PANE);
     }
 
     /**
@@ -224,7 +284,7 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the shared video toolbar button which toggles sharing of a
+     * Clicks on the shared video toolbar button which starts sharing a
      * YouTube video.
      */
     public void clickSharedVideoButton()
@@ -233,11 +293,27 @@ public class Toolbar
     }
 
     /**
-     * Clicks on the tile view button which enables or disables tile layout.
+     * Clicks on the shared video toolbar button which stops YouTube video.
+     */
+    public void clickStopSharedVideoButton()
+    {
+        clickButtonInOverflowMenu(STOP_SHARE_VIDEO);
+    }
+
+    /**
+     * Clicks on the tile view button which enables tile layout.
      */
     public void clickTileViewButton()
     {
         clickButton(TILE_VIEW_BUTTON);
+    }
+
+    /**
+     * Clicks on the tile view button which disabled tile layout.
+     */
+    public void clickExitTileViewButton()
+    {
+        clickButton(EXIT_TILE_VIEW_BUTTON);
     }
 
     /**
@@ -246,6 +322,14 @@ public class Toolbar
     public void clickVideoMuteButton()
     {
         clickButton(VIDEO_MUTE);
+    }
+
+    /**
+     * Clicks on the video unmute toolbar button which toggles video mute.
+     */
+    public void clickVideoUnmuteButton()
+    {
+        clickButton(VIDEO_UNMUTE);
     }
 
     /**
@@ -364,12 +448,30 @@ public class Toolbar
     }
 
     /**
+     * Waits up to 10 seconds for the video mute button in the toolbar to be
+     * visible.
+     */
+    public void waitForVideoUnmuteButtonDisplay()
+    {
+        waitForButtonDisplay(VIDEO_UNMUTE);
+    }
+
+    /**
      * Waits up to 10 seconds for the audio mute button in the toolbar to be
      * visible.
      */
     public void waitForAudioMuteButtonDisplay()
     {
         waitForButtonDisplay(AUDIO_MUTE);
+    }
+
+    /**
+     * Waits up to 10 seconds for the audio unmute button in the toolbar to be
+     * visible.
+     */
+    public void waitForAudioUnmuteButtonDisplay()
+    {
+        waitForButtonDisplay(AUDIO_UNMUTE);
     }
 
     /**

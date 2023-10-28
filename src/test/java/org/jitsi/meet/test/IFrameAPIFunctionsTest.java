@@ -41,6 +41,8 @@ public class IFrameAPIFunctionsTest
     {
         super.setupClass();
 
+        checkIframeDisabled();
+
         checkModerationSupported();
     }
 

@@ -90,16 +90,45 @@ public class WebParticipantFactory
     @Override
     protected WebParticipant doCreateParticipant(ParticipantOptions options)
     {
-        WebParticipantOptions webOptions = new WebParticipantOptions();
+        WebParticipantOptions webOptions;
+        if (options instanceof WebParticipantOptions)
+        {
+            webOptions = (WebParticipantOptions)options;
+        }
+        else
+        {
+            webOptions = new WebParticipantOptions();
+            webOptions.putAll(options);
+        }
 
-        webOptions.putAll(options);
+        WebDriver driver;
+
+        if (webOptions.getMultitab())
+        {
+            RemoteWebDriver baseDriver;
+            if (webOptions.getBaseDriver() != null)
+            {
+                /* Throws BadCast if this isn't a RemoteWebDriver. */
+                baseDriver = (RemoteWebDriver)webOptions.getBaseDriver();
+            }
+            else
+            {
+                baseDriver = startWebDriver(webOptions);
+            }
+            driver = new TabbedWebDriver(baseDriver);
+        }
+        else
+        {
+            driver = startWebDriver(webOptions);
+        }
 
         WebParticipant webParticipant
             = new WebParticipant(
                     webOptions.getName(),
-                    startWebDriver(webOptions),
+                    driver,
                     webOptions.getParticipantType(),
-                    webOptions.getLoadTest());
+                    webOptions.getLoadTest(),
+                    webOptions.getSaveLogs());
 
         return webParticipant;
     }
@@ -109,7 +138,7 @@ public class WebParticipantFactory
      * @param options the options to use when creating the driver.
      * @return the <tt>WebDriver</tt> instance.
      */
-    private WebDriver startWebDriver(
+    private RemoteWebDriver startWebDriver(
         WebParticipantOptions options)
     {
         ParticipantType participantType = options.getParticipantType();
@@ -251,7 +280,7 @@ public class WebParticipantFactory
             if (options.isHeadless())
             {
                 ops.addArguments("headless");
-                ops.addArguments("window-size=1200x600");
+                ops.addArguments("window-size=1400x600");
             }
 
             // starting version 46 we see crashes of chrome GPU process when

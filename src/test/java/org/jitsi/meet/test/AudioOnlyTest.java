@@ -68,7 +68,7 @@ public class AudioOnlyTest
         TestUtils.waitForDisplayedElementByXPath(
             driver1, LARGE_AVATAR_XPATH, 2);
 
-        MeetUIUtils.assertLocalThumbnailShowsAvatar(driver1);
+        MeetUIUtils.assertLocalThumbnailShowsDefaultAvatar(driver1);
     }
 
     /**
@@ -113,7 +113,7 @@ public class AudioOnlyTest
     public void unmuteAfterAudioOnlyDisabled()
     {
         // Unmute video on participant1.
-        getParticipant1().getToolbar().clickVideoMuteButton();
+        getParticipant1().getToolbar().clickVideoUnmuteButton();
 
         verifyVideoMute(getParticipant1(), getParticipant2(), false);
     }

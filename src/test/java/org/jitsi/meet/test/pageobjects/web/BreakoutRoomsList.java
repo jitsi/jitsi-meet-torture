@@ -146,9 +146,9 @@ public class BreakoutRoomsList
             WebElement listItem = TestUtils.waitForElementBy(participant.getDriver(),
                     By.xpath("//div[@data-testid='" + id + "']"), 5);
 
-            Actions hoverOnBreakoutRoomListItem = new Actions(participant.getDriver());
-            hoverOnBreakoutRoomListItem.moveToElement(listItem);
-            hoverOnBreakoutRoomListItem.perform();
+            Actions clickOnBreakoutRoomListItem = new Actions(participant.getDriver());
+            clickOnBreakoutRoomListItem.click(listItem);
+            clickOnBreakoutRoomListItem.perform();
 
             WebElement joinButton = TestUtils.waitForElementBy(participant.getDriver(),
                     ByTestId.testId("join-room-" + id), 2);
@@ -161,9 +161,9 @@ public class BreakoutRoomsList
             WebElement listItem = TestUtils.waitForElementBy(participant.getDriver(),
                     By.xpath("//div[@data-testid='" + id + "']"), 5);
 
-            Actions hoverOnBreakoutRoomListItem = new Actions(participant.getDriver());
-            hoverOnBreakoutRoomListItem.moveToElement(listItem);
-            hoverOnBreakoutRoomListItem.perform();
+            Actions clickOnBreakoutRoomListItem = new Actions(participant.getDriver());
+            clickOnBreakoutRoomListItem.click(listItem);
+            clickOnBreakoutRoomListItem.perform();
 
             String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(MORE_LABEL);
             listItem.findElement(By.cssSelector(cssSelector)).click();

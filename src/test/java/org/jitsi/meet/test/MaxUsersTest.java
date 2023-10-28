@@ -89,7 +89,7 @@ public class MaxUsersTest
                     participants[i] =
                         this.participants
                             .createParticipant("web.participant" + (i + 4));
-                    participants[i].joinConference(currentRoomName);
+                    participants[i].joinConference(getJitsiMeetUrl());
                 }
                 // Check if the error dialog is displayed for
                 // the last participant.

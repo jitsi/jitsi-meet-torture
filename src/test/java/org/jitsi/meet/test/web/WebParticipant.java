@@ -38,11 +38,6 @@ public class WebParticipant extends Participant<WebDriver>
     implements JavascriptExecutor
 {
     /**
-     * Temporary added to be able to test Plan-B till it is completely dropped from Chrome.
-     */
-    private static final boolean DISABLE_UNIFIED = Boolean.getBoolean("jitsi-meet-torture.disable.unified");
-
-    /**
      * Default config for Web participants.
      */
     public static final String DEFAULT_CONFIG
@@ -58,7 +53,6 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.p2p.useStunTurn=false"
             + "&config.pcStatsInterval=1500"
             + "&config.prejoinConfig.enabled=false"
-            + (DISABLE_UNIFIED ? "&config.p2p.enableUnifiedOnChrome=false&config.enableUnifiedOnChrome=false" : "")
             + "&config.gatherStats=true"
             + "&config.disable1On1Mode=true"
             + "&config.analytics.disabled=true"
@@ -110,6 +104,7 @@ public class WebParticipant extends Participant<WebDriver>
     private AVModerationMenu avModerationMenu;
     private BreakoutRoomsList breakoutRoomsList;
     private DialInNumbersPage dialInNumbersPage;
+    private Dialogs dialogs;
     private InviteDialog inviteDialog;
     private LargeVideo largeVideo;
     private LobbyScreen lobbyScreen;
@@ -122,6 +117,7 @@ public class WebParticipant extends Participant<WebDriver>
     private WebFilmstrip filmstrip;
 
     private final boolean isLoadTest;
+    private final boolean saveLogs;
 
     /**
      * Constructs a Participant.
@@ -129,12 +125,15 @@ public class WebParticipant extends Participant<WebDriver>
      * @param name    the name.
      * @param driver  its driver instance.
      * @param type    the type (type of browser).
+     * @param isLoadTest is this a load test participant.
+     * @param saveLogs is save logs on hangup enabled.
      */
     public WebParticipant(
-            String name, WebDriver driver, ParticipantType type, boolean isLoadTest)
+            String name, WebDriver driver, ParticipantType type, boolean isLoadTest, boolean saveLogs)
     {
         super(name, driver, type, DEFAULT_CONFIG);
         this.isLoadTest = isLoadTest;
+        this.saveLogs = saveLogs;
     }
 
     public String getBridgeIp()
@@ -217,48 +216,47 @@ public class WebParticipant extends Participant<WebDriver>
 
         MeetUtils.waitForPageToLoad(driver);
 
-        // if (!isLoadTest)
-        // {
-        //     // disables animations
-        //     executeScript("try { jQuery.fx.off = true; } catch(e) {}");
+        if (!isLoadTest)
+        {
+            // disables animations
+            executeScript("try { jQuery.fx.off = true; } catch(e) {}");
 
-        //    // executeScript("APP.UI.dockToolbar(true);");
+            executeScript("APP.UI.dockToolbar(true);");
 
-        //     // disable keyframe animations (.fadeIn and .fadeOut classes)
-        //     executeScript("$('<style>.notransition * { "
-        //         + "animation-duration: 0s !important; "
-        //         + "-webkit-animation-duration: 0s !important; transition:none; }"
-        //         + " </style>').appendTo(document.head);");
-        //     executeScript("$('body').toggleClass('notransition');");
+            // disable keyframe animations (.fadeIn and .fadeOut classes)
+            executeScript("$('<style>.notransition * { "
+                + "animation-duration: 0s !important; "
+                + "-webkit-animation-duration: 0s !important; transition:none; }"
+                + " </style>').appendTo(document.head);");
+            executeScript("$('body').toggleClass('notransition');");
 
-        //     // disable the blur effect in firefox as it has some performance issues
-        //     if (this.type.isFirefox())
-        //     {
-        //         executeScript(
-        //             "try { var blur "
-        //                 + "= document.querySelector('.video_blurred_container'); "
-        //                 + "if (blur) { "
-        //                 + "document.querySelector('.video_blurred_container')"
-        //                 + ".style.display = 'none' "
-        //                 + "} } catch(e) {}");
-        //     }
-        // }
+            // disable the blur effect in firefox as it has some performance issues
+            if (this.type.isFirefox())
+            {
+                executeScript(
+                    "try { var blur "
+                        + "= document.querySelector('.video_blurred_container'); "
+                        + "if (blur) { "
+                        + "document.querySelector('.video_blurred_container')"
+                        + ".style.display = 'none' "
+                        + "} } catch(e) {}");
+            }
+        }
 
-        // if ("false".equals(conferenceUrl.getFragmentParam("config.callStatsID")))
-        // {
-        //     // Hack-in disabling of callstats (old versions of jitsi-meet don't
-        //     // handle URL parameters)
-        //     executeScript("config.callStatsID=false;");
-        // }
+        String version = TestUtils.executeScriptAndReturnString(driver, "return JitsiMeetJS.version");
+        String sessionID = (driver instanceof RemoteWebDriver ?
+            ((RemoteWebDriver)driver).getSessionId().toString() :
+            (driver instanceof TabbedWebDriver) ?
+                ((TabbedWebDriver)driver).getSessionId() : null);
 
-        // String version = TestUtils.executeScriptAndReturnString(driver,
-        //     "return JitsiMeetJS.version;");
-        // TestUtils.print(name + " lib-jitsi-meet version: " + version
-        //     + (driver instanceof RemoteWebDriver ?
-        //         " sessionID: "
-        //             + ((RemoteWebDriver)driver).getSessionId() : ""));
+        TestUtils.print(name + " lib-jitsi-meet version: " + version
+            + (sessionID != null ?
+                " sessionID: " + sessionID : ""));
 
-        // executeScript("document.title='" + name + "'");
+        if (!isLoadTest)
+        {
+            executeScript("document.title='" + name + "'");
+        }
     }
 
     /**
@@ -267,6 +265,11 @@ public class WebParticipant extends Participant<WebDriver>
     @Override
     protected void doHangUp()
     {
+        if (this.saveLogs)
+        {
+            FailureListener.saveBrowserLogs("on-hangup", this);
+        }
+
         if (!isLoadTest)
         {
             try
@@ -680,6 +683,20 @@ public class WebParticipant extends Participant<WebDriver>
         return lobbyScreen;
     }
 
+
+    /**
+     * @return a representation of the dialogs.
+     */
+    public Dialogs getDialogs()
+    {
+        if (dialogs == null)
+        {
+            dialogs = new Dialogs(this);
+        }
+
+        return dialogs;
+    }
+
     /**
      * @return a representation of the notifications.
      */
@@ -810,6 +827,14 @@ public class WebParticipant extends Participant<WebDriver>
     public void muteAudio(boolean mute)
     {
         executeScript("APP.conference.muteAudio(arguments[0])", mute);
+    }
+
+    /**
+     *  Mute or unmute a single client's audio in a multi-client load test participant, through the API.
+     */
+    public void muteOneAudio(boolean mute, int num)
+    {
+        executeScript("APP.conference.muteAudio(arguments[0], arguments[1])", mute, num);
     }
 
     /**

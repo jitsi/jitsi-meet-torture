@@ -138,7 +138,7 @@ public class FailureListener
         // in order to easily spot them in the html report
         for (ITestResult r : iTestContext.getFailedConfigurations().getAllResults())
         {
-            iTestContext.getFailedTests().addResult(r, r.getMethod());
+            iTestContext.getFailedTests().addResult(r);
         }
     }
 
@@ -355,16 +355,26 @@ public class FailureListener
     {
         participants.forEach(p ->
         {
-            try
-            {
-                TestUtils.print("Saving browser logs for:" + p.getName());
-                saveBrowserLogs(p, fileNamePrefix, "-console-" + p.getName(), ".log");
-            }
-            catch(Throwable e)
-            {
-                TestUtils.print("Error obtaining browser logs for " + p.getName() + ": " + e.getMessage());
-            }
+            saveBrowserLogs(fileNamePrefix, p);
         });
+    }
+
+    /**
+     * Saves browser console logs for a participant.
+     * @param fileNamePrefix the file prefix.
+     * @param participant the participant which logs to save.
+     */
+    public static void saveBrowserLogs(String fileNamePrefix, Participant<? extends WebDriver> participant)
+    {
+        try
+        {
+            TestUtils.print("Saving browser logs for:" + participant.getName());
+            saveBrowserLogs(participant, fileNamePrefix, "-console-" + participant.getName(), ".log");
+        }
+        catch(Throwable e)
+        {
+            TestUtils.print("Error obtaining browser logs for " + participant.getName() + ": " + e.getMessage());
+        }
     }
 
     /**
@@ -400,7 +410,7 @@ public class FailureListener
     /**
      * Saves browser console logs.
      */
-    private void saveBrowserLogs(Participant p, String fileNamePrefix, String suffix, String extension)
+    private static void saveBrowserLogs(Participant p, String fileNamePrefix, String suffix, String extension)
         throws Exception
     {
         List logs = p.getBrowserLogs();
