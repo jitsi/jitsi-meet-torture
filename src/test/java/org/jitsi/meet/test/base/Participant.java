@@ -491,7 +491,7 @@ public abstract class Participant<T extends WebDriver>
     {
         try
         {
-            if (getMeetUrl().getIframeToNavigateTo() != null)
+            if (getMeetUrl() != null && getMeetUrl().getIframeToNavigateTo() != null)
             {
                 // let's wait for switch to that iframe, so we can save the correct page
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
