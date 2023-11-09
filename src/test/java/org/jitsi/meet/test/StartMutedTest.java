@@ -20,7 +20,6 @@ import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
-import org.openqa.selenium.*;
 import org.testng.annotations.*;
 
 /**

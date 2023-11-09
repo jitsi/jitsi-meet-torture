@@ -15,11 +15,11 @@
  */
 package org.jitsi.meet.test.pageobjects.mobile.permissions;
 
-import io.appium.java_client.*;
 import io.appium.java_client.pagefactory.*;
 
 import org.jitsi.meet.test.mobile.*;
 import org.jitsi.meet.test.pageobjects.mobile.base.*;
+import org.openqa.selenium.*;
 
 /**
  * This is the camera/mic permissions alert.
@@ -33,10 +33,10 @@ public class PermissionsAlert extends AbstractMobilePage
     @AndroidFindBy(
         id = "com.android.packageinstaller:id/permission_allow_button"
     )
-    @iOSFindBy(
+    @iOSXCUITFindBy(
         id = "OK"
     )
-    private MobileElement allowButton;
+    private WebElement allowButton;
 
     /**
      * Creates new <tt>{@link PermissionsAlert}</tt>.
@@ -51,9 +51,9 @@ public class PermissionsAlert extends AbstractMobilePage
      * Obtains the OK/Allow button used to grant permission to use
      * camera/microphone.
      *
-     * @return a <tt>{@link MobileElement}</tt> proxy object.
+     * @return a <tt>{@link WebElement}</tt> proxy object.
      */
-    public MobileElement getAllowButton()
+    public WebElement getAllowButton()
     {
         return allowButton;
     }

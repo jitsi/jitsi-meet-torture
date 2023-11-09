@@ -26,6 +26,7 @@ import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
@@ -140,7 +141,7 @@ public class WebParticipant extends Participant<WebDriver>
     {
         // With the default stats interval (10s) this can take up to 20 seconds.
         // We wait for 30 to give ourselves some margin.
-        return new WebDriverWait(driver, 30).until(d -> {
+        return new WebDriverWait(driver, Duration.ofSeconds(30)).until(d -> {
 
             RtpStatistics rtpStats
                 = new WebRtpStatistics((JavascriptExecutor) d);
@@ -209,7 +210,7 @@ public class WebParticipant extends Participant<WebDriver>
         {
             // let's wait for loading and switch to that iframe so we can continue
             // with regular tests
-            WebDriverWait wait = new WebDriverWait(driver, 60);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                 By.id(conferenceUrl.getIframeToNavigateTo())));
         }

@@ -5,6 +5,7 @@ import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
 import java.util.*;
 
 public class SettingsDialog
@@ -226,7 +227,7 @@ public class SettingsDialog
         WebDriver driver = participant.getDriver();
 
         TestUtils.waitForElementBy(driver, By.xpath(xPathSelectorForTab), 5);
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(
             By.xpath(xPathSelectorForTab)));
 

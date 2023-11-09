@@ -24,6 +24,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -493,7 +494,7 @@ public abstract class Participant<T extends WebDriver>
             if (getMeetUrl().getIframeToNavigateTo() != null)
             {
                 // let's wait for switch to that iframe, so we can save the correct page
-                WebDriverWait wait = new WebDriverWait(driver, 60);
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
                 wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(
                     By.id(getMeetUrl().getIframeToNavigateTo())));
             }

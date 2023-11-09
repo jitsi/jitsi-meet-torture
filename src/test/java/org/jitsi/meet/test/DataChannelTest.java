@@ -23,6 +23,8 @@ import org.openqa.selenium.support.ui.*;
 
 import org.testng.annotations.*;
 
+import java.time.*;
+
 import static org.testng.Assert.*;
 
 /**
@@ -156,7 +158,7 @@ public class DataChannelTest
      */
     private void waitForDataChannelToOpen(WebDriver webDriver)
     {
-        new WebDriverWait(webDriver, 15).until(
+        new WebDriverWait(webDriver, Duration.ofSeconds(15)).until(
             (ExpectedCondition<Boolean>) this::isDataChannelOpen);
     }
 
@@ -171,7 +173,7 @@ public class DataChannelTest
      */
     private void waitToReceiveServerHello(WebDriver webDriver)
     {
-        new WebDriverWait(webDriver, 15).until(
+        new WebDriverWait(webDriver, Duration.ofSeconds(15)).until(
             (ExpectedCondition<Boolean>) this::isServerHelloReceived);
     }
 

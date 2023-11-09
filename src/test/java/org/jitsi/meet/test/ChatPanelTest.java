@@ -19,8 +19,6 @@ import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.web.*;
 import org.testng.annotations.*;
 
-import static org.testng.Assert.*;
-
 /**
  * Checks that the chat panel can be opened and closed with a shortcut and
  * with the toolbar button.

@@ -20,6 +20,7 @@ import org.openqa.selenium.support.ui.*;
 
 import java.io.*;
 import java.nio.file.*;
+import java.time.*;
 import java.util.*;
 
 import static org.testng.Assert.fail;
@@ -74,7 +75,7 @@ public class TestUtils
     public static void click(WebDriver driver, final By by)
     {
         waitForElementBy(driver, by, 10);
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement element = wait.until(
             ExpectedConditions.elementToBeClickable(by));
 
@@ -132,7 +133,7 @@ public class TestUtils
         final String scriptToExecute,
         long timeout)
     {
-        (new WebDriverWait(driver, timeout))
+        (new WebDriverWait(driver, Duration.ofSeconds(timeout)))
             .until((ExpectedCondition<Boolean>) d -> {
                 Object res = ((JavascriptExecutor) driver)
                     .executeScript(scriptToExecute);
@@ -154,7 +155,7 @@ public class TestUtils
         final String expectedResult,
         long timeout)
     {
-        (new WebDriverWait(driver, timeout))
+        (new WebDriverWait(driver, Duration.ofSeconds(timeout)))
             .until((ExpectedCondition<Boolean>) d -> {
                 Object res =
                     ((JavascriptExecutor) driver)
@@ -193,7 +194,7 @@ public class TestUtils
         String errorMessage)
     {
         FluentWait<WebDriver> waitImpl
-            = new WebDriverWait(driver, timeout);
+            = new WebDriverWait(driver, Duration.ofSeconds(timeout));
 
         if (errorMessage != null)
         {
@@ -220,7 +221,7 @@ public class TestUtils
         long timeout)
     {
         final WebElement[] foundElement = new WebElement[1];
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
             .until((ExpectedCondition<Boolean>) d -> {
                 List<WebElement> elements = d.findElements(by);
 
@@ -251,7 +252,7 @@ public class TestUtils
         final String[] foundElement = new String[2];
         try
         {
-            new WebDriverWait(driver, timeout)
+            new WebDriverWait(driver, Duration.ofSeconds(timeout))
                 .until((ExpectedCondition<Boolean>) d -> {
                     List<WebElement> elements = d.findElements(by);
 
@@ -294,7 +295,7 @@ public class TestUtils
         final By by,
         long timeout)
     {
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
             .until((ExpectedCondition<Boolean>) d -> d.findElements(by)
                 .isEmpty());
     }
@@ -382,7 +383,7 @@ public class TestUtils
             final Object attributeValue,
             long timeout)
     {
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
                 .until((ExpectedCondition<Boolean>) d -> {
                     WebElement el = d.findElement(By.xpath(xpath));
 
@@ -407,7 +408,7 @@ public class TestUtils
             long timeout
     )
     {
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
             .until((ExpectedCondition<Boolean>) d -> {
                 WebElement el = d.findElement(By.xpath(xpath));
                 String classNames = el.getAttribute("class");
@@ -429,7 +430,7 @@ public class TestUtils
             final String className,
             long timeout)
     {
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
                 .until((ExpectedCondition<Boolean>) d -> {
                     WebElement el = d.findElement(By.xpath(xpath));
                     String classNames = el.getAttribute("class");
@@ -496,7 +497,7 @@ public class TestUtils
         long timeout,
         final boolean isDisplayed)
     {
-        new WebDriverWait(driver, timeout)
+        new WebDriverWait(driver, Duration.ofSeconds(timeout))
             .withMessage(
                 "Is " + (isDisplayed ? "" : "not")
                     + "displayed: " + by.toString())
@@ -535,7 +536,7 @@ public class TestUtils
                                         int timeoutSeconds,
                                         ExpectedCondition<?> condition)
     {
-        WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
 
         if (message != null)
         {
@@ -574,7 +575,7 @@ public class TestUtils
                                         ExpectedCondition<?> condition,
                                         long pollWaitTime)
     {
-        (new WebDriverWait(driver, timeoutSeconds, pollWaitTime))
+        (new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds), Duration.ofSeconds(pollWaitTime)))
             .until(condition);
     }
 

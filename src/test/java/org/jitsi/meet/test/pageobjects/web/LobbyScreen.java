@@ -21,6 +21,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
+import java.time.*;
+
 /**
  * The Lobby screen representation.
  */
@@ -105,7 +107,7 @@ public class LobbyScreen
 
         new Actions(this.participant.getDriver()).moveToElement(passwordButton).click().perform();
 
-        new WebDriverWait(this.participant.getDriver(), 3).until(
+        new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(3)).until(
             (ExpectedCondition<Boolean>) d ->
                 d.findElements(ByTestId.testId("lobby.password")).size() > 0);
 
@@ -158,7 +160,7 @@ public class LobbyScreen
     public void waitForLoading()
     {
         // we wait for LOBBY_SCREEN_ID to successfully appear
-        new WebDriverWait(this.participant.getDriver(), 5).until(
+        new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(5)).until(
             (ExpectedCondition<Boolean>) d -> d.findElements(By.className(LOBBY_SCREEN_ID)).size() > 0);
     }
 

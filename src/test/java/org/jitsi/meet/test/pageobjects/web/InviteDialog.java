@@ -15,13 +15,13 @@
  */
 package org.jitsi.meet.test.pageobjects.web;
 
+import java.time.*;
 import java.util.*;
 import java.util.logging.*;
 
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
 
 /**
@@ -212,7 +212,7 @@ public class InviteDialog
 
         // sometimes we see FF taking long (more than 5 seconds) to show the dialog
         // let's wait a little bit longer, give it 5 more seconds to see it
-        String fullText = (new WebDriverWait(driver, 5)).until((ExpectedCondition<String>) d ->
+        String fullText = (new WebDriverWait(driver, Duration.ofSeconds(5))).until((ExpectedCondition<String>) d ->
         {
             String text = driver.findElement(By.className(className)).getText();
 
