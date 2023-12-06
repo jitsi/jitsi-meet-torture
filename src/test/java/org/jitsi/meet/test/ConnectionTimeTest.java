@@ -37,16 +37,16 @@ public class ConnectionTimeTest
     extends WebTestBase
 {
     /**
-     * Number of conferences that are going to be started and closed to 
+     * Number of conferences that are going to be started and closed to
      * gather the data.
      */
     private static int NUMBER_OF_CONFERENCES = 10;
-    
+
     /**
      * Script that checks if the mandatory objects that are going to be used to
-     * get the connection time measurements are created or not. 
+     * get the connection time measurements are created or not.
      */
-    private static final String CHECK_OBJECTS_CREATED_SCRIPT 
+    private static final String CHECK_OBJECTS_CREATED_SCRIPT
         = "return (APP && APP.connection "
             + "&& APP.conference && APP.conference._room)? true : false";
 
@@ -57,31 +57,31 @@ public class ConnectionTimeTest
      */
     private enum TimeMeasurements
     {
-        INDEX_LOADED("return APP.connectionTimes['index.loaded']", null, 200.0),
-        
-        DOCUMENT_READY("return APP.connectionTimes['document.ready']", 
+        INDEX_LOADED("return window.JitsiMeetJS?.app?.connectionTimes['index.loaded']", null, 200.0),
+
+        DOCUMENT_READY("return window.JitsiMeetJS?.app?.connectionTimes['document.ready']",
             INDEX_LOADED, 600.0),
-        
+
         CONNECTION_ATTACHING(
             "return APP.connection.getConnectionTimes()['attaching']",
             DOCUMENT_READY, 500.0),
-        
+
         CONNECTION_ATTACHED(
-            "return APP.connection.getConnectionTimes()['attached']", 
+            "return APP.connection.getConnectionTimes()['attached']",
             CONNECTION_ATTACHING, 5.0),
-        
+
         CONNECTION_CONNECTING(
-            "return APP.connection.getConnectionTimes()['connecting']", 
+            "return APP.connection.getConnectionTimes()['connecting']",
             DOCUMENT_READY, 500.0),
-        
+
         CONNECTION_CONNECTED(
-            "return APP.connection.getConnectionTimes()['connected']", 
+            "return APP.connection.getConnectionTimes()['connected']",
             CONNECTION_CONNECTING, 1000.0),
-        
+
         MUC_JOINED(
             "return APP.conference._room.getConnectionTimes()['muc.joined']",
             null, 500.0),
-        
+
         SESSION_INITIATE("return APP.conference._room.getConnectionTimes()"
             + "['session.initiate']", MUC_JOINED, 600.0),
 
@@ -90,10 +90,10 @@ public class ConnectionTimeTest
         // to the original value
         ICE_CHECKING("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.checking']", SESSION_INITIATE, 300.0),
-        
+
         ICE_CONNECTED("return APP.conference._room.getConnectionTimes()"
             + "['ice.state.connected']", ICE_CHECKING, 500.0),
-        
+
         AUDIO_RENDER(
             "return APP.conference._room.getConnectionTimes()['audio.render']",
             ICE_CONNECTED, 200.0),
@@ -119,32 +119,32 @@ public class ConnectionTimeTest
          * The script used to get the data for a time measurement type.
          */
         private String script;
-        
+
         /**
-         * Max time between the previous measurement and 
+         * Max time between the previous measurement and
          * the current one
          */
         private Double threshold;
-        
+
         /**
-         * The previous executed time measurement. We are going to compare the 
-         * period of time between 2 consecutive time measurements and the 
+         * The previous executed time measurement. We are going to compare the
+         * period of time between 2 consecutive time measurements and the
          * threshold.
          */
         private TimeMeasurements prevStep;
-        
+
         /**
          * The number of time measurements/
          */
         public static final int length = TimeMeasurements.values().length;
-        
-        /** 
+
+        /**
          * Construct new TimeMeasurements instance.
-         * @param script The script used to get the data for a time 
+         * @param script The script used to get the data for a time
          * measurement type.
          * @param prevStep previous measurement.
-         * @param threshold Max time between the previous measurement and 
-         * the current one 
+         * @param threshold Max time between the previous measurement and
+         * the current one
          */
         TimeMeasurements(String script, TimeMeasurements prevStep,
             Double threshold)
@@ -153,7 +153,7 @@ public class ConnectionTimeTest
             this.prevStep = prevStep;
             this.threshold = threshold;
         }
-        
+
         /**
          * Returns the threshold property.
          * @return the threshold property.
@@ -162,7 +162,7 @@ public class ConnectionTimeTest
         {
             return threshold;
         }
-        
+
         /**
          * Returns prevStep property.
          * @return prevStep property.
@@ -171,7 +171,7 @@ public class ConnectionTimeTest
         {
             return prevStep;
         }
-        
+
         /**
          * Executes the script property for the given {@link WebDriver}
          * and returns a time measurement. (?)
@@ -197,7 +197,7 @@ public class ConnectionTimeTest
 
             return null;
         }
-        
+
         /**
          * Executes CHECK_OBJECTS_CREATED_SCRIPT for passed WebDriver and
          * returns the result. That way we can check if all objects that are
@@ -220,8 +220,8 @@ public class ConnectionTimeTest
             }
             return null;
         }
-        
-        
+
+
     }
 
     @Override
@@ -376,7 +376,7 @@ public class ConnectionTimeTest
 
         return data;
     }
-    
+
     /**
      * Refreshes the second participant.
      */
@@ -390,7 +390,7 @@ public class ConnectionTimeTest
 
         ensureTwoParticipants();
     }
-    
+
     /**
      * Waits for all measurements to be complete. We only wait for VIDEO_RENDER,
      * AUDIO_RENDER and DATA_CHANNEL_OPEN, assuming all the rest would have
@@ -431,7 +431,7 @@ public class ConnectionTimeTest
             medianValue < s.getThreshold(),
             "Expected:" + s.getThreshold() + ", was:" + medianValue);
     }
-    
+
     /**
      * Returns the median from passed array.
      * @param data the array
@@ -442,7 +442,7 @@ public class ConnectionTimeTest
         Arrays.sort(data);
         return data[data.length/2];
     }
-    
+
     /**
      * Returns array with elements constructed by subtracting element from a
      * from element from b with the same index.
