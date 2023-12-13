@@ -76,12 +76,12 @@ public class Notifications
     /**
      * The test id of the button in the notification to approve access.
      */
-    private static final String LOBBY_PARTICIPANT_ADMIT_TEST_ID = "lobby.admit";
+    private static final String LOBBY_PARTICIPANT_ADMIT_TEST_ID = "participantsPane.actions.admit";
 
     /**
      * The test id of the button in the notification to reject access.
      */
-    private static final String LOBBY_PARTICIPANT_REJECT_TEST_ID = "lobby.reject";
+    private static final String LOBBY_PARTICIPANT_REJECT_TEST_ID = "participantsPane.actions.reject";
 
     /**
      * The xpath to find the notification for single knocking participant.
