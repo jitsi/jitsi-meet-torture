@@ -33,8 +33,8 @@ public class Toolbar
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link Toolbar}.
      */
-    public final static String AUDIO_MUTE = "Mute";
-    public final static String AUDIO_UNMUTE = "Unmute";
+    public final static String AUDIO_MUTE = "Mute microphone";
+    public final static String AUDIO_UNMUTE = "Unmute microphone";
     public final static String CHAT = "Open chat";
     public final static String CLOSE_CHAT = "Close chat";
     public final static String DESKTOP = "Start sharing your screen";
@@ -58,7 +58,7 @@ public class Toolbar
     public final static String RECORD = "Toggle recording";
     public final static String SECURITY = "Security options";
     public final static String SELECT_BACKGROUND = "Select Background";
-    public final static String SETTINGS = "Toggle settings";
+    public final static String SETTINGS = "Open settings";
     public final static String SHARE_AUDIO = "Share audio";
     public final static String SHARE_VIDEO = "Share video";
     public final static String STOP_SHARE_VIDEO = "Stop video";
