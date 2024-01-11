@@ -98,7 +98,7 @@ public abstract class AbstractBaseTest<P extends Participant>
      * used in tests
      */
     public static final String TOKEN_PNAME = "org.jitsi.token";
-    
+
     /**
      * Default.
      */
@@ -232,23 +232,13 @@ public abstract class AbstractBaseTest<P extends Participant>
     }
 
     /**
-     * Return new {@link JitsiMeetUrl} instance which has only
-     * {@link JitsiMeetUrl#serverUrl} field initialized with the value from
-     * {@link ParticipantOptions#JITSI_MEET_URL_PROP} system property.
+     * Return new {@link JitsiMeetUrl} instance.
      *
      * @return a new instance of {@link JitsiMeetUrl}.
      */
     public JitsiMeetUrl getJitsiMeetUrl()
     {
-        String token = System.getProperty(TOKEN_PNAME);
-
-        JitsiMeetUrl u = participants.getJitsiMeetUrl().setRoomName(currentRoomName);
-        if (StringUtils.isNotBlank(token))
-        {
-            u.addRoomParameter("jwt", token);
-        }
-
-        return u;
+        return participants.getJitsiMeetUrl().setRoomName(currentRoomName);
     }
 
     /**

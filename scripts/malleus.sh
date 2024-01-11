@@ -102,7 +102,7 @@ set_defaults() {
       MALLEUS_SET_SAVELOGS=false
     fi
 
-    # Null is a fine default for MALLEUS_EXTRA_SENDER_PARAMS and MALLEUS_EXTRA_RECEIVER_PARAMS
+    # Null is a fine default for MALLEUS_EXTRA_SENDER_PARAMS, MALLEUS_EXTRA_RECEIVER_PARAMS and MALLEUS_JWT
 }
 
 case $1 in
@@ -144,6 +144,7 @@ case $1 in
         --extra-receiver-params) MALLEUS_EXTRA_RECEIVER_PARAMS=$optvalue;;
         --max-disrupted-bridges-pct) MALLEUS_MAX_DISRUPTED_BRIDGES_PCT=$optvalue;;
         --debug) set -x;;
+        --jwt) MALLEUS_JWT=$optvalue;;
         *)
           usage
           ;;
@@ -232,6 +233,7 @@ mvn \
 -Dremote.address=$MALLEUS_HUB_URL \
 -DallowInsecureCerts=$MALLEUS_ALLOW_INSECURE_CERTS \
 -Djitsi-meet.tests.toRun=$MALLEUS_TESTS_TO_RUN \
+-Dorg.jitsi.token=$MALLEUS_JWT \
 -Dwdm.gitHubTokenName=jitsi-jenkins \
 -Dremote.resource.path=/usr/share/jitsi-meet-torture \
 -Djitsi-meet.instance.url=$MALLEUS_INSTANCE_URL \

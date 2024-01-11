@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static org.jitsi.meet.test.base.ParticipantOptions.GLOBAL_PROP_PREFIX;
+import static org.jitsi.meet.test.base.AbstractBaseTest.TOKEN_PNAME;
 
 /**
  * Helper class for managing {@link Participant}s.
@@ -263,6 +264,13 @@ public abstract class ParticipantHelper<P extends Participant>
         }
 
         url.setServerUrl(serverUrl);
+
+        String token = System.getProperty(TOKEN_PNAME);
+        if (StringUtils.isNotBlank(token))
+        {
+            url.addRoomParameter("jwt", token);
+        }
+
         return url;
     }
 
