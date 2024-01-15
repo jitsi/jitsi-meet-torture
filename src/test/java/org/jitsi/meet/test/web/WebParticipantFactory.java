@@ -246,7 +246,7 @@ public class WebParticipantFactory
 
             // Force chrome to use English instead of system language.
             Map<String, Object> prefs = new HashMap<String, Object>();
-            prefs.put("intl.accept_languages", "en-US");
+            prefs.put("intl.accept_languages", "en,en-US");
             ops.setExperimentalOption("prefs", prefs);
 
             ops.addArguments("allow-insecure-localhost");
