@@ -22,6 +22,8 @@ import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Start muted tests
  * @author Hristo Terezov
