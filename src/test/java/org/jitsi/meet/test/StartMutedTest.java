@@ -211,7 +211,7 @@ public class StartMutedTest
 
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
 
-        participant1.getLargeVideo().isVideoPlaying();
+        assertTrue(participant1.getLargeVideo().isVideoPlaying(), "Large video is not playing");
     }
 
     /**
@@ -305,7 +305,7 @@ public class StartMutedTest
         participant1.getToolbar().clickAudioUnmuteButton();
         MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
 
-        participant2.getLargeVideo().isVideoPlaying();
+        assertTrue(participant2.getLargeVideo().isVideoPlaying(), "Large video is not playing");
 
         MeetUIUtils.waitForAudioMuted(
             participant2.getDriver(),
@@ -317,7 +317,7 @@ public class StartMutedTest
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
         participant2.getToolbar().clickAudioUnmuteButton();
 
-        participant1.getLargeVideo().isVideoPlaying();
+        assertTrue(participant1.getLargeVideo().isVideoPlaying(), "Large video is not playing");
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
             participant2.getDriver(),
@@ -357,6 +357,6 @@ public class StartMutedTest
 
         // Check if p2's video is playing on p1.
         participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
-        participant1.getLargeVideo().isVideoPlaying();
+        assertTrue(participant1.getLargeVideo().isVideoPlaying(), "Large video is not playing");
     }
 }
