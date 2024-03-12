@@ -271,8 +271,8 @@ public class StartMutedTest
         hangUpAllParticipants();
 
         JitsiMeetUrl meetUrl = getJitsiMeetUrl().appendConfig(
-                "config.startWithAudioMuted=true" +
-                "config.startWithVideoMuted=true" +
+                "config.startWithAudioMuted=true&" +
+                "config.startWithVideoMuted=true&" +
                 "config.p2p.enabled=true");
 
         // Do not use ensureTwoParticipants() because it checks for send/rec
@@ -315,12 +315,48 @@ public class StartMutedTest
 
         // Unmute p2's audio and video and check on p1.
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-        participant1.getLargeVideo().isVideoPlaying();
+        participant2.getToolbar().clickAudioUnmuteButton();
 
+        participant1.getLargeVideo().isVideoPlaying();
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
             participant2.getDriver(),
             "participant2",
             false);
+    }
+
+    @Test(dependsOnMethods = { "startWithAudioVideoMutedCanUnmute" })
+    public void testp2pJvbSwitchAndSwitchBack()
+    {
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl();
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        // Mute p2's video just before p3 joins.
+        participant2.getToolbar().clickVideoMuteButton();
+
+        WebParticipant participant3 = joinThirdParticipant(meetUrl, null);
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
+        
+        // Unmute p2 and check if its video is being received by p1 and p3.
+        participant2.getToolbar().clickVideoUnmuteButton();
+
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+
+        // Mute p2's video just before p3 leaves.
+        participant2.getToolbar().clickVideoMuteButton();
+
+        participant3.hangUp();
+
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+        participant2.getToolbar().clickVideoUnmuteButton();
+
+        // Check if p2's video is playing on p1.
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+        participant1.getLargeVideo().isVideoPlaying();
     }
 }
