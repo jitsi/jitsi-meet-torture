@@ -20,7 +20,6 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.support.ui.*;
-import org.openqa.selenium.TimeoutException;
 
 /**
  * Represents the large video view for a particular {@link WebParticipant}.
@@ -50,10 +49,9 @@ public class LargeVideo
      * @return {@code boolean} True if the video element is progressing through
      * video, false if no play progress is detected.
      */
-    public boolean isVideoPlaying()
+    public void isVideoPlaying()
     {
-        try {
-            TestUtils.waitForCondition(
+        TestUtils.waitForCondition(
             participant.getDriver(),
             5,
             (ExpectedCondition<Boolean>) w -> {
@@ -65,11 +63,6 @@ public class LargeVideo
                 System.out.println(startTime + " " + newTime);
                 return newTime > startTime;
             });
-        }
-        catch (TimeoutException timeoutExc)
-        {
-            return false;
-        }
     }
 
     /**
