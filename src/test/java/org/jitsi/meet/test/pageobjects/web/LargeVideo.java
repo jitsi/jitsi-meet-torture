@@ -20,6 +20,7 @@ import java.util.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.support.ui.*;
+import org.openqa.selenium.TimeoutException;
 
 /**
  * Represents the large video view for a particular {@link WebParticipant}.
