@@ -43,13 +43,9 @@ public class LargeVideo
     }
 
     /**
-     * Returns whether or not the video element on {@code LargeVideo} is
-     * currently playing.
-     *
-     * @return {@code boolean} True if the video element is progressing through
-     * video, false if no play progress is detected.
+     * Throws an exception if the video element is not playing (blocks for at least 500 ms).
      */
-    public void isVideoPlaying()
+    public void assertVideoPlaying()
     {
         TestUtils.waitForCondition(
             participant.getDriver(),
@@ -60,7 +56,6 @@ public class LargeVideo
                 TestUtils.waitMillis(500);
 
                 double newTime = this.getVideoPlaytime();
-                System.out.println(startTime + " " + newTime);
                 return newTime > startTime;
             });
     }
