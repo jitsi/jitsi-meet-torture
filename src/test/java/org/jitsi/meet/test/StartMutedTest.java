@@ -22,6 +22,8 @@ import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * Start muted tests
  * @author Hristo Terezov
@@ -260,5 +262,103 @@ public class StartMutedTest
             participant1.getDriver(),
             "participant1",
             false);
+    }
+
+    /**
+     * Join the conference while both audio and video are muted, unmute both the participants.
+     */
+    @Test(dependsOnMethods = { "startWithAudioMutedCanUnmute" })
+    public void startWithAudioVideoMutedCanUnmute()
+    {
+        hangUpAllParticipants();
+
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl().appendConfig(
+                "config.startWithAudioMuted=true&" +
+                "config.startWithVideoMuted=true&" +
+                "config.p2p.enabled=true");
+
+        // Do not use ensureTwoParticipants() because it checks for send/rec
+        // bitrate which should be 0 if both participants start audio muted.
+        ensureOneParticipant(meetUrl);
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = joinSecondParticipant(meetUrl);
+
+        participant2.waitToJoinMUC();
+        participant2.waitForIceConnected();
+
+        MeetUIUtils.waitForAudioMuted(
+            participant1.getDriver(),
+            participant2.getDriver(),
+            "participant2",
+            true);
+
+        MeetUIUtils.waitForAudioMuted(
+            participant2.getDriver(),
+            participant1.getDriver(),
+            "participant1",
+            true);
+
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+
+        participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
+
+        // Unmute p1's both audio and video and check on p2.
+        participant1.getToolbar().clickAudioUnmuteButton();
+        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
+
+        participant2.getLargeVideo().isVideoPlaying();
+
+        MeetUIUtils.waitForAudioMuted(
+            participant2.getDriver(),
+            participant1.getDriver(),
+            "participant1",
+            false);
+
+        // Unmute p2's audio and video and check on p1.
+        MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
+        participant2.getToolbar().clickAudioUnmuteButton();
+
+        participant1.getLargeVideo().isVideoPlaying();
+        MeetUIUtils.waitForAudioMuted(
+            participant1.getDriver(),
+            participant2.getDriver(),
+            "participant2",
+            false);
+    }
+
+    @Test(dependsOnMethods = { "startWithAudioVideoMutedCanUnmute" })
+    public void testp2pJvbSwitchAndSwitchBack()
+    {
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl();
+
+        WebParticipant participant1 = getParticipant1();
+        WebParticipant participant2 = getParticipant2();
+
+        // Mute p2's video just before p3 joins.
+        participant2.getToolbar().clickVideoMuteButton();
+
+        WebParticipant participant3 = joinThirdParticipant(meetUrl, null);
+        participant3.waitToJoinMUC();
+        participant3.waitForIceConnected();
+        participant3.waitForSendReceiveData();
+        
+        // Unmute p2 and check if its video is being received by p1 and p3.
+        participant2.getToolbar().clickVideoUnmuteButton();
+
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+        participant3.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+
+        // Mute p2's video just before p3 leaves.
+        participant2.getToolbar().clickVideoMuteButton();
+
+        participant3.hangUp();
+
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
+        participant2.getToolbar().clickVideoUnmuteButton();
+
+        // Check if p2's video is playing on p1.
+        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
+        participant1.getLargeVideo().isVideoPlaying();
     }
 }
