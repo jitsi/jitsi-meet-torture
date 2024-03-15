@@ -22,8 +22,6 @@ import org.jitsi.meet.test.web.*;
 
 import org.testng.annotations.*;
 
-import static org.testng.Assert.*;
-
 /**
  * Start muted tests
  * @author Hristo Terezov
@@ -213,7 +211,7 @@ public class StartMutedTest
 
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
 
-        participant1.getLargeVideo().isVideoPlaying();
+        participant1.getLargeVideo().assertVideoPlaying();
     }
 
     /**
@@ -305,21 +303,22 @@ public class StartMutedTest
 
         // Unmute p1's both audio and video and check on p2.
         participant1.getToolbar().clickAudioUnmuteButton();
-        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
-
-        participant2.getLargeVideo().isVideoPlaying();
-
         MeetUIUtils.waitForAudioMuted(
             participant2.getDriver(),
             participant1.getDriver(),
             "participant1",
             false);
 
+        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
+        participant2.getLargeVideo().assertVideoPlaying();
+
+        TestUtils.waitMillis(1000);
+
         // Unmute p2's audio and video and check on p1.
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-        participant2.getToolbar().clickAudioUnmuteButton();
+        participant1.getLargeVideo().assertVideoPlaying();
 
-        participant1.getLargeVideo().isVideoPlaying();
+        participant2.getToolbar().clickAudioUnmuteButton();
         MeetUIUtils.waitForAudioMuted(
             participant1.getDriver(),
             participant2.getDriver(),
@@ -359,6 +358,6 @@ public class StartMutedTest
 
         // Check if p2's video is playing on p1.
         participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, false);
-        participant1.getLargeVideo().isVideoPlaying();
+        participant1.getLargeVideo().assertVideoPlaying();
     }
 }
