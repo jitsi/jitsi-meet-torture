@@ -312,6 +312,8 @@ public class StartMutedTest
         MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
         participant2.getLargeVideo().assertVideoPlaying();
 
+        TestUtils.waitMillis(1000);
+
         // Unmute p2's audio and video and check on p1.
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
         participant1.getLargeVideo().assertVideoPlaying();
