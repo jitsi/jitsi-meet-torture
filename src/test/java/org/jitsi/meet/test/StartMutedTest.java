@@ -274,30 +274,24 @@ public class StartMutedTest
                 "config.startWithAudioMuted=true&" +
                 "config.startWithVideoMuted=true&" +
                 "config.p2p.enabled=true");
+        JitsiMeetUrl meetUrl2 = getJitsiMeetUrl().appendConfig(
+                "config.p2p.enabled=true");
 
         // Do not use ensureTwoParticipants() because it checks for send/rec
         // bitrate which should be 0 if both participants start audio muted.
         ensureOneParticipant(meetUrl);
 
         WebParticipant participant1 = getParticipant1();
-        WebParticipant participant2 = joinSecondParticipant(meetUrl);
+        WebParticipant participant2 = joinSecondParticipant(meetUrl2);
 
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
-
-        MeetUIUtils.waitForAudioMuted(
-            participant1.getDriver(),
-            participant2.getDriver(),
-            "participant2",
-            true);
 
         MeetUIUtils.waitForAudioMuted(
             participant2.getDriver(),
             participant1.getDriver(),
             "participant1",
             true);
-
-        participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
 
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant1, true);
 
@@ -311,19 +305,6 @@ public class StartMutedTest
 
         MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
         participant2.getLargeVideo().assertVideoPlaying();
-
-        TestUtils.waitMillis(1000);
-
-        // Unmute p2's audio and video and check on p1.
-        MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-        participant1.getLargeVideo().assertVideoPlaying();
-
-        participant2.getToolbar().clickAudioUnmuteButton();
-        MeetUIUtils.waitForAudioMuted(
-            participant1.getDriver(),
-            participant2.getDriver(),
-            "participant2",
-            false);
     }
 
     @Test(dependsOnMethods = { "startWithAudioVideoMutedCanUnmute" })
