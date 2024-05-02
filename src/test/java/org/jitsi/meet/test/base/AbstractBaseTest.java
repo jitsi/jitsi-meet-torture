@@ -99,13 +99,17 @@ public abstract class AbstractBaseTest<P extends Participant>
      */
     public static final String TOKEN_PNAME = "org.jitsi.token";
 
+    public static String generateRandomRoomName()
+    {
+        return "jitsimeettorture" + ((int)(Math.random()*1000000000));
+    }
+
     /**
      * Default.
      */
     protected AbstractBaseTest()
     {
-        currentRoomName
-            = "jitsimeettorture" + String.valueOf((int)(Math.random()*1000000000));
+        currentRoomName = generateRandomRoomName();
         participants = null;
     }
 

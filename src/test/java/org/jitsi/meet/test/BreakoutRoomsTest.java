@@ -269,7 +269,7 @@ public class BreakoutRoomsTest
         // so the previous breakout rooms would still be there.
         // To avoid this issue we use a different meeting
         JitsiMeetUrl url = getJitsiMeetUrl()
-                .setRoomName("random-room-name")
+                .setRoomName(generateRandomRoomName())
                 .appendConfig("config.startWithAudioMuted=true");
         ensureTwoParticipants(url, url);
 
