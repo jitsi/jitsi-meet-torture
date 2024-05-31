@@ -6,25 +6,86 @@
 </head>
 <body>
 <script>
-    const params = new URLSearchParams(document.location.search);
-    const config = JSON.parse(params.get("config"));
-    const interfaceConfig = JSON.parse(params.get("interfaceConfig"));
-    const password = params.get("password");
+    const blacklist = [ '__proto__', 'constructor', 'prototype' ];
+    const paramStr = document.location.hash;
+    const params = {};
+    const paramParts = paramStr?.substring(1).split('&') || [];
 
-    const uInfoObj = params.get("userInfo");
-    const userInfo = uInfoObj && uInfoObj.length > 0 ?
-        JSON.parse(uInfoObj) : undefined;
+    paramParts.forEach(part => {
+        const param = part.split('=');
+        const key = param[0];
 
-    var domain = params.get("domain");
-    var options = {
-        jwt: params.get("jwt"),
-        roomName: params.get("room"),
+        if (!key || key.split('.').some(k => blacklist.includes(k))) {
+            return;
+        }
+
+        let value;
+
+        try {
+            value = param[1];
+
+
+            const decoded = decodeURIComponent(value).replace(/\\&/, '&')
+                .replace(/[\u2018\u2019]/g, '\'')
+                .replace(/[\u201C\u201D]/g, '"');
+
+            value = decoded === 'undefined' || decoded === '' ? undefined : JSON.parse(decoded);
+
+        } catch (e) {
+            console.error(`Failed to parse URL parameter value: ${String(value)}`, e);
+
+            return;
+        }
+        params[key] = value;
+    });
+    const json = {
+        config: {},
+        interfaceConfig: {}
+    };
+
+    for (const param of Object.keys(params)) {
+        let base = json;
+        const names = param.split('.');
+        const last = names.pop() ?? '';
+
+        for (const name of names) {
+            base = base[name] = base[name] || {};
+        }
+
+        base[last] = params[param];
+    }
+
+    // we can drop the url params in the future
+    const urlParams = new URLSearchParams(document.location.search);
+
+    const config = !Object.keys(json.config).length ? JSON.parse(urlParams.get("config"))
+        : json.config;
+    const interfaceConfig = !Object.keys(json.interfaceConfig).length ? JSON.parse(urlParams.get("interfaceConfig"))
+        : json.interfaceConfig;
+    const password = json.password || urlParams.get("password");
+    const uInfoObj = urlParams.get("userInfo") || json.userInfo; // prefer url just for compatability with old code
+
+    let userInfo;
+    if (uInfoObj) {
+        if (uInfoObj.length > 0) {
+            userInfo = JSON.parse(uInfoObj);
+        } else if (Object.keys(uInfoObj).length) {
+            userInfo = uInfoObj;
+        }
+    }
+    const jwt = json.jwt || urlParams.get("jwt");
+    const roomName = json.room || urlParams.get("room");
+    const domain = json.domain || urlParams.get("domain");
+
+    const options = {
+        jwt,
+        roomName,
         configOverwrite: config,
         interfaceConfigOverwrite: interfaceConfig,
         userInfo
     };
 
-    var externalAPIScript = document.createElement('script');
+    const externalAPIScript = document.createElement('script');
     externalAPIScript.src = `https://${domain}/external_api.js`;
     externalAPIScript.type = "text/javascript";
     externalAPIScript.onload = function(){
@@ -36,13 +97,13 @@
                 window.jitsiAPI.test.isModerator = true;
             }
         });
-        window.jitsiAPI.addListener('audioAvailabilityChanged', function(event) {
+        window.jitsiAPI.addEventListener('audioAvailabilityChanged', function(event) {
             window.jitsiAPI.test.audioAvailabilityChanged = event;
         });
-        window.jitsiAPI.addListener('videoAvailabilityChanged', function(event) {
+        window.jitsiAPI.addEventListener('videoAvailabilityChanged', function(event) {
             window.jitsiAPI.test.videoAvailabilityChanged = event;
         });
-        window.jitsiAPI.addListener('videoConferenceJoined', function(event) {
+        window.jitsiAPI.addEventListener('videoConferenceJoined', function(event) {
             window.jitsiAPI.test.videoConferenceJoined = event;
         });
         if (password && password.length > 0) {

@@ -86,7 +86,7 @@ public class BackendLobbyTest
         JitsiMeetUrl url = getJitsiMeetUrl();
         url.setRoomName(tenantName + '/' + nonModerator1RoomName);
 
-        ensureTwoParticipants(url.copy().addRoomParameter("jwt", nonModerator1Token), url);
+        ensureTwoParticipants(url.copy().addFragmentParam("jwt", nonModerator1Token), url);
 
         assertFalse(getParticipant1().getSecurityDialog().isLobbyEnabled());
         assertFalse(getParticipant2().getSecurityDialog().isLobbySectionPresent());
@@ -141,7 +141,7 @@ public class BackendLobbyTest
 
         lobbyScreen.join();
 
-        joinSecondParticipant(url.copy().addRoomParameter("jwt", moderatorToken));
+        joinSecondParticipant(url.copy().addFragmentParam("jwt", moderatorToken));
         WebParticipant moderator = getParticipant2();
 
         moderator.waitToJoinMUC();
@@ -154,7 +154,7 @@ public class BackendLobbyTest
 
         moderator.hangUp();
 
-        joinSecondParticipant(url.copy().addRoomParameter("jwt", moderatorToken));
+        joinSecondParticipant(url.copy().addFragmentParam("jwt", moderatorToken));
         moderator = getParticipant2();
 
         moderator.waitToJoinMUC();
@@ -163,7 +163,7 @@ public class BackendLobbyTest
         assertEquals(name2, participant1.getName(),
             "Wrong name for the knocking participant or participant is missing");
 
-        joinThirdParticipant(url.copy().addRoomParameter("jwt", nonModerator2Token), null);
+        joinThirdParticipant(url.copy().addFragmentParam("jwt", nonModerator2Token), null);
 
         WebParticipant participant3 = getParticipant3();
         LobbyScreen lobbyScreen3 = participant3.getLobbyScreen();

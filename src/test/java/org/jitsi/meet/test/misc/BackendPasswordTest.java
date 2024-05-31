@@ -79,11 +79,11 @@ public class BackendPasswordTest
         JitsiMeetUrl url = getJitsiMeetUrl();
         url.setRoomName(tenantName + '/' + roomName);
 
-        joinFirstParticipant(url.copy().addRoomParameter("jwt", moderator1Token), null);
+        joinFirstParticipant(url.copy().addFragmentParam("jwt", moderator1Token), null);
 
         joinWithPassAndCheck(getParticipant1());
 
-        joinSecondParticipant(url.copy().addRoomParameter("jwt", moderator2Token));
+        joinSecondParticipant(url.copy().addFragmentParam("jwt", moderator2Token));
         joinWithPassAndCheck(getParticipant2());
 
         joinThirdParticipant(url, null);
