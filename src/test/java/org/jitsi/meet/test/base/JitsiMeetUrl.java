@@ -436,7 +436,8 @@ public class JitsiMeetUrl
 
             urlBuilder.append(entry.getKey());
             urlBuilder.append("=");
-            urlBuilder.append(entry.getValue());
+            // make sure we add a valid json param
+            urlBuilder.append(JsonParser.parseString(entry.getValue()).toString());
         }
 
         return urlBuilder.toString();

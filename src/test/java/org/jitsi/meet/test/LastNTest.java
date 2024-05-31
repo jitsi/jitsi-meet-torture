@@ -50,7 +50,7 @@ public class LastNTest
         WebDriver driver1 = participant1.getDriver();
 
         WebParticipant participant2 = joinSecondParticipant(meetUrl2);
-        WebDriver driver2 = participant2.getDriver();
+
         participant2.waitToJoinMUC();
         participant2.waitForIceConnected();
 

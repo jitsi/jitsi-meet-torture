@@ -16,6 +16,7 @@
 package org.jitsi.meet.test;
 
 import com.google.gson.*;
+import org.apache.commons.lang3.*;
 import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -144,12 +145,18 @@ public class IFrameAPIBase
             .appendConfig(config)
             .getFragmentParamsAsJson();
 
-        iFrameUrl.addRoomParameter("domain", domain);
-        iFrameUrl.addRoomParameter("room", currentRoomName);
-        iFrameUrl.addRoomParameter("config", defaultParams.get("config").toString());
-        iFrameUrl.addRoomParameter("interfaceConfig", defaultParams.get("interfaceConfig").toString());
-        iFrameUrl.addRoomParameter("userInfo", userInfo != null ? userInfo.toString() : "");
-        iFrameUrl.addRoomParameter("password", password != null ? password : "");
+        iFrameUrl.addFragmentParam("domain", domain);
+        iFrameUrl.addFragmentParam("room", currentRoomName);
+
+        // do not include empty params (externalAPI complains)
+        if (userInfo != null && StringUtils.isNotBlank(userInfo.toString()))
+        {
+            iFrameUrl.addFragmentParam("userInfo", userInfo.toString());
+        }
+        if (password != null && StringUtils.isNotBlank(password))
+        {
+            iFrameUrl.addFragmentParam("password", password);
+        }
 
         // Override the server and the path part(which is s room name)
         iFrameUrl.setServerUrl(pagePath);
