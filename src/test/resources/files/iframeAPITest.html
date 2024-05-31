@@ -55,6 +55,7 @@
         base[last] = params[param];
     }
 
+    // we can drop the url params in the future
     const urlParams = new URLSearchParams(document.location.search);
 
     const config = !Object.keys(json.config).length ? JSON.parse(urlParams.get("config"))
@@ -62,7 +63,7 @@
     const interfaceConfig = !Object.keys(json.interfaceConfig).length ? JSON.parse(urlParams.get("interfaceConfig"))
         : json.interfaceConfig;
     const password = json.password || urlParams.get("password");
-    const uInfoObj = json.userInfo || urlParams.get("userInfo");
+    const uInfoObj = urlParams.get("userInfo") || json.userInfo; // prefer url just for compatability with old code
 
     let userInfo;
     if (uInfoObj) {
