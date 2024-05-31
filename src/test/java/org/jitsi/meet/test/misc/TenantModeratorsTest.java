@@ -79,8 +79,8 @@ public class TenantModeratorsTest
 
         // moderator + guest
         ensureThreeParticipants(
-            url.copy().addRoomParameter("jwt", moderator1Token),
-            url.copy().addRoomParameter("jwt", moderator2Token),
+            url.copy().addFragmentParam("jwt", moderator1Token),
+            url.copy().addFragmentParam("jwt", moderator2Token),
             url);
 
         // FIXME: Showing remote video menu in tile view does not work
@@ -102,8 +102,8 @@ public class TenantModeratorsTest
         // Now let's test changing the second participant with one from different tenant
         getParticipant2().hangUp();
         ensureThreeParticipants(
-            url.copy().addRoomParameter("jwt", moderator1Token),
-            url.copy().addRoomParameter("jwt", nonModeratorToken),
+            url.copy().addFragmentParam("jwt", moderator1Token),
+            url.copy().addFragmentParam("jwt", nonModeratorToken),
             url);
 
         // FIXME: Showing remote video menu in tileview does not work

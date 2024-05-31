@@ -75,8 +75,8 @@ public class AllAuthenticatedModeratorsTest
 
         // moderator + guest
         ensureThreeParticipants(
-            url.copy().addRoomParameter("jwt", moderator1Token),
-            url.copy().addRoomParameter("jwt", moderator2Token),
+            url.copy().addFragmentParam("jwt", moderator1Token),
+            url.copy().addFragmentParam("jwt", moderator2Token),
             url);
 
         // FIXME: Showing remote video menu in tileview does not work
@@ -107,8 +107,8 @@ public class AllAuthenticatedModeratorsTest
 
         // moderator + guest
         ensureThreeParticipants(
-            url.copy().addRoomParameter("jwt", moderator1Token),
-            url.copy().addRoomParameter("jwt", moderator2Token),
+            url.copy().addFragmentParam("jwt", moderator1Token),
+            url.copy().addFragmentParam("jwt", moderator2Token),
             url);
 
         // FIXME: Showing remote video menu in tileview does not work

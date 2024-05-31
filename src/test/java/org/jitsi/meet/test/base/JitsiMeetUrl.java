@@ -365,6 +365,20 @@ public class JitsiMeetUrl
     }
 
     /**
+     * Sets the {@link #fragmentParameters} part of the conference URL.
+     *
+     * @param paramKey the fragment parameter key name
+     * @param paramValue the value to assign to the framgent parameter key
+     * @return a reference to this object.
+     */
+    public JitsiMeetUrl addFragmentParam(String paramKey, String paramValue)
+    {
+        this.fragmentParams.put(paramKey, paramValue);
+
+        return this;
+    }
+
+    /**
      * Sets the {@link #serverUrl} part of the conference URL.
      *
      * @param serverUrl a Jitsi Meet server URL (see {@link #serverUrl} for more

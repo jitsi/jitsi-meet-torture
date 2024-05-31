@@ -268,7 +268,7 @@ public abstract class ParticipantHelper<P extends Participant>
         String token = System.getProperty(TOKEN_PNAME);
         if (StringUtils.isNotBlank(token))
         {
-            url.addRoomParameter("jwt", token);
+            url.addFragmentParam("jwt", token);
         }
 
         return url;

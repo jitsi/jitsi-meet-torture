@@ -57,7 +57,7 @@ public class ModeratedRoomsTest
         JitsiMeetUrl url = getJitsiMeetUrl();
         url.setRoomName(tenantName + '/' + url.getRoomName());
 
-        ensureTwoParticipants(url.copy().addRoomParameter("jwt", token), url);
+        ensureTwoParticipants(url.copy().addFragmentParam("jwt", token), url);
 
         assertTrue(getParticipant1().isModerator(), "Participant 1 must be moderator");
         assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");

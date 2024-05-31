@@ -77,7 +77,7 @@ public class SingleModeratorTest
         url.setRoomName(tenantName + '/' + roomName);
 
         // moderator + guest
-        ensureTwoParticipants(url.copy().addRoomParameter("jwt", moderatorToken), url);
+        ensureTwoParticipants(url.copy().addFragmentParam("jwt", moderatorToken), url);
 
         assertTrue(getParticipant1().isModerator(), "Participant 1 must be moderator");
         assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");
@@ -89,8 +89,8 @@ public class SingleModeratorTest
 
         // moderator + another authenticated user from same tenant
         ensureTwoParticipants(
-            url.copy().addRoomParameter("jwt", moderatorToken),
-            url.copy().addRoomParameter("jwt", nonModerator1Token));
+            url.copy().addFragmentParam("jwt", moderatorToken),
+            url.copy().addFragmentParam("jwt", nonModerator1Token));
 
         assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");
         ModeratedRoomsTest.checkModeratorMenuItems(getParticipant2(), getParticipant1());
@@ -99,8 +99,8 @@ public class SingleModeratorTest
 
         // moderator + another authenticated user from different tenant
         ensureTwoParticipants(
-            url.copy().addRoomParameter("jwt", moderatorToken),
-            url.copy().addRoomParameter("jwt", nonModerator2Token));
+            url.copy().addFragmentParam("jwt", moderatorToken),
+            url.copy().addFragmentParam("jwt", nonModerator2Token));
 
         assertFalse(getParticipant2().isModerator(), "Participant 2 must not be moderator");
         ModeratedRoomsTest.checkModeratorMenuItems(getParticipant2(), getParticipant1());
