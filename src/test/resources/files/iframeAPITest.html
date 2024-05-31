@@ -63,8 +63,15 @@
         : json.interfaceConfig;
     const password = json.password || urlParams.get("password");
     const uInfoObj = json.userInfo || urlParams.get("userInfo");
-    const userInfo = uInfoObj && uInfoObj.length > 0 ?
-        JSON.parse(uInfoObj) : undefined;
+
+    let userInfo;
+    if (uInfoObj) {
+        if (uInfoObj.length > 0) {
+            userInfo = JSON.parse(uInfoObj);
+        } else if (Object.keys(uInfoObj).length) {
+            userInfo = uInfoObj;
+        }
+    }
     const jwt = json.jwt || urlParams.get("jwt");
     const roomName = json.room || urlParams.get("room");
     const domain = json.domain || urlParams.get("domain");

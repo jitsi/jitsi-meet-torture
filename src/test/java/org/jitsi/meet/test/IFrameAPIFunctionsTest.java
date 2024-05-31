@@ -69,7 +69,7 @@ public class IFrameAPIFunctionsTest
 
         this.iFrameUrl = getIFrameUrl(userInfo, null);
 
-        ensureOneParticipant(this.iFrameUrl);
+        ensureOneParticipant(this.iFrameUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
         WebParticipant participant1 = getParticipant1();
         String endpointId1 = participant1.getEndpointId();
