@@ -177,6 +177,30 @@ public class BreakoutRoomsList
             removeButton.click();
         }
 
+        public void renameRoom(String newName)
+        {
+            WebDriver driver = participant.getDriver();
+
+            openContextMenu();
+            WebElement removeButton = TestUtils.waitForElementBy(driver, By.id("rename-room-" + id), 2);
+
+            removeButton.click();
+
+            TestUtils.waitForElementBy(driver, By.xpath("//input[@name='breakoutRoomName']"), 5);
+
+            // give time for the dialog to fully load
+            TestUtils.waitMillis(1000);
+
+            WebElement passwordInput = driver.findElement(By.xpath("//input[@name='breakoutRoomName']"));
+
+            passwordInput.clear();
+            passwordInput.sendKeys(newName);
+
+            TestUtils.waitMillis(500);
+
+            ModalDialogHelper.clickOKButton(driver);
+        }
+
         public void closeRoom()
         {
             openContextMenu();

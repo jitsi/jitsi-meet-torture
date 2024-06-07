@@ -15,23 +15,21 @@
  */
 package org.jitsi.meet.test;
 
-import org.jitsi.meet.test.base.JitsiMeetUrl;
-import org.jitsi.meet.test.pageobjects.web.BreakoutRoomsList;
-import org.jitsi.meet.test.pageobjects.web.ParticipantsPane;
-import org.jitsi.meet.test.util.TestUtils;
-import org.jitsi.meet.test.web.WebParticipant;
-import org.jitsi.meet.test.web.WebTestBase;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.testng.SkipException;
-import org.testng.annotations.Test;
+import org.jitsi.meet.test.base.*;
+import org.jitsi.meet.test.pageobjects.web.*;
+import org.jitsi.meet.test.util.*;
+import org.jitsi.meet.test.web.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
+import org.testng.*;
+import org.testng.annotations.*;
 
 import java.util.*;
 import java.util.logging.*;
 
 import static org.testng.Assert.*;
-import static org.jitsi.meet.test.pageobjects.web.ParticipantsPane.PARTICIPANT_ITEM;
+import static org.jitsi.meet.test.pageobjects.web.ParticipantsPane.*;
 
 /**
  * Tests the Breakout rooms functionality.
@@ -345,5 +343,53 @@ public class BreakoutRoomsTest
         // the collapsed room should still have one participant
         TestUtils.waitForCondition(participant1.getDriver(), 5,
                 (ExpectedCondition<Boolean>) d -> roomsList.getRooms().get(0).getParticipantsCount() == 1);
+    }
+    @Test(dependsOnMethods = {"testCollapseRoom"})
+    public void testRenameRoom()
+    {
+        BreakoutRoomsList roomsList = participant1.getBreakoutRoomsList();
+
+        String myNewRoomName = "breakout-" + generateRandomRoomName();
+
+        // let's rename breakout room and see it in local and remote
+        BreakoutRoomsList.BreakoutRoom room = roomsList.getRooms().get(0);
+        room.renameRoom(myNewRoomName);
+
+        SubjectTest.checkSubject(participant2, myNewRoomName);
+
+        TestUtils.waitForCondition(participant1.getDriver(), "Breakout room was not renamed for moderator", 5,
+               (ExpectedCondition<Boolean>) d -> roomsList.getRooms().get(0).getName().trim().equals(myNewRoomName));
+
+        ParticipantsPane pane2 = participant2.getParticipantsPane();
+        pane2.open();
+        BreakoutRoomsList roomsList2 = participant2.getBreakoutRoomsList();
+
+        // leave room
+        pane2.leaveBreakoutRoom();
+
+        // there should be one empty room
+        TestUtils.waitForCondition(participant1.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> {
+               List<BreakoutRoomsList.BreakoutRoom> rooms = roomsList.getRooms();
+               return rooms.size() == 1
+                       && rooms.get(0).getParticipantsCount() == 0;
+           });
+
+        assertEquals(roomsList2.getRooms().get(0).getName().trim(), myNewRoomName,
+             "Participant2 do not see new room name");
+
+        // send the second participant to the first breakout room
+        ParticipantsPane pane = participant1.getParticipantsPane();
+        pane.sendParticipantToBreakoutRoom(participant2, roomsList.getRooms().get(0).getName().trim());
+
+        // there should be one room with one participant
+        TestUtils.waitForCondition(participant1.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> {
+               List<BreakoutRoomsList.BreakoutRoom> rooms = roomsList.getRooms();
+               return rooms.size() == 1
+                       && rooms.get(0).getParticipantsCount() == 1;
+           });
+
+        SubjectTest.checkSubject(participant2, myNewRoomName);
     }
 }
