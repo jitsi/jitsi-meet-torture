@@ -15,9 +15,11 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
@@ -59,8 +61,8 @@ public class SubjectTest
 
         if (participant1.isModerator())
         {
-            checkSubject(participant1);
-            checkSubject(getParticipant2());
+            checkSubject(participant1, MY_TEST_SUBJECT);
+            checkSubject(getParticipant2(), MY_TEST_SUBJECT);
         }
         else
         {
@@ -69,7 +71,7 @@ public class SubjectTest
         }
     }
 
-    private void checkSubject(WebParticipant participant)
+    public static void checkSubject(WebParticipant participant, String subject)
     {
         WebDriver driver = participant.getDriver();
 
@@ -80,6 +82,8 @@ public class SubjectTest
 
         String txt = driver.findElement(By.xpath(SUBJECT_XPATH)).getText();
 
-        assertTrue(txt.startsWith(MY_TEST_SUBJECT), "Subject does not match for " + participant.getName());
+        TestUtils.waitForCondition(driver, "Subject does not match for " + participant.getName(), 5,
+           (ExpectedCondition<Boolean>) d ->
+                   d.findElement(By.xpath(SUBJECT_XPATH)).getText().startsWith(subject));
     }
 }
