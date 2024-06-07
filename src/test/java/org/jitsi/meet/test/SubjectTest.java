@@ -23,7 +23,7 @@ import org.testng.annotations.*;
 
 import java.util.logging.*;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * TSets subject via config url hash param and check locally and remote for it.
