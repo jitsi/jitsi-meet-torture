@@ -218,6 +218,11 @@
             <class name="org.jitsi.meet.test.StopVideoTest" />
         </classes>
     </test>
+    <test name="SubjectTest">
+        <classes>
+            <class name="org.jitsi.meet.test.SubjectTest" />
+        </classes>
+    </test>
     <test name="SwitchVideoTest">
         <classes>
             <class name="org.jitsi.meet.test.SwitchVideoTest" />
