@@ -56,6 +56,11 @@
             <class name="org.jitsi.meet.test.ConnectionTimeTest" />
         </classes>
     </test>-->
+    <test name="CodecSelectionTest">
+        <classes>
+            <class name="org.jitsi.meet.test.CodecSelectionTest" />
+        </classes>
+    </test>
     <test name="DataChannelTest">
         <classes>
             <class name="org.jitsi.meet.test.DataChannelTest" />
