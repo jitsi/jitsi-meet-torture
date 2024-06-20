@@ -50,7 +50,8 @@ public class CodecSelectionTest
     @Test
     public void testAsymmetricCodecs()
     {
-        ensureOneParticipant(getJitsiMeetUrl());
+        ensureOneParticipant(getJitsiMeetUrl()
+            .appendConfig("config.videoQuality.codecPreferenceOrder=[ 'VP9', 'VP8', 'AV1' ]"));
         WebParticipant participant1 = getParticipant1();
 
         WebParticipant participant2 = joinSecondParticipant(getJitsiMeetUrl()
@@ -153,7 +154,10 @@ public class CodecSelectionTest
     {
         hangUpAllParticipants();
 
-        ensureTwoParticipants();
+        JitsiMeetUrl url = getJitsiMeetUrl()
+            .appendConfig("config.videoQuality.codecPreferenceOrder=[ 'VP9', 'VP8', 'AV1' ]");
+
+        ensureTwoParticipants(url, url);
         WebParticipant participant1 = getParticipant1();
         WebParticipant participant2 = getParticipant2();
 
@@ -171,10 +175,10 @@ public class CodecSelectionTest
             "return JitsiMeetJS.app.testing.isLocalCameraEncodingVp9();",
             10);
 
-        JitsiMeetUrl url = getJitsiMeetUrl()
+        JitsiMeetUrl meetUrl = getJitsiMeetUrl()
             .appendConfig("config.videoQuality.codecPreferenceOrder=[ 'VP8' ]");
 
-        WebParticipant participant3 = joinThirdParticipant(url, null);
+        WebParticipant participant3 = joinThirdParticipant(meetUrl, null);
         participant3.waitToJoinMUC();
         participant3.waitForIceConnected();
         participant3.waitForSendReceiveData(true, true);
