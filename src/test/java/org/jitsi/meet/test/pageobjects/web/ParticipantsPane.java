@@ -417,7 +417,7 @@ public class ParticipantsPane
      *
      * @param remoteId id the participant for which to open the menu
      */
-    private void openParticipantContextMenu(String remoteId)
+    private void openParticipantContextMenu(String remoteId, boolean retry)
     {
         WebElement listItem = TestUtils.waitForElementBy(participant.getDriver(),
                 By.xpath("//div[@id='participant-item-" + remoteId + "']"), 5);
@@ -426,8 +426,27 @@ public class ParticipantsPane
         hoverOnParticipantListItem.moveToElement(listItem);
         hoverOnParticipantListItem.perform();
 
-        String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(PARTICIPANT_MORE_LABEL);
-        listItem.findElement(By.cssSelector(cssSelector)).click();
+        try
+        {
+            String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(PARTICIPANT_MORE_LABEL);
+            listItem.findElement(By.cssSelector(cssSelector)).click();
+        }
+        catch (ElementNotInteractableException e)
+        {
+            if (retry)
+            {
+                throw e;
+            }
+
+            // workaround of exception we sometimes see
+            // let's move the mous to local video and then back try the context menu
+            WebElement toolbar = participant.getDriver().findElement(By.id("localVideoContainer"));
+            Actions hoverOnToolbar = new Actions(participant.getDriver());
+            hoverOnToolbar.moveToElement(toolbar);
+            hoverOnToolbar.perform();
+
+            openParticipantContextMenu(remoteId, true);
+        }
     }
 
     /**
@@ -440,7 +459,7 @@ public class ParticipantsPane
     {
         String remoteParticipantId = participantToSend.getEndpointId();
 
-        openParticipantContextMenu(remoteParticipantId);
+        openParticipantContextMenu(remoteParticipantId, false);
 
         String cssSelector = MeetUIUtils.getAccessibilityCSSSelector(roomName);
         WebElement sendButton = TestUtils.waitForElementBy(participant.getDriver(),
