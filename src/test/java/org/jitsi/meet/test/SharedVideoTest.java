@@ -36,7 +36,7 @@ public class SharedVideoTest
      * Links to youtube videos and their expected urls, used for loading and
      * testing.
      */
-    private static String V1_VIDEO_ID = "xNXN7CZk8X0";
+    private static String V1_VIDEO_ID = "rDNCWjkVR64";
     private static String V1_LINK = "https://www.youtube.com/watch?v=" + V1_VIDEO_ID;
     public static String V2_LINK = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
     private static String V2_VIDEO_ID = V2_LINK;
