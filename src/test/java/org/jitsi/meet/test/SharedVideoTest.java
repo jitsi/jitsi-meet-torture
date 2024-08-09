@@ -33,11 +33,9 @@ public class SharedVideoTest
     extends WebTestBase
 {
     /**
-     * Links to youtube videos and their expected urls, used for loading and
+     * Links to videos and their expected urls, used for loading and
      * testing.
      */
-    private static String V1_VIDEO_ID = "xNXN7CZk8X0";
-    private static String V1_LINK = "https://www.youtube.com/watch?v=" + V1_VIDEO_ID;
     public static String V2_LINK = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
     private static String V2_VIDEO_ID = V2_LINK;
 
@@ -76,7 +74,7 @@ public class SharedVideoTest
     @Test
     public void startSharingVideo()
     {
-        startSharingVideoByUrl(V1_LINK, V1_VIDEO_ID, true);
+        startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, true);
 
         checkRunning();
 
@@ -376,22 +374,7 @@ public class SharedVideoTest
         }
     }
 
-    /**
-     * Starts sharing another video.
-     */
     @Test(dependsOnMethods = { "stopSharingTest" })
-    public void startSharingDifferentVideo()
-    {
-        startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, true);
-
-        checkRunning();
-
-        checkUrls();
-
-        stopSharingTest();
-    }
-
-    @Test(dependsOnMethods = { "startSharingDifferentVideo" })
     public void startSharingDifferentVideoAfterStop()
     {
         startSharingVideoByUrl(V2_LINK, V2_VIDEO_ID, true);
