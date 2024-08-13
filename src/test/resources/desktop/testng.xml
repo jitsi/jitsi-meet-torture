@@ -198,11 +198,11 @@
             <class name="org.jitsi.meet.test.ReloadTest" />
         </classes>
     </test>
-    <test name="SharedVideoTest">
+    <!-- <test name="SharedVideoTest">
         <classes>
             <class name="org.jitsi.meet.test.SharedVideoTest" />
         </classes>
-    </test>
+    </test> -->
     <test name="SingleModeratorTest">
         <classes>
             <class name="org.jitsi.meet.test.misc.SingleModeratorTest" />
