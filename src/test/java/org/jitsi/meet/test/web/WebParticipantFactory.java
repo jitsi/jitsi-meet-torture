@@ -280,7 +280,7 @@ public class WebParticipantFactory
             if (options.isHeadless())
             {
                 ops.addArguments("headless");
-                ops.addArguments("window-size=1400x600");
+                ops.addArguments("window-size=1400,600");
             }
 
             // starting version 46 we see crashes of chrome GPU process when
