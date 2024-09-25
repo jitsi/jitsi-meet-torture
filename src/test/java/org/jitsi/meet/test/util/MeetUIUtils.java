@@ -643,7 +643,7 @@ public class MeetUIUtils
      */
     public static String getAccessibilityCSSSelector(String accessibilityLabel)
     {
-        return String.format("[aria-label=\"%s\"]", accessibilityLabel);
+        return String.format("[aria-label^=\"%s\"]", accessibilityLabel);
     }
 
     /**
