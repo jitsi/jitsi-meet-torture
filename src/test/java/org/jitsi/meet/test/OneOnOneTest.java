@@ -44,8 +44,8 @@ public class OneOnOneTest
      */
     private static final String ONE_ON_ONE_CONFIG_OVERRIDES
         = "config.disable1On1Mode=false"
-        + "&interfaceConfig.TOOLBAR_TIMEOUT=500"
-        + "&config.alwaysVisibleToolbar=false";
+        + "&config.toolbarConfig.timeout=500"
+        + "&config.toolbarConfig.alwaysVisible=false";
 
     /**
      * Tests remote videos in filmstrip do not display in a 1-on-1 call.

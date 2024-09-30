@@ -49,7 +49,7 @@ public class WebParticipant extends Participant<WebDriver>
             + "&config.disableNS=true"
             + "&config.enableTalkWhileMuted=false"
             + "&config.callStatsID=false"
-            + "&config.alwaysVisibleToolbar=true"
+            + "&config.toolbarConfig.alwaysVisible=true"
             + "&config.p2p.enabled=false"
             + "&config.p2p.useStunTurn=false"
             + "&config.pcStatsInterval=1500"
