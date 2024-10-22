@@ -1388,6 +1388,7 @@ public class IFrameAPICommandsTest
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.executeCommand('toggleParticipantsPane', false);");
+
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.isParticipantsPaneOpen()" +
                         ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen2 = res);");

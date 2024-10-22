@@ -22,11 +22,14 @@ import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.*;
 import org.testng.*;
 
 import java.net.*;
 import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.*;
 
 /**
@@ -62,6 +65,9 @@ public class IFrameAPIBase
     protected JitsiMeetUrl iFrameUrl;
 
     protected static boolean isModeratorSupported = false;
+
+    private static ScheduledExecutorService refreshScheduler = Executors.newScheduledThreadPool(1);
+    private static Map<WebDriver, ScheduledFuture<?>> refreshTasks = new ConcurrentHashMap<>();
 
     /**
      * Loads one/firsst participant and checks for moderator rights.
@@ -173,6 +179,20 @@ public class IFrameAPIBase
     protected static void switchToIframeAPI(WebDriver driver)
     {
         driver.switchTo().defaultContent();
+
+        if (!refreshTasks.containsKey(driver))
+        {
+            ScheduledFuture<?> task = refreshScheduler.scheduleAtFixedRate(() -> {
+                try
+                {
+                    driver.getTitle();
+                }
+                catch (Exception ignored)
+                {}
+            }, 15, 15, TimeUnit.SECONDS);
+
+            refreshTasks.put(driver, task);
+        }
     }
 
     /**
@@ -334,5 +354,22 @@ public class IFrameAPIBase
 
         participant2.getFilmstrip().assertAudioMuteIcon(participant1, false);
         participant1.getFilmstrip().assertAudioMuteIcon(participant2, false);
+    }
+
+    @Override
+    public void cleanupClass()
+    {
+        try
+        {
+            refreshTasks.forEach((driver, task) -> {
+                task.cancel(true);
+                refreshTasks.remove(driver);
+            });
+            refreshScheduler.shutdown();
+        }
+        catch (Exception ignored)
+        {}
+
+        super.cleanupClass();
     }
 }
