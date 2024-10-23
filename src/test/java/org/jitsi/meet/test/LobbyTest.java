@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -126,6 +127,11 @@ public class LobbyTest
             });
     }
 
+    private String enterLobby(WebParticipant moderator, boolean enterDisplayName)
+    {
+        return this.enterLobby(moderator, enterDisplayName, false);
+    }
+
     /**
      * Expects that lobby is enabled for the room we will try to join.
      * Lobby UI is shown, enter display name and join.
@@ -137,12 +143,28 @@ public class LobbyTest
      * from local storage.
      * @return the participant name knocking.
      */
-    private String enterLobby(WebParticipant moderator, boolean enterDisplayName)
+    private String enterLobby(WebParticipant moderator, boolean enterDisplayName, boolean usePrejoin)
     {
-        joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
+        JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
+
+        if (usePrejoin)
+        {
+            meetingUrl.removeFragmentParam("config.prejoinConfig");
+            meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
+        }
+
+        joinThirdParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
         WebParticipant participant3 = getParticipant3();
-        LobbyScreen lobbyScreen = participant3.getLobbyScreen();
+        ParentPreMeetingScreen lobbyScreen;
+        if (usePrejoin)
+        {
+            lobbyScreen = participant3.getPreJoinScreen();
+        }
+        else
+        {
+            lobbyScreen = participant3.getLobbyScreen();
+        }
 
         // participant 3 should be now on pre-join screen
         lobbyScreen.waitForLoading();
@@ -157,9 +179,13 @@ public class LobbyTest
 
         if (enterDisplayName)
         {
-            // check join button is disabled
             String classes = joinButton.getAttribute("class");
-            assertTrue(classes.contains("disabled"), "The join button should be disabled");
+
+            if (!usePrejoin)
+            {
+                // check join button is disabled
+                assertTrue(classes.contains("disabled"), "The join button should be disabled");
+            }
 
             // TODO check that password is hidden as the room does not have password
             // this check needs to be added once the functionality exists
@@ -181,7 +207,7 @@ public class LobbyTest
             (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
 
         // check no join button
-        assertFalse(lobbyScreen.hasJoinButton(), "Join button should be hidden after clicking it");
+        assertFalse(lobbyScreen.hasJoinButton(), "Join button should be hidden or disabled after clicking it");
 
         // new screen, is password button shown
         WebElement passwordButton = lobbyScreen.getPasswordButton();
