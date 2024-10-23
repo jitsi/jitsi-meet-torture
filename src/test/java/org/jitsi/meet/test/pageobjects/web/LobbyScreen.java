@@ -27,12 +27,8 @@ import java.time.*;
  * The Lobby screen representation.
  */
 public class LobbyScreen
+    extends ParentPreMeetingScreen
 {
-    /**
-     * The participant used to interact with the lobby screen.
-     */
-    private final WebParticipant participant;
-
     /**
      * The id we can use to check whether participant is in pre join screen.
      */
@@ -48,29 +44,9 @@ public class LobbyScreen
      */
     private final static String JOIN_BUTTON_TEST_ID = "lobby.knockButton";
 
-    /**
-     * The testId of the join meeting button.
-     */
-    private final static String PASSWORD_BUTTON_TEST_ID = "lobby.enterPasswordButton";
-
-    /**
-     * JS script to check whether lobby room is joined or not.
-     */
-    private static final String CHECK_LOBBY_JOINED_SCRIPT
-        = "return APP.conference._room?.room?.getLobby()?.lobbyRoom?.joined == true;";
-
     public LobbyScreen(WebParticipant participant)
     {
-        this.participant = participant;
-    }
-
-    /**
-     * Returns the password button.
-     * @return the password button.
-     */
-    public WebElement getPasswordButton()
-    {
-        return participant.getDriver().findElement(ByTestId.testId(PASSWORD_BUTTON_TEST_ID));
+        super(participant);
     }
 
     /**
@@ -82,94 +58,26 @@ public class LobbyScreen
         return participant.getDriver().findElement(ByTestId.testId(DISPLAY_NAME_TEST_ID));
     }
 
-    /**
-     * Interacts with the view to enter a display name.
-     */
-    public void enterDisplayName(String displayName)
+    @Override
+    protected String getScreenTestId()
     {
-        WebElement displayNameInput = getDisplayNameInput();
-
-        // element.clear does not always work, make sure we delete the content
-        while (!displayNameInput.getAttribute("value").equals(""))
-        {
-            displayNameInput.sendKeys(Keys.BACK_SPACE);
-        }
-
-        displayNameInput.sendKeys(displayName);
+        return LOBBY_SCREEN_ID;
     }
 
-    /**
-     * Interacts with the view to enter a password.
-     */
-    public void enterPassword(String password)
+    @Override
+    public String getJoinButtonTestId()
     {
-        WebElement passwordButton = getPasswordButton();
-
-        new Actions(this.participant.getDriver()).moveToElement(passwordButton).click().perform();
-
-        new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(3)).until(
-            (ExpectedCondition<Boolean>) d ->
-                d.findElements(ByTestId.testId("lobby.password")).size() > 0);
-
-        WebElement passwordInput
-            = participant.getDriver().findElement(ByTestId.testId("lobby.password"));
-
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
-
-        WebElement joinButton = participant.getDriver().findElement(ByTestId.testId("lobby.passwordJoinButton"));
-
-        new Actions(this.participant.getDriver()).moveToElement(joinButton).click().perform();
-    }
-
-    /**
-     * The join button.
-     * @return join button.
-     */
-    public WebElement getJoinButton()
-    {
-        return participant.getDriver().findElement(ByTestId.testId(JOIN_BUTTON_TEST_ID));
-    }
-
-    /**
-     * Is join button available.
-     * @return <tt>true</tt> if join button is present on the page.
-     */
-    public boolean hasJoinButton()
-    {
-        return participant.getDriver().findElements(ByTestId.testId(JOIN_BUTTON_TEST_ID)).size() > 0;
-    }
-
-    /**
-     * Clicks the join button.
-     */
-    public void join()
-    {
-        WebElement joinButton = getJoinButton();
-        if (joinButton == null)
-        {
-            throw new NoSuchElementException("Lobby join button not found!");
-        }
-
-        new Actions(this.participant.getDriver()).moveToElement(joinButton).click().perform();
+        return JOIN_BUTTON_TEST_ID;
     }
 
     /**
      * Waits for lobby screen to load.
      */
+    @Override
     public void waitForLoading()
     {
         // we wait for LOBBY_SCREEN_ID to successfully appear
         new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(5)).until(
-            (ExpectedCondition<Boolean>) d -> d.findElements(By.className(LOBBY_SCREEN_ID)).size() > 0);
-    }
-
-    /**
-     * Checks internally whether lobby room is joined.
-     * @return true if lobby room is joined.
-     */
-    public boolean isLobbyRoomJoined()
-    {
-        return TestUtils.executeScriptAndReturnBoolean(this.participant.getDriver(), CHECK_LOBBY_JOINED_SCRIPT);
+                (ExpectedCondition<Boolean>) d -> d.findElements(By.className(LOBBY_SCREEN_ID)).size() > 0);
     }
 }

@@ -26,12 +26,8 @@ import java.time.*;
  * The pre join screen representation.
  */
 public class PreJoinScreen
+    extends ParentPreMeetingScreen
 {
-    /**
-     * The participant used to interact with the pre join screen.
-     */
-    private final WebParticipant participant;
-
     /**
      * The testId of the join meeting button.
      */
@@ -57,27 +53,15 @@ public class PreJoinScreen
      */
     private final static String JOIN_WITHOUT_AUDIO = "prejoin.joinWithoutAudio";
 
+    /**
+     * The testId of the display name input.
+     */
+    private final static String DISPLAY_NAME_TEST_ID = "premeeting-name-input";
+
+
     public PreJoinScreen(WebParticipant participant)
     {
-        this.participant = participant;
-    }
-
-    /**
-     * Waits for pre join screen to load.
-     */
-    public void waitForLoading()
-    {
-        new WebDriverWait(this.participant.getDriver(), Duration.ofSeconds(3)).until(
-            (ExpectedCondition<Boolean>) d -> d.findElements(ByTestId.testId(PREJOIN_SCREEN_TEST_ID)).size() > 0);
-    }
-
-    /**
-     * The join button.
-     * @return join button.
-     */
-    public WebElement getJoinButton()
-    {
-        return participant.getDriver().findElement(ByTestId.testId(JOIN_BUTTON_TEST_ID));
+        super(participant);
     }
 
     /**
@@ -105,5 +89,26 @@ public class PreJoinScreen
     public WebElement getJoinWithoutAudioButton()
     {
         return participant.getDriver().findElement(ByTestId.testId(JOIN_WITHOUT_AUDIO));
+    }
+
+    /**
+     * The input for display name.
+     * @return input for display name.
+     */
+    public WebElement getDisplayNameInput()
+    {
+        return participant.getDriver().findElement(By.id(DISPLAY_NAME_TEST_ID));
+    }
+
+    @Override
+    protected String getScreenTestId()
+    {
+        return PREJOIN_SCREEN_TEST_ID;
+    }
+
+    @Override
+    public String getJoinButtonTestId()
+    {
+        return JOIN_BUTTON_TEST_ID;
     }
 }
