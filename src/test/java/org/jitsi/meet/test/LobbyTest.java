@@ -15,6 +15,7 @@
  */
 package org.jitsi.meet.test;
 
+import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.pageobjects.web.*;
 import org.jitsi.meet.test.util.*;
 import org.jitsi.meet.test.web.*;
@@ -126,6 +127,11 @@ public class LobbyTest
             });
     }
 
+    private String enterLobby(WebParticipant moderator, boolean enterDisplayName)
+    {
+        return this.enterLobby(moderator, enterDisplayName, false);
+    }
+
     /**
      * Expects that lobby is enabled for the room we will try to join.
      * Lobby UI is shown, enter display name and join.
@@ -137,12 +143,28 @@ public class LobbyTest
      * from local storage.
      * @return the participant name knocking.
      */
-    private String enterLobby(WebParticipant moderator, boolean enterDisplayName)
+    private String enterLobby(WebParticipant moderator, boolean enterDisplayName, boolean usePrejoin)
     {
-        joinThirdParticipant(null, new WebParticipantOptions().setSkipDisplayNameSet(true));
+        JitsiMeetUrl meetingUrl = getJitsiMeetUrl();
+
+        if (usePrejoin)
+        {
+            meetingUrl.removeFragmentParam("config.prejoinConfig");
+            meetingUrl.appendConfig("config.prejoinConfig.enabled=true");
+        }
+
+        joinThirdParticipant(meetingUrl, new WebParticipantOptions().setSkipDisplayNameSet(true));
 
         WebParticipant participant3 = getParticipant3();
-        LobbyScreen lobbyScreen = participant3.getLobbyScreen();
+        ParentPreMeetingScreen lobbyScreen;
+        if (usePrejoin)
+        {
+            lobbyScreen = participant3.getPreJoinScreen();
+        }
+        else
+        {
+            lobbyScreen = participant3.getLobbyScreen();
+        }
 
         // participant 3 should be now on pre-join screen
         lobbyScreen.waitForLoading();
@@ -157,9 +179,13 @@ public class LobbyTest
 
         if (enterDisplayName)
         {
-            // check join button is disabled
             String classes = joinButton.getAttribute("class");
-            assertTrue(classes.contains("disabled"), "The join button should be disabled");
+
+            if (!usePrejoin)
+            {
+                // check join button is disabled
+                assertTrue(classes.contains("disabled"), "The join button should be disabled");
+            }
 
             // TODO check that password is hidden as the room does not have password
             // this check needs to be added once the functionality exists
@@ -181,7 +207,7 @@ public class LobbyTest
             (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
 
         // check no join button
-        assertFalse(lobbyScreen.hasJoinButton(), "Join button should be hidden after clicking it");
+        assertFalse(lobbyScreen.hasJoinButton(), "Join button should be hidden or disabled after clicking it");
 
         // new screen, is password button shown
         WebElement passwordButton = lobbyScreen.getPasswordButton();
@@ -513,5 +539,65 @@ public class LobbyTest
             participant2.getDriver(),
             5,
             (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
+    }
+
+    @Test(dependsOnMethods = {"testModeratorLeavesWhileLobbyEnabled"})
+    public void testRejectAndApproveInPreJoin()
+    {
+        hangUpAllParticipants();
+
+        ensureTwoParticipants();
+        enableLobby();
+
+        WebParticipant participant1 = getParticipant1();
+        String knockingParticipant = enterLobby(participant1, true, true); // set display name to false
+
+        // moderator rejects access
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        participantsPane.open();
+        participantsPane.rejectLobbyParticipant(knockingParticipant);
+        participantsPane.close();
+
+        WebParticipant participant3 = getParticipant3();
+        // check the denied one is out of lobby, sees the notification about it
+        // The third participant should see a warning that his access to the room was denied
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> participant3.getNotifications().hasLobbyAccessDenied());
+
+        // check Lobby room not left
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> !participant3.getLobbyScreen().isLobbyRoomJoined());
+
+        // try again entering the lobby with the third one and approve it
+        // check that everything is fine in the meeting
+        participant3.getNotifications().closeLocalLobbyAccessDenied();
+
+        // let's retry to enter the lobby and approve this time
+        ParentPreMeetingScreen lobbyScreen = participant3.getPreJoinScreen();
+
+        // click join button
+        lobbyScreen.join();
+
+        TestUtils.waitForCondition(
+                participant3.getDriver(),
+                5,
+                (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
+
+        // check that moderator (participant 1) sees notification about participant in lobby
+        String name = participant1.getNotifications().getKnockingParticipantName();
+        assertEquals(name, participant3.getName(), "Wrong name for the knocking participant or participant is missing");
+
+
+        participantsPane.open();
+        participantsPane.admitLobbyParticipant(knockingParticipant);
+        participantsPane.close();
+
+        participant3.waitForParticipants(2);
+        participant3.waitForRemoteStreams(2);
+
+        assertEquals(
+            MeetUIUtils.getVisibleThumbnails(participant3.getDriver()).size(),
+            3, // one local and two remote
+            "number of visible thumbnails for participant3");
     }
 }
