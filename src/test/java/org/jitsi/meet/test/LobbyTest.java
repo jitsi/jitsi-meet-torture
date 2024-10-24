@@ -540,4 +540,64 @@ public class LobbyTest
             5,
             (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
     }
+
+    @Test(dependsOnMethods = {"testModeratorLeavesWhileLobbyEnabled"})
+    public void testRejectAndApproveInPreJoin()
+    {
+        hangUpAllParticipants();
+
+        ensureTwoParticipants();
+        enableLobby();
+
+        WebParticipant participant1 = getParticipant1();
+        String knockingParticipant = enterLobby(participant1, true, true); // set display name to false
+
+        // moderator rejects access
+        ParticipantsPane participantsPane = participant1.getParticipantsPane();
+        participantsPane.open();
+        participantsPane.rejectLobbyParticipant(knockingParticipant);
+        participantsPane.close();
+
+        WebParticipant participant3 = getParticipant3();
+        // check the denied one is out of lobby, sees the notification about it
+        // The third participant should see a warning that his access to the room was denied
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> participant3.getNotifications().hasLobbyAccessDenied());
+
+        // check Lobby room not left
+        TestUtils.waitForCondition(participant3.getDriver(), 5,
+           (ExpectedCondition<Boolean>) d -> !participant3.getLobbyScreen().isLobbyRoomJoined());
+
+        // try again entering the lobby with the third one and approve it
+        // check that everything is fine in the meeting
+        participant3.getNotifications().closeLocalLobbyAccessDenied();
+
+        // let's retry to enter the lobby and approve this time
+        ParentPreMeetingScreen lobbyScreen = participant3.getPreJoinScreen();
+
+        // click join button
+        lobbyScreen.join();
+
+        TestUtils.waitForCondition(
+                participant3.getDriver(),
+                5,
+                (ExpectedCondition<Boolean>) d -> lobbyScreen.isLobbyRoomJoined());
+
+        // check that moderator (participant 1) sees notification about participant in lobby
+        String name = participant1.getNotifications().getKnockingParticipantName();
+        assertEquals(name, participant3.getName(), "Wrong name for the knocking participant or participant is missing");
+
+
+        participantsPane.open();
+        participantsPane.admitLobbyParticipant(knockingParticipant);
+        participantsPane.close();
+
+        participant3.waitForParticipants(2);
+        participant3.waitForRemoteStreams(2);
+
+        assertEquals(
+            MeetUIUtils.getVisibleThumbnails(participant3.getDriver()).size(),
+            3, // one local and two remote
+            "number of visible thumbnails for participant3");
+    }
 }
