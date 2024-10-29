@@ -199,7 +199,8 @@ public class WebParticipant extends Participant<WebDriver>
         // then check for id='showMore' and click it
         try
         {
-            executeScript("window.APP === undefined && document.getElementById('showMore').click();");
+            executeScript("window.APP === undefined && document.getElementById('showMore')" +
+                              " && document.getElementById('showMore').click();");
         }
         catch(Exception e)
         {
