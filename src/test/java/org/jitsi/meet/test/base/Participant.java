@@ -174,8 +174,15 @@ public abstract class Participant<T extends WebDriver>
             this.keepAliveExecution = this.executor
                 .scheduleAtFixedRate(
                         () -> {
-                            Logger.getGlobal().log(Level.INFO,
-                               "KeepAliveeeee " + name + "/" + driver + "/" + driver.getCurrentUrl());
+                            try
+                            {
+                                Logger.getGlobal().log(Level.INFO,
+                                    "KeepAliveeeee " + name + "/" + driver + "/" + driver.getCurrentUrl());
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.getGlobal().log(Level.SEVERE, "Failed to keep alive " + name + "/" + driver, e);
+                            }
                         },
                     KEEP_ALIVE_SESSION_INTERVAL,
                     KEEP_ALIVE_SESSION_INTERVAL,

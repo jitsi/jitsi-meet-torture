@@ -194,6 +194,8 @@ public class FailureListener
             String fileNamePrefix
                 = testResult.getTestClass().getRealClass().getCanonicalName();
 
+            Logger.getGlobal().log(Level.SEVERE, "Error dump:" + getThreadDumb());
+
             takeScreenshots(fileNamePrefix, participants);
 
             saveHtmlSources(fileNamePrefix, participants);
@@ -452,5 +454,68 @@ public class FailureListener
         }
 
         return outputLogsParentFolder.getAbsolutePath();
+    }
+
+    /**
+     * Retrieves a thread dump.
+     * @return string representing current state of threads.
+     */
+    private static String getThreadDumb()
+    {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(
+                threadMXBean.getAllThreadIds(), 100);
+        StringBuilder dbg = new StringBuilder();
+        for (ThreadInfo threadInfo : threadInfos)
+        {
+            if (threadInfo == null)
+            {
+                continue;
+            }
+            dbg.append('"').append(threadInfo.getThreadName()).append('"');
+
+            Thread.State state = threadInfo.getThreadState();
+            dbg.append("\n   java.lang.Thread.State: ").append(state);
+
+            if (threadInfo.getLockName() != null)
+            {
+                dbg.append(" on ").append(threadInfo.getLockName());
+            }
+            dbg.append('\n');
+
+            StackTraceElement[] stackTraceElements
+                    = threadInfo.getStackTrace();
+            for (int i = 0; i < stackTraceElements.length; i++)
+            {
+                StackTraceElement ste = stackTraceElements[i];
+                dbg.append("\tat " + ste.toString());
+                dbg.append('\n');
+                if (i == 0 && threadInfo.getLockInfo() != null)
+                {
+                    Thread.State ts = threadInfo.getThreadState();
+                    if (ts == Thread.State.BLOCKED
+                            || ts == Thread.State.WAITING
+                            || ts == Thread.State.TIMED_WAITING)
+                    {
+                        dbg.append("\t-  " + ts + " on "
+                                           + threadInfo.getLockInfo());
+                        dbg.append('\n');
+                    }
+                }
+
+                for (MonitorInfo mi
+                        : threadInfo.getLockedMonitors())
+                {
+                    if (mi.getLockedStackDepth() == i)
+                    {
+                        dbg.append("\t-  locked " + mi);
+                        dbg.append('\n');
+                    }
+                }
+            }
+            dbg.append("\n\n");
+        }
+
+        return dbg.toString();
     }
 }
