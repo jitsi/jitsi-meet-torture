@@ -170,9 +170,13 @@ public abstract class Participant<T extends WebDriver>
     {
         if (this.keepAliveExecution == null)
         {
+            Logger.getGlobal().log(Level.INFO, "Createeeee KeepAliveeeee " + name + "/" + driver, new Exception());
             this.keepAliveExecution = this.executor
                 .scheduleAtFixedRate(
-                    driver::getCurrentUrl,
+                        () -> {
+                            Logger.getGlobal().log(Level.INFO,
+                               "KeepAliveeeee " + name + "/" + driver + "/" + driver.getCurrentUrl());
+                        },
                     KEEP_ALIVE_SESSION_INTERVAL,
                     KEEP_ALIVE_SESSION_INTERVAL,
                     TimeUnit.SECONDS);
@@ -186,6 +190,7 @@ public abstract class Participant<T extends WebDriver>
     {
         if (this.keepAliveExecution != null)
         {
+            Logger.getGlobal().log(Level.SEVERE, "Cancel KeepAliveeeee "+ name + "/" + driver, new Exception());
             this.keepAliveExecution.cancel(true);
             this.keepAliveExecution = null;
         }
