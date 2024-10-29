@@ -55,51 +55,35 @@ public class RestTests
     {
         serverAddress = getJitsiMeetUrl().getHost();
 
-        checkJicofoHealth();
-        checkJVBHealth();
-        checkConferencesThroughREST();
-    }
-
-    /**
-     * Just checks jicofo's health through REST api.
-     */
-    private void checkJicofoHealth()
-    {
-        runRestClient(serverAddress, 8888, "/about/health");
-    }
-
-    /**
-     * Just checks jvb's health through REST api.
-     */
-    private void checkJVBHealth()
-    {
-        runRestClient(serverAddress, 8080, "/about/health");
+        // jicofo
+        get(serverAddress, 8888, "/about/health");
+        // JVB
+        get(serverAddress, 8080, "/about/health");
+        checkJvbConferencesThroughREST();
     }
 
     /**
      * Checks the number of conferences, should be more than 0.
      */
-    private void checkConferencesThroughREST()
+    private void checkJvbConferencesThroughREST()
     {
-        String conferences
-            = runRestClient(serverAddress, 8080, "/colibri/conferences");
+        String conferences = get(serverAddress, 8080, "/colibri/conferences");
 
         JsonArray confs = new Gson().fromJson(conferences, JsonArray.class);
-        if (confs == null || confs.size() == 0)
+        if (confs == null || confs.isEmpty())
         {
             fail("Expected at least one conference");
         }
     }
 
     /**
-     * Just checks jvb's health through REST api.
+     * Send an HTTP GET and return the response body as a string. Throw an AssertionError if exceptions occur.
      * @param serverAddress the address to query
      * @param port the port to use
      * @param queryURL the url part without the host
      * @return the body content from the response
      */
-    private String runRestClient(
-        String serverAddress, int port, String queryURL)
+    private String get(String serverAddress, int port, String queryURL)
     {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
             .setSocketTimeout(5000)
@@ -114,8 +98,7 @@ public class RestTests
         try
         {
             HttpGet httpget = new HttpGet(queryURL);
-            try (CloseableHttpResponse response = httpclient.execute(
-                targetHost, httpget))
+            try (CloseableHttpResponse response = httpclient.execute(targetHost, httpget))
             {
                 if (response.getStatusLine().getStatusCode() != 200)
                 {
@@ -127,7 +110,7 @@ public class RestTests
         }
         catch (IOException e)
         {
-            fail("REST no enabled or not reachable:" + e.getMessage());
+            fail("REST not enabled or not reachable:" + e.getMessage());
         }
 
         return null;
