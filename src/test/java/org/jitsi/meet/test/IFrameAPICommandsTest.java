@@ -1357,48 +1357,47 @@ public class IFrameAPICommandsTest
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.isParticipantsPaneOpen()" +
                         ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen1 = res);");
-        boolean isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
-                "return window.jitsiAPI.test.isParticipantsPaneOpen1;");
-
-        // checks both the function and the UI
-        assertFalse(isParticipantsPaneOpen);
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return !window.jitsiAPI.test.isParticipantsPaneOpen1;"));
 
         switchToMeetContent(this.iFrameUrl, driver1);
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
-                participantsPane.isOpen() == false);
+                !participantsPane.isOpen());
 
         // then executes the command to open it
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.executeCommand('toggleParticipantsPane', true);");
+        TestUtils.waitMillis(500);
 
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.isParticipantsPaneOpen()" +
                         ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen2 = res);");
-        isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
-                "return window.jitsiAPI.test.isParticipantsPaneOpen2;");
-
-        assertTrue(isParticipantsPaneOpen);
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return window.jitsiAPI.test.isParticipantsPaneOpen2;"));
 
         switchToMeetContent(this.iFrameUrl, driver1);
-        TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
-                participantsPane.isOpen() == true);
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                participantsPane.isOpen());
 
         // executes the command to close it
         switchToIframeAPI(driver1);
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.executeCommand('toggleParticipantsPane', false);");
+        TestUtils.waitMillis(500);
+
         TestUtils.executeScript(driver1,
                 "window.jitsiAPI.isParticipantsPaneOpen()" +
                         ".then(res => window.jitsiAPI.test.isParticipantsPaneOpen2 = res);");
-        isParticipantsPaneOpen = TestUtils.executeScriptAndReturnBoolean(driver1,
-                "return window.jitsiAPI.test.isParticipantsPaneOpen2;");
-
-        assertFalse(isParticipantsPaneOpen);
+        TestUtils.waitForCondition(driver1, 2, (ExpectedCondition<Boolean>) d ->
+                TestUtils.executeScriptAndReturnBoolean(driver1,
+                        "return !window.jitsiAPI.test.isParticipantsPaneOpen2;"));
 
         switchToMeetContent(this.iFrameUrl, driver1);
         TestUtils.waitForCondition(driver1, 5, (ExpectedCondition<Boolean>) d ->
-                participantsPane.isOpen() == false);
+                !participantsPane.isOpen());
     }
 
     /**
