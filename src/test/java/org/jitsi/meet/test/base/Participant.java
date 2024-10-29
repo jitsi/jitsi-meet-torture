@@ -40,7 +40,7 @@ public abstract class Participant<T extends WebDriver>
      * The seconds between calls that will make sure we keep alive the
      * webdriver session.
      */
-    private static final int KEEP_ALIVE_SESSION_INTERVAL = 20;
+    private static final int KEEP_ALIVE_SESSION_INTERVAL = 10;
 
     /**
      * The default config which will be set on the {@link JitsiMeetUrl}, before
