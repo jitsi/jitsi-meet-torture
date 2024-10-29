@@ -19,6 +19,7 @@ import org.jitsi.meet.test.base.*;
 import org.jitsi.meet.test.util.*;
 import org.openqa.selenium.*;
 
+import java.util.*;
 import java.util.logging.*;
 
 /**
@@ -27,6 +28,15 @@ import java.util.logging.*;
 public class WebTestBase
     extends TypedBaseTest<WebParticipant, WebParticipantFactory>
 {
+    static
+    {
+        Logger logger = Logger.getLogger("");
+        logger.setLevel(Level.FINE);
+        Arrays.stream(logger.getHandlers()).forEach(handler -> {
+            handler.setLevel(Level.FINE);
+        });
+    }
+
     /**
      * Default
      */
