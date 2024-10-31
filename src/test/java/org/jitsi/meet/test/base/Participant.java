@@ -117,7 +117,7 @@ public abstract class Participant<T extends WebDriver>
      */
     public void initialize()
     {
-        startKeepAliveExecution();
+//        startKeepAliveExecution();
     }
 
     /**
