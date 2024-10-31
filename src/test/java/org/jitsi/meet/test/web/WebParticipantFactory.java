@@ -24,6 +24,7 @@ import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.ie.*;
 import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
+import org.openqa.selenium.remote.http.*;
 import org.openqa.selenium.safari.*;
 
 import java.io.*;
@@ -344,7 +345,12 @@ public class WebParticipantFactory
                     ops.setBrowserVersion(version);
                 }
 
-                return new RemoteWebDriver(options.getRemoteDriverAddress(), ops);
+//                return new RemoteWebDriver(options.getRemoteDriverAddress(), ops);
+                WebCommandExecutor e = new WebCommandExecutor(
+                        ClientConfig.defaultConfig().baseUrl(options.getRemoteDriverAddress()));
+                RemoteWebDriver d = new RemoteWebDriver(e, ops);
+                e.init(d);
+                return d;
             }
 
             try
