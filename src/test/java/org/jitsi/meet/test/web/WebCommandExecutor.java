@@ -39,6 +39,11 @@ public class WebCommandExecutor
         {
             try
             {
+                if (driver.getSessionId() == null)
+                {
+                    return;
+                }
+
                 Logger.getGlobal().log(Level.INFO, "KeepAliveeeee1 " +  driver);
                 Logger.getGlobal().log(Level.INFO, "KeepAliveeeee2 " +  driver + "/" + driver.getCurrentUrl());
             }
