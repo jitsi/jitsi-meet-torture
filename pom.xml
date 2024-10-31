@@ -251,7 +251,7 @@
                         </property>
                     </properties>
                     <parallel>tests</parallel>
-                    <threadCount>4</threadCount>
+                    <threadCount>1</threadCount>
                 </configuration>
             </plugin>
 
