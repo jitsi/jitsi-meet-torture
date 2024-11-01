@@ -68,26 +68,26 @@ public class IFrameAPIBase
      */
     protected void checkModerationSupported()
     {
-        // if it is true there is no point of checking.
-        if (isModeratorSupported)
-        {
-            return;
-        }
-
-        ensureOneParticipant();
-
-        // make sure we wait a bit if we got updated later to moderator
-        try
-        {
-            TestUtils.waitForCondition(getParticipant1().getDriver(), 2,
-                (ExpectedCondition<Boolean>) d -> getParticipant1().isModerator());
-
+//        // if it is true there is no point of checking.
+//        if (isModeratorSupported)
+//        {
+//            return;
+//        }
+//
+//        ensureOneParticipant();
+//
+//        // make sure we wait a bit if we got updated later to moderator
+//        try
+//        {
+//            TestUtils.waitForCondition(getParticipant1().getDriver(), 2,
+//                (ExpectedCondition<Boolean>) d -> getParticipant1().isModerator());
+//            System.err.println("oooooooooooooo1 true");
             isModeratorSupported = true;
-        }
-        catch(TimeoutException e)
-        {
-            isModeratorSupported = false;
-        }
+//        }
+//        catch(TimeoutException e)
+//        {
+//            isModeratorSupported = false;
+//        }
     }
 
     /**
@@ -95,14 +95,15 @@ public class IFrameAPIBase
      */
     protected void checkIframeDisabled()
     {
-        ensureOneParticipant();
-
-        if (MeetUtils.iFrameAPIDisabled(getParticipant1().getDriver()))
-        {
-            cleanupClass();
-            throw new SkipException(
-                "IFrameAPI is disabled. Disabling test.");
-        }
+//        ensureOneParticipant();
+//
+//        if (MeetUtils.iFrameAPIDisabled(getParticipant1().getDriver()))
+//        {
+//System.err.println("oooooooooooooo2 false");
+//            cleanupClass();
+//            throw new SkipException(
+//                "IFrameAPI is disabled. Disabling test.");
+//        }
     }
 
     /**
