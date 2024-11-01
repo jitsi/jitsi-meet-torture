@@ -276,13 +276,17 @@ public class WebParticipant extends Participant<WebDriver>
         {
             try
             {
-                getToolbar().clickHangUpButton();
+                // we use here the command instead of toolbar button as toolbar button causes a redirect
+                // on some deployments and that with combination of iframe can cause some issue when navigating after
+                // that to about:blank. We were seeing 504 gateway timeout errors between hub and nodes.
+                executeScript("APP.conference.leaveRoom(true);");
             }
             catch(Exception e)
             {
-                // there are cases where the toolbar is not available as we had already hanged up
+                // there are cases where we had already hanged up
             }
 
+            // wait here to make sure the command above has finished
             TestUtils.waitMillis(500);
         }
         // open a blank page after hanging up, to make sure
