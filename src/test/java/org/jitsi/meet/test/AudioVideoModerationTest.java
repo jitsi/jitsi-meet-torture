@@ -311,8 +311,14 @@ public class AudioVideoModerationTest
         // we try to unmute and test it that it was still muted
         tryToAudioUnmuteAndCheck(participant2, participant1);
 
+        // under some windows size toolbar can be over the thumbnail and cause problem finding
+        // the mute button
+        participantsPane.close();
+
         // stop video and check
         participant1.getRemoteParticipantById(participant2.getEndpointId()).stopVideo();
+
+        participantsPane.open();
 
         participant1.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
         participant2.getParticipantsPane().assertIsParticipantVideoMuted(participant2, true);
