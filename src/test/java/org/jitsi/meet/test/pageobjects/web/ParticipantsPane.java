@@ -20,7 +20,7 @@ public class ParticipantsPane
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link ParticipantsPane}.
      */
-    private final static String INVITE = "Invite Someone";
+    private final static String INVITE = "Invite someone";
 
     /**
      * The ID of the context menu button.
@@ -153,11 +153,11 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.perform();
 
 
-        if (fromContextMenu) 
+        if (fromContextMenu)
         {
             clickAskToUnmuteContextMenuById(participantToUnmute);
         }
-        else 
+        else
         {
             clickAskToUnmuteQuickActionButtonById(participantToUnmute);
         }
@@ -179,11 +179,11 @@ public class ParticipantsPane
         hoverOnMeetingParticipantListItem.moveToElement(meetingParticipantListItem);
         hoverOnMeetingParticipantListItem.perform();
 
-        if (fromContextMenu) 
+        if (fromContextMenu)
         {
             clickAllowVideoContextMenuById(participantToUnmute);
         }
-        else 
+        else
         {
             clickAllowVideoQuickActionButtonById(participantToUnmute);
         }

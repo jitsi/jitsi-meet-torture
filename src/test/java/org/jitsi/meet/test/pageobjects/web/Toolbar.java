@@ -46,7 +46,7 @@ public class Toolbar
     public final static String HANGUP = "Leave the meeting";
     public final static String HELP = "Help";
     public final static String INVITE = "Invite people";
-    public final static String INVITE_CSS = "Invite Someone";
+    public final static String INVITE_CSS = "Invite someone";
     public final static String LIVE_STREAM = "Live Stream";
     public final static String OVERFLOW = "More actions";
     public final static String OVERFLOW_MENU = "More actions menu" ;
