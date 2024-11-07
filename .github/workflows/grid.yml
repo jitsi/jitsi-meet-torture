@@ -106,7 +106,7 @@ jobs:
         name: Build and push firefox beta
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           context: ./doc/grid
           push: true
           build-args: |
