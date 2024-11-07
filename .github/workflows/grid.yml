@@ -20,7 +20,11 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       -
         name: Get video resources
         uses: robinraju/release-downloader@v1.8
@@ -42,14 +46,15 @@ jobs:
     #     uses: docker/setup-buildx-action@v2
       -
         name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push chrome stable
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64
           context: ./doc/grid
           push: true
           build-args: |
@@ -59,9 +64,23 @@ jobs:
             jitsi/selenium-standalone-chrome:latest
             jitsi/selenium-standalone-chrome:${{ needs.date.outputs.date }}
       -
-        name: Build and push firefox stable
-        uses: docker/build-push-action@v4
+        name: Build and push chromium stable
+        uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64,linux/arm64
+          context: ./doc/grid
+          push: true
+          build-args: |
+            BROWSER=chromium
+            VERSION=latest
+          tags: |
+            jitsi/selenium-standalone-chromium:latest
+            jitsi/selenium-standalone-chromium:${{ needs.date.outputs.date }}
+      -
+        name: Build and push firefox stable
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
           context: ./doc/grid
           push: true
           build-args: |
@@ -72,8 +91,9 @@ jobs:
             jitsi/selenium-standalone-firefox:${{ needs.date.outputs.date }}
       -
         name: Build and push chrome beta
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64
           context: ./doc/grid
           push: true
           build-args: |
@@ -84,8 +104,9 @@ jobs:
             jitsi/selenium-standalone-chrome:beta-${{ needs.date.outputs.date }}
       -
         name: Build and push firefox beta
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64,linux/arm64
           context: ./doc/grid
           push: true
           build-args: |
