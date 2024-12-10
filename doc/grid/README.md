@@ -17,6 +17,13 @@ docker build --build-arg VERSION=beta --build-arg BROWSER=firefox -t jitsi/stand
 docker build --build-arg VERSION=beta --build-arg BROWSER=chrome -t jitsi/standalone-chrome:beta .
 ```
 
+OR alternately create multi-arch images (only for chromium and firefox, no chrome arm64 builds available from Google.
+You will need your own docker registry or project to push these to.  Example below
+```
+PRIVATE_DOCKER_REGISTRY=example/standalone-firefox
+docker buildx build --build-arg VERSION=latest --build-arg BROWSER=firefox--platform=linux/arm64,linux/amd64 --push --pull --progress=plain --tag $PRIVATE_DOCKER_REGISTRY:latest .
+```
+
 ### Start the grid
 ```
 docker-compose-v3-dynamic-grid.yml
