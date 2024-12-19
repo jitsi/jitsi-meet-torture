@@ -1,9 +1,6 @@
 ARG BROWSER=chrome
 ARG VERSION=latest
-FROM --platform=$TARGETPLATFORM  selenium/standalone-${BROWSER}:${VERSION}
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-
+FROM selenium/standalone-${BROWSER}:${VERSION}
 
 USER root
 
