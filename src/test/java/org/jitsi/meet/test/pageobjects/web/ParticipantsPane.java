@@ -20,7 +20,7 @@ public class ParticipantsPane
      * Accessibility labels to be used as selectors for finding WebElements
      * within the {@link ParticipantsPane}.
      */
-    private final static String INVITE = "Invite someone";
+    private final static String INVITE = "Invite Someone";
 
     /**
      * The ID of the context menu button.
