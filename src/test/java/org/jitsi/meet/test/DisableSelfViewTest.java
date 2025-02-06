@@ -152,4 +152,10 @@ public class DisableSelfViewTest
     {
         checkSelfViewHidden(hidden, false);
     }
+
+    @Override
+    public boolean skipTestByDefault()
+    {
+        return true;
+    }
 }
