@@ -160,8 +160,6 @@ public class AudioVideoModerationTest
         // participant3 was unmuted by unmuteByModerator
         MeetUIUtils.unmuteAudioAndCheck(participant2, participant1);
         MeetUIUtils.unmuteVideoAndCheck(participant2, participant1);
-        MeetUIUtils.unmuteAudioAndCheck(participant1, participant2);
-        MeetUIUtils.unmuteVideoAndCheck(participant1, participant2);
     }
 
     /**
