@@ -206,7 +206,7 @@ public class AudioVideoModerationTest
         Actions moderatorActions = new Actions(moderatorDriver);
 
         moderator.getParticipantsPane().open();
-        moderator.getParticipantsPane().allowVideo(nonModerator, false);
+        moderator.getParticipantsPane().allowVideo(nonModerator, true);
         moderator.getParticipantsPane().askToUnmute(nonModerator, false);
         nonModerator.getNotifications().getAskToUnmuteNotification();
         MeetUIUtils.unmuteAudioAndCheck(nonModerator, participant1);
@@ -406,6 +406,8 @@ public class AudioVideoModerationTest
 
         askParticipantToUnmute(moderator, participant);
 
+        participant.getNotifications().closeAskToUnmuteNotification();
+
         MeetUIUtils.unmuteAudioAndCheck(participant, moderator);
         MeetUIUtils.unmuteVideoAndCheck(participant, moderator);
 
@@ -439,7 +441,7 @@ public class AudioVideoModerationTest
     {
         ParticipantsPane participantsPane = moderator.getParticipantsPane();
 
-        participantsPane.allowVideo(participant, false);
+        participantsPane.allowVideo(participant, true);
         participantsPane.askToUnmute(participant, false);
 
         participant.getNotifications().getAskToUnmuteNotification();

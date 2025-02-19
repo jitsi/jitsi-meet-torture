@@ -1072,7 +1072,7 @@ public class MeetUIUtils
         TestUtils.waitForCondition(
             driver,
             10,
-            (ExpectedCondition<Boolean>) d -> 
+            (ExpectedCondition<Boolean>) d ->
             {
                 WebElement videoElement
                     = driver.findElement(By.xpath("//span[@id='participant_" + endpointId + "']"));
@@ -1248,6 +1248,8 @@ public class MeetUIUtils
     public static void unmuteAudioAndCheck(WebParticipant participant,
                                            WebParticipant participantCheck)
     {
+        participant.getNotifications().closeAskToUnmuteNotification();
+
         WebDriver driver = participant.getDriver();
 
         // Make sure that there is the audio unmute button
