@@ -1,0 +1,8 @@
+<suite name="JitsiMeet Suite">
+    <test name="Selenium Grid Test">
+        <parameter name="hub" value="http://localhost:4444/wd/hub"/>
+        <classes>
+            <class name="org.jitsi.meet.test.AbcTest"/>
+        </classes>
+    </test>
+</suite>
