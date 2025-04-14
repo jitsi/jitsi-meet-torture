@@ -68,20 +68,9 @@ public class CodecSelectionTest
             "return JitsiMeetJS.app.testing.isLargeVideoReceived();",
             10);
 
-        // Check if p1 is sending VP9 and p2 is sending VP8 as per their codec preferences.
-        // Except on Firefox because it doesn't support VP9 encode.
-        if (participant1.getType().isFirefox())
-        {
-            TestUtils.waitForBoolean(participant1.getDriver(),
-            "return JitsiMeetJS.app.testing.isLocalCameraEncodingVp8();",
-            10);
-        } 
-        else
-        {
-            TestUtils.waitForBoolean(participant1.getDriver(),
-            "return JitsiMeetJS.app.testing.isLocalCameraEncodingVp9();",
-            10);
-        }
+        TestUtils.waitForBoolean(participant1.getDriver(),
+        "return JitsiMeetJS.app.testing.isLocalCameraEncodingVp9();",
+        10);
 
         TestUtils.waitForBoolean(participant2.getDriver(),
             "return JitsiMeetJS.app.testing.isLocalCameraEncodingVp8();",
