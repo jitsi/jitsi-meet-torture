@@ -103,7 +103,7 @@ public class DisableSelfViewTest
     }
 
     @Test(dependsOnMethods = { "testHideSelfViewFromSettings" })
-    public void testSelfViewIsShownIfAloneInMeeting()
+    public void testSelfViewIsHiddenIfAloneInMeeting()
     {
         checkSelfViewHidden(true);
         participant2.hangUp();
