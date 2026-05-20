@@ -73,4 +73,6 @@ The `ConferenceFixture.FAKE_VIDEO_FNAME_PROP` property should point to the stamp
 
 The test will output the calculated PSNR value for each frame, as well as a running average for all frames.  If `ConferenceFixture.PSNR_OUTPUT_DIR_PROP` and `ConferenceFixture.PSNR_OUTPUT_FILENAME_PROP` are set, the overall average PSNR value will be written to the file described by the two properties.
 
+
+
 `scripts/push_psnr_results.py` can be invoked to push the psnr value (and some variables from the jenkins build environment) to a configured URL.
