@@ -2,10 +2,10 @@
 # Configs have a mapping between the Docker image to use and the capabilities that need to be matched to
 # start a container with the given image.
 configs = [
-    "jitsi/standalone-firefox:latest", '{"browserName": "firefox", "platformName": "linux"}',
-    "jitsi/standalone-chrome:latest", '{"browserName": "chrome", "platformName": "linux"}',
-    "jitsi/standalone-firefox:beta", '{"browserName": "firefox", "platformName": "linux", "browserVersion": "beta"}',
-    "jitsi/standalone-chrome:beta", '{"browserName": "chrome", "platformName": "linux", "browserVersion": "beta" }'
+    "jitsi/selenium-standalone-firefox:latest", '{"browserName": "firefox", "platformName": "linux"}',
+    "jitsi/selenium-standalone-chrome:latest", '{"browserName": "chrome", "platformName": "linux"}',
+    "jitsi/selenium-standalone-firefox:beta", '{"browserName": "firefox", "platformName": "linux", "browserVersion": "beta"}',
+    "jitsi/selenium-standalone-chrome:beta", '{"browserName": "chrome", "platformName": "linux", "browserVersion": "beta" }'
 ]
 
 # URL for connecting to the docker daemon
